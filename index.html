@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Kabaru Ward Football</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7f6;
+    color: #17221c;
+    line-height: 1.6;
+}
+
+header {
+    background: #073b25;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 3px 12px rgba(0,0,0,.2);
+}
+
+.navbar {
+    max-width: 1200px;
+    margin: auto;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #f5c542;
+}
+
+nav {
+    display: flex;
+    gap: 18px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #f5c542;
+}
+
+.hero {
+    background:
+        linear-gradient(rgba(3,47,28,.82), rgba(3,47,28,.92)),
+        radial-gradient(circle at center, #1c7548, #032f1c);
+    color: white;
+    padding: 70px 20px;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: clamp(34px, 8vw, 62px);
+    margin-bottom: 10px;
+}
+
+.hero h1 span {
+    color: #f5c542;
+}
+
+.hero p {
+    max-width: 650px;
+    margin: auto;
+    font-size: 17px;
+    opacity: .95;
+}
+
+.hero-buttons {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 13px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-gold {
+    background: #f5c542;
+    color: #17221c;
+}
+
+.btn-outline {
+    border: 2px solid white;
+    color: white;
+}
+
+.container {
+    max-width: 1150px;
+    margin: auto;
+    padding: 50px 18px;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.section-title h2 {
+    font-size: 30px;
+    color: #073b25;
+}
+
+.section-title p {
+    color: #657169;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.card h3 {
+    margin-bottom: 8px;
+    color: #073b25;
+}
+
+.competition {
+    background: #073b25;
+    color: white;
+    border-radius: 18px;
+    padding: 30px 22px;
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.competition h2 {
+    color: #f5c542;
+    font-size: 30px;
+}
+
+.competition p {
+    margin: 8px 0 20px;
+}
+
+.badge {
+    display: inline-block;
+    background: #f5c542;
+    color: #17221c;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.07);
+}
+
+th {
+    background: #073b25;
+    color: white;
+    padding: 13px 8px;
+    font-size: 13px;
+}
+
+td {
+    padding: 13px 8px;
+    border-bottom: 1px solid #e7ebe8;
+    text-align: center;
+    font-size: 13px;
+}
+
+td:nth-child(2) {
+    text-align: left;
+    font-weight: bold;
+}
+
+.position {
+    font-weight: bold;
+    color: #073b25;
+}
+
+.match {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+}
+
+.team {
+    font-weight: bold;
+    flex: 1;
+}
+
+.team:last-child {
+    text-align: right;
+}
+
+.vs {
+    font-weight: bold;
+    color: #073b25;
+}
+
+.match-info {
+    font-size: 12px;
+    color: #657169;
+    text-align: center;
+    margin-top: 4px;
+}
+
+.sponsor-area {
+    background: white;
+    border-radius: 18px;
+    padding: 35px 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,.07);
+}
+
+.sponsors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.sponsor {
+    border: 2px dashed #cbd4ce;
+    border-radius: 12px;
+    padding: 25px 10px;
+    color: #657169;
+}
+
+.sponsor strong {
+    display: block;
+    color: #073b25;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.register {
+    background: linear-gradient(135deg, #073b25, #0c6240);
+    color: white;
+    border-radius: 18px;
+    padding: 40px 22px;
+    text-align: center;
+}
+
+.register h2 {
+    color: #f5c542;
+    margin-bottom: 10px;
+}
+
+footer {
+    background: #062719;
+    color: white;
+    text-align: center;
+    padding: 30px 18px;
+    margin-top: 20px;
+}
+
+footer span {
+    color: #f5c542;
+}
+
+@media (max-width: 750px) {
+    nav {
+        display: none;
+    }
+
+    .hero {
+        padding: 55px 18px;
+    }
+
+    table {
+        font-size: 11px;
+    }
+
+    th, td {
+        padding: 9px 4px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="navbar">
+        <div class="logo">KABARU <span>⚽</span> FOOTBALL</div>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#table">Table</a>
+            <a href="#fixtures">Fixtures</a>
+            <a href="#teams">Teams</a>
+            <a href="#sponsors">Sponsors</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero" id="home">
+    <h1>Kabaru Ward <span>Football</span></h1>
+
+    <p>
+        The home of football leagues, tournaments, teams,
+        players, fixtures, results and football development
+        across Kabaru Ward.
+    </p>
+
+    <div class="hero-buttons">
+        <a class="btn btn-gold" href="#table">View League Table</a>
+        <a class="btn btn-outline" href="#register">Register Your Team</a>
+    </div>
+</section>
+
+<main>
+
+<div class="container">
+
+    <div class="competition">
+        <span class="badge">CURRENT COMPETITION</span>
+
+        <h2>Kabaru Ward Football League</h2>
+
+        <p>
+            Season 2026 • Kabaru Ward
+        </p>
+
+        <strong>Competition status: Coming Soon</strong>
+    </div>
+
+    <div class="section-title">
+        <h2>Football Hub</h2>
+        <p>Everything you need to follow football in Kabaru Ward.</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>🏆 Competitions</h3>
+            <p>
+                Follow ward leagues, tournaments and knockout
+                competitions.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>📅 Fixtures</h3>
+            <p>
+                See upcoming matches, dates, venues and kick-off
+                times.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>⚽ Results</h3>
+            <p>
+                Check previous match results and competition
+                progress.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>👥 Teams</h3>
+            <p>
+                Explore registered teams, coaches, captains and
+                players.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<section id="table">
+<div class="container">
+
+    <div class="section-title">
+        <h2>📊 League Table</h2>
+        <p>Kabaru Ward Football League 2026</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Pos</th>
+                <th>Team</th>
+                <th>P</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>GD</th>
+                <th>Pts</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="position">1</td>
+                <td>Team One</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td><strong>0</strong></td>
+            </tr>
+
+            <tr>
+                <td class="position">2</td>
+                <td>Team Two</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td><strong>0</strong></td>
+            </tr>
+
+            <tr>
+                <td class="position">3</td>
+                <td>Team Three</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td><strong>0</strong></td>
+            </tr>
+
+            <tr>
+                <td class="position">4</td>
+                <td>Team Four</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td><strong>0</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+</section>
+
+<section id="fixtures">
+<div class="container">
+
+    <div class="section-title">
+        <h2>📅 Upcoming Fixtures</h2>
+        <p>Latest scheduled matches</p>
+    </div>
+
+    <div class="match">
+        <div class="team">
+            Team One
+        </div>
+
+        <div>
+            <div class="vs">VS</div>
+            <div class="match-info">
+                Saturday • 3:00 PM<br>
+                Kabaru Grounds
+            </div>
+        </div>
+
+        <div class="team">
+            Team Two
+        </div>
+    </div>
+
+    <div class="match">
+        <div class="team">
+            Team Three
+        </div>
+
+        <div>
+            <div class="vs">VS</div>
+            <div class="match-info">
+                Sunday • 3:00 PM<br>
+                Ward Stadium
+            </div>
+        </div>
+
+        <div class="team">
+            Team Four
+        </div>
+    </div>
+
+</div>
+</section>
+
+<section id="teams">
+<div class="container">
+
+    <div class="section-title">
+        <h2>👥 Registered Teams</h2>
+        <p>Meet the football teams of Kabaru Ward.</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>⚽ Team One</h3>
+            <p>Players: 20</p>
+            <p>Coach: To be registered</p>
+            <p>Captain: To be registered</p>
+        </div>
+
+        <div class="card">
+            <h3>⚽ Team Two</h3>
+            <p>Players: 20</p>
+            <p>Coach: To be registered</p>
+            <p>Captain: To be registered</p>
+        </div>
+
+        <div class="card">
+            <h3>⚽ Team Three</h3>
+            <p>Players: 20</p>
+            <p>Coach: To be registered</p>
+            <p>Captain: To be registered</p>
+        </div>
+
+    </div>
+
+</div>
+</section>
+
+<section id="sponsors">
+<div class="container">
+
+    <div class="sponsor-area">
+
+        <div class="section-title">
+            <h2>🤝 Our Sponsors & Partners</h2>
+
+            <p>
+                Supporting football development and youth talent
+                in Kabaru Ward.
+            </p>
+        </div>
+
+        <div class="sponsors">
+
+            <div class="sponsor">
+                <strong>YOUR LOGO</strong>
+                Gold Sponsor
+            </div>
+
+            <div class="sponsor">
+                <strong>YOUR LOGO</strong>
+                Official Partner
+            </div>
+
+            <div class="sponsor">
+                <strong>YOUR LOGO</strong>
+                Community Partner
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</section>
+
+<section id="register">
+<div class="container">
+
+    <div class="register">
+
+        <h2>📝 Register Your Team</h2>
+
+        <p>
+            Is your team established in Kabaru Ward?
+            Register your team and become part of the official
+            Kabaru Ward football database.
+        </p>
+
+        <br>
+
+        <p>
+            Each team can register a coach, captain,
+            vice captain, discipline master and a maximum
+            of 20 players.
+        </p>
+
+        <br>
+
+        <a class="btn btn-gold" href="#">
+            Team Registration Coming Soon
+        </a>
+
+    </div>
+
+</div>
+</section>
+
+</main>
+
+<footer>
+    <p>
+        © 2026 <span>Kabaru Ward Football</span>
+    </p>
+
+    <p>
+        Football • Community • Talent • Development
+    </p>
+</footer>
+
+</body>
+</html>
