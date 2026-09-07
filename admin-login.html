@@ -448,12 +448,12 @@ loginForm.addEventListener("submit", async function(event) {
         /* Check administrator permission */
 
         const { data: adminUser, error: adminError } =
-            await supabaseClient
-                .from("admin_users")
-                .select("user_id, role")
-                .eq("user_id", data.user.id)
-                .eq("role", "admin")
-                .maybeSingle();
+    await supabaseClient
+        .from("admin_users")
+        .select("user_id, role")
+        .eq("user_id", data.user.id)
+        .in("role", ["admin", "super_admin"])
+        .maybeSingle();
 
 
         if (adminError) {
