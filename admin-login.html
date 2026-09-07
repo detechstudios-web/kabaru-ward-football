@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +39,7 @@
             text-align: center;
             color: #666;
             margin-bottom: 25px;
+            line-height: 1.5;
         }
 
         .login-card label {
@@ -59,7 +59,8 @@
         }
 
         .login-btn,
-        .reset-btn {
+        .reset-btn,
+        .update-btn {
             width: 100%;
             margin-top: 22px;
             padding: 13px;
@@ -76,12 +77,17 @@
             background: #555;
         }
 
+        .update-btn {
+            background: #16803c;
+        }
+
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
 
-        .forgot-link {
+        .forgot-link,
+        .back-login {
             display: block;
             text-align: center;
             margin-top: 18px;
@@ -96,6 +102,7 @@
             margin-top: 15px;
             padding: 12px;
             border-radius: 7px;
+            line-height: 1.4;
         }
 
         .error {
@@ -119,6 +126,12 @@
         .hidden {
             display: none;
         }
+
+        .password-note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 7px;
+        }
     </style>
 </head>
 
@@ -126,7 +139,9 @@
 
 <div class="login-container">
 
-    <!-- LOGIN CARD -->
+    <!-- =========================
+         LOGIN CARD
+    ========================== -->
 
     <div class="login-card" id="loginCard">
 
@@ -195,9 +210,11 @@
     </div>
 
 
-    <!-- PASSWORD RESET CARD -->
+    <!-- =========================
+         PASSWORD RESET REQUEST
+    ========================== -->
 
-    <div class="login-card hidden" id="resetCard">
+    <div class="login-card hidden" id="resetRequestCard">
 
         <h1>🔑 Reset Password</h1>
 
@@ -205,7 +222,7 @@
             Enter your administrator email and we will send you a password reset link.
         </p>
 
-        <form id="resetForm">
+        <form id="resetRequestForm">
 
             <label for="resetEmail">
                 Admin Email
@@ -240,82 +257,144 @@
 
         <span
             id="backToLogin"
-            class="forgot-link">
+            class="back-login">
             ← Back to Login
         </span>
+
+    </div>
+
+
+    <!-- =========================
+         CREATE NEW PASSWORD
+    ========================== -->
+
+    <div class="login-card hidden" id="newPasswordCard">
+
+        <h1>🔐 Create New Password</h1>
+
+        <p class="subtitle">
+            Your password reset link is valid.
+            Choose a new password for the administrator account.
+        </p>
+
+        <form id="newPasswordForm">
+
+            <label for="newPassword">
+                New Password
+            </label>
+
+            <input
+                type="password"
+                id="newPassword"
+                placeholder="Enter your new password"
+                minlength="6"
+                required
+            >
+
+            <div class="password-note">
+                Use at least 6 characters.
+            </div>
+
+            <label for="confirmPassword">
+                Confirm New Password
+            </label>
+
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Enter the password again"
+                minlength="6"
+                required
+            >
+
+            <button
+                type="submit"
+                id="updatePasswordBtn"
+                class="update-btn">
+                ✅ Update Password
+            </button>
+
+        </form>
+
+        <div
+            id="passwordErrorMessage"
+            class="message error">
+        </div>
+
+        <div
+            id="passwordSuccessMessage"
+            class="message success">
+        </div>
 
     </div>
 
 </div>
 
 
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 
+
 <script>
 
-const loginForm = document.getElementById("loginForm");
-const loginBtn = document.getElementById("loginBtn");
+/* ==========================================
+   ELEMENTS
+========================================== */
 
-const forgotPassword = document.getElementById("forgotPassword");
+const loginCard =
+    document.getElementById("loginCard");
 
-const resetCard = document.getElementById("resetCard");
-const loginCard = document.getElementById("loginCard");
+const resetRequestCard =
+    document.getElementById("resetRequestCard");
 
-const resetForm = document.getElementById("resetForm");
-const resetBtn = document.getElementById("resetBtn");
-
-const backToLogin = document.getElementById("backToLogin");
-
-const errorMessage = document.getElementById("errorMessage");
-const successMessage = document.getElementById("successMessage");
-
-const resetErrorMessage =
-    document.getElementById("resetErrorMessage");
-
-const resetSuccessMessage =
-    document.getElementById("resetSuccessMessage");
+const newPasswordCard =
+    document.getElementById("newPasswordCard");
 
 
-function showLoginError(message) {
+const loginForm =
+    document.getElementById("loginForm");
 
-    errorMessage.textContent = message;
-    errorMessage.style.display = "block";
+const resetRequestForm =
+    document.getElementById("resetRequestForm");
 
-    successMessage.style.display = "none";
+const newPasswordForm =
+    document.getElementById("newPasswordForm");
+
+
+const loginBtn =
+    document.getElementById("loginBtn");
+
+const resetBtn =
+    document.getElementById("resetBtn");
+
+const updatePasswordBtn =
+    document.getElementById("updatePasswordBtn");
+
+
+/* ==========================================
+   MESSAGE FUNCTIONS
+========================================== */
+
+function showMessage(element, message) {
+
+    element.textContent = message;
+    element.style.display = "block";
+
 }
 
 
-function showLoginSuccess(message) {
+function hideMessage(element) {
 
-    successMessage.textContent = message;
-    successMessage.style.display = "block";
+    element.style.display = "none";
 
-    errorMessage.style.display = "none";
 }
 
 
-function showResetError(message) {
-
-    resetErrorMessage.textContent = message;
-    resetErrorMessage.style.display = "block";
-
-    resetSuccessMessage.style.display = "none";
-}
-
-
-function showResetSuccess(message) {
-
-    resetSuccessMessage.textContent = message;
-    resetSuccessMessage.style.display = "block";
-
-    resetErrorMessage.style.display = "none";
-}
-
-
-/* ================================
+/* ==========================================
    LOGIN
-================================ */
+========================================== */
 
 loginForm.addEventListener("submit", async function(event) {
 
@@ -327,11 +406,19 @@ loginForm.addEventListener("submit", async function(event) {
     const password =
         document.getElementById("password").value;
 
+
     loginBtn.disabled = true;
     loginBtn.textContent = "Logging in...";
 
-    errorMessage.style.display = "none";
-    successMessage.style.display = "none";
+
+    hideMessage(
+        document.getElementById("errorMessage")
+    );
+
+    hideMessage(
+        document.getElementById("successMessage")
+    );
+
 
     try {
 
@@ -339,7 +426,6 @@ loginForm.addEventListener("submit", async function(event) {
             await supabaseClient.auth.signInWithPassword({
 
                 email: email,
-
                 password: password
 
             });
@@ -359,10 +445,7 @@ loginForm.addEventListener("submit", async function(event) {
         }
 
 
-        /*
-         Check that the authenticated user
-         is actually an administrator.
-        */
+        /* Check administrator permission */
 
         const { data: adminUser, error: adminError } =
             await supabaseClient
@@ -389,7 +472,8 @@ loginForm.addEventListener("submit", async function(event) {
         }
 
 
-        showLoginSuccess(
+        showMessage(
+            document.getElementById("successMessage"),
             "Login successful. Opening administrator dashboard..."
         );
 
@@ -409,7 +493,8 @@ loginForm.addEventListener("submit", async function(event) {
         );
 
 
-        showLoginError(
+        showMessage(
+            document.getElementById("errorMessage"),
             error.message ||
             "Unable to login. Please check your email and password."
         );
@@ -423,107 +508,324 @@ loginForm.addEventListener("submit", async function(event) {
 });
 
 
-/* ================================
-   SHOW RESET PASSWORD
-================================ */
+/* ==========================================
+   SHOW FORGOT PASSWORD
+========================================== */
 
-forgotPassword.addEventListener("click", function() {
+document
+    .getElementById("forgotPassword")
+    .addEventListener("click", function() {
 
-    loginCard.classList.add("hidden");
+        loginCard.classList.add("hidden");
 
-    resetCard.classList.remove("hidden");
+        resetRequestCard.classList.remove("hidden");
 
-    resetErrorMessage.style.display = "none";
+        hideMessage(
+            document.getElementById("resetErrorMessage")
+        );
 
-    resetSuccessMessage.style.display = "none";
+        hideMessage(
+            document.getElementById("resetSuccessMessage")
+        );
 
-});
+    });
 
 
-/* ================================
+/* ==========================================
    BACK TO LOGIN
-================================ */
+========================================== */
 
-backToLogin.addEventListener("click", function() {
+document
+    .getElementById("backToLogin")
+    .addEventListener("click", function() {
 
-    resetCard.classList.add("hidden");
+        resetRequestCard.classList.add("hidden");
 
-    loginCard.classList.remove("hidden");
+        loginCard.classList.remove("hidden");
 
-});
-
-
-/* ================================
-   SEND PASSWORD RESET EMAIL
-================================ */
-
-resetForm.addEventListener("submit", async function(event) {
-
-    event.preventDefault();
+    });
 
 
-    const email =
-        document.getElementById("resetEmail").value.trim();
+/* ==========================================
+   SEND RESET EMAIL
+========================================== */
+
+resetRequestForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
 
 
-    resetBtn.disabled = true;
-    resetBtn.textContent = "Sending...";
+        const email =
+            document
+                .getElementById("resetEmail")
+                .value
+                .trim();
 
-    resetErrorMessage.style.display = "none";
-    resetSuccessMessage.style.display = "none";
+
+        resetBtn.disabled = true;
+        resetBtn.textContent = "Sending...";
 
 
-    try {
+        hideMessage(
+            document.getElementById("resetErrorMessage")
+        );
 
-        /*
-         Supabase will send the password
-         recovery email to this address.
-        */
+        hideMessage(
+            document.getElementById("resetSuccessMessage")
+        );
 
-        const { error } =
-            await supabaseClient.auth.resetPasswordForEmail(
-                email,
-                {
-                    redirectTo:
+
+        try {
+
+            const { error } =
+                await supabaseClient.auth.resetPasswordForEmail(
+                    email,
+                    {
                         redirectTo:
-    "https://detechstudios-web.github.io/kabaru-ward-football/admin-login.html"
-                }
+                            "https://detechstudios-web.github.io/kabaru-ward-football/admin-login.html"
+                    }
+                );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            showMessage(
+                document.getElementById("resetSuccessMessage"),
+                "Password reset email sent. Check your email inbox and follow the link."
             );
 
 
-        if (error) {
-            throw error;
+        } catch (error) {
+
+            console.error(
+                "Password reset error:",
+                error
+            );
+
+
+            showMessage(
+                document.getElementById("resetErrorMessage"),
+                error.message ||
+                "Unable to send password reset email."
+            );
+
         }
 
 
-        showResetSuccess(
-            "Password reset email sent. Check your email inbox and follow the link to create a new password."
+        resetBtn.disabled = false;
+        resetBtn.textContent = "📧 Send Reset Email";
+
+    }
+);
+
+
+/* ==========================================
+   PASSWORD RECOVERY DETECTION
+========================================== */
+
+/*
+   Supabase sends PASSWORD_RECOVERY when the
+   user arrives through the password reset link.
+*/
+
+supabaseClient.auth.onAuthStateChange(
+    async function(event, session) {
+
+        console.log(
+            "Supabase auth event:",
+            event
         );
 
+
+        if (event === "PASSWORD_RECOVERY") {
+
+            loginCard.classList.add("hidden");
+
+            resetRequestCard.classList.add("hidden");
+
+            newPasswordCard.classList.remove("hidden");
+
+        }
+
+    }
+);
+
+
+/* ==========================================
+   CHECK FOR EXISTING RECOVERY SESSION
+========================================== */
+
+async function checkRecoverySession() {
+
+    try {
+
+        const { data } =
+            await supabaseClient.auth.getSession();
+
+
+        if (
+            data &&
+            data.session &&
+            window.location.hash.includes("type=recovery")
+        ) {
+
+            loginCard.classList.add("hidden");
+
+            resetRequestCard.classList.add("hidden");
+
+            newPasswordCard.classList.remove("hidden");
+
+        }
 
     } catch (error) {
 
         console.error(
-            "Password reset error:",
+            "Recovery session check error:",
             error
-        );
-
-
-        showResetError(
-            error.message ||
-            "Unable to send password reset email."
         );
 
     }
 
+}
 
-    resetBtn.disabled = false;
-    resetBtn.textContent = "📧 Send Reset Email";
 
-});
+checkRecoverySession();
+
+
+/* ==========================================
+   UPDATE PASSWORD
+========================================== */
+
+newPasswordForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const newPassword =
+            document
+                .getElementById("newPassword")
+                .value;
+
+        const confirmPassword =
+            document
+                .getElementById("confirmPassword")
+                .value;
+
+
+        hideMessage(
+            document.getElementById("passwordErrorMessage")
+        );
+
+        hideMessage(
+            document.getElementById("passwordSuccessMessage")
+        );
+
+
+        if (newPassword.length < 6) {
+
+            showMessage(
+                document.getElementById("passwordErrorMessage"),
+                "Your new password must be at least 6 characters long."
+            );
+
+            return;
+
+        }
+
+
+        if (newPassword !== confirmPassword) {
+
+            showMessage(
+                document.getElementById("passwordErrorMessage"),
+                "The two passwords do not match."
+            );
+
+            return;
+
+        }
+
+
+        updatePasswordBtn.disabled = true;
+        updatePasswordBtn.textContent =
+            "Updating Password...";
+
+
+        try {
+
+            const { data, error } =
+                await supabaseClient.auth.updateUser({
+
+                    password: newPassword
+
+                });
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            showMessage(
+                document.getElementById("passwordSuccessMessage"),
+                "✅ Password updated successfully! You can now log in with your new password."
+            );
+
+
+            updatePasswordBtn.disabled = true;
+
+
+            /*
+              Sign out after successful password change.
+              This ensures the administrator logs in normally
+              using the new password.
+            */
+
+            setTimeout(async function() {
+
+                await supabaseClient.auth.signOut();
+
+                newPasswordCard.classList.add("hidden");
+
+                loginCard.classList.remove("hidden");
+
+                document.getElementById("password").value = "";
+
+            }, 1800);
+
+
+        } catch (error) {
+
+            console.error(
+                "Update password error:",
+                error
+            );
+
+
+            showMessage(
+                document.getElementById("passwordErrorMessage"),
+                error.message ||
+                "Unable to update your password. Please request a new reset link."
+            );
+
+
+            updatePasswordBtn.disabled = false;
+
+            updatePasswordBtn.textContent =
+                "✅ Update Password";
+
+        }
+
+    }
+);
 
 </script>
 
 </body>
 </html>
-```
