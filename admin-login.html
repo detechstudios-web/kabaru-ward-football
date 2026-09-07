@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kabaru Ward Football - Admin Login</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f6f8;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+        }
+
+        .login-card h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .login-card .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .login-card label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .login-card input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #16803c;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 7px;
+        }
+
+        .error {
+            background: #fde8e8;
+            color: #b42318;
+        }
+
+        .success {
+            background: #e8f7ee;
+            color: #166534;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #16803c;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <h1>⚽ Kabaru Ward Football</h1>
+
+        <p class="subtitle">
+            Administrator Login
+        </p>
+
+        <form id="loginForm">
+
+            <label for="email">
+                Admin Email
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter admin email"
+                required
+            >
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+                required
+            >
+
+            <button
+                type="submit"
+                id="loginBtn"
+                class="login-btn">
+                🔐 Login
+            </button>
+
+        </form>
+
+        <div
+            id="errorMessage"
+            class="message error">
+        </div>
+
+        <div
+            id="successMessage"
+            class="message success">
+        </div>
+
+        <a
+            href="index.html"
+            class="back-link">
+            ← Back to Main Website
+        </a>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<script>
+
+const loginForm = document.getElementById("loginForm");
+const loginBtn = document.getElementById("loginBtn");
+
+const errorMessage = document.getElementById("errorMessage");
+const successMessage = document.getElementById("successMessage");
+
+function showError(message) {
+
+    errorMessage.textContent = message;
+    errorMessage.style.display = "block";
+
+    successMessage.style.display = "none";
+}
+
+function showSuccess(message) {
+
+    successMessage.textContent = message;
+    successMessage.style.display = "block";
+
+    errorMessage.style.display = "none";
+}
+
+loginForm.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Logging in...";
+
+    errorMessage.style.display = "none";
+    successMessage.style.display = "none";
+
+    try {
+
+        // Login through Supabase Authentication
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data.user) {
+            throw new Error("Login failed. No user was returned.");
+        }
+
+        // Check whether this user is an administrator
+        const { data: adminUser, error: adminError } =
+            await supabaseClient
+                .from("admin_users")
+                .select("user_id, role")
+                .eq("user_id", data.user.id)
+                .eq("role", "admin")
+                .maybeSingle();
+
+        if (adminError) {
+            throw adminError;
+        }
+
+        if (!adminUser) {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+                "This account is not registered as a Kabaru Ward Football administrator."
+            );
+        }
+
+        showSuccess("Login successful. Opening administrator dashboard...");
+
+        setTimeout(function() {
+
+            window.location.href = "admin.html";
+
+        }, 800);
+
+    } catch (error) {
+
+        console.error("Admin login error:", error);
+
+        showError(
+            error.message ||
+            "Unable to login. Please check your email and password."
+        );
+
+        loginBtn.disabled = false;
+        loginBtn.textContent = "🔐 Login";
+    }
+
+});
+
+</script>
+
+</body>
+</html>
