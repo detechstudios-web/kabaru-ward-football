@@ -13,9 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let playerNumber = 0;
 
-    // ----------------------------------------
-    // Add a player
-    // ----------------------------------------
+
+    // ========================================
+    // ADD PLAYER
+    // ========================================
+
     function addPlayer() {
 
         if (playerNumber >= 20) {
@@ -56,33 +58,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 <option value="Forward">Forward</option>
             </select>
 
-            <button
-                type="button"
-                class="remove-player"
-            >
+            <button type="button" class="remove-player">
                 Remove
             </button>
         `;
 
-        player.querySelector(".remove-player").addEventListener(
-            "click",
-            () => {
+        player
+            .querySelector(".remove-player")
+            .addEventListener("click", () => {
 
                 player.remove();
-
                 updatePlayerNumbers();
 
-            }
-        );
+            });
 
         playersContainer.appendChild(player);
 
         updatePlayerNumbers();
     }
 
-    // ----------------------------------------
-    // Update player numbers
-    // ----------------------------------------
+
+    // ========================================
+    // UPDATE PLAYER NUMBERS
+    // ========================================
+
     function updatePlayerNumbers() {
 
         const rows =
@@ -103,234 +102,305 @@ document.addEventListener("DOMContentLoaded", () => {
         if (playerNumber >= 20) {
 
             addPlayerBtn.disabled = true;
-            addPlayerBtn.textContent = "Maximum 20 Players";
+
+            addPlayerBtn.textContent =
+                "Maximum 20 Players";
 
         } else {
 
             addPlayerBtn.disabled = false;
-            addPlayerBtn.textContent = "+ Add Player";
 
+            addPlayerBtn.textContent =
+                "+ Add Player";
         }
     }
 
-    // ----------------------------------------
-    // Add first player automatically
-    // ----------------------------------------
+
+    // ========================================
+    // START WITH ONE PLAYER
+    // ========================================
+
     addPlayer();
 
-    addPlayerBtn.addEventListener(
-        "click",
-        addPlayer
-    );
 
-    // ----------------------------------------
-    // Submit registration
-    // ----------------------------------------
+    // ========================================
+    // ADD PLAYER BUTTON
+    // ========================================
+
+    addPlayerBtn.addEventListener("click", addPlayer);
+
+
+    // ========================================
+    // SUBMIT REGISTRATION
+    // ========================================
+
     form.addEventListener("submit", async (event) => {
 
         event.preventDefault();
 
-        message.innerHTML =
-            "<p>Submitting registration...</p>";
-
         message.className =
             "registration-message loading";
+
+        message.innerHTML =
+            "<p>Submitting registration...</p>";
 
         const submitButton =
             form.querySelector("button[type='submit']");
 
         submitButton.disabled = true;
 
+
         try {
 
-            // --------------------------------
-            // Collect team information
-            // --------------------------------
+            // ========================================
+            // TEAM DETAILS
+            // ========================================
 
             const team = {
 
                 name:
-                    document.getElementById("teamName").value.trim(),
+                    document.getElementById("teamName")
+                        .value.trim(),
 
                 short_name:
-                    document.getElementById("shortName").value.trim(),
+                    document.getElementById("shortName")
+                        .value.trim(),
 
                 location:
-                    document.getElementById("teamLocation").value.trim(),
+                    document.getElementById("teamLocation")
+                        .value.trim(),
 
                 coach_name:
-                    document.getElementById("coachName").value.trim(),
+                    document.getElementById("coachName")
+                        .value.trim(),
 
                 captain_name:
-                    document.getElementById("captainName").value.trim(),
+                    document.getElementById("captainName")
+                        .value.trim(),
 
                 vice_captain_name:
-                    document.getElementById("viceCaptainName").value.trim(),
+                    document.getElementById("viceCaptainName")
+                        .value.trim(),
 
                 discipline_master_name:
-                    document.getElementById("disciplineMasterName").value.trim(),
+                    document.getElementById("disciplineMasterName")
+                        .value.trim(),
 
                 phone:
-                    document.getElementById("teamPhone").value.trim(),
+                    document.getElementById("teamPhone")
+                        .value.trim(),
 
                 email:
-                    document.getElementById("teamEmail").value.trim(),
-
-                registration_status:
-                    "Pending"
+                    document.getElementById("teamEmail")
+                        .value.trim()
             };
 
-            // --------------------------------
-            // Collect players
-            // --------------------------------
+
+            // ========================================
+            // COLLECT PLAYERS
+            // ========================================
 
             const playerRows =
                 playersContainer.querySelectorAll(".player-row");
+
 
             if (playerRows.length === 0) {
 
                 throw new Error(
                     "Please add at least one player."
                 );
-
             }
+
 
             if (playerRows.length > 20) {
 
                 throw new Error(
                     "A maximum of 20 players is allowed."
                 );
-
             }
+
 
             const players = [];
 
+
             playerRows.forEach(row => {
+
+                const fullName =
+                    row.querySelector(
+                        'input[name="player_name"]'
+                    ).value.trim();
+
+                const jerseyNumber =
+                    parseInt(
+                        row.querySelector(
+                            'input[name="jersey_number"]'
+                        ).value
+                    );
+
+                const position =
+                    row.querySelector(
+                        'select[name="position"]'
+                    ).value;
+
+
+                if (!fullName) {
+
+                    throw new Error(
+                        "Every player must have a full name."
+                    );
+                }
+
+
+                if (
+                    !Number.isInteger(jerseyNumber) ||
+                    jerseyNumber < 1 ||
+                    jerseyNumber > 99
+                ) {
+
+                    throw new Error(
+                        "Jersey numbers must be between 1 and 99."
+                    );
+                }
+
+
+                if (!position) {
+
+                    throw new Error(
+                        "Please select a position for every player."
+                    );
+                }
+
 
                 players.push({
 
-                    full_name:
-                        row.querySelector(
-                            'input[name="player_name"]'
-                        ).value.trim(),
+                    full_name: fullName,
 
-                    jersey_number:
-                        parseInt(
-                            row.querySelector(
-                                'input[name="jersey_number"]'
-                            ).value
-                        ),
+                    jersey_number: jerseyNumber,
 
-                    position:
-                        row.querySelector(
-                            'select[name="position"]'
-                        ).value,
+                    position: position
 
-                    registration_status:
-                        "Pending"
                 });
 
             });
 
-            // --------------------------------
-            // Check duplicate jersey numbers
-            // --------------------------------
+
+            // ========================================
+            // CHECK DUPLICATE JERSEY NUMBERS
+            // ========================================
 
             const jerseyNumbers =
-                players.map(player => player.jersey_number);
+                players.map(
+                    player => player.jersey_number
+                );
 
             const uniqueNumbers =
                 new Set(jerseyNumbers);
 
-            if (uniqueNumbers.size !== jerseyNumbers.length) {
+
+            if (
+                uniqueNumbers.size !==
+                jerseyNumbers.length
+            ) {
 
                 throw new Error(
                     "Each player must have a different jersey number."
                 );
-
             }
 
-            // --------------------------------
-            // Insert team
-            // --------------------------------
 
-            console.log("TEAM BEING SENT:", team);
+            console.log("TEAM:", team);
+            console.log("PLAYERS:", players);
 
-const { data: teamData, error: teamError } = await supabaseClient
-    .from("teams")
-    .insert(team)
-    .select("id")
-    .single();
 
-console.log("TEAM RESPONSE:", teamData);
-console.log("TEAM ERROR:", teamError);
+            // ========================================
+            // SEND TEAM + PLAYERS TO SUPABASE
+            // ========================================
 
-            if (teamError) {
+            const { data: teamId, error } =
+                await supabaseClient.rpc(
+                    "submit_team_registration",
+                    {
 
-                throw teamError;
+                        p_name:
+                            team.name,
 
+                        p_short_name:
+                            team.short_name,
+
+                        p_location:
+                            team.location,
+
+                        p_coach_name:
+                            team.coach_name,
+
+                        p_captain_name:
+                            team.captain_name,
+
+                        p_vice_captain_name:
+                            team.vice_captain_name,
+
+                        p_discipline_master_name:
+                            team.discipline_master_name,
+
+                        p_phone:
+                            team.phone,
+
+                        p_email:
+                            team.email,
+
+                        p_players:
+                            players
+                    }
+                );
+
+
+            console.log(
+                "SUPABASE RESULT:",
+                teamId,
+                error
+            );
+
+
+            if (error) {
+
+                throw error;
             }
 
-            const teamId = teamData.id;
 
-            // --------------------------------
-            // Add team ID to players
-            // --------------------------------
-
-            const playersWithTeam =
-                players.map(player => ({
-                    ...player,
-                    team_id: teamId
-                }));
-
-            // --------------------------------
-            // Insert players
-            // --------------------------------
-
-            const {
-                error: playersError
-            } = await supabaseClient
-                .from("players")
-                .insert(playersWithTeam);
-
-            if (playersError) {
-
-                // Try to remove the team if player
-                // insertion failed
-                await supabaseClient
-                    .from("teams")
-                    .delete()
-                    .eq("id", teamId);
-
-                throw playersError;
-
-            }
-
-            // --------------------------------
+            // ========================================
             // SUCCESS
-            // --------------------------------
+            // ========================================
 
             message.className =
                 "registration-message success";
 
             message.innerHTML = `
+
                 <h3>✅ Registration Submitted!</h3>
 
                 <p>
-                    <strong>${escapeHtml(team.name)}</strong>
+                    <strong>
+                        ${escapeHtml(team.name)}
+                    </strong>
                     has been successfully submitted.
                 </p>
 
                 <p>
-                    Your team and ${players.length} player(s)
-                    are currently <strong>Pending Approval</strong>.
+                    Your team and
+                    <strong>${players.length}</strong>
+                    player(s) are currently
+                    <strong>Pending Approval</strong>.
                 </p>
 
                 <p>
                     The Kabaru Ward Football administrator
                     will review the registration.
                 </p>
+
             `;
+
+
+            // Reset form
 
             form.reset();
 
@@ -340,19 +410,32 @@ console.log("TEAM ERROR:", teamError);
 
             addPlayer();
 
+
             window.scrollTo({
-                top: message.offsetTop - 100,
-                behavior: "smooth"
+
+                top:
+                    message.offsetTop - 100,
+
+                behavior:
+                    "smooth"
+
             });
+
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "REGISTRATION ERROR:",
+                error
+            );
+
 
             message.className =
                 "registration-message error";
 
+
             message.innerHTML = `
+
                 <h3>❌ Registration Failed</h3>
 
                 <p>
@@ -361,6 +444,7 @@ console.log("TEAM ERROR:", teamError);
                         "Something went wrong. Please try again."
                     )}
                 </p>
+
             `;
 
         } finally {
@@ -371,19 +455,20 @@ console.log("TEAM ERROR:", teamError);
 
     });
 
-    // ----------------------------------------
-    // Basic HTML escaping
-    // ----------------------------------------
+
+    // ========================================
+    // ESCAPE HTML
+    // ========================================
 
     function escapeHtml(value) {
 
         return String(value)
+
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
-
     }
 
 });
