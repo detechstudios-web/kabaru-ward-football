@@ -607,6 +607,7 @@ footer span {
 </section>
 
 <section id="register">
+
 <div class="container">
 
     <div class="register">
@@ -614,28 +615,199 @@ footer span {
         <h2>📝 Register Your Team</h2>
 
         <p>
-            Is your team established in Kabaru Ward?
-            Register your team and become part of the official
-            Kabaru Ward football database.
+            Register your established football team
+            in Kabaru Ward.
         </p>
-
-        <br>
 
         <p>
-            Each team can register a coach, captain,
-            vice captain, discipline master and a maximum
-            of 20 players.
+            Your registration will be reviewed by the
+            Kabaru Ward Football administrator.
         </p>
 
-        <br>
+    </div>
 
-        <a class="btn btn-gold" href="#">
-            Team Registration Coming Soon
-        </a>
+
+    <div class="registration-form-container">
+
+        <form id="teamRegistrationForm">
+
+            <div class="form-section">
+
+                <h2>⚽ Team Information</h2>
+
+                <label for="teamName">
+                    Team Name *
+                </label>
+
+                <input
+                    type="text"
+                    id="teamName"
+                    placeholder="e.g. Kabaru United FC"
+                    required
+                >
+
+
+                <label for="shortName">
+                    Short Name
+                </label>
+
+                <input
+                    type="text"
+                    id="shortName"
+                    placeholder="e.g. KUF"
+                    maxlength="10"
+                >
+
+
+                <label for="teamLocation">
+                    Location / Village *
+                </label>
+
+                <input
+                    type="text"
+                    id="teamLocation"
+                    placeholder="e.g. Kabaru"
+                    required
+                >
+
+
+                <label for="teamPhone">
+                    Team Phone *
+                </label>
+
+                <input
+                    type="tel"
+                    id="teamPhone"
+                    placeholder="e.g. 07XXXXXXXX"
+                    required
+                >
+
+
+                <label for="teamEmail">
+                    Team Email
+                </label>
+
+                <input
+                    type="email"
+                    id="teamEmail"
+                    placeholder="team@example.com"
+                >
+
+            </div>
+
+
+            <div class="form-section">
+
+                <h2>👥 Team Officials</h2>
+
+
+                <label for="coachName">
+                    Coach *
+                </label>
+
+                <input
+                    type="text"
+                    id="coachName"
+                    placeholder="Coach full name"
+                    required
+                >
+
+
+                <label for="captainName">
+                    Captain *
+                </label>
+
+                <input
+                    type="text"
+                    id="captainName"
+                    placeholder="Captain full name"
+                    required
+                >
+
+
+                <label for="viceCaptainName">
+                    Vice Captain *
+                </label>
+
+                <input
+                    type="text"
+                    id="viceCaptainName"
+                    placeholder="Vice captain full name"
+                    required
+                >
+
+
+                <label for="disciplineMasterName">
+                    Discipline Master *
+                </label>
+
+                <input
+                    type="text"
+                    id="disciplineMasterName"
+                    placeholder="Discipline master full name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-section">
+
+                <div class="players-heading">
+
+                    <div>
+                        <h2>⚽ Players</h2>
+
+                        <p>
+                            Add your team's players.
+                        </p>
+                    </div>
+
+                    <span
+                        id="playerCount"
+                        class="player-count"
+                    >
+                        0/20 players
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="playersContainer"
+                ></div>
+
+
+                <button
+                    type="button"
+                    id="addPlayerBtn"
+                    class="add-player-btn"
+                >
+                    + Add Player
+                </button>
+
+            </div>
+
+
+            <div
+                id="registrationMessage"
+                class="registration-message"
+            ></div>
+
+
+            <button
+                type="submit"
+                class="submit-registration"
+            >
+                📝 Submit Team Registration
+            </button>
+
+        </form>
 
     </div>
 
 </div>
+
 </section>
 
 </main>
