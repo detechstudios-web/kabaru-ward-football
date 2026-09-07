@@ -71,14 +71,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Check admin_users table
 
             const {
-                data: admin,
-                error: adminError
-            } = await supabaseClient
-                .from("admin_users")
-                .select("user_id, role")
-                .eq("user_id", user.id)
-                .eq("role", "admin")
-                .maybeSingle();
+    data: admin,
+    error: adminError
+} = await supabaseClient
+    .from("admin_users")
+    .select("user_id, role")
+    .eq("user_id", user.id)
+    .in("role", ["admin", "super_admin"])
+    .maybeSingle();
 
 
             if (adminError) {
