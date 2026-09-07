@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Profile | Kabaru Ward Football</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7f6;
+    color: #17221c;
+    line-height: 1.6;
+}
+
+header {
+    background: #073b25;
+    color: white;
+    padding: 18px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.2);
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: #f5c542;
+}
+
+.back-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-link:hover {
+    color: #f5c542;
+}
+
+.container {
+    max-width: 1050px;
+    margin: auto;
+    padding: 35px 18px;
+}
+
+.team-header {
+    background: #073b25;
+    color: white;
+    border-radius: 18px;
+    padding: 35px 25px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.team-icon {
+    font-size: 55px;
+    margin-bottom: 10px;
+}
+
+.team-header h1 {
+    color: #f5c542;
+    font-size: clamp(30px, 7vw, 48px);
+    margin-bottom: 5px;
+}
+
+.team-short-name {
+    opacity: .9;
+    font-size: 18px;
+}
+
+.team-location {
+    margin-top: 10px;
+    opacity: .9;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.detail-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+}
+
+.detail-card strong {
+    display: block;
+    color: #073b25;
+    margin-bottom: 5px;
+}
+
+.section-title {
+    color: #073b25;
+    margin-bottom: 15px;
+}
+
+.squad-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.squad-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.squad-table th {
+    background: #073b25;
+    color: white;
+    padding: 13px 8px;
+    text-align: left;
+}
+
+.squad-table td {
+    padding: 13px 8px;
+    border-bottom: 1px solid #e7ebe8;
+}
+
+.squad-table tr:last-child td {
+    border-bottom: none;
+}
+
+.jersey {
+    font-weight: bold;
+    color: #073b25;
+}
+
+.status {
+    display: inline-block;
+    background: #e7f6ed;
+    color: #176b3c;
+    padding: 4px 9px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.message {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+}
+
+.error {
+    color: #a33;
+}
+
+footer {
+    background: #062719;
+    color: white;
+    text-align: center;
+    padding: 25px 18px;
+    margin-top: 30px;
+}
+
+footer span {
+    color: #f5c542;
+}
+
+@media (max-width: 600px) {
+
+    .header-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .squad-table {
+        font-size: 13px;
+    }
+
+    .squad-table th,
+    .squad-table td {
+        padding: 10px 6px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="header-inner">
+
+        <div class="logo">
+            KABARU <span>⚽</span> FOOTBALL
+        </div>
+
+        <a
+            href="index.html#teams"
+            class="back-link"
+        >
+            ← Back to Teams
+        </a>
+
+    </div>
+
+</header>
+
+
+<main>
+
+<div class="container">
+
+    <div
+        id="teamContent"
+        class="message"
+    >
+        Loading team profile...
+    </div>
+
+</div>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 <span>Kabaru Ward Football</span>
+    </p>
+
+    <p>
+        Football • Community • Talent • Development
+    </p>
+
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+
+<script>
+
+// ========================================
+// KABARU WARD FOOTBALL
+// TEAM PROFILE
+// ========================================
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const teamContent =
+        document.getElementById("teamContent");
+
+
+    // ========================================
+    // GET TEAM ID FROM URL
+    // ========================================
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const teamId =
+        params.get("id");
+
+
+    if (!teamId) {
+
+        teamContent.innerHTML = `
+            <h2 class="error">
+                ⚠️ Team Not Found
+            </h2>
+
+            <p>
+                No team was specified.
+            </p>
+
+            <p style="margin-top:15px;">
+                <a href="index.html#teams">
+                    Return to Registered Teams
+                </a>
+            </p>
+        `;
+
+        return;
+    }
+
+
+    // ========================================
+    // LOAD TEAM
+    // ========================================
+
+    try {
+
+        const {
+            data: team,
+            error
+        } = await supabaseClient
+
+            .from("teams")
+
+            .select(`
+                id,
+                name,
+                short_name,
+                location,
+                coach_name,
+                captain_name,
+                vice_captain_name,
+                discipline_master_name,
+                registration_status,
+
+                players (
+                    id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    registration_status
+                )
+            `)
+
+            .eq("id", teamId)
+
+            .eq("registration_status", "Approved")
+
+            .single();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!team) {
+
+            throw new Error(
+                "This team does not exist or has not been approved."
+            );
+
+        }
+
+
+        // ========================================
+        // APPROVED PLAYERS ONLY
+        // ========================================
+
+        const players =
+            (team.players || []).filter(
+                player =>
+                    player.registration_status === "Approved"
+            );
+
+
+        // ========================================
+        // SORT PLAYERS BY JERSEY NUMBER
+        // ========================================
+
+        players.sort(
+            (a, b) =>
+                a.jersey_number - b.jersey_number
+        );
+
+
+        // ========================================
+        // DISPLAY PROFILE
+        // ========================================
+
+        teamContent.className = "";
+
+        teamContent.innerHTML = `
+
+            <div class="team-header">
+
+                <div class="team-icon">
+                    ⚽
+                </div>
+
+                <h1>
+                    ${escapeHtml(team.name)}
+                </h1>
+
+                ${
+                    team.short_name
+                    ? `
+                        <div class="team-short-name">
+                            ${escapeHtml(team.short_name)}
+                        </div>
+                    `
+                    : ""
+                }
+
+                <div class="team-location">
+                    📍 ${escapeHtml(
+                        team.location || "Location not provided"
+                    )}
+                </div>
+
+            </div>
+
+
+            <div class="details">
+
+                <div class="detail-card">
+                    <strong>👔 Coach</strong>
+                    ${escapeHtml(
+                        team.coach_name || "Not provided"
+                    )}
+                </div>
+
+                <div class="detail-card">
+                    <strong>🧑‍✈️ Captain</strong>
+                    ${escapeHtml(
+                        team.captain_name || "Not provided"
+                    )}
+                </div>
+
+                <div class="detail-card">
+                    <strong>Vice Captain</strong>
+                    ${escapeHtml(
+                        team.vice_captain_name || "Not provided"
+                    )}
+                </div>
+
+                <div class="detail-card">
+                    <strong>Discipline Master</strong>
+                    ${escapeHtml(
+                        team.discipline_master_name || "Not provided"
+                    )}
+                </div>
+
+            </div>
+
+
+            <h2 class="section-title">
+                👥 Squad (${players.length}/20)
+            </h2>
+
+
+            <div class="squad-card">
+
+                ${
+                    players.length > 0
+
+                    ? `
+
+                        <table class="squad-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Player</th>
+                                    <th>Jersey</th>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                ${players.map((player, index) => `
+
+                                    <tr>
+
+                                        <td>
+                                            ${index + 1}
+                                        </td>
+
+                                        <td>
+                                            <strong>
+                                                ${escapeHtml(
+                                                    player.full_name
+                                                )}
+                                            </strong>
+                                        </td>
+
+                                        <td class="jersey">
+                                            #${player.jersey_number}
+                                        </td>
+
+                                        <td>
+                                            ${escapeHtml(
+                                                player.position
+                                            )}
+                                        </td>
+
+                                        <td>
+                                            <span class="status">
+                                                Approved
+                                            </span>
+                                        </td>
+
+                                    </tr>
+
+                                `).join("")}
+
+                            </tbody>
+
+                        </table>
+
+                    `
+
+                    : `
+
+                        <div class="message">
+                            <p>
+                                No approved players have been
+                                registered for this team yet.
+                            </p>
+                        </div>
+
+                    `
+                }
+
+            </div>
+
+        `;
+
+
+        document.title =
+            `${team.name} | Kabaru Ward Football`;
+
+
+    } catch (error) {
+
+        console.error(
+            "TEAM PROFILE ERROR:",
+            error
+        );
+
+
+        teamContent.className =
+            "message error";
+
+
+        teamContent.innerHTML = `
+
+            <h2>
+                ⚠️ Unable to Load Team
+            </h2>
+
+            <p>
+                ${escapeHtml(
+                    error.message ||
+                    "Something went wrong while loading this team."
+                )}
+            </p>
+
+            <p style="margin-top:15px;">
+
+                <a href="index.html#teams">
+                    ← Return to Registered Teams
+                </a>
+
+            </p>
+
+        `;
+
+    }
+
+
+    // ========================================
+    // HTML ESCAPING
+    // ========================================
+
+    function escapeHtml(value) {
+
+        return String(value)
+
+            .replace(/&/g, "&amp;")
+
+            .replace(/</g, "&lt;")
+
+            .replace(/>/g, "&gt;")
+
+            .replace(/"/g, "&quot;")
+
+            .replace(/'/g, "&#039;");
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
