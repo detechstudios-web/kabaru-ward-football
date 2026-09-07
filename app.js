@@ -254,14 +254,16 @@ document.addEventListener("DOMContentLoaded", () => {
             // Insert team
             // --------------------------------
 
-            const {
-                data: teamData,
-                error: teamError
-            } = await supabaseClient
-                .from("teams")
-                .insert(team)
-                .select("id")
-                .single();
+            console.log("TEAM BEING SENT:", team);
+
+const { data: teamData, error: teamError } = await supabaseClient
+    .from("teams")
+    .insert(team)
+    .select("id")
+    .single();
+
+console.log("TEAM RESPONSE:", teamData);
+console.log("TEAM ERROR:", teamError);
 
             if (teamError) {
 
