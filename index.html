@@ -707,32 +707,17 @@ footer span {
 
     <div class="section-title">
         <h2>👥 Registered Teams</h2>
-        <p>Meet the football teams of Kabaru Ward.</p>
+        <p>Meet the approved football teams of Kabaru Ward.</p>
     </div>
 
-    <div class="cards">
-
-        <div class="card">
-            <h3>⚽ Team One</h3>
-            <p>Players: 20</p>
-            <p>Coach: To be registered</p>
-            <p>Captain: To be registered</p>
+    <div
+        id="registeredTeams"
+        class="cards"
+    >
+        <div class="card" style="text-align:center;">
+            <h3>⚽ Loading Teams...</h3>
+            <p>Please wait while we load the registered teams.</p>
         </div>
-
-        <div class="card">
-            <h3>⚽ Team Two</h3>
-            <p>Players: 20</p>
-            <p>Coach: To be registered</p>
-            <p>Captain: To be registered</p>
-        </div>
-
-        <div class="card">
-            <h3>⚽ Team Three</h3>
-            <p>Players: 20</p>
-            <p>Coach: To be registered</p>
-            <p>Captain: To be registered</p>
-        </div>
-
     </div>
 
 </div>
@@ -994,6 +979,180 @@ footer span {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 <script src="app.js"></script>
+
+<script>
+
+// ========================================
+// KABARU WARD FOOTBALL
+// LOAD APPROVED TEAMS
+// ========================================
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const teamsContainer =
+        document.getElementById("registeredTeams");
+
+    if (!teamsContainer) {
+        return;
+    }
+
+    try {
+
+        const {
+            data: teams,
+            error
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name,
+                location,
+                coach_name,
+                captain_name,
+                players (
+                    id,
+                    registration_status
+                )
+            `)
+            .eq("registration_status", "Approved")
+            .order("name", {
+                ascending: true
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        // ----------------------------------------
+        // No approved teams
+        // ----------------------------------------
+
+        if (!teams || teams.length === 0) {
+
+            teamsContainer.innerHTML = `
+                <div class="card" style="text-align:center;">
+                    <h3>⚽ No Registered Teams Yet</h3>
+                    <p>
+                        Approved teams will appear here
+                        once they are registered and approved
+                        by the administrator.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+        // ----------------------------------------
+        // Display teams
+        // ----------------------------------------
+
+        teamsContainer.innerHTML = "";
+
+        teams.forEach(team => {
+
+            const approvedPlayers =
+                (team.players || []).filter(
+                    player =>
+                        player.registration_status === "Approved"
+                );
+
+            const card =
+                document.createElement("div");
+
+            card.className = "card";
+
+            card.innerHTML = `
+
+                <h3>
+                    ⚽ ${escapeTeamHtml(team.name)}
+                </h3>
+
+                ${
+                    team.short_name
+                    ? `
+                        <p>
+                            <strong>Short Name:</strong>
+                            ${escapeTeamHtml(team.short_name)}
+                        </p>
+                    `
+                    : ""
+                }
+
+                <p>
+                    <strong>📍 Location:</strong>
+                    ${escapeTeamHtml(team.location || "Not provided")}
+                </p>
+
+                <p>
+                    <strong>👔 Coach:</strong>
+                    ${escapeTeamHtml(team.coach_name || "Not provided")}
+                </p>
+
+                <p>
+                    <strong>🧑‍✈️ Captain:</strong>
+                    ${escapeTeamHtml(team.captain_name || "Not provided")}
+                </p>
+
+                <p>
+                    <strong>👥 Players:</strong>
+                    ${approvedPlayers.length}
+                </p>
+
+                <div style="margin-top:18px;">
+
+                    <a
+                        href="team.html?id=${encodeURIComponent(team.id)}"
+                        class="btn btn-gold"
+                        style="display:inline-block;"
+                    >
+                        View Team
+                    </a>
+
+                </div>
+
+            `;
+
+            teamsContainer.appendChild(card);
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "LOAD APPROVED TEAMS ERROR:",
+            error
+        );
+
+        teamsContainer.innerHTML = `
+            <div class="card" style="text-align:center;">
+                <h3>⚠️ Unable to Load Teams</h3>
+                <p>
+                    Please try again later.
+                </p>
+            </div>
+        `;
+    }
+
+    // ----------------------------------------
+    // HTML escaping
+    // ----------------------------------------
+
+    function escapeTeamHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+});
+
+</script>
+
 </body>
-</html>
 
