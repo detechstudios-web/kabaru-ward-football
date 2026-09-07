@@ -321,6 +321,176 @@ footer span {
         padding: 9px 4px;
     }
 }
+  /* ========================================
+   TEAM REGISTRATION FORM
+======================================== */
+
+.registration-form-container {
+    background: white;
+    border-radius: 18px;
+    padding: 25px 20px;
+    margin-top: 25px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.08);
+}
+
+.form-section {
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e5ebe7;
+}
+
+.form-section h2 {
+    color: #073b25;
+    margin-bottom: 18px;
+}
+
+.form-section label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    color: #27352d;
+}
+
+.form-section input,
+.form-section select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #cbd4ce;
+    border-radius: 8px;
+    font-size: 15px;
+    background: #fff;
+}
+
+.form-section input:focus,
+.form-section select:focus {
+    outline: none;
+    border-color: #073b25;
+    box-shadow: 0 0 0 2px rgba(7,59,37,.1);
+}
+
+.players-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.players-heading p {
+    color: #657169;
+}
+
+.player-count {
+    background: #073b25;
+    color: white;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.player-row {
+    display: grid;
+    grid-template-columns: 35px 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f5f7f6;
+    border-radius: 10px;
+}
+
+.player-row input,
+.player-row select {
+    min-width: 0;
+}
+
+.player-number {
+    background: #073b25;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.remove-player {
+    grid-column: 2;
+    border: none;
+    background: #eee;
+    color: #a33;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.add-player-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 13px;
+    border: 2px dashed #073b25;
+    background: white;
+    color: #073b25;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-player-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.submit-registration {
+    width: 100%;
+    border: none;
+    padding: 15px;
+    background: #073b25;
+    color: white;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.submit-registration:hover {
+    background: #0c6240;
+}
+
+.submit-registration:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.registration-message {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 10px;
+    display: none;
+}
+
+.registration-message.success,
+.registration-message.error,
+.registration-message.loading {
+    display: block;
+}
+
+.registration-message.success {
+    background: #e7f6ed;
+    border: 1px solid #9ed0ae;
+}
+
+.registration-message.error {
+    background: #fdeaea;
+    border: 1px solid #e0a2a2;
+}
+
+.registration-message.loading {
+    background: #f1f4f2;
+}  
 </style>
 </head>
 
