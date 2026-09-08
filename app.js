@@ -1059,9 +1059,10 @@ async function loadLeagueTable() {
                 status
             `)
             .in("status", [
-                "Scheduled",
-                "Published"
-            ]);
+    "Scheduled",
+    "Published",
+    "Completed"
+]);
 
         if (fixturesError) {
             throw fixturesError;
