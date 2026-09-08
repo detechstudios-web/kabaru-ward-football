@@ -472,3 +472,529 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+// ========================================
+// KABARU WARD FOOTBALL
+// PUBLIC FIXTURE LOADER
+// ========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    loadPublicFixtures();
+
+});
+
+
+// ========================================
+// LOAD PUBLIC FIXTURES
+// ========================================
+
+async function loadPublicFixtures() {
+
+    const fixturesContainer =
+        document.getElementById("upcomingFixtures");
+
+    // If the fixture section does not exist,
+    // do nothing.
+    if (!fixturesContainer) {
+        return;
+    }
+
+    try {
+
+        // ========================================
+        // GET FIXTURES
+        // ========================================
+
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                venue,
+                matchday,
+                status
+            `)
+            .in("status", ["Scheduled", "Published"])
+            .order("match_date", {
+                ascending: true
+            })
+            .order("kick_off", {
+                ascending: true
+            });
+
+
+        if (fixturesError) {
+            throw fixturesError;
+        }
+
+
+        // ========================================
+        // NO FIXTURES
+        // ========================================
+
+        if (!fixtures || fixtures.length === 0) {
+
+            fixturesContainer.innerHTML = `
+
+                <div class="card" style="text-align:center;">
+
+                    <h3>⚽ No Upcoming Fixtures</h3>
+
+                    <p>
+                        Fixtures will appear here once
+                        they are published by the administrator.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        // ========================================
+        // GET TEAMS
+        // ========================================
+
+        const {
+            data: teams,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name,
+                logo_url,
+                registration_status
+            `)
+            .eq("registration_status", "Approved");
+
+
+        if (teamsError) {
+            throw teamsError;
+        }
+
+
+        // ========================================
+        // GET COMPETITIONS
+        // ========================================
+
+        const {
+            data: competitions,
+            error: competitionsError
+        } = await supabaseClient
+            .from("competitions")
+            .select(`
+                id,
+                name,
+                season,
+                status
+            `);
+
+
+        if (competitionsError) {
+            throw competitionsError;
+        }
+
+
+        // ========================================
+        // CREATE QUICK LOOKUP MAPS
+        // ========================================
+
+        const teamMap = {};
+
+        (teams || []).forEach(team => {
+
+            teamMap[team.id] = team;
+
+        });
+
+
+        const competitionMap = {};
+
+        (competitions || []).forEach(competition => {
+
+            competitionMap[competition.id] = competition;
+
+        });
+
+
+        // ========================================
+        // BUILD FIXTURE CARDS
+        // ========================================
+
+        fixturesContainer.innerHTML = "";
+
+
+        fixtures.forEach(fixture => {
+
+            const homeTeam =
+                teamMap[fixture.home_team_id];
+
+            const awayTeam =
+                teamMap[fixture.away_team_id];
+
+            const competition =
+                competitionMap[fixture.competition_id];
+
+
+            // Ignore fixtures where the teams
+            // are no longer publicly available.
+            if (!homeTeam || !awayTeam) {
+                return;
+            }
+
+
+            // ========================================
+            // FORMAT DATE
+            // ========================================
+
+            let formattedDate =
+                "Date TBA";
+
+            if (fixture.match_date) {
+
+                const date =
+                    new Date(
+                        fixture.match_date + "T00:00:00"
+                    );
+
+                formattedDate =
+                    date.toLocaleDateString(
+                        "en-KE",
+                        {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric"
+                        }
+                    );
+            }
+
+
+            // ========================================
+            // FORMAT KICK-OFF
+            // ========================================
+
+            let formattedTime =
+                "Time TBA";
+
+            if (fixture.kick_off) {
+
+                const timeParts =
+                    fixture.kick_off.split(":");
+
+                const hours =
+                    parseInt(timeParts[0], 10);
+
+                const minutes =
+                    timeParts[1];
+
+                const period =
+                    hours >= 12 ? "PM" : "AM";
+
+                const displayHour =
+                    hours % 12 || 12;
+
+                formattedTime =
+                    `${displayHour}:${minutes} ${period}`;
+            }
+
+
+            // ========================================
+            // CREATE CARD
+            // ========================================
+
+            const card =
+                document.createElement("div");
+
+            card.className = "card fixture-card";
+
+
+            card.innerHTML = `
+
+                <div style="
+                    text-align:center;
+                    padding:10px;
+                ">
+
+                    <p style="
+                        font-weight:bold;
+                        margin-bottom:10px;
+                    ">
+                        🏆 ${escapeFixtureHtml(
+                            competition
+                                ? competition.name
+                                : "Football Match"
+                        )}
+                    </p>
+
+
+                    ${
+                        fixture.matchday
+                        ? `
+                            <p style="
+                                font-size:14px;
+                                margin-bottom:15px;
+                            ">
+                                🔢 Matchday
+                                ${escapeFixtureHtml(
+                                    fixture.matchday
+                                )}
+                            </p>
+                        `
+                        : ""
+                    }
+
+
+                    <div style="
+                        display:flex;
+                        justify-content:center;
+                        align-items:center;
+                        gap:15px;
+                        margin:20px 0;
+                    ">
+
+                        <div style="
+                            flex:1;
+                            text-align:center;
+                        ">
+
+                            ${
+                                homeTeam.logo_url
+                                ? `
+                                    <img
+                                        src="${escapeFixtureHtml(
+                                            homeTeam.logo_url
+                                        )}"
+                                        alt="${escapeFixtureHtml(
+                                            homeTeam.name
+                                        )}"
+                                        style="
+                                            width:60px;
+                                            height:60px;
+                                            object-fit:contain;
+                                            margin-bottom:8px;
+                                        "
+                                    >
+                                `
+                                : `
+                                    <div style="
+                                        font-size:40px;
+                                        margin-bottom:8px;
+                                    ">
+                                        ⚽
+                                    </div>
+                                `
+                            }
+
+                            <h3 style="
+                                margin:0;
+                            ">
+                                ${escapeFixtureHtml(
+                                    homeTeam.name
+                                )}
+                            </h3>
+
+                            <small>
+                                ${escapeFixtureHtml(
+                                    homeTeam.short_name || ""
+                                )}
+                            </small>
+
+                        </div>
+
+
+                        <div style="
+                            font-size:22px;
+                            font-weight:bold;
+                        ">
+                            VS
+                        </div>
+
+
+                        <div style="
+                            flex:1;
+                            text-align:center;
+                        ">
+
+                            ${
+                                awayTeam.logo_url
+                                ? `
+                                    <img
+                                        src="${escapeFixtureHtml(
+                                            awayTeam.logo_url
+                                        )}"
+                                        alt="${escapeFixtureHtml(
+                                            awayTeam.name
+                                        )}"
+                                        style="
+                                            width:60px;
+                                            height:60px;
+                                            object-fit:contain;
+                                            margin-bottom:8px;
+                                        "
+                                    >
+                                `
+                                : `
+                                    <div style="
+                                        font-size:40px;
+                                        margin-bottom:8px;
+                                    ">
+                                        ⚽
+                                    </div>
+                                `
+                            }
+
+                            <h3 style="
+                                margin:0;
+                            ">
+                                ${escapeFixtureHtml(
+                                    awayTeam.name
+                                )}
+                            </h3>
+
+                            <small>
+                                ${escapeFixtureHtml(
+                                    awayTeam.short_name || ""
+                                )}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div style="
+                        margin-top:15px;
+                        line-height:1.8;
+                    ">
+
+                        <p>
+                            📅
+                            <strong>
+                                ${escapeFixtureHtml(
+                                    formattedDate
+                                )}
+                            </strong>
+                        </p>
+
+                        <p>
+                            ⏰
+                            <strong>
+                                ${escapeFixtureHtml(
+                                    formattedTime
+                                )}
+                            </strong>
+                        </p>
+
+                        <p>
+                            📍
+                            <strong>
+                                ${escapeFixtureHtml(
+                                    fixture.venue ||
+                                    "Venue TBA"
+                                )}
+                            </strong>
+                        </p>
+
+                        <p>
+                            📢
+                            <strong>
+                                ${escapeFixtureHtml(
+                                    fixture.status
+                                )}
+                            </strong>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            fixturesContainer.appendChild(card);
+
+        });
+
+
+        // ========================================
+        // IF ALL FIXTURES WERE FILTERED OUT
+        // ========================================
+
+        if (
+            fixturesContainer.children.length === 0
+        ) {
+
+            fixturesContainer.innerHTML = `
+
+                <div class="card" style="text-align:center;">
+
+                    <h3>⚽ No Upcoming Fixtures</h3>
+
+                    <p>
+                        Fixtures will appear here once
+                        approved teams are available.
+                    </p>
+
+                </div>
+
+            `;
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "FIXTURE LOADING ERROR:",
+            error
+        );
+
+
+        fixturesContainer.innerHTML = `
+
+            <div class="card" style="text-align:center;">
+
+                <h3>⚠️ Unable to Load Fixtures</h3>
+
+                <p>
+                    Please try refreshing the page.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ========================================
+// ESCAPE FIXTURE HTML
+// ========================================
+
+function escapeFixtureHtml(value) {
+
+    return String(value || "")
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+}
