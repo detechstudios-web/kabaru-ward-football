@@ -1970,3 +1970,38 @@ function escapeResultsHtml(value) {
         .replace(/'/g, "&#039;");
 
 }
+// ========================================
+// LOAD CURRENT COMPETITION STATUS
+// ========================================
+
+async function loadCompetitionStatus() {
+
+    const statusElement = document.getElementById("competitionStatus");
+
+    if (!statusElement) return;
+
+    const { data, error } = await supabaseClient
+        .from("competitions")
+        .select("status")
+        .eq("name", "Kabaru Ward Football League")
+        .eq("season", "2026")
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Competition status error:", error);
+        statusElement.textContent = "Competition status: Unavailable";
+        return;
+    }
+
+    if (!data) {
+        statusElement.textContent = "Competition status: Not Found";
+        return;
+    }
+
+    statusElement.textContent =
+        "Competition status: " + data.status;
+}
+
+// Load competition status when the page opens
+loadCompetitionStatus();
