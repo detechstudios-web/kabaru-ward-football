@@ -424,7 +424,107 @@
     class="status-message">
 </div>
 
+<!-- ========================================
+     COMPETITION MANAGER
+========================================= -->
 
+<section class="admin-card">
+
+    <div class="section-heading">
+        <h2>🏆 Competition Manager</h2>
+        <p>Create and manage Kabaru Ward football competitions.</p>
+    </div>
+
+    <form id="competitionForm">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="competitionName">Competition Name</label>
+                <input
+                    type="text"
+                    id="competitionName"
+                    placeholder="e.g. Kabaru Ward Football League"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="competitionType">Competition Type</label>
+                <select id="competitionType" required>
+                    <option value="">Select type</option>
+                    <option value="League">League</option>
+                    <option value="Tournament">Tournament</option>
+                    <option value="Cup">Cup</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="competitionSeason">Season</label>
+                <input
+                    type="text"
+                    id="competitionSeason"
+                    placeholder="e.g. 2026"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="competitionStartDate">Start Date</label>
+                <input
+                    type="date"
+                    id="competitionStartDate"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="competitionEndDate">End Date</label>
+                <input
+                    type="date"
+                    id="competitionEndDate"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="competitionStatus">Status</label>
+                <select id="competitionStatus" required>
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Active">Active</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="competitionDescription">Description</label>
+            <textarea
+                id="competitionDescription"
+                rows="4"
+                placeholder="Enter competition description..."
+            ></textarea>
+        </div>
+
+        <button
+            type="submit"
+            class="admin-btn create-fixture-btn"
+        >
+            ➕ CREATE COMPETITION
+        </button>
+
+        <p
+            id="competitionFormMessage"
+            class="status-message"
+        ></p>
+
+    </form>
+
+</section>
+
+<!-- ========================================
+     EXISTING FIXTURE MANAGER
+========================================= -->
 <!-- ========================================
      FIXTURE MANAGER
 ========================================= -->
