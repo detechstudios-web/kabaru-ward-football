@@ -217,6 +217,27 @@ td:nth-child(2) {
     color: #073b25;
 }
 
+/* ========================================
+   PUBLIC FIXTURES
+======================================== */
+
+.fixtures-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.fixture-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.fixture-card h3 {
+    color: #073b25;
+}
+
 .match {
     display: flex;
     justify-content: space-between;
@@ -305,6 +326,7 @@ footer span {
 }
 
 @media (max-width: 750px) {
+
     nav {
         display: none;
     }
@@ -317,11 +339,18 @@ footer span {
         font-size: 11px;
     }
 
-    th, td {
+    th,
+    td {
         padding: 9px 4px;
     }
+
+    .fixtures-grid {
+        grid-template-columns: 1fr;
+    }
 }
-  /* ========================================
+
+
+/* ========================================
    TEAM REGISTRATION FORM
 ======================================== */
 
@@ -490,15 +519,19 @@ footer span {
 
 .registration-message.loading {
     background: #f1f4f2;
-}  
+}
 </style>
 </head>
 
 <body>
 
 <header>
+
     <div class="navbar">
-        <div class="logo">KABARU <span>⚽</span> FOOTBALL</div>
+
+        <div class="logo">
+            KABARU <span>⚽</span> FOOTBALL
+        </div>
 
         <nav>
             <a href="#home">Home</a>
@@ -507,11 +540,17 @@ footer span {
             <a href="#teams">Teams</a>
             <a href="#sponsors">Sponsors</a>
         </nav>
+
     </div>
+
 </header>
 
+
 <section class="hero" id="home">
-    <h1>Kabaru Ward <span>Football</span></h1>
+
+    <h1>
+        Kabaru Ward <span>Football</span>
+    </h1>
 
     <p>
         The home of football leagues, tournaments, teams,
@@ -520,80 +559,156 @@ footer span {
     </p>
 
     <div class="hero-buttons">
-        <a class="btn btn-gold" href="#table">View League Table</a>
-        <a class="btn btn-outline" href="#register">Register Your Team</a>
+
+        <a class="btn btn-gold" href="#table">
+            View League Table
+        </a>
+
+        <a class="btn btn-outline" href="#register">
+            Register Your Team
+        </a>
+
     </div>
+
 </section>
 
+
 <main>
+
+
+<!-- ========================================
+     COMPETITION
+======================================== -->
 
 <div class="container">
 
     <div class="competition">
-        <span class="badge">CURRENT COMPETITION</span>
 
-        <h2>Kabaru Ward Football League</h2>
+        <span class="badge">
+            CURRENT COMPETITION
+        </span>
+
+        <h2>
+            Kabaru Ward Football League
+        </h2>
 
         <p>
             Season 2026 • Kabaru Ward
         </p>
 
-        <strong>Competition status: Coming Soon</strong>
+        <strong>
+            Competition status: Coming Soon
+        </strong>
+
     </div>
 
+
+<!-- ========================================
+     FOOTBALL HUB
+======================================== -->
+
     <div class="section-title">
-        <h2>Football Hub</h2>
-        <p>Everything you need to follow football in Kabaru Ward.</p>
+
+        <h2>
+            Football Hub
+        </h2>
+
+        <p>
+            Everything you need to follow football in Kabaru Ward.
+        </p>
+
     </div>
+
 
     <div class="cards">
 
         <div class="card">
-            <h3>🏆 Competitions</h3>
+
+            <h3>
+                🏆 Competitions
+            </h3>
+
             <p>
                 Follow ward leagues, tournaments and knockout
                 competitions.
             </p>
+
         </div>
 
+
         <div class="card">
-            <h3>📅 Fixtures</h3>
+
+            <h3>
+                📅 Fixtures
+            </h3>
+
             <p>
                 See upcoming matches, dates, venues and kick-off
                 times.
             </p>
+
         </div>
 
+
         <div class="card">
-            <h3>⚽ Results</h3>
+
+            <h3>
+                ⚽ Results
+            </h3>
+
             <p>
                 Check previous match results and competition
                 progress.
             </p>
+
         </div>
 
+
         <div class="card">
-            <h3>👥 Teams</h3>
+
+            <h3>
+                👥 Teams
+            </h3>
+
             <p>
                 Explore registered teams, coaches, captains and
                 players.
             </p>
+
         </div>
 
     </div>
+
 </div>
 
+
+<!-- ========================================
+     LEAGUE TABLE
+======================================== -->
+
 <section id="table">
+
 <div class="container">
 
     <div class="section-title">
-        <h2>📊 League Table</h2>
-        <p>Kabaru Ward Football League 2026</p>
+
+        <h2>
+            📊 League Table
+        </h2>
+
+        <p>
+            Kabaru Ward Football League 2026
+        </p>
+
     </div>
 
+
     <table>
+
         <thead>
+
             <tr>
+
                 <th>Pos</th>
                 <th>Team</th>
                 <th>P</th>
@@ -602,156 +717,272 @@ footer span {
                 <th>L</th>
                 <th>GD</th>
                 <th>Pts</th>
+
             </tr>
+
         </thead>
 
+
         <tbody>
+
             <tr>
+
                 <td class="position">1</td>
+
                 <td>Team One</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
-                <td><strong>0</strong></td>
+
+                <td>
+                    <strong>0</strong>
+                </td>
+
             </tr>
 
+
             <tr>
+
                 <td class="position">2</td>
+
                 <td>Team Two</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
-                <td><strong>0</strong></td>
+
+                <td>
+                    <strong>0</strong>
+                </td>
+
             </tr>
 
+
             <tr>
+
                 <td class="position">3</td>
+
                 <td>Team Three</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
-                <td><strong>0</strong></td>
+
+                <td>
+                    <strong>0</strong>
+                </td>
+
             </tr>
 
+
             <tr>
+
                 <td class="position">4</td>
+
                 <td>Team Four</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
+
                 <td>0</td>
-                <td><strong>0</strong></td>
+
+                <td>
+                    <strong>0</strong>
+                </td>
+
             </tr>
+
         </tbody>
+
     </table>
 
 </div>
+
 </section>
 
+
+<!-- ========================================
+     UPCOMING FIXTURES
+======================================== -->
+
 <section id="fixtures">
+
 <div class="container">
 
     <div class="section-title">
-        <h2>📅 Upcoming Fixtures</h2>
-        <p>Latest scheduled matches</p>
+
+        <h2>
+            📅 Upcoming Fixtures
+        </h2>
+
+        <p>
+            Latest scheduled matches
+        </p>
+
     </div>
 
-    <div class="match">
-        <div class="team">
-            Team One
+
+    <!--
+        JavaScript will load real fixtures
+        from Supabase into this container.
+    -->
+
+    <div
+        id="upcomingFixtures"
+        class="fixtures-grid"
+    >
+
+        <div
+            class="card"
+            style="text-align:center;"
+        >
+
+            <h3>
+                ⚽ Loading Fixtures...
+            </h3>
+
+            <p>
+                Please wait while we load the
+                latest scheduled matches.
+            </p>
+
         </div>
 
-        <div>
-            <div class="vs">VS</div>
-            <div class="match-info">
-                Saturday • 3:00 PM<br>
-                Kabaru Grounds
-            </div>
-        </div>
-
-        <div class="team">
-            Team Two
-        </div>
-    </div>
-
-    <div class="match">
-        <div class="team">
-            Team Three
-        </div>
-
-        <div>
-            <div class="vs">VS</div>
-            <div class="match-info">
-                Sunday • 3:00 PM<br>
-                Ward Stadium
-            </div>
-        </div>
-
-        <div class="team">
-            Team Four
-        </div>
     </div>
 
 </div>
+
 </section>
 
+
+<!-- ========================================
+     REGISTERED TEAMS
+======================================== -->
+
 <section id="teams">
+
 <div class="container">
 
     <div class="section-title">
-        <h2>👥 Registered Teams</h2>
-        <p>Meet the approved football teams of Kabaru Ward.</p>
+
+        <h2>
+            👥 Registered Teams
+        </h2>
+
+        <p>
+            Meet the approved football teams of Kabaru Ward.
+        </p>
+
     </div>
+
 
     <div
         id="registeredTeams"
         class="cards"
     >
-        <div class="card" style="text-align:center;">
-            <h3>⚽ Loading Teams...</h3>
-            <p>Please wait while we load the registered teams.</p>
+
+        <div
+            class="card"
+            style="text-align:center;"
+        >
+
+            <h3>
+                ⚽ Loading Teams...
+            </h3>
+
+            <p>
+                Please wait while we load the registered teams.
+            </p>
+
         </div>
+
     </div>
 
 </div>
+
 </section>
 
+
+<!-- ========================================
+     SPONSORS
+======================================== -->
+
 <section id="sponsors">
+
 <div class="container">
 
     <div class="sponsor-area">
 
         <div class="section-title">
-            <h2>🤝 Our Sponsors & Partners</h2>
+
+            <h2>
+                🤝 Our Sponsors & Partners
+            </h2>
 
             <p>
                 Supporting football development and youth talent
                 in Kabaru Ward.
             </p>
+
         </div>
+
 
         <div class="sponsors">
 
             <div class="sponsor">
-                <strong>YOUR LOGO</strong>
+
+                <strong>
+                    YOUR LOGO
+                </strong>
+
                 Gold Sponsor
+
             </div>
 
+
             <div class="sponsor">
-                <strong>YOUR LOGO</strong>
+
+                <strong>
+                    YOUR LOGO
+                </strong>
+
                 Official Partner
+
             </div>
 
+
             <div class="sponsor">
-                <strong>YOUR LOGO</strong>
+
+                <strong>
+                    YOUR LOGO
+                </strong>
+
                 Community Partner
+
             </div>
 
         </div>
@@ -759,7 +990,13 @@ footer span {
     </div>
 
 </div>
+
 </section>
+
+
+<!-- ========================================
+     TEAM REGISTRATION
+======================================== -->
 
 <section id="register">
 
@@ -767,7 +1004,9 @@ footer span {
 
     <div class="register">
 
-        <h2>📝 Register Your Team</h2>
+        <h2>
+            📝 Register Your Team
+        </h2>
 
         <p>
             Register your established football team
@@ -786,9 +1025,15 @@ footer span {
 
         <form id="teamRegistrationForm">
 
+
+            <!-- TEAM INFORMATION -->
+
             <div class="form-section">
 
-                <h2>⚽ Team Information</h2>
+                <h2>
+                    ⚽ Team Information
+                </h2>
+
 
                 <label for="teamName">
                     Team Name *
@@ -851,9 +1096,13 @@ footer span {
             </div>
 
 
+            <!-- TEAM OFFICIALS -->
+
             <div class="form-section">
 
-                <h2>👥 Team Officials</h2>
+                <h2>
+                    👥 Team Officials
+                </h2>
 
 
                 <label for="coachName">
@@ -906,17 +1155,24 @@ footer span {
             </div>
 
 
+            <!-- PLAYERS -->
+
             <div class="form-section">
 
                 <div class="players-heading">
 
                     <div>
-                        <h2>⚽ Players</h2>
+
+                        <h2>
+                            ⚽ Players
+                        </h2>
 
                         <p>
                             Add your team's players.
                         </p>
+
                     </div>
+
 
                     <span
                         id="playerCount"
@@ -944,11 +1200,15 @@ footer span {
             </div>
 
 
+            <!-- REGISTRATION MESSAGE -->
+
             <div
                 id="registrationMessage"
                 class="registration-message"
             ></div>
 
+
+            <!-- SUBMIT -->
 
             <button
                 type="submit"
@@ -965,9 +1225,16 @@ footer span {
 
 </section>
 
+
 </main>
 
+
+<!-- ========================================
+     FOOTER
+======================================== -->
+
 <footer>
+
     <p>
         © 2026 <span>Kabaru Ward Football</span>
     </p>
@@ -975,17 +1242,26 @@ footer span {
     <p>
         Football • Community • Talent • Development
     </p>
+
 </footer>
+
+
+<!-- ========================================
+     SUPABASE
+======================================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase.js"></script>
+
 <script src="app.js"></script>
 
-<script>
 
-// ========================================
-// KABARU WARD FOOTBALL
-// LOAD APPROVED TEAMS
-// ========================================
+<!-- ========================================
+     LOAD APPROVED TEAMS
+======================================== -->
+
+<script>
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -995,6 +1271,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!teamsContainer) {
         return;
     }
+
 
     try {
 
@@ -1020,35 +1297,49 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ascending: true
             });
 
+
         if (error) {
             throw error;
         }
 
-        // ----------------------------------------
-        // No approved teams
-        // ----------------------------------------
+
+        // ========================================
+        // NO APPROVED TEAMS
+        // ========================================
 
         if (!teams || teams.length === 0) {
 
             teamsContainer.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>⚽ No Registered Teams Yet</h3>
+
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+
+                    <h3>
+                        ⚽ No Registered Teams Yet
+                    </h3>
+
                     <p>
                         Approved teams will appear here
                         once they are registered and approved
                         by the administrator.
                     </p>
+
                 </div>
+
             `;
 
             return;
         }
 
-        // ----------------------------------------
-        // Display teams
-        // ----------------------------------------
+
+        // ========================================
+        // DISPLAY TEAMS
+        // ========================================
 
         teamsContainer.innerHTML = "";
+
 
         teams.forEach(team => {
 
@@ -1058,10 +1349,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                         player.registration_status === "Approved"
                 );
 
+
             const card =
                 document.createElement("div");
 
+
             card.className = "card";
+
 
             card.innerHTML = `
 
@@ -1069,36 +1363,76 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ⚽ ${escapeTeamHtml(team.name)}
                 </h3>
 
+
                 ${
                     team.short_name
                     ? `
                         <p>
-                            <strong>Short Name:</strong>
-                            ${escapeTeamHtml(team.short_name)}
+                            <strong>
+                                Short Name:
+                            </strong>
+
+                            ${escapeTeamHtml(
+                                team.short_name
+                            )}
                         </p>
                     `
                     : ""
                 }
 
-                <p>
-                    <strong>📍 Location:</strong>
-                    ${escapeTeamHtml(team.location || "Not provided")}
-                </p>
 
                 <p>
-                    <strong>👔 Coach:</strong>
-                    ${escapeTeamHtml(team.coach_name || "Not provided")}
+
+                    <strong>
+                        📍 Location:
+                    </strong>
+
+                    ${escapeTeamHtml(
+                        team.location ||
+                        "Not provided"
+                    )}
+
                 </p>
 
-                <p>
-                    <strong>🧑‍✈️ Captain:</strong>
-                    ${escapeTeamHtml(team.captain_name || "Not provided")}
-                </p>
 
                 <p>
-                    <strong>👥 Players:</strong>
+
+                    <strong>
+                        👔 Coach:
+                    </strong>
+
+                    ${escapeTeamHtml(
+                        team.coach_name ||
+                        "Not provided"
+                    )}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        🧑‍✈️ Captain:
+                    </strong>
+
+                    ${escapeTeamHtml(
+                        team.captain_name ||
+                        "Not provided"
+                    )}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        👥 Players:
+                    </strong>
+
                     ${approvedPlayers.length}
+
                 </p>
+
 
                 <div style="margin-top:18px;">
 
@@ -1114,9 +1448,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             `;
 
+
             teamsContainer.appendChild(card);
 
         });
+
 
     } catch (error) {
 
@@ -1125,27 +1461,45 @@ document.addEventListener("DOMContentLoaded", async () => {
             error
         );
 
+
         teamsContainer.innerHTML = `
-            <div class="card" style="text-align:center;">
-                <h3>⚠️ Unable to Load Teams</h3>
+
+            <div
+                class="card"
+                style="text-align:center;"
+            >
+
+                <h3>
+                    ⚠️ Unable to Load Teams
+                </h3>
+
                 <p>
                     Please try again later.
                 </p>
+
             </div>
+
         `;
+
     }
 
-    // ----------------------------------------
-    // HTML escaping
-    // ----------------------------------------
+
+    // ========================================
+    // HTML ESCAPING
+    // ========================================
 
     function escapeTeamHtml(value) {
 
         return String(value)
+
             .replace(/&/g, "&amp;")
+
             .replace(/</g, "&lt;")
+
             .replace(/>/g, "&gt;")
+
             .replace(/"/g, "&quot;")
+
             .replace(/'/g, "&#039;");
 
     }
@@ -1154,5 +1508,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 </script>
 
-</body>
 
+</body>
+</html>
