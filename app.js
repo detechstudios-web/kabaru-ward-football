@@ -1460,3 +1460,513 @@ function escapeLeagueHtml(value) {
         .replace(/'/g, "&#039;");
 
 }
+document.addEventListener("DOMContentLoaded", () => {
+    loadPublicResults();
+});
+
+async function loadPublicResults() {
+
+    const resultsList = document.getElementById("resultsList");
+
+    if (!resultsList) return;
+
+    resultsList.innerHTML = `
+        <div class="empty-message">
+            Loading results...
+        </div>
+    `;
+
+    try {
+
+        // Get completed fixtures
+        const { data: fixtures, error: fixturesError } =
+            await supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    venue,
+                    matchday,
+                    status
+                `)
+                .eq("status", "Completed")
+                .order("match_date", { ascending: false })
+                .order("kick_off", { ascending: false });
+
+        if (fixturesError) throw fixturesError;
+
+        if (!fixtures || fixtures.length === 0) {
+
+            resultsList.innerHTML = `
+                <div class="empty-message">
+                    ⚽ No match results yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        // Get results
+        const fixtureIds = fixtures.map(fixture => fixture.id);
+
+        const { data: results, error: resultsError } =
+            await supabaseClient
+                .from("results")
+                .select(`
+                    id,
+                    fixture_id,
+                    home_score,
+                    away_score,
+                    match_report
+                `)
+                .in("fixture_id", fixtureIds);
+
+        if (resultsError) throw resultsError;
+
+        // Get teams
+        const teamIds = [
+            ...new Set(
+                fixtures.flatMap(fixture => [
+                    fixture.home_team_id,
+                    fixture.away_team_id
+                ])
+            )
+        ];
+
+        const { data: teams, error: teamsError } =
+            await supabaseClient
+                .from("teams")
+                .select(`
+                    id,
+                    name,
+                    short_name
+                `)
+                .in("id", teamIds);
+
+        if (teamsError) throw teamsError;
+
+        // Get competitions
+        const competitionIds = [
+            ...new Set(
+                fixtures.map(fixture => fixture.competition_id)
+            )
+        ];
+
+        const { data: competitions, error: competitionsError } =
+            await supabaseClient
+                .from("competitions")
+                .select(`
+                    id,
+                    name,
+                    season
+                `)
+                .in("id", competitionIds);
+
+        if (competitionsError) throw competitionsError;
+
+        // Get goal scorers
+        const resultIds = (results || []).map(result => result.id);
+
+        let goalScorers = [];
+
+        if (resultIds.length > 0) {
+
+            const { data: scorerData, error: scorerError } =
+                await supabaseClient
+                    .from("goal_scorers")
+                    .select(`
+                        id,
+                        result_id,
+                        player_id,
+                        minute
+                    `)
+                    .in("result_id", resultIds)
+                    .order("minute", { ascending: true });
+
+            if (scorerError) throw scorerError;
+
+            goalScorers = scorerData || [];
+        }
+
+        // Get players
+        const playerIds = [
+            ...new Set(
+                goalScorers.map(goal => goal.player_id)
+            )
+        ];
+
+        let players = [];
+
+        if (playerIds.length > 0) {
+
+            const { data: playerData, error: playerError } =
+                await supabaseClient
+                    .from("players")
+                    .select(`
+                        id,
+                        full_name,
+                        jersey_number,
+                        team_id
+                    `)
+                    .in("id", playerIds);
+
+            if (playerError) throw playerError;
+
+            players = playerData || [];
+        }
+
+        resultsList.innerHTML = "";
+
+        fixtures.forEach(fixture => {
+
+            const result = (results || []).find(item =>
+                Number(item.fixture_id) === Number(fixture.id)
+            );
+
+            if (!result) return;
+
+            const homeTeam = (teams || []).find(team =>
+                Number(team.id) === Number(fixture.home_team_id)
+            );
+
+            const awayTeam = (teams || []).find(team =>
+                Number(team.id) === Number(fixture.away_team_id)
+            );
+
+            const competition = (competitions || []).find(item =>
+                Number(item.id) === Number(fixture.competition_id)
+            );
+
+            const fixtureGoals = goalScorers.filter(goal =>
+                Number(goal.result_id) === Number(result.id)
+            );
+
+            // Group goals by player
+            const groupedScorers = {};
+
+            fixtureGoals.forEach(goal => {
+
+                const player = players.find(item =>
+                    Number(item.id) === Number(goal.player_id)
+                );
+
+                if (!player) return;
+
+                if (!groupedScorers[player.id]) {
+
+                    groupedScorers[player.id] = {
+                        player: player,
+                        minutes: []
+                    };
+
+                }
+
+                groupedScorers[player.id].minutes.push(goal.minute);
+            });
+
+            const homeScorers = Object.values(groupedScorers)
+                .filter(item =>
+                    Number(item.player.team_id) === Number(fixture.home_team_id)
+                );
+
+            const awayScorers = Object.values(groupedScorers)
+                .filter(item =>
+                    Number(item.player.team_id) === Number(fixture.away_team_id)
+                );
+
+            function scorerHtml(scorers) {
+
+                if (!scorers.length) {
+
+                    return `
+                        <p class="no-scorers">
+                            No goals
+                        </p>
+                    `;
+
+                }
+
+                return scorers.map(item => {
+
+                    const minutes = item.minutes
+                        .map(minute => `⚽ ${escapeResultsHtml(minute)}'`)
+                        .join(" ");
+
+                    return `
+                        <div class="result-scorer">
+                            <strong>
+                                ${escapeResultsHtml(
+                                    item.player.full_name
+                                )}
+                            </strong>
+
+                            <span>
+                                ${minutes}
+                            </span>
+                        </div>
+                    `;
+
+                }).join("");
+
+            }
+
+            const card = document.createElement("div");
+
+            card.className = "result-card";
+
+            card.innerHTML = `
+
+                <div class="result-header">
+
+                    <div>
+                        <strong>
+                            🏆
+                            ${escapeResultsHtml(
+                                competition
+                                    ? competition.name
+                                    : "Football Competition"
+                            )}
+                        </strong>
+
+                        ${
+                            competition && competition.season
+                                ? `<span> • ${escapeResultsHtml(
+                                    competition.season
+                                )}</span>`
+                                : ""
+                        }
+
+                    </div>
+
+                    <span>
+                        Matchday
+                        ${escapeResultsHtml(
+                            fixture.matchday || "-"
+                        )}
+                    </span>
+
+                </div>
+
+                <div class="result-date">
+
+                    📅
+                    ${formatResultsDate(fixture.match_date)}
+
+                    &nbsp;&nbsp;
+
+                    ⏰
+                    ${formatResultsTime(fixture.kick_off)}
+
+                </div>
+
+                <div class="result-score">
+
+                    <div class="result-team home-team">
+
+                        <strong>
+                            ${escapeResultsHtml(
+                                homeTeam
+                                    ? homeTeam.name
+                                    : "Home Team"
+                            )}
+                        </strong>
+
+                        ${
+                            homeTeam && homeTeam.short_name
+                                ? `<small>${escapeResultsHtml(
+                                    homeTeam.short_name
+                                )}</small>`
+                                : ""
+                        }
+
+                    </div>
+
+                    <div class="score-number">
+
+                        <span>
+                            ${result.home_score}
+                        </span>
+
+                        <strong>–</strong>
+
+                        <span>
+                            ${result.away_score}
+                        </span>
+
+                    </div>
+
+                    <div class="result-team away-team">
+
+                        <strong>
+                            ${escapeResultsHtml(
+                                awayTeam
+                                    ? awayTeam.name
+                                    : "Away Team"
+                            )}
+                        </strong>
+
+                        ${
+                            awayTeam && awayTeam.short_name
+                                ? `<small>${escapeResultsHtml(
+                                    awayTeam.short_name
+                                )}</small>`
+                                : ""
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="result-goals">
+
+                    <div class="result-goal-column">
+
+                        <h4>
+                            🏠 ${escapeResultsHtml(
+                                homeTeam
+                                    ? homeTeam.name
+                                    : "Home"
+                            )}
+                        </h4>
+
+                        ${scorerHtml(homeScorers)}
+
+                    </div>
+
+                    <div class="result-goal-column">
+
+                        <h4>
+                            ✈️ ${escapeResultsHtml(
+                                awayTeam
+                                    ? awayTeam.name
+                                    : "Away"
+                            )}
+                        </h4>
+
+                        ${scorerHtml(awayScorers)}
+
+                    </div>
+
+                </div>
+
+                ${
+                    result.match_report
+                        ? `
+                            <div class="match-report">
+
+                                <h4>📝 Match Report</h4>
+
+                                <p>
+                                    ${escapeResultsHtml(
+                                        result.match_report
+                                    )}
+                                </p>
+
+                            </div>
+                        `
+                        : ""
+                }
+
+                <div class="result-venue">
+
+                    📍
+                    ${escapeResultsHtml(
+                        fixture.venue || "-"
+                    )}
+
+                </div>
+
+            `;
+
+            resultsList.appendChild(card);
+
+        });
+
+        if (!resultsList.children.length) {
+
+            resultsList.innerHTML = `
+                <div class="empty-message">
+                    ⚽ No completed match results yet.
+                </div>
+            `;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "PUBLIC RESULTS ERROR:",
+            error
+        );
+
+        resultsList.innerHTML = `
+            <div class="empty-message">
+
+                ❌ Unable to load match results.
+
+            </div>
+        `;
+
+    }
+
+}
+
+function formatResultsDate(value) {
+
+    if (!value) return "-";
+
+    const date = new Date(
+        value + "T00:00:00"
+    );
+
+    return date.toLocaleDateString(
+        "en-KE",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+function formatResultsTime(value) {
+
+    if (!value) return "-";
+
+    const parts = value.split(":");
+
+    const hour = Number(parts[0]);
+
+    const minute = parts[1] || "00";
+
+    const period =
+        hour >= 12 ? "PM" : "AM";
+
+    const displayHour =
+        hour % 12 || 12;
+
+    return (
+        displayHour +
+        ":" +
+        minute +
+        " " +
+        period
+    );
+
+}
+
+function escapeResultsHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
