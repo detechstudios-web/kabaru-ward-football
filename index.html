@@ -184,8 +184,19 @@ nav a:hover {
     font-weight: bold;
 }
 
-table {
+/* ========================================
+   LEAGUE TABLE
+======================================== */
+
+.table-wrapper {
     width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+.league-table {
+    width: 100%;
+    min-width: 700px;
     border-collapse: collapse;
     background: white;
     border-radius: 12px;
@@ -193,26 +204,34 @@ table {
     box-shadow: 0 4px 15px rgba(0,0,0,.07);
 }
 
-th {
+.league-table th {
     background: #073b25;
     color: white;
     padding: 13px 8px;
     font-size: 13px;
+    text-align: center;
 }
 
-td {
+.league-table td {
     padding: 13px 8px;
     border-bottom: 1px solid #e7ebe8;
     text-align: center;
     font-size: 13px;
 }
 
-td:nth-child(2) {
+.league-table td:nth-child(2) {
     text-align: left;
     font-weight: bold;
 }
 
-.position {
+.league-table td:nth-child(2) small {
+    display: block;
+    color: #657169;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.league-table .position {
     font-weight: bold;
     color: #073b25;
 }
@@ -324,31 +343,6 @@ footer {
 footer span {
     color: #f5c542;
 }
-
-@media (max-width: 750px) {
-
-    nav {
-        display: none;
-    }
-
-    .hero {
-        padding: 55px 18px;
-    }
-
-    table {
-        font-size: 11px;
-    }
-
-    th,
-    td {
-        padding: 9px 4px;
-    }
-
-    .fixtures-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 
 /* ========================================
    TEAM REGISTRATION FORM
@@ -520,6 +514,38 @@ footer span {
 .registration-message.loading {
     background: #f1f4f2;
 }
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 750px) {
+
+    nav {
+        display: none;
+    }
+
+    .hero {
+        padding: 55px 18px;
+    }
+
+    .fixtures-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .league-table {
+        min-width: 700px;
+    }
+
+    .players-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
 </style>
 </head>
 
@@ -545,6 +571,10 @@ footer span {
 
 </header>
 
+
+<!-- ========================================
+     HERO
+======================================== -->
 
 <section class="hero" id="home">
 
@@ -703,122 +733,48 @@ footer span {
     </div>
 
 
-    <table>
+    <div class="table-wrapper">
 
-        <thead>
+        <table class="league-table">
 
-            <tr>
+            <thead>
 
-                <th>Pos</th>
-                <th>Team</th>
-                <th>P</th>
-                <th>W</th>
-                <th>D</th>
-                <th>L</th>
-                <th>GD</th>
-                <th>Pts</th>
+                <tr>
 
-            </tr>
+                    <th>Pos</th>
+                    <th>Team</th>
+                    <th>P</th>
+                    <th>W</th>
+                    <th>D</th>
+                    <th>L</th>
+                    <th>GF</th>
+                    <th>GA</th>
+                    <th>GD</th>
+                    <th>Pts</th>
 
-        </thead>
+                </tr>
 
-
-        <tbody>
-
-            <tr>
-
-                <td class="position">1</td>
-
-                <td>Team One</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>
-                    <strong>0</strong>
-                </td>
-
-            </tr>
+            </thead>
 
 
-            <tr>
+            <tbody id="leagueTableBody">
 
-                <td class="position">2</td>
+                <tr>
 
-                <td>Team Two</td>
+                    <td
+                        colspan="10"
+                        style="text-align:center;"
+                    >
+                        ⚽ Loading league table...
+                    </td>
 
-                <td>0</td>
+                </tr>
 
-                <td>0</td>
+            </tbody>
 
-                <td>0</td>
+        </table>
 
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>
-                    <strong>0</strong>
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td class="position">3</td>
-
-                <td>Team Three</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>
-                    <strong>0</strong>
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td class="position">4</td>
-
-                <td>Team Four</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>0</td>
-
-                <td>
-                    <strong>0</strong>
-                </td>
-
-            </tr>
-
-        </tbody>
-
-    </table>
+    </div>
 
 </div>
 
@@ -845,11 +801,6 @@ footer span {
 
     </div>
 
-
-    <!--
-        JavaScript will load real fixtures
-        from Supabase into this container.
-    -->
 
     <div
         id="upcomingFixtures"
@@ -1184,9 +1135,7 @@ footer span {
                 </div>
 
 
-                <div
-                    id="playersContainer"
-                ></div>
+                <div id="playersContainer"></div>
 
 
                 <button
@@ -1272,7 +1221,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-
     try {
 
         const {
@@ -1303,10 +1251,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // ========================================
-        // NO APPROVED TEAMS
-        // ========================================
-
         if (!teams || teams.length === 0) {
 
             teamsContainer.innerHTML = `
@@ -1333,10 +1277,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-
-        // ========================================
-        // DISPLAY TEAMS
-        // ========================================
 
         teamsContainer.innerHTML = "";
 
@@ -1483,10 +1423,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-
-    // ========================================
-    // HTML ESCAPING
-    // ========================================
 
     function escapeTeamHtml(value) {
 
