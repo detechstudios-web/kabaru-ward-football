@@ -290,6 +290,153 @@ nav a:hover {
     margin-top: 4px;
 }
 
+/* ========================================
+   PUBLIC RESULTS
+======================================== */
+
+.results-section {
+    background: #eef3f0;
+}
+
+.results-list {
+    max-width: 900px;
+    margin: auto;
+}
+
+.result-card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5ebe7;
+    color: #073b25;
+}
+
+.result-header span {
+    color: #657169;
+    font-size: 13px;
+}
+
+.result-date {
+    text-align: center;
+    color: #657169;
+    font-size: 13px;
+    margin: 15px 0;
+}
+
+.result-score {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+    padding: 15px 0;
+}
+
+.result-team {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 16px;
+}
+
+.result-team small {
+    color: #657169;
+    font-size: 12px;
+}
+
+.score-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #073b25;
+}
+
+.result-goals {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 18px;
+}
+
+.result-goal-column {
+    background: #f5f7f6;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.result-goal-column h4 {
+    color: #073b25;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.result-scorer {
+    padding: 7px 0;
+    border-bottom: 1px solid #e1e7e3;
+}
+
+.result-scorer:last-child {
+    border-bottom: none;
+}
+
+.result-scorer strong {
+    display: block;
+    color: #17221c;
+}
+
+.result-scorer span {
+    display: block;
+    color: #073b25;
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+.no-scorers {
+    color: #657169;
+    font-size: 13px;
+}
+
+.match-report {
+    margin-top: 18px;
+    padding: 15px;
+    background: #f5f7f6;
+    border-radius: 10px;
+}
+
+.match-report h4 {
+    color: #073b25;
+    margin-bottom: 5px;
+}
+
+.match-report p {
+    color: #4f5d54;
+}
+
+.result-venue {
+    margin-top: 15px;
+    text-align: center;
+    color: #657169;
+    font-size: 13px;
+}
+
+/* ========================================
+   SPONSORS
+======================================== */
+
 .sponsor-area {
     background: white;
     border-radius: 18px;
@@ -318,6 +465,10 @@ nav a:hover {
     font-size: 18px;
     margin-bottom: 5px;
 }
+
+/* ========================================
+   REGISTRATION
+======================================== */
 
 .register {
     background: linear-gradient(135deg, #073b25, #0c6240);
@@ -545,6 +696,27 @@ footer span {
         align-items: flex-start;
         flex-direction: column;
     }
+
+    .result-score {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .score-number {
+        order: 2;
+    }
+
+    .home-team {
+        order: 1;
+    }
+
+    .away-team {
+        order: 3;
+    }
+
+    .result-goals {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
@@ -563,6 +735,7 @@ footer span {
             <a href="#home">Home</a>
             <a href="#table">Table</a>
             <a href="#fixtures">Fixtures</a>
+            <a href="#results">Results</a>
             <a href="#teams">Teams</a>
             <a href="#sponsors">Sponsors</a>
         </nav>
@@ -819,6 +992,54 @@ footer span {
             <p>
                 Please wait while we load the
                 latest scheduled matches.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- ========================================
+     PUBLIC MATCH RESULTS
+======================================== -->
+
+<section id="results" class="results-section">
+
+<div class="container">
+
+    <div class="section-title">
+
+        <h2>
+            🏁 Match Results
+        </h2>
+
+        <p>
+            Previous results from Kabaru Ward Football competitions.
+        </p>
+
+    </div>
+
+
+    <div
+        id="resultsList"
+        class="results-list"
+    >
+
+        <div
+            class="card"
+            style="text-align:center;"
+        >
+
+            <h3>
+                ⚽ Loading Results...
+            </h3>
+
+            <p>
+                Please wait while we load completed matches.
             </p>
 
         </div>
@@ -1379,7 +1600,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <a
                         href="team.html?id=${encodeURIComponent(team.id)}"
                         class="btn btn-gold"
-                        style="display:inline-block;"
                     >
                         View Team
                     </a>
