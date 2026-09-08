@@ -998,3 +998,464 @@ function escapeFixtureHtml(value) {
 
         .replace(/'/g, "&#039;");
 }
+// ========================================
+// AUTOMATIC LEAGUE TABLE
+// ========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadLeagueTable();
+});
+
+async function loadLeagueTable() {
+
+    const tableBody =
+        document.getElementById("leagueTableBody");
+
+    if (!tableBody) {
+        return;
+    }
+
+    try {
+
+        // ========================================
+        // GET APPROVED TEAMS
+        // ========================================
+
+        const {
+            data: teams,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name,
+                registration_status
+            `)
+            .eq("registration_status", "Approved")
+            .order("name", {
+                ascending: true
+            });
+
+        if (teamsError) {
+            throw teamsError;
+        }
+
+
+        // ========================================
+        // GET FIXTURES
+        // ========================================
+
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                status
+            `)
+            .in("status", [
+                "Scheduled",
+                "Published"
+            ]);
+
+        if (fixturesError) {
+            throw fixturesError;
+        }
+
+
+        // ========================================
+        // GET RESULTS
+        // ========================================
+
+        const {
+            data: results,
+            error: resultsError
+        } = await supabaseClient
+            .from("results")
+            .select(`
+                id,
+                fixture_id,
+                home_score,
+                away_score
+            `);
+
+        if (resultsError) {
+            throw resultsError;
+        }
+
+
+        // ========================================
+        // CREATE INITIAL TABLE
+        // ========================================
+
+        const table = {};
+
+        (teams || []).forEach(team => {
+
+            table[team.id] = {
+
+                id: team.id,
+
+                name: team.name,
+
+                short_name:
+                    team.short_name || "",
+
+                played: 0,
+
+                wins: 0,
+
+                draws: 0,
+
+                losses: 0,
+
+                goalsFor: 0,
+
+                goalsAgainst: 0,
+
+                goalDifference: 0,
+
+                points: 0
+
+            };
+
+        });
+
+
+        // ========================================
+        // FIXTURE LOOKUP
+        // ========================================
+
+        const fixtureMap = {};
+
+        (fixtures || []).forEach(fixture => {
+
+            fixtureMap[fixture.id] = fixture;
+
+        });
+
+
+        // ========================================
+        // CALCULATE RESULTS
+        // ========================================
+
+        (results || []).forEach(result => {
+
+            const fixture =
+                fixtureMap[result.fixture_id];
+
+            if (!fixture) {
+                return;
+            }
+
+
+            const home =
+                table[fixture.home_team_id];
+
+            const away =
+                table[fixture.away_team_id];
+
+
+            if (!home || !away) {
+                return;
+            }
+
+
+            const homeScore =
+                Number(result.home_score);
+
+            const awayScore =
+                Number(result.away_score);
+
+
+            // Played
+
+            home.played++;
+            away.played++;
+
+
+            // Goals
+
+            home.goalsFor += homeScore;
+            home.goalsAgainst += awayScore;
+
+            away.goalsFor += awayScore;
+            away.goalsAgainst += homeScore;
+
+
+            // Result
+
+            if (homeScore > awayScore) {
+
+                home.wins++;
+                home.points += 3;
+
+                away.losses++;
+
+            }
+
+            else if (homeScore < awayScore) {
+
+                away.wins++;
+                away.points += 3;
+
+                home.losses++;
+
+            }
+
+            else {
+
+                home.draws++;
+                away.draws++;
+
+                home.points++;
+                away.points++;
+
+            }
+
+        });
+
+
+        // ========================================
+        // GOAL DIFFERENCE
+        // ========================================
+
+        Object.values(table).forEach(team => {
+
+            team.goalDifference =
+                team.goalsFor -
+                team.goalsAgainst;
+
+        });
+
+
+        // ========================================
+        // SORT TABLE
+        // ========================================
+
+        const sortedTeams =
+            Object.values(table).sort((a, b) => {
+
+                // Points
+
+                if (b.points !== a.points) {
+
+                    return b.points - a.points;
+
+                }
+
+
+                // Goal Difference
+
+                if (
+                    b.goalDifference !==
+                    a.goalDifference
+                ) {
+
+                    return (
+                        b.goalDifference -
+                        a.goalDifference
+                    );
+
+                }
+
+
+                // Goals For
+
+                if (
+                    b.goalsFor !==
+                    a.goalsFor
+                ) {
+
+                    return (
+                        b.goalsFor -
+                        a.goalsFor
+                    );
+
+                }
+
+
+                // Team name
+
+                return a.name.localeCompare(
+                    b.name
+                );
+
+            });
+
+
+        // ========================================
+        // NO TEAMS
+        // ========================================
+
+        if (sortedTeams.length === 0) {
+
+            tableBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="10"
+                        style="text-align:center;"
+                    >
+                        ⚽ No approved teams yet.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ========================================
+        // DISPLAY TABLE
+        // ========================================
+
+        tableBody.innerHTML =
+            sortedTeams.map((team, index) => {
+
+                const gd =
+                    team.goalDifference > 0
+                        ? `+${team.goalDifference}`
+                        : team.goalDifference;
+
+
+                return `
+
+                    <tr>
+
+                        <td class="position">
+                            <strong>
+                                ${index + 1}
+                            </strong>
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                ${escapeLeagueHtml(
+                                    team.name
+                                )}
+                            </strong>
+
+                            ${
+                                team.short_name
+                                ? `
+                                    <small>
+                                        ${escapeLeagueHtml(
+                                            team.short_name
+                                        )}
+                                    </small>
+                                  `
+                                : ""
+                            }
+
+                        </td>
+
+
+                        <td>
+                            ${team.played}
+                        </td>
+
+
+                        <td>
+                            ${team.wins}
+                        </td>
+
+
+                        <td>
+                            ${team.draws}
+                        </td>
+
+
+                        <td>
+                            ${team.losses}
+                        </td>
+
+
+                        <td>
+                            ${team.goalsFor}
+                        </td>
+
+
+                        <td>
+                            ${team.goalsAgainst}
+                        </td>
+
+
+                        <td>
+                            ${gd}
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                ${team.points}
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }).join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "LEAGUE TABLE ERROR:",
+            error
+        );
+
+
+        tableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    style="text-align:center;"
+                >
+                    ❌ Unable to load league table.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+// ========================================
+// ESCAPE LEAGUE TABLE HTML
+// ========================================
+
+function escapeLeagueHtml(value) {
+
+    return String(value)
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+}
