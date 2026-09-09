@@ -44,11 +44,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // HELPER
+    // HELPER FUNCTIONS
     // ========================================
 
     function escapeHtml(value) {
-        if (value === null || value === undefined) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
             return "";
         }
 
@@ -67,17 +71,21 @@ document.addEventListener("DOMContentLoaded", async function () {
             return "";
         }
 
-        const date = new Date(dateValue + "T00:00:00");
+        const date =
+            new Date(dateValue + "T00:00:00");
 
         if (isNaN(date.getTime())) {
             return dateValue;
         }
 
-        return date.toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        });
+        return date.toLocaleDateString(
+            "en-GB",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
     }
 
 
@@ -87,24 +95,48 @@ document.addEventListener("DOMContentLoaded", async function () {
             return "";
         }
 
-        const parts = timeValue.split(":");
+        const parts =
+            String(timeValue).split(":");
 
         if (parts.length < 2) {
             return timeValue;
         }
 
-        let hour = Number(parts[0]);
-        const minute = parts[1];
+        let hour =
+            Number(parts[0]);
 
-        const ampm = hour >= 12 ? "PM" : "AM";
+        const minute =
+            parts[1];
 
-        hour = hour % 12;
+        const ampm =
+            hour >= 12
+                ? "PM"
+                : "AM";
+
+        hour =
+            hour % 12;
 
         if (hour === 0) {
             hour = 12;
         }
 
-        return hour + ":" + minute + " " + ampm;
+        return (
+            hour +
+            ":" +
+            minute +
+            " " +
+            ampm
+        );
+    }
+
+
+    function showError(container, message) {
+
+        if (container) {
+
+            container.innerHTML =
+                `<p>${escapeHtml(message)}</p>`;
+        }
     }
 
 
@@ -117,13 +149,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function loadCompetitionStatus() {
 
-        if (!competitionNameEl &&
+        if (
+            !competitionNameEl &&
             !competitionSeasonEl &&
-            !competitionStatusEl) {
+            !competitionStatusEl
+        ) {
             return;
         }
 
-        const { data, error } = await supabaseClient
+
+        const {
+            data,
+            error
+        } = await supabaseClient
             .from("competitions")
             .select("*")
             .eq("status", "Active")
@@ -133,6 +171,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             .limit(1)
             .maybeSingle();
 
+
         if (error) {
 
             console.error(
@@ -141,6 +180,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
             if (competitionStatusEl) {
+
                 competitionStatusEl.textContent =
                     "Unable to load competition";
             }
@@ -148,21 +188,26 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
         currentCompetition = data;
 
 
         if (!data) {
 
             if (competitionNameEl) {
+
                 competitionNameEl.textContent =
                     "No Active Competition";
             }
 
             if (competitionSeasonEl) {
-                competitionSeasonEl.textContent = "";
+
+                competitionSeasonEl.textContent =
+                    "";
             }
 
             if (competitionStatusEl) {
+
                 competitionStatusEl.textContent =
                     "Coming Soon";
             }
@@ -172,23 +217,73 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         if (competitionNameEl) {
+
             competitionNameEl.textContent =
-                data.name || "Kabaru Ward Football";
+                data.name ||
+                "Kabaru Ward Football";
         }
 
 
         if (competitionSeasonEl) {
+
             competitionSeasonEl.textContent =
                 data.season
-                    ? "Season " + data.season
-                    : "";
+                    ? "Season " +
+                      data.season +
+                      " • Kabaru Ward"
+                    : "Kabaru Ward";
         }
 
 
         if (competitionStatusEl) {
+
             competitionStatusEl.textContent =
-                data.status || "Active";
+                data.status ||
+                "Active";
         }
+    }
+
+
+    // ========================================
+    // LOAD ALL APPROVED TEAMS
+    // ========================================
+
+    async function getApprovedTeams() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name
+            `)
+            .eq(
+                "registration_status",
+                "Approved"
+            )
+            .order("name");
+
+
+        if (error) {
+
+            console.error(
+                "Teams loading error:",
+                error
+            );
+
+            return {
+                teams: [],
+                error: error
+            };
+        }
+
+
+        return {
+            teams: data || [],
+            error: null
+        };
     }
 
 
@@ -202,54 +297,47 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
         fixturesContainer.innerHTML =
             "<p>Loading fixtures...</p>";
 
 
-        let query = supabaseClient
-            .from("fixtures")
-            .select(`
-                id,
-                competition_id,
-                home_team_id,
-                away_team_id,
-                match_date,
-                kick_off,
-                venue,
-                matchday,
-                status,
-                home_team:teams!fixtures_home_team_id_fkey(
+        let query =
+            supabaseClient
+                .from("fixtures")
+                .select(`
                     id,
-                    name
-                ),
-                away_team:teams!fixtures_away_team_id_fkey(
-                    id,
-                    name
-                ),
-                competition:competitions(
-                    id,
-                    name,
-                    season
-                )
-            `)
-            .order("match_date", {
-                ascending: true
-            })
-            .order("kick_off", {
-                ascending: true
-            });
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    venue,
+                    matchday,
+                    status
+                `)
+                .order("match_date", {
+                    ascending: true
+                })
+                .order("kick_off", {
+                    ascending: true
+                });
 
 
         if (currentCompetition) {
 
-            query = query.eq(
-                "competition_id",
-                currentCompetition.id
-            );
+            query =
+                query.eq(
+                    "competition_id",
+                    currentCompetition.id
+                );
         }
 
 
-        const { data, error } = await query;
+        const {
+            data: fixtures,
+            error
+        } = await query;
 
 
         if (error) {
@@ -259,21 +347,32 @@ document.addEventListener("DOMContentLoaded", async function () {
                 error
             );
 
-            fixturesContainer.innerHTML =
-                "<p>Unable to load fixtures.</p>";
+            showError(
+                fixturesContainer,
+                "Unable to load fixtures."
+            );
 
             return;
         }
 
 
-        const fixtures = (data || []).filter(function (fixture) {
+        const upcomingFixtures =
+            (fixtures || []).filter(
+                function (fixture) {
 
-            return fixture.status !== "Completed" &&
-                   fixture.status !== "Cancelled";
-        });
+                    return (
+                        fixture.status !==
+                        "Completed" &&
+                        fixture.status !==
+                        "Cancelled"
+                    );
+                }
+            );
 
 
-        if (fixtures.length === 0) {
+        if (
+            upcomingFixtures.length === 0
+        ) {
 
             fixturesContainer.innerHTML =
                 "<p>No upcoming fixtures.</p>";
@@ -282,85 +381,128 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        fixturesContainer.innerHTML = "";
+        const {
+            teams
+        } = await getApprovedTeams();
 
 
-        fixtures.forEach(function (fixture) {
-
-            const homeName =
-                fixture.home_team?.name ||
-                "Home Team";
-
-            const awayName =
-                fixture.away_team?.name ||
-                "Away Team";
+        const teamMap = {};
 
 
-            const card =
-                document.createElement("div");
+        teams.forEach(function (team) {
 
-            card.className = "fixture-card";
-
-
-            card.innerHTML = `
-
-                <div class="fixture-date">
-                    ${escapeHtml(formatDate(fixture.match_date))}
-                </div>
-
-                <div class="fixture-match">
-
-                    <div class="fixture-team">
-                        ${escapeHtml(homeName)}
-                    </div>
-
-                    <div class="fixture-vs">
-                        VS
-                    </div>
-
-                    <div class="fixture-team">
-                        ${escapeHtml(awayName)}
-                    </div>
-
-                </div>
-
-                <div class="fixture-details">
-
-                    ${
-                        fixture.kick_off
-                            ? escapeHtml(
-                                formatTime(
-                                    fixture.kick_off
-                                )
-                            )
-                            : ""
-                    }
-
-                    ${
-                        fixture.venue
-                            ? " • " +
-                              escapeHtml(
-                                  fixture.venue
-                              )
-                            : ""
-                    }
-
-                    ${
-                        fixture.matchday
-                            ? " • Matchday " +
-                              escapeHtml(
-                                  fixture.matchday
-                              )
-                            : ""
-                    }
-
-                </div>
-
-            `;
-
-
-            fixturesContainer.appendChild(card);
+            teamMap[team.id] =
+                team;
         });
+
+
+        fixturesContainer.innerHTML =
+            "";
+
+
+        upcomingFixtures.forEach(
+            function (fixture) {
+
+                const homeTeam =
+                    teamMap[
+                        fixture.home_team_id
+                    ];
+
+                const awayTeam =
+                    teamMap[
+                        fixture.away_team_id
+                    ];
+
+
+                const homeName =
+                    homeTeam?.name ||
+                    "Home Team";
+
+                const awayName =
+                    awayTeam?.name ||
+                    "Away Team";
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "fixture-card";
+
+
+                card.innerHTML = `
+
+                    <div class="fixture-date">
+                        ${escapeHtml(
+                            formatDate(
+                                fixture.match_date
+                            )
+                        )}
+                    </div>
+
+                    <div class="fixture-match">
+
+                        <div class="fixture-team">
+                            ${escapeHtml(
+                                homeName
+                            )}
+                        </div>
+
+                        <div class="fixture-vs">
+                            VS
+                        </div>
+
+                        <div class="fixture-team">
+                            ${escapeHtml(
+                                awayName
+                            )}
+                        </div>
+
+                    </div>
+
+                    <div class="fixture-details">
+
+                        ${
+                            fixture.kick_off
+                                ? escapeHtml(
+                                    formatTime(
+                                        fixture.kick_off
+                                    )
+                                )
+                                : ""
+                        }
+
+                        ${
+                            fixture.venue
+                                ? " • " +
+                                  escapeHtml(
+                                      fixture.venue
+                                  )
+                                : ""
+                        }
+
+                        ${
+                            fixture.matchday
+                                ? " • Matchday " +
+                                  escapeHtml(
+                                      fixture.matchday
+                                  )
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+
+                fixturesContainer.appendChild(
+                    card
+                );
+            }
+        );
     }
 
 
@@ -374,36 +516,48 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
         tableBody.innerHTML =
-            "<tr><td colspan='9'>Loading table...</td></tr>";
+            `
+            <tr>
+                <td colspan="10">
+                    Loading table...
+                </td>
+            </tr>
+            `;
 
 
-        const { data: teams, error: teamsError } =
-            await supabaseClient
-                .from("teams")
-                .select("id,name")
-                .eq("registration_status", "Approved")
-                .order("name");
+        const {
+            teams,
+            error: teamsError
+        } = await getApprovedTeams();
 
 
         if (teamsError) {
 
-            console.error(
-                "Teams error:",
-                teamsError
-            );
-
             tableBody.innerHTML =
-                "<tr><td colspan='9'>Unable to load table.</td></tr>";
+                `
+                <tr>
+                    <td colspan="10">
+                        Unable to load teams.
+                    </td>
+                </tr>
+                `;
 
             return;
         }
 
 
-        if (!teams || teams.length === 0) {
+        if (!teams.length) {
 
             tableBody.innerHTML =
-                "<tr><td colspan='9'>No approved teams.</td></tr>";
+                `
+                <tr>
+                    <td colspan="10">
+                        No approved teams.
+                    </td>
+                </tr>
+                `;
 
             return;
         }
@@ -414,12 +568,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                 .from("fixtures")
                 .select(`
                     id,
+                    competition_id,
                     home_team_id,
                     away_team_id,
-                    status,
-                    competition_id
+                    status
                 `)
-                .eq("status", "Completed");
+                .eq(
+                    "status",
+                    "Completed"
+                );
 
 
         if (currentCompetition) {
@@ -446,16 +603,25 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
             tableBody.innerHTML =
-                "<tr><td colspan='9'>Unable to load table.</td></tr>";
+                `
+                <tr>
+                    <td colspan="10">
+                        Unable to load fixtures.
+                    </td>
+                </tr>
+                `;
 
             return;
         }
 
 
         const fixtureIds =
-            (fixtures || []).map(function (f) {
-                return f.id;
-            });
+            (fixtures || []).map(
+                function (fixture) {
+
+                    return fixture.id;
+                }
+            );
 
 
         let results = [];
@@ -474,206 +640,347 @@ document.addEventListener("DOMContentLoaded", async function () {
                     home_score,
                     away_score
                 `)
-                .in("fixture_id", fixtureIds);
+                .in(
+                    "fixture_id",
+                    fixtureIds
+                );
 
 
             if (error) {
 
                 console.error(
-                    "Results error:",
+                    "Table results error:",
                     error
                 );
 
                 tableBody.innerHTML =
-                    "<tr><td colspan='9'>Unable to load results.</td></tr>";
+                    `
+                    <tr>
+                        <td colspan="10">
+                            Unable to load results.
+                        </td>
+                    </tr>
+                    `;
 
                 return;
             }
 
-            results = data || [];
+
+            results =
+                data || [];
         }
 
 
         const resultMap = {};
 
 
-        results.forEach(function (result) {
+        results.forEach(
+            function (result) {
 
-            resultMap[result.fixture_id] =
-                result;
-        });
+                resultMap[
+                    result.fixture_id
+                ] = result;
+            }
+        );
 
+
+        // ========================================
+        // CREATE TEAM STATISTICS
+        // ========================================
 
         const stats = {};
 
 
-        teams.forEach(function (team) {
+        teams.forEach(
+            function (team) {
 
-            stats[team.id] = {
+                stats[team.id] = {
 
-                id: team.id,
-                name: team.name,
+                    id:
+                        team.id,
 
-                played: 0,
-                won: 0,
-                drawn: 0,
-                lost: 0,
+                    name:
+                        team.name,
 
-                gf: 0,
-                ga: 0,
+                    played:
+                        0,
 
-                gd: 0,
-                points: 0
-            };
-        });
+                    won:
+                        0,
 
+                    drawn:
+                        0,
 
-        (fixtures || []).forEach(function (fixture) {
+                    lost:
+                        0,
 
-            const result =
-                resultMap[fixture.id];
+                    gf:
+                        0,
 
+                    ga:
+                        0,
 
-            if (!result) {
-                return;
+                    gd:
+                        0,
+
+                    points:
+                        0
+                };
             }
+        );
 
 
-            const home =
-                stats[fixture.home_team_id];
+        // ========================================
+        // CALCULATE TABLE
+        // ========================================
 
-            const away =
-                stats[fixture.away_team_id];
+        (fixtures || []).forEach(
+            function (fixture) {
+
+                const result =
+                    resultMap[
+                        fixture.id
+                    ];
 
 
-            if (!home || !away) {
-                return;
+                if (!result) {
+                    return;
+                }
+
+
+                const home =
+                    stats[
+                        fixture.home_team_id
+                    ];
+
+                const away =
+                    stats[
+                        fixture.away_team_id
+                    ];
+
+
+                if (!home || !away) {
+                    return;
+                }
+
+
+                const homeScore =
+                    Number(
+                        result.home_score
+                    );
+
+
+                const awayScore =
+                    Number(
+                        result.away_score
+                    );
+
+
+                home.played++;
+                away.played++;
+
+
+                home.gf +=
+                    homeScore;
+
+                home.ga +=
+                    awayScore;
+
+
+                away.gf +=
+                    awayScore;
+
+                away.ga +=
+                    homeScore;
+
+
+                if (
+                    homeScore >
+                    awayScore
+                ) {
+
+                    home.won++;
+
+                    away.lost++;
+
+                    home.points += 3;
+
+                } else if (
+                    awayScore >
+                    homeScore
+                ) {
+
+                    away.won++;
+
+                    home.lost++;
+
+                    away.points += 3;
+
+                } else {
+
+                    home.drawn++;
+
+                    away.drawn++;
+
+                    home.points += 1;
+
+                    away.points += 1;
+                }
             }
+        );
 
 
-            const homeScore =
-                Number(result.home_score || 0);
+        // ========================================
+        // CALCULATE GOAL DIFFERENCE
+        // ========================================
 
-            const awayScore =
-                Number(result.away_score || 0);
+        Object.values(stats).forEach(
+            function (team) {
 
-
-            home.played++;
-            away.played++;
-
-
-            home.gf += homeScore;
-            home.ga += awayScore;
-
-            away.gf += awayScore;
-            away.ga += homeScore;
-
-
-            if (homeScore > awayScore) {
-
-                home.won++;
-                home.points += 3;
-
-                away.lost++;
-
-            } else if (homeScore < awayScore) {
-
-                away.won++;
-                away.points += 3;
-
-                home.lost++;
-
-            } else {
-
-                home.drawn++;
-                away.drawn++;
-
-                home.points++;
-                away.points++;
+                team.gd =
+                    team.gf -
+                    team.ga;
             }
-        });
+        );
 
 
-        Object.values(stats).forEach(function (team) {
-
-            team.gd =
-                team.gf - team.ga;
-        });
-
+        // ========================================
+        // SORT TABLE
+        // ========================================
 
         const sorted =
-            Object.values(stats).sort(function (a, b) {
+            Object.values(stats)
+                .sort(
+                    function (a, b) {
 
-                if (b.points !== a.points) {
-                    return b.points - a.points;
-                }
+                        // Points
+                        if (
+                            b.points !==
+                            a.points
+                        ) {
 
-                if (b.gd !== a.gd) {
-                    return b.gd - a.gd;
-                }
-
-                if (b.gf !== a.gf) {
-                    return b.gf - a.gf;
-                }
-
-                return a.name.localeCompare(b.name);
-            });
-
-
-        tableBody.innerHTML = "";
+                            return (
+                                b.points -
+                                a.points
+                            );
+                        }
 
 
-        sorted.forEach(function (team, index) {
+                        // Goal Difference
+                        if (
+                            b.gd !==
+                            a.gd
+                        ) {
 
-            const row =
-                document.createElement("tr");
-
-
-            row.innerHTML = `
-
-                <td class="position">
-                    ${index + 1}
-                </td>
-
-                <td>
-                    ${escapeHtml(team.name)}
-                </td>
-
-                <td>
-                    ${team.played}
-                </td>
-
-                <td>
-                    ${team.won}
-                </td>
-
-                <td>
-                    ${team.drawn}
-                </td>
-
-                <td>
-                    ${team.lost}
-                </td>
-
-                <td>
-                    ${team.gf}
-                </td>
-
-                <td>
-                    ${team.ga}
-                </td>
-
-                <td>
-                    <strong>
-                        ${team.points}
-                    </strong>
-                </td>
-
-            `;
+                            return (
+                                b.gd -
+                                a.gd
+                            );
+                        }
 
 
-            tableBody.appendChild(row);
-        });
+                        // Goals For
+                        if (
+                            b.gf !==
+                            a.gf
+                        ) {
+
+                            return (
+                                b.gf -
+                                a.gf
+                            );
+                        }
+
+
+                        // Alphabetical
+                        return a.name.localeCompare(
+                            b.name
+                        );
+                    }
+                );
+
+
+        tableBody.innerHTML =
+            "";
+
+
+        // ========================================
+        // DISPLAY TABLE
+        // ========================================
+
+        sorted.forEach(
+            function (team, index) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const gdDisplay =
+                    team.gd > 0
+                        ? "+" + team.gd
+                        : String(team.gd);
+
+
+                row.innerHTML = `
+
+                    <td class="position">
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${escapeHtml(
+                                team.name
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${team.played}
+                    </td>
+
+                    <td>
+                        ${team.won}
+                    </td>
+
+                    <td>
+                        ${team.drawn}
+                    </td>
+
+                    <td>
+                        ${team.lost}
+                    </td>
+
+                    <td>
+                        ${team.gf}
+                    </td>
+
+                    <td>
+                        ${team.ga}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${gdDisplay}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${team.points}
+                        </strong>
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(
+                    row
+                );
+            }
+        );
     }
 
 
@@ -687,11 +994,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
         resultsContainer.innerHTML =
             "<p>Loading results...</p>";
 
 
-        let query =
+        let fixtureQuery =
             supabaseClient
                 .from("fixtures")
                 .select(`
@@ -703,37 +1011,30 @@ document.addEventListener("DOMContentLoaded", async function () {
                     kick_off,
                     venue,
                     matchday,
-                    status,
-
-                    home_team:teams!fixtures_home_team_id_fkey(
-                        id,
-                        name
-                    ),
-
-                    away_team:teams!fixtures_away_team_id_fkey(
-                        id,
-                        name
-                    ),
-
-                    competition:competitions(
-                        id,
-                        name,
-                        season
-                    )
+                    status
                 `)
-                .eq("status", "Completed")
-                .order("match_date", {
-                    ascending: false
-                })
-                .order("kick_off", {
-                    ascending: false
-                });
+                .eq(
+                    "status",
+                    "Completed"
+                )
+                .order(
+                    "match_date",
+                    {
+                        ascending: false
+                    }
+                )
+                .order(
+                    "kick_off",
+                    {
+                        ascending: false
+                    }
+                );
 
 
         if (currentCompetition) {
 
-            query =
-                query.eq(
+            fixtureQuery =
+                fixtureQuery.eq(
                     "competition_id",
                     currentCompetition.id
                 );
@@ -743,24 +1044,29 @@ document.addEventListener("DOMContentLoaded", async function () {
         const {
             data: fixtures,
             error: fixtureError
-        } = await query;
+        } = await fixtureQuery;
 
 
         if (fixtureError) {
 
             console.error(
-                "Result fixtures error:",
+                "Results fixtures error:",
                 fixtureError
             );
 
-            resultsContainer.innerHTML =
-                "<p>Unable to load results.</p>";
+            showError(
+                resultsContainer,
+                "Unable to load results."
+            );
 
             return;
         }
 
 
-        if (!fixtures || fixtures.length === 0) {
+        if (
+            !fixtures ||
+            fixtures.length === 0
+        ) {
 
             resultsContainer.innerHTML =
                 "<p>No match results yet.</p>";
@@ -769,10 +1075,42 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
+        const {
+            teams,
+            error: teamsError
+        } = await getApprovedTeams();
+
+
+        if (teamsError) {
+
+            showError(
+                resultsContainer,
+                "Unable to load teams."
+            );
+
+            return;
+        }
+
+
+        const teamMap = {};
+
+
+        teams.forEach(
+            function (team) {
+
+                teamMap[team.id] =
+                    team;
+            }
+        );
+
+
         const fixtureIds =
-            fixtures.map(function (fixture) {
-                return fixture.id;
-            });
+            fixtures.map(
+                function (fixture) {
+
+                    return fixture.id;
+                }
+            );
 
 
         const {
@@ -788,18 +1126,23 @@ document.addEventListener("DOMContentLoaded", async function () {
                 match_report,
                 created_at
             `)
-            .in("fixture_id", fixtureIds);
+            .in(
+                "fixture_id",
+                fixtureIds
+            );
 
 
         if (resultsError) {
 
             console.error(
-                "Results loading error:",
+                "Results error:",
                 resultsError
             );
 
-            resultsContainer.innerHTML =
-                "<p>Unable to load match results.</p>";
+            showError(
+                resultsContainer,
+                "Unable to load match results."
+            );
 
             return;
         }
@@ -808,17 +1151,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         const resultMap = {};
 
 
-        (results || []).forEach(function (result) {
+        (results || []).forEach(
+            function (result) {
 
-            resultMap[result.fixture_id] =
-                result;
-        });
+                resultMap[
+                    result.fixture_id
+                ] = result;
+            }
+        );
 
 
         const resultIds =
-            (results || []).map(function (result) {
-                return result.id;
-            });
+            (results || []).map(
+                function (result) {
+
+                    return result.id;
+                }
+            );
 
 
         let goalRows = [];
@@ -839,10 +1188,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                     assist_player_id,
                     is_penalty
                 `)
-                .in("result_id", resultIds)
-                .order("minute", {
-                    ascending: true
-                });
+                .in(
+                    "result_id",
+                    resultIds
+                )
+                .order(
+                    "minute",
+                    {
+                        ascending: true
+                    }
+                );
 
 
             if (error) {
@@ -854,28 +1209,37 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             } else {
 
-                goalRows = data || [];
+                goalRows =
+                    data || [];
             }
         }
 
 
+        // ========================================
+        // LOAD PLAYERS
+        // ========================================
+
         const playerIds = [];
 
 
-        goalRows.forEach(function (goal) {
+        goalRows.forEach(
+            function (goal) {
 
-            if (goal.player_id) {
-                playerIds.push(
-                    goal.player_id
-                );
-            }
+                if (goal.player_id) {
 
-            if (goal.assist_player_id) {
-                playerIds.push(
-                    goal.assist_player_id
-                );
+                    playerIds.push(
+                        goal.player_id
+                    );
+                }
+
+                if (goal.assist_player_id) {
+
+                    playerIds.push(
+                        goal.assist_player_id
+                    );
+                }
             }
-        });
+        );
 
 
         let players = [];
@@ -884,7 +1248,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (playerIds.length > 0) {
 
             const uniquePlayerIds =
-                [...new Set(playerIds)];
+                [
+                    ...new Set(
+                        playerIds
+                    )
+                ];
 
 
             const {
@@ -899,7 +1267,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     jersey_number,
                     position
                 `)
-                .in("id", uniquePlayerIds);
+                .in(
+                    "id",
+                    uniquePlayerIds
+                );
 
 
             if (error) {
@@ -911,7 +1282,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             } else {
 
-                players = data || [];
+                players =
+                    data || [];
             }
         }
 
@@ -919,276 +1291,385 @@ document.addEventListener("DOMContentLoaded", async function () {
         const playerMap = {};
 
 
-        players.forEach(function (player) {
+        players.forEach(
+            function (player) {
 
-            playerMap[player.id] =
-                player;
-        });
-
-
-        resultsContainer.innerHTML = "";
-
-
-        fixtures.forEach(function (fixture) {
-
-            const result =
-                resultMap[fixture.id];
-
-
-            if (!result) {
-                return;
+                playerMap[
+                    player.id
+                ] = player;
             }
+        );
 
 
-            const homeName =
-                fixture.home_team?.name ||
-                "Home Team";
-
-            const awayName =
-                fixture.away_team?.name ||
-                "Away Team";
+        resultsContainer.innerHTML =
+            "";
 
 
-            const goals =
-                goalRows.filter(function (goal) {
+        // ========================================
+        // DISPLAY RESULTS
+        // ========================================
 
-                    return goal.result_id === result.id;
-                });
+        fixtures.forEach(
+            function (fixture) {
 
-
-            const homeGoals =
-                goals.filter(function (goal) {
-
-                    return goal.player_id &&
-                        playerMap[goal.player_id] &&
-                        playerMap[goal.player_id].team_id ===
-                            fixture.home_team_id;
-
-                });
+                const result =
+                    resultMap[
+                        fixture.id
+                    ];
 
 
-            const awayGoals =
-                goals.filter(function (goal) {
-
-                    return goal.player_id &&
-                        playerMap[goal.player_id] &&
-                        playerMap[goal.player_id].team_id ===
-                            fixture.away_team_id;
-
-                });
+                if (!result) {
+                    return;
+                }
 
 
-            const card =
-                document.createElement("div");
+                const homeTeam =
+                    teamMap[
+                        fixture.home_team_id
+                    ];
 
-            card.className =
-                "result-card";
-
-
-            let scorerHtml = "";
-
-
-            if (goals.length > 0) {
-
-                scorerHtml = `
-
-                    <div class="result-scorers">
-
-                        <strong>
-                            Goal Scorers
-                        </strong>
-
-                        <div class="scorers-columns">
-
-                            <div class="home-scorers">
-
-                                <div class="scorer-team-title">
-                                    ${escapeHtml(homeName)}
-                                </div>
-
-                                ${
-                                    homeGoals.length
-                                        ? homeGoals.map(function (goal) {
-
-                                            const player =
-                                                playerMap[
-                                                    goal.player_id
-                                                ];
-
-                                            const playerName =
-                                                player?.full_name ||
-                                                "Unknown Player";
-
-                                            const minute =
-                                                goal.minute !== null &&
-                                                goal.minute !== undefined
-                                                    ? goal.minute + "'"
-                                                    : "";
-
-                                            const penalty =
-                                                goal.is_penalty
-                                                    ? " (P)"
-                                                    : "";
-
-                                            return `
-                                                <div class="scorer">
-                                                    ${escapeHtml(playerName)}
-                                                    ${escapeHtml(minute)}
-                                                    ${penalty}
-                                                </div>
-                                            `;
-
-                                        }).join("")
-                                        : "<div>No goals</div>"
-                                }
-
-                            </div>
+                const awayTeam =
+                    teamMap[
+                        fixture.away_team_id
+                    ];
 
 
-                            <div class="away-scorers">
+                const homeName =
+                    homeTeam?.name ||
+                    "Home Team";
 
-                                <div class="scorer-team-title">
-                                    ${escapeHtml(awayName)}
-                                </div>
-
-                                ${
-                                    awayGoals.length
-                                        ? awayGoals.map(function (goal) {
-
-                                            const player =
-                                                playerMap[
-                                                    goal.player_id
-                                                ];
-
-                                            const playerName =
-                                                player?.full_name ||
-                                                "Unknown Player";
-
-                                            const minute =
-                                                goal.minute !== null &&
-                                                goal.minute !== undefined
-                                                    ? goal.minute + "'"
-                                                    : "";
-
-                                            const penalty =
-                                                goal.is_penalty
-                                                    ? " (P)"
-                                                    : "";
-
-                                            return `
-                                                <div class="scorer">
-                                                    ${escapeHtml(playerName)}
-                                                    ${escapeHtml(minute)}
-                                                    ${penalty}
-                                                </div>
-                                            `;
-
-                                        }).join("")
-                                        : "<div>No goals</div>"
-                                }
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                `;
-            }
+                const awayName =
+                    awayTeam?.name ||
+                    "Away Team";
 
 
-            const report =
-                result.match_report
-                    ? `
-                        <div class="match-report">
+                const goals =
+                    goalRows.filter(
+                        function (goal) {
+
+                            return (
+                                goal.result_id ===
+                                result.id
+                            );
+                        }
+                    );
+
+
+                const homeGoals =
+                    goals.filter(
+                        function (goal) {
+
+                            const player =
+                                playerMap[
+                                    goal.player_id
+                                ];
+
+                            return (
+                                player &&
+                                player.team_id ===
+                                fixture.home_team_id
+                            );
+                        }
+                    );
+
+
+                const awayGoals =
+                    goals.filter(
+                        function (goal) {
+
+                            const player =
+                                playerMap[
+                                    goal.player_id
+                                ];
+
+                            return (
+                                player &&
+                                player.team_id ===
+                                fixture.away_team_id
+                            );
+                        }
+                    );
+
+
+                let scorerHtml =
+                    "";
+
+
+                if (goals.length > 0) {
+
+                    scorerHtml = `
+
+                        <div class="result-scorers">
 
                             <strong>
-                                Match Report
+                                Goal Scorers
                             </strong>
 
-                            <p>
-                                ${escapeHtml(
-                                    result.match_report
-                                )}
-                            </p>
+                            <div class="scorers-columns">
+
+                                <div class="home-scorers">
+
+                                    <div class="scorer-team-title">
+                                        ${escapeHtml(
+                                            homeName
+                                        )}
+                                    </div>
+
+                                    ${
+                                        homeGoals.length
+                                            ? homeGoals.map(
+                                                function (goal) {
+
+                                                    const player =
+                                                        playerMap[
+                                                            goal.player_id
+                                                        ];
+
+                                                    const playerName =
+                                                        player?.full_name ||
+                                                        "Unknown Player";
+
+                                                    const minute =
+                                                        goal.minute !== null &&
+                                                        goal.minute !== undefined
+                                                            ? goal.minute +
+                                                              "'"
+                                                            : "";
+
+                                                    const penalty =
+                                                        goal.is_penalty
+                                                            ? " (P)"
+                                                            : "";
+
+                                                    return `
+
+                                                        <div class="scorer">
+
+                                                            ${escapeHtml(
+                                                                playerName
+                                                            )}
+
+                                                            ${escapeHtml(
+                                                                minute
+                                                            )}
+
+                                                            ${penalty}
+
+                                                        </div>
+
+                                                    `;
+
+                                                }
+                                            ).join("")
+                                            : "<div>No goals</div>"
+                                    }
+
+                                </div>
+
+
+                                <div class="away-scorers">
+
+                                    <div class="scorer-team-title">
+                                        ${escapeHtml(
+                                            awayName
+                                        )}
+                                    </div>
+
+                                    ${
+                                        awayGoals.length
+                                            ? awayGoals.map(
+                                                function (goal) {
+
+                                                    const player =
+                                                        playerMap[
+                                                            goal.player_id
+                                                        ];
+
+                                                    const playerName =
+                                                        player?.full_name ||
+                                                        "Unknown Player";
+
+                                                    const minute =
+                                                        goal.minute !== null &&
+                                                        goal.minute !== undefined
+                                                            ? goal.minute +
+                                                              "'"
+                                                            : "";
+
+                                                    const penalty =
+                                                        goal.is_penalty
+                                                            ? " (P)"
+                                                            : "";
+
+                                                    return `
+
+                                                        <div class="scorer">
+
+                                                            ${escapeHtml(
+                                                                playerName
+                                                            )}
+
+                                                            ${escapeHtml(
+                                                                minute
+                                                            )}
+
+                                                            ${penalty}
+
+                                                        </div>
+
+                                                    `;
+
+                                                }
+                                            ).join("")
+                                            : "<div>No goals</div>"
+                                    }
+
+                                </div>
+
+                            </div>
 
                         </div>
-                    `
-                    : "";
+
+                    `;
+                }
 
 
-            card.innerHTML = `
+                const report =
+                    result.match_report
+                        ? `
 
-                <div class="result-date">
-                    ${escapeHtml(
-                        formatDate(
-                            fixture.match_date
-                        )
-                    )}
-                </div>
+                            <div class="match-report">
 
-                <div class="result-match">
+                                <strong>
+                                    Match Report
+                                </strong>
 
-                    <div class="result-team">
-                        ${escapeHtml(homeName)}
-                    </div>
+                                <p>
+                                    ${escapeHtml(
+                                        result.match_report
+                                    )}
+                                </p>
 
-                    <div class="result-score">
+                            </div>
 
-                        <strong>
-                            ${Number(result.home_score || 0)}
-                        </strong>
+                        `
+                        : "";
 
-                        <span>
-                            -
-                        </span>
 
-                        <strong>
-                            ${Number(result.away_score || 0)}
-                        </strong>
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
-                    </div>
 
-                    <div class="result-team">
-                        ${escapeHtml(awayName)}
-                    </div>
+                card.className =
+                    "result-card";
 
-                </div>
 
-                <div class="result-details">
+                card.innerHTML = `
 
-                    ${
-                        fixture.kick_off
-                            ? escapeHtml(
-                                formatTime(
-                                    fixture.kick_off
-                                )
+                    <div class="result-date">
+
+                        ${escapeHtml(
+                            formatDate(
+                                fixture.match_date
                             )
-                            : ""
-                    }
+                        )}
 
-                    ${
-                        fixture.venue
-                            ? " • " +
-                              escapeHtml(
-                                  fixture.venue
-                              )
-                            : ""
-                    }
-
-                </div>
-
-                ${scorerHtml}
-
-                ${report}
-
-            `;
+                    </div>
 
 
-            resultsContainer.appendChild(card);
-        });
+                    <div class="result-match">
+
+                        <div class="result-team">
+                            ${escapeHtml(
+                                homeName
+                            )}
+                        </div>
 
 
-        if (resultsContainer.innerHTML.trim() === "") {
+                        <div class="result-score">
+
+                            <strong>
+                                ${Number(
+                                    result.home_score || 0
+                                )}
+                            </strong>
+
+                            <span>
+                                -
+                            </span>
+
+                            <strong>
+                                ${Number(
+                                    result.away_score || 0
+                                )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-team">
+                            ${escapeHtml(
+                                awayName
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-details">
+
+                        ${
+                            fixture.kick_off
+                                ? escapeHtml(
+                                    formatTime(
+                                        fixture.kick_off
+                                    )
+                                )
+                                : ""
+                        }
+
+                        ${
+                            fixture.venue
+                                ? " • " +
+                                  escapeHtml(
+                                      fixture.venue
+                                  )
+                                : ""
+                        }
+
+                        ${
+                            fixture.matchday
+                                ? " • Matchday " +
+                                  escapeHtml(
+                                      fixture.matchday
+                                  )
+                                : ""
+                        }
+
+                    </div>
+
+
+                    ${scorerHtml}
+
+
+                    ${report}
+
+                `;
+
+
+                resultsContainer.appendChild(
+                    card
+                );
+            }
+        );
+
+
+        if (
+            resultsContainer.innerHTML.trim() ===
+            ""
+        ) {
 
             resultsContainer.innerHTML =
                 "<p>No match results yet.</p>";
@@ -1202,123 +1683,297 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function loadPlayerLeaders() {
 
-        const leaderContainers = [
+        const containers = [
 
             topScorersContainer,
+
             assistLeadersContainer,
+
             appearanceLeadersContainer,
+
             yellowCardLeadersContainer,
+
             redCardLeadersContainer
 
         ];
 
 
         if (
-            leaderContainers.every(function (element) {
-                return !element;
-            })
+            containers.every(
+                function (container) {
+                    return !container;
+                }
+            )
         ) {
             return;
         }
 
 
-        leaderContainers.forEach(function (element) {
+        containers.forEach(
+            function (container) {
 
-            if (element) {
-                element.innerHTML =
-                    "<p>Loading...</p>";
+                if (container) {
+
+                    container.innerHTML =
+                        "<p>Loading...</p>";
+                }
             }
-        });
+        );
+
+
+        // ========================================
+        // GET CURRENT COMPETITION FIXTURES
+        // ========================================
+
+        let fixtureQuery =
+            supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    status
+                `);
+
+
+        if (currentCompetition) {
+
+            fixtureQuery =
+                fixtureQuery.eq(
+                    "competition_id",
+                    currentCompetition.id
+                );
+        }
 
 
         const {
-            data: stats,
-            error: statsError
-        } = await supabaseClient
-            .from("player_match_stats")
-            .select(`
-                id,
-                result_id,
-                player_id,
-                appearances,
-                goals,
-                assists,
-                yellow_cards,
-                red_cards
-            `);
+            data: fixtures,
+            error: fixtureError
+        } = await fixtureQuery;
 
 
-        if (statsError) {
+        if (fixtureError) {
 
             console.error(
-                "Player stats error:",
-                statsError
+                "Leader fixtures error:",
+                fixtureError
             );
 
-            leaderContainers.forEach(function (element) {
+            containers.forEach(
+                function (container) {
 
-                if (element) {
-                    element.innerHTML =
-                        "<p>Unable to load player statistics.</p>";
+                    if (container) {
+
+                        container.innerHTML =
+                            "<p>Unable to load player statistics.</p>";
+                    }
                 }
-            });
+            );
 
             return;
         }
 
 
-        const allStats =
-            stats || [];
+        const completedFixtureIds =
+            (fixtures || [])
+                .filter(
+                    function (fixture) {
+
+                        return (
+                            fixture.status ===
+                            "Completed"
+                        );
+                    }
+                )
+                .map(
+                    function (fixture) {
+
+                        return fixture.id;
+                    }
+                );
 
 
-        const playerIds =
-            [...new Set(
-                allStats.map(function (stat) {
-                    return stat.player_id;
-                })
-            )];
+        let resultIds = [];
 
 
-        let players = [];
+        if (
+            completedFixtureIds.length > 0
+        ) {
+
+            const {
+                data: results,
+                error: resultsError
+            } = await supabaseClient
+                .from("results")
+                .select(`
+                    id,
+                    fixture_id
+                `)
+                .in(
+                    "fixture_id",
+                    completedFixtureIds
+                );
 
 
-        if (playerIds.length > 0) {
+            if (resultsError) {
+
+                console.error(
+                    "Leader results error:",
+                    resultsError
+                );
+
+            } else {
+
+                resultIds =
+                    (results || []).map(
+                        function (result) {
+
+                            return result.id;
+                        }
+                    );
+            }
+        }
+
+
+        let stats = [];
+
+
+        if (resultIds.length > 0) {
 
             const {
                 data,
                 error
             } = await supabaseClient
-                .from("players")
+                .from("player_match_stats")
                 .select(`
                     id,
-                    team_id,
-                    full_name,
-                    jersey_number,
-                    position
+                    result_id,
+                    player_id,
+                    appearances,
+                    goals,
+                    assists,
+                    yellow_cards,
+                    red_cards
                 `)
-                .in("id", playerIds);
+                .in(
+                    "result_id",
+                    resultIds
+                );
 
 
             if (error) {
 
                 console.error(
-                    "Leader players error:",
+                    "Player stats error:",
                     error
                 );
 
-            } else {
+                containers.forEach(
+                    function (container) {
 
-                players = data || [];
+                        if (container) {
+
+                            container.innerHTML =
+                                "<p>Unable to load player statistics.</p>";
+                        }
+                    }
+                );
+
+                return;
             }
+
+
+            stats =
+                data || [];
         }
 
 
+        if (!stats.length) {
+
+            containers.forEach(
+                function (container) {
+
+                    if (container) {
+
+                        container.innerHTML =
+                            "<p>No player statistics yet.</p>";
+                    }
+                }
+            );
+
+            return;
+        }
+
+
+        // ========================================
+        // LOAD PLAYERS
+        // ========================================
+
+        const playerIds =
+            [
+                ...new Set(
+                    stats.map(
+                        function (stat) {
+                            return stat.player_id;
+                        }
+                    )
+                )
+            ];
+
+
+        const {
+            data: players,
+            error: playersError
+        } = await supabaseClient
+            .from("players")
+            .select(`
+                id,
+                team_id,
+                full_name,
+                jersey_number,
+                position
+            `)
+            .in(
+                "id",
+                playerIds
+            );
+
+
+        if (playersError) {
+
+            console.error(
+                "Leader players error:",
+                playersError
+            );
+
+            containers.forEach(
+                function (container) {
+
+                    if (container) {
+
+                        container.innerHTML =
+                            "<p>Unable to load player names.</p>";
+                    }
+                }
+            );
+
+            return;
+        }
+
+
+        // ========================================
+        // LOAD TEAMS
+        // ========================================
+
         const teamIds =
-            [...new Set(
-                players.map(function (player) {
-                    return player.team_id;
-                })
-            )];
+            [
+                ...new Set(
+                    (players || []).map(
+                        function (player) {
+                            return player.team_id;
+                        }
+                    )
+                )
+            ];
 
 
         let teams = [];
@@ -1335,19 +1990,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                     id,
                     name
                 `)
-                .in("id", teamIds);
-
-
-            if (error) {
-
-                console.error(
-                    "Leader teams error:",
-                    error
+                .in(
+                    "id",
+                    teamIds
                 );
 
-            } else {
 
-                teams = data || [];
+            if (!error) {
+
+                teams =
+                    data || [];
             }
         }
 
@@ -1356,85 +2008,140 @@ document.addEventListener("DOMContentLoaded", async function () {
         const teamMap = {};
 
 
-        players.forEach(function (player) {
+        (players || []).forEach(
+            function (player) {
 
-            playerMap[player.id] =
-                player;
-        });
+                playerMap[
+                    player.id
+                ] = player;
+            }
+        );
 
 
-        teams.forEach(function (team) {
+        teams.forEach(
+            function (team) {
 
-            teamMap[team.id] =
-                team;
-        });
+                teamMap[
+                    team.id
+                ] = team;
+            }
+        );
 
+
+        // ========================================
+        // TOTAL PLAYER STATISTICS
+        // ========================================
 
         const totals = {};
 
 
-        allStats.forEach(function (stat) {
+        stats.forEach(
+            function (stat) {
 
-            if (!totals[stat.player_id]) {
+                const playerId =
+                    stat.player_id;
 
-                totals[stat.player_id] = {
 
-                    player_id:
-                        stat.player_id,
+                if (!totals[playerId]) {
 
-                    appearances: 0,
-                    goals: 0,
-                    assists: 0,
-                    yellow_cards: 0,
-                    red_cards: 0
-                };
+                    totals[playerId] = {
+
+                        player_id:
+                            playerId,
+
+                        appearances:
+                            0,
+
+                        goals:
+                            0,
+
+                        assists:
+                            0,
+
+                        yellow_cards:
+                            0,
+
+                        red_cards:
+                            0
+                    };
+                }
+
+
+                totals[playerId]
+                    .appearances +=
+                    Number(
+                        stat.appearances || 0
+                    );
+
+
+                totals[playerId]
+                    .goals +=
+                    Number(
+                        stat.goals || 0
+                    );
+
+
+                totals[playerId]
+                    .assists +=
+                    Number(
+                        stat.assists || 0
+                    );
+
+
+                totals[playerId]
+                    .yellow_cards +=
+                    Number(
+                        stat.yellow_cards || 0
+                    );
+
+
+                totals[playerId]
+                    .red_cards +=
+                    Number(
+                        stat.red_cards || 0
+                    );
             }
-
-
-            totals[stat.player_id].appearances +=
-                Number(stat.appearances || 0);
-
-            totals[stat.player_id].goals +=
-                Number(stat.goals || 0);
-
-            totals[stat.player_id].assists +=
-                Number(stat.assists || 0);
-
-            totals[stat.player_id].yellow_cards +=
-                Number(stat.yellow_cards || 0);
-
-            totals[stat.player_id].red_cards +=
-                Number(stat.red_cards || 0);
-        });
+        );
 
 
         const leaderData =
-            Object.values(totals).map(function (total) {
+            Object.values(totals)
+                .map(
+                    function (total) {
 
-                const player =
-                    playerMap[total.player_id];
-
-                const team =
-                    player
-                        ? teamMap[player.team_id]
-                        : null;
+                        const player =
+                            playerMap[
+                                total.player_id
+                            ];
 
 
-                return {
+                        const team =
+                            player
+                                ? teamMap[
+                                    player.team_id
+                                  ]
+                                : null;
 
-                    ...total,
 
-                    playerName:
-                        player?.full_name ||
-                        "Unknown Player",
+                        return {
 
-                    teamName:
-                        team?.name ||
-                        "Unknown Team"
-                };
+                            ...total,
 
-            });
+                            playerName:
+                                player?.full_name ||
+                                "Unknown Player",
 
+                            teamName:
+                                team?.name ||
+                                "Unknown Team"
+                        };
+                    }
+                );
+
+
+        // ========================================
+        // RENDER LEADER LIST
+        // ========================================
 
         function renderLeaderList(
             container,
@@ -1448,162 +2155,273 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            if (!data || data.length === 0) {
+            if (
+                !data ||
+                data.length === 0
+            ) {
 
                 container.innerHTML =
-                    "<p>" + emptyText + "</p>";
+                    `<p>${escapeHtml(
+                        emptyText
+                    )}</p>`;
 
                 return;
             }
 
 
-            container.innerHTML = "";
+            container.innerHTML =
+                "";
 
 
-            data.forEach(function (item, index) {
+            data.forEach(
+                function (item, index) {
 
-                const row =
-                    document.createElement("div");
-
-                row.className =
-                    "leader-row";
-
-
-                row.innerHTML = `
-
-                    <div class="leader-rank">
-                        ${index + 1}
-                    </div>
-
-                    <div class="leader-info">
-
-                        <strong>
-                            ${escapeHtml(
-                                item.playerName
-                            )}
-                        </strong>
-
-                        <span>
-                            ${escapeHtml(
-                                item.teamName
-                            )}
-                        </span>
-
-                    </div>
-
-                    <div class="leader-value">
-                        ${item[valueKey]}
-                    </div>
-
-                `;
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
 
 
-                container.appendChild(row);
-            });
+                    row.className =
+                        "leader-row";
+
+
+                    row.innerHTML = `
+
+                        <div class="leader-rank">
+                            ${index + 1}
+                        </div>
+
+
+                        <div class="leader-info">
+
+                            <strong>
+                                ${escapeHtml(
+                                    item.playerName
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHtml(
+                                    item.teamName
+                                )}
+                            </span>
+
+                        </div>
+
+
+                        <div class="leader-value">
+                            ${item[valueKey]}
+                        </div>
+
+                    `;
+
+
+                    container.appendChild(
+                        row
+                    );
+                }
+            );
         }
 
 
+        // ========================================
+        // TOP SCORERS
+        // ========================================
+
         const topScorers =
             [...leaderData]
-                .filter(function (item) {
-                    return item.goals > 0;
-                })
-                .sort(function (a, b) {
+                .filter(
+                    function (item) {
 
-                    if (b.goals !== a.goals) {
-                        return b.goals - a.goals;
+                        return item.goals > 0;
                     }
+                )
+                .sort(
+                    function (a, b) {
 
-                    return a.playerName.localeCompare(
-                        b.playerName
-                    );
-                })
-                .slice(0, 10);
+                        if (
+                            b.goals !==
+                            a.goals
+                        ) {
 
+                            return (
+                                b.goals -
+                                a.goals
+                            );
+                        }
+
+                        return a.playerName.localeCompare(
+                            b.playerName
+                        );
+                    }
+                )
+                .slice(
+                    0,
+                    10
+                );
+
+
+        // ========================================
+        // ASSISTS
+        // ========================================
 
         const assistLeaders =
             [...leaderData]
-                .filter(function (item) {
-                    return item.assists > 0;
-                })
-                .sort(function (a, b) {
+                .filter(
+                    function (item) {
 
-                    if (b.assists !== a.assists) {
-                        return b.assists - a.assists;
+                        return item.assists > 0;
                     }
+                )
+                .sort(
+                    function (a, b) {
 
-                    return a.playerName.localeCompare(
-                        b.playerName
-                    );
-                })
-                .slice(0, 10);
+                        if (
+                            b.assists !==
+                            a.assists
+                        ) {
 
+                            return (
+                                b.assists -
+                                a.assists
+                            );
+                        }
+
+                        return a.playerName.localeCompare(
+                            b.playerName
+                        );
+                    }
+                )
+                .slice(
+                    0,
+                    10
+                );
+
+
+        // ========================================
+        // APPEARANCES
+        // ========================================
 
         const appearanceLeaders =
             [...leaderData]
-                .filter(function (item) {
-                    return item.appearances > 0;
-                })
-                .sort(function (a, b) {
+                .filter(
+                    function (item) {
 
-                    if (b.appearances !== a.appearances) {
-                        return b.appearances - a.appearances;
+                        return (
+                            item.appearances >
+                            0
+                        );
                     }
+                )
+                .sort(
+                    function (a, b) {
 
-                    return a.playerName.localeCompare(
-                        b.playerName
-                    );
-                })
-                .slice(0, 10);
+                        if (
+                            b.appearances !==
+                            a.appearances
+                        ) {
 
+                            return (
+                                b.appearances -
+                                a.appearances
+                            );
+                        }
+
+                        return a.playerName.localeCompare(
+                            b.playerName
+                        );
+                    }
+                )
+                .slice(
+                    0,
+                    10
+                );
+
+
+        // ========================================
+        // YELLOW CARDS
+        // ========================================
 
         const yellowCardLeaders =
             [...leaderData]
-                .filter(function (item) {
-                    return item.yellow_cards > 0;
-                })
-                .sort(function (a, b) {
+                .filter(
+                    function (item) {
 
-                    if (
-                        b.yellow_cards !==
-                        a.yellow_cards
-                    ) {
                         return (
-                            b.yellow_cards -
-                            a.yellow_cards
+                            item.yellow_cards >
+                            0
                         );
                     }
+                )
+                .sort(
+                    function (a, b) {
 
-                    return a.playerName.localeCompare(
-                        b.playerName
-                    );
-                })
-                .slice(0, 10);
+                        if (
+                            b.yellow_cards !==
+                            a.yellow_cards
+                        ) {
 
+                            return (
+                                b.yellow_cards -
+                                a.yellow_cards
+                            );
+                        }
+
+                        return a.playerName.localeCompare(
+                            b.playerName
+                        );
+                    }
+                )
+                .slice(
+                    0,
+                    10
+                );
+
+
+        // ========================================
+        // RED CARDS
+        // ========================================
 
         const redCardLeaders =
             [...leaderData]
-                .filter(function (item) {
-                    return item.red_cards > 0;
-                })
-                .sort(function (a, b) {
+                .filter(
+                    function (item) {
 
-                    if (
-                        b.red_cards !==
-                        a.red_cards
-                    ) {
                         return (
-                            b.red_cards -
-                            a.red_cards
+                            item.red_cards >
+                            0
                         );
                     }
+                )
+                .sort(
+                    function (a, b) {
 
-                    return a.playerName.localeCompare(
-                        b.playerName
-                    );
-                })
-                .slice(0, 10);
+                        if (
+                            b.red_cards !==
+                            a.red_cards
+                        ) {
 
+                            return (
+                                b.red_cards -
+                                a.red_cards
+                            );
+                        }
+
+                        return a.playerName.localeCompare(
+                            b.playerName
+                        );
+                    }
+                )
+                .slice(
+                    0,
+                    10
+                );
+
+
+        // ========================================
+        // DISPLAY LEADERS
+        // ========================================
 
         renderLeaderList(
             topScorersContainer,
@@ -1647,7 +2465,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // SCORER COLUMN STYLING
+    // STYLING
     // ========================================
 
     const style =
@@ -1663,6 +2481,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             margin-top: 10px;
         }
 
+
         .home-scorers,
         .away-scorers {
             padding: 10px;
@@ -1670,14 +2489,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             background: rgba(0,0,0,0.03);
         }
 
+
         .scorer-team-title {
             font-weight: bold;
             margin-bottom: 8px;
         }
 
+
         .scorer {
             margin: 5px 0;
         }
+
 
         .leader-row {
             display: flex;
@@ -1687,10 +2509,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             border-bottom: 1px solid #ddd;
         }
 
+
         .leader-rank {
             width: 28px;
             font-weight: bold;
         }
+
 
         .leader-info {
             flex: 1;
@@ -1698,15 +2522,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             flex-direction: column;
         }
 
+
         .leader-info span {
             font-size: 0.85em;
             opacity: 0.7;
         }
 
+
         .leader-value {
             font-weight: bold;
             font-size: 1.1em;
         }
+
 
         @media (max-width: 600px) {
 
@@ -1724,12 +2551,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // INITIAL LOAD
+    // START APPLICATION
     // ========================================
 
     await loadCompetitionStatus();
 
-    await Promise.all([
+
+    await Promise.allSettled([
 
         loadFixtures(),
 
@@ -1740,6 +2568,5 @@ document.addEventListener("DOMContentLoaded", async function () {
         loadPlayerLeaders()
 
     ]);
-
 
 });
