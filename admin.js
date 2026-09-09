@@ -3326,25 +3326,21 @@ document.addEventListener("DOMContentLoaded", async function () {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
+
 // ========================================
 // COMPETITION MANAGER
 // ========================================
 
-const competitionForm =
-    document.getElementById("competitionForm");
-
 const createCompetitionButton =
-    competitionForm
-        ? competitionForm.querySelector("button[type='submit']")
-        : null;
+    document.getElementById("createCompetitionButton");
 
-if (competitionForm && createCompetitionButton) {
+if (createCompetitionButton) {
 
     createCompetitionButton.addEventListener(
         "click",
-        async function (event) {
+        async function () {
 
-            event.preventDefault();
+            console.log("CREATE COMPETITION BUTTON CLICKED");
 
             const message =
                 document.getElementById(
@@ -3389,23 +3385,28 @@ if (competitionForm && createCompetitionButton) {
             if (!name) {
                 message.textContent =
                     "❌ Please enter the competition name.";
+                message.style.display = "block";
                 return;
             }
 
             if (!competitionType) {
                 message.textContent =
                     "❌ Please select the competition type.";
+                message.style.display = "block";
                 return;
             }
 
             if (!season) {
                 message.textContent =
                     "❌ Please enter the season.";
+                message.style.display = "block";
                 return;
             }
 
             message.textContent =
                 "Saving competition...";
+
+            message.style.display = "block";
 
             createCompetitionButton.disabled = true;
 
@@ -3423,8 +3424,7 @@ if (competitionForm && createCompetitionButton) {
                         start_date: startDate,
                         end_date: endDate,
                         status: status,
-                        description:
-                            description || null
+                        description: description || null
                     })
                     .select()
                     .single();
@@ -3434,16 +3434,22 @@ if (competitionForm && createCompetitionButton) {
                 }
 
                 console.log(
-                    "Competition created:",
+                    "Competition created successfully:",
                     data
                 );
 
                 message.textContent =
                     "✅ Competition created successfully!";
 
-                competitionForm.reset();
+                message.style.display = "block";
 
-                await loadCompetitions();
+                document.getElementById(
+                    "competitionForm"
+                ).reset();
+
+                if (typeof loadCompetitions === "function") {
+                    await loadCompetitions();
+                }
 
             } catch (error) {
 
@@ -3459,16 +3465,26 @@ if (competitionForm && createCompetitionButton) {
                         "Unknown error"
                     );
 
+                message.style.display = "block";
+
             } finally {
 
-                createCompetitionButton.disabled =
-                    false;
+                createCompetitionButton.disabled = false;
 
             }
 
         }
     );
+
+} else {
+
+    console.error(
+        "CREATE COMPETITION BUTTON NOT FOUND"
+    );
+
 }
+            
+
     // ========================================
     // START DASHBOARD
     // ========================================
