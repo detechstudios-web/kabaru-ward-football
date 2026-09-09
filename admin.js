@@ -3327,7 +3327,115 @@ document.addEventListener("DOMContentLoaded", async function () {
             .replace(/'/g, "&#039;");
     }
 
+// ========================================
+// COMPETITION MANAGER
+// ========================================
 
+const competitionForm =
+    document.getElementById("competitionForm");
+
+if (competitionForm) {
+
+    competitionForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+            const message =
+                document.getElementById(
+                    "competitionFormMessage"
+                );
+
+            const name =
+                document.getElementById(
+                    "competitionName"
+                ).value.trim();
+
+            const competitionType =
+                document.getElementById(
+                    "competitionType"
+                ).value;
+
+            const season =
+                document.getElementById(
+                    "competitionSeason"
+                ).value.trim();
+
+            const startDate =
+                document.getElementById(
+                    "competitionStartDate"
+                ).value || null;
+
+            const endDate =
+                document.getElementById(
+                    "competitionEndDate"
+                ).value || null;
+
+            const status =
+                document.getElementById(
+                    "competitionStatus"
+                ).value;
+
+            const description =
+                document.getElementById(
+                    "competitionDescription"
+                ).value.trim();
+
+            message.textContent =
+                "Saving competition...";
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from("competitions")
+                    .insert({
+                        name: name,
+                        competition_type: competitionType,
+                        season: season,
+                        start_date: startDate,
+                        end_date: endDate,
+                        status: status,
+                        description:
+                            description || null
+                    })
+                    .select()
+                    .single();
+
+                if (error) {
+                    throw error;
+                }
+
+                console.log(
+                    "Competition created:",
+                    data
+                );
+
+                message.textContent =
+                    "✅ Competition created successfully!";
+
+                competitionForm.reset();
+
+            } catch (error) {
+
+                console.error(
+                    "CREATE COMPETITION ERROR:",
+                    error
+                );
+
+                message.textContent =
+                    "❌ Unable to create competition: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    );
+            }
+        }
+    );
+}
     // ========================================
     // START DASHBOARD
     // ========================================
