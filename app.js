@@ -22,11 +22,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("leagueTableBody");
 
     const fixturesContainer =
-        document.getElementById("fixturesContainer");
-
+    document.getElementById("upcomingFixtures");
     const resultsContainer =
-        document.getElementById("resultsContainer");
-
+    document.getElementById("resultsList");
     const topScorersContainer =
         document.getElementById("topScorers");
 
