@@ -1355,181 +1355,207 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const homeGoals =
                     goals.filter(
-                        function (goal) {
+                // ========================================
+// GROUP GOALS BY PLAYER
+// ========================================
 
-                            const player =
-                                playerMap[
-                                    goal.player_id
-                                ];
+function groupGoalsByPlayer(goalList) {
 
-                            return (
-                                player &&
-                                player.team_id ===
-                                fixture.home_team_id
-                            );
-                        }
-                    );
+    const grouped = {};
 
+    goalList.forEach(function (goal) {
 
-                const awayGoals =
-                    goals.filter(
-                        function (goal) {
+        const player =
+            playerMap[goal.player_id];
 
-                            const player =
-                                playerMap[
-                                    goal.player_id
-                                ];
+        if (!player) {
+            return;
+        }
 
-                            return (
-                                player &&
-                                player.team_id ===
-                                fixture.away_team_id
-                            );
-                        }
-                    );
+        if (!grouped[goal.player_id]) {
 
+            grouped[goal.player_id] = {
 
-                let scorerHtml =
-                    "";
+                player: player,
+
+                goals: []
+
+            };
+        }
+
+        grouped[goal.player_id].goals.push(goal);
+
+    });
+
+    return Object.values(grouped);
+}
 
 
-                if (goals.length > 0) {
+// ========================================
+// HOME AND AWAY GOALS
+// ========================================
 
-                    scorerHtml = `
+const homeGoals =
+    goals.filter(function (goal) {
 
-                        <div class="result-scorers">
+        const player =
+            playerMap[goal.player_id];
 
-                            <strong>
-                                Goal Scorers
-                            </strong>
+        return (
+            player &&
+            player.team_id ===
+            fixture.home_team_id
+        );
 
-                            <div class="scorers-columns">
-
-                                <div class="home-scorers">
-
-                                    <div class="scorer-team-title">
-                                        ${escapeHtml(
-                                            homeName
-                                        )}
-                                    </div>
-
-                                    ${
-                                        homeGoals.length
-                                            ? homeGoals.map(
-                                                function (goal) {
-
-                                                    const player =
-                                                        playerMap[
-                                                            goal.player_id
-                                                        ];
-
-                                                    const playerName =
-                                                        player?.full_name ||
-                                                        "Unknown Player";
-
-                                                    const minute =
-                                                        goal.minute !== null &&
-                                                        goal.minute !== undefined
-                                                            ? goal.minute +
-                                                              "'"
-                                                            : "";
-
-                                                    const penalty =
-                                                        goal.is_penalty
-                                                            ? " (P)"
-                                                            : "";
-
-                                                    return `
-
-                                                        <div class="scorer">
-
-                                                            ${escapeHtml(
-                                                                playerName
-                                                            )}
-
-                                                            ${escapeHtml(
-                                                                minute
-                                                            )}
-
-                                                            ${penalty}
-
-                                                        </div>
-
-                                                    `;
-
-                                                }
-                                            ).join("")
-                                            : "<div>No goals</div>"
-                                    }
-
-                                </div>
+    });
 
 
-                                <div class="away-scorers">
+const awayGoals =
+    goals.filter(function (goal) {
 
-                                    <div class="scorer-team-title">
-                                        ${escapeHtml(
-                                            awayName
-                                        )}
-                                    </div>
+        const player =
+            playerMap[goal.player_id];
 
-                                    ${
-                                        awayGoals.length
-                                            ? awayGoals.map(
-                                                function (goal) {
+        return (
+            player &&
+            player.team_id ===
+            fixture.away_team_id
+        );
 
-                                                    const player =
-                                                        playerMap[
-                                                            goal.player_id
-                                                        ];
+    });
 
-                                                    const playerName =
-                                                        player?.full_name ||
-                                                        "Unknown Player";
 
-                                                    const minute =
-                                                        goal.minute !== null &&
-                                                        goal.minute !== undefined
-                                                            ? goal.minute +
-                                                              "'"
-                                                            : "";
+const groupedHomeGoals =
+    groupGoalsByPlayer(homeGoals);
 
-                                                    const penalty =
-                                                        goal.is_penalty
-                                                            ? " (P)"
-                                                            : "";
 
-                                                    return `
+const groupedAwayGoals =
+    groupGoalsByPlayer(awayGoals);
 
-                                                        <div class="scorer">
 
-                                                            ${escapeHtml(
-                                                                playerName
-                                                            )}
+// ========================================
+// RENDER GROUPED SCORERS
+// ========================================
 
-                                                            ${escapeHtml(
-                                                                minute
-                                                            )}
+function renderGroupedScorers(groupedGoals) {
 
-                                                            ${penalty}
+    if (!groupedGoals.length) {
 
-                                                        </div>
+        return "<div>No goals</div>";
 
-                                                    `;
+    }
 
-                                                }
-                                            ).join("")
-                                            : "<div>No goals</div>"
-                                    }
+    return groupedGoals.map(
+        function (group) {
 
-                                </div>
+            const playerName =
+                group.player?.full_name ||
+                "Unknown Player";
 
-                            </div>
 
-                        </div>
+            const minutes =
+                group.goals.map(
+                    function (goal) {
 
-                    `;
-                }
+                        const minute =
+                            goal.minute !== null &&
+                            goal.minute !== undefined
+                                ? goal.minute + "'"
+                                : "";
+
+
+                        const penalty =
+                            goal.is_penalty
+                                ? " (P)"
+                                : "";
+
+
+                        return (
+                            minute +
+                            penalty
+                        );
+
+                    }
+                ).join(", ");
+
+
+            return `
+
+                <div class="scorer">
+
+                    ⚽
+                    <strong>
+                        ${escapeHtml(
+                            playerName
+                        )}
+                    </strong>
+
+                    ${escapeHtml(
+                        minutes
+                    )}
+
+                </div>
+
+            `;
+
+        }
+    ).join("");
+
+}
+
+
+let scorerHtml = "";
+
+
+if (goals.length > 0) {
+
+    scorerHtml = `
+
+        <div class="result-scorers">
+
+            <strong>
+                Goal Scorers
+            </strong>
+
+            <div class="scorers-columns">
+
+                <div class="home-scorers">
+
+                    <div class="scorer-team-title">
+                        ${escapeHtml(
+                            homeName
+                        )}
+                    </div>
+
+                    ${renderGroupedScorers(
+                        groupedHomeGoals
+                    )}
+
+                </div>
+
+
+                <div class="away-scorers">
+
+                    <div class="scorer-team-title">
+                        ${escapeHtml(
+                            awayName
+                        )}
+                    </div>
+
+                    ${renderGroupedScorers(
+                        groupedAwayGoals
+                    )}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}        
+                     
 
 
                 const report =
