@@ -27,27 +27,18 @@ async function loadCompetitionStatus() {
     const statusElement =
         document.getElementById("competitionStatus");
 
-    if (!statusElement) {
-        return;
-    }
+    if (!statusElement) return;
 
     try {
 
-        const {
-            data,
-            error
-        } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from("competitions")
-            .select("*")
+            .select("id, name, status, created_at")
             .eq("status", "Active")
-            .order("created_at", {
-                ascending: false
-            })
+            .order("created_at", { ascending: false })
             .limit(1);
 
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
         if (!data || data.length === 0) {
 
@@ -84,57 +75,42 @@ async function loadFixtures() {
     const container =
         document.getElementById("upcomingFixtures");
 
-    if (!container) {
-        console.error(
-            "Upcoming fixtures container not found."
-        );
-        return;
-    }
+    if (!container) return;
 
     try {
 
-        const {
-            data: fixtures,
-            error: fixturesError
-        } = await supabaseClient
-            .from("fixtures")
-            .select(`
-                id,
-                competition_id,
-                home_team_id,
-                away_team_id,
-                match_date,
-                kick_off,
-                venue,
-                matchday,
-                status
-            `)
-            .in("status", [
-                "Scheduled",
-                "Published"
-            ])
-            .order("match_date", {
-                ascending: true
-            })
-            .order("kick_off", {
-                ascending: true
-            });
+        const { data: fixtures, error } =
+            await supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    venue,
+                    matchday,
+                    status
+                `)
+                .in("status", [
+                    "Scheduled",
+                    "Published"
+                ])
+                .order("match_date", {
+                    ascending: true
+                })
+                .order("kick_off", {
+                    ascending: true
+                });
 
-        if (fixturesError) {
-            throw fixturesError;
-        }
+        if (error) throw error;
 
         if (!fixtures || fixtures.length === 0) {
 
             container.innerHTML = `
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-                    <h3>
-                        📅 No Upcoming Fixtures
-                    </h3>
-
+                <div class="card" style="text-align:center;">
+                    <h3>📅 No Upcoming Fixtures</h3>
                     <p>
                         New fixtures will appear here
                         once they are published.
@@ -144,7 +120,6 @@ async function loadFixtures() {
 
             return;
         }
-
 
         const teamIds = [
             ...new Set(
@@ -157,29 +132,17 @@ async function loadFixtures() {
 
         const competitionIds = [
             ...new Set(
-                fixtures.map(
-                    f => f.competition_id
-                )
+                fixtures.map(f => f.competition_id)
             )
         ];
 
+        const { data: teams, error: teamsError } =
+            await supabaseClient
+                .from("teams")
+                .select("id, name, short_name")
+                .in("id", teamIds);
 
-        const {
-            data: teams,
-            error: teamsError
-        } = await supabaseClient
-            .from("teams")
-            .select(`
-                id,
-                name,
-                short_name
-            `)
-            .in("id", teamIds);
-
-        if (teamsError) {
-            throw teamsError;
-        }
-
+        if (teamsError) throw teamsError;
 
         const {
             data: competitions,
@@ -194,35 +157,21 @@ async function loadFixtures() {
             `)
             .in("id", competitionIds);
 
-        if (competitionsError) {
-            throw competitionsError;
-        }
-
+        if (competitionsError) throw competitionsError;
 
         const teamMap = {};
 
         (teams || []).forEach(team => {
-
             teamMap[team.id] = team;
-
         });
-
 
         const competitionMap = {};
 
-        (competitions || []).forEach(
-            competition => {
-
-                competitionMap[
-                    competition.id
-                ] = competition;
-
-            }
-        );
-
+        (competitions || []).forEach(competition => {
+            competitionMap[competition.id] = competition;
+        });
 
         container.innerHTML = "";
-
 
         fixtures.forEach(fixture => {
 
@@ -233,35 +182,18 @@ async function loadFixtures() {
                 teamMap[fixture.away_team_id];
 
             const competition =
-                competitionMap[
-                    fixture.competition_id
-                ];
-
+                competitionMap[fixture.competition_id];
 
             const homeName =
-                homeTeam?.name ||
-                "Home Team";
+                homeTeam?.name || "Home Team";
 
             const awayName =
-                awayTeam?.name ||
-                "Away Team";
-
-
-            const date = formatDate(
-                fixture.match_date
-            );
-
-            const time = formatTime(
-                fixture.kick_off
-            );
-
+                awayTeam?.name || "Away Team";
 
             const card =
                 document.createElement("div");
 
-            card.className =
-                "fixture-card";
-
+            card.className = "fixture-card";
 
             card.innerHTML = `
 
@@ -290,11 +222,13 @@ async function loadFixtures() {
 
                 <div class="match-info">
 
-                    📅 ${date}
+                    📅 ${formatDate(fixture.match_date)}
 
                     ${
                         fixture.kick_off
-                        ? ` • ⏰ ${time}`
+                        ? ` • ⏰ ${formatTime(
+                            fixture.kick_off
+                        )}`
                         : ""
                     }
 
@@ -325,11 +259,9 @@ async function loadFixtures() {
 
             `;
 
-
             container.appendChild(card);
 
         });
-
 
     } catch (error) {
 
@@ -339,22 +271,10 @@ async function loadFixtures() {
         );
 
         container.innerHTML = `
-
-            <div
-                class="card"
-                style="text-align:center;"
-            >
-
-                <h3>
-                    ⚠️ Unable to Load Fixtures
-                </h3>
-
-                <p>
-                    Please try again later.
-                </p>
-
+            <div class="card" style="text-align:center;">
+                <h3>⚠️ Unable to Load Fixtures</h3>
+                <p>Please try again later.</p>
             </div>
-
         `;
 
     }
@@ -369,138 +289,91 @@ async function loadFixtures() {
 async function loadLeagueTable() {
 
     const tableBody =
-        document.getElementById(
-            "leagueTableBody"
-        );
+        document.getElementById("leagueTableBody");
 
-    if (!tableBody) {
-        console.error(
-            "League table body not found."
-        );
-        return;
-    }
+    if (!tableBody) return;
 
     try {
 
-        const {
-            data: teams,
-            error: teamsError
-        } = await supabaseClient
-            .from("teams")
-            .select(`
-                id,
-                name,
-                short_name
-            `)
-            .eq(
-                "registration_status",
-                "Approved"
-            )
-            .order("name", {
-                ascending: true
-            });
+        const { data: teams, error: teamsError } =
+            await supabaseClient
+                .from("teams")
+                .select(`
+                    id,
+                    name,
+                    short_name
+                `)
+                .eq(
+                    "registration_status",
+                    "Approved"
+                );
 
-        if (teamsError) {
-            throw teamsError;
-        }
-
+        if (teamsError) throw teamsError;
 
         if (!teams || teams.length === 0) {
 
             tableBody.innerHTML = `
-
                 <tr>
-
                     <td
                         colspan="10"
                         style="text-align:center;"
                     >
                         No approved teams yet.
                     </td>
-
                 </tr>
-
             `;
 
             return;
         }
 
+        const { data: fixtures, error: fixturesError } =
+            await supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    home_team_id,
+                    away_team_id,
+                    status
+                `)
+                .eq("status", "Completed");
 
-        const {
-            data: fixtures,
-            error: fixturesError
-        } = await supabaseClient
-            .from("fixtures")
-            .select(`
-                id,
-                home_team_id,
-                away_team_id,
-                status
-            `)
-            .in("status", [
-                "Scheduled",
-                "Published",
-                "Completed"
-            ]);
+        if (fixturesError) throw fixturesError;
 
-        if (fixturesError) {
-            throw fixturesError;
-        }
+        const { data: results, error: resultsError } =
+            await supabaseClient
+                .from("results")
+                .select(`
+                    id,
+                    fixture_id,
+                    home_score,
+                    away_score
+                `);
 
-
-        const {
-            data: results,
-            error: resultsError
-        } = await supabaseClient
-            .from("results")
-            .select(`
-                id,
-                fixture_id,
-                home_score,
-                away_score
-            `);
-
-        if (resultsError) {
-            throw resultsError;
-        }
-
+        if (resultsError) throw resultsError;
 
         const resultMap = {};
 
         (results || []).forEach(result => {
-
-            resultMap[result.fixture_id] =
-                result;
-
+            resultMap[result.fixture_id] = result;
         });
 
-
         const table = {};
-
 
         teams.forEach(team => {
 
             table[team.id] = {
 
                 id: team.id,
-
                 name: team.name,
-
-                short_name:
-                    team.short_name || "",
+                short_name: team.short_name || "",
 
                 played: 0,
-
                 won: 0,
-
                 drawn: 0,
-
                 lost: 0,
 
                 gf: 0,
-
                 ga: 0,
-
                 gd: 0,
 
                 points: 0
@@ -509,24 +382,12 @@ async function loadLeagueTable() {
 
         });
 
-
         (fixtures || []).forEach(fixture => {
-
-            if (
-                fixture.status !==
-                "Completed"
-            ) {
-                return;
-            }
-
 
             const result =
                 resultMap[fixture.id];
 
-            if (!result) {
-                return;
-            }
-
+            if (!result) return;
 
             const home =
                 table[fixture.home_team_id];
@@ -534,11 +395,7 @@ async function loadLeagueTable() {
             const away =
                 table[fixture.away_team_id];
 
-
-            if (!home || !away) {
-                return;
-            }
-
+            if (!home || !away) return;
 
             const homeScore =
                 Number(result.home_score) || 0;
@@ -546,10 +403,8 @@ async function loadLeagueTable() {
             const awayScore =
                 Number(result.away_score) || 0;
 
-
             home.played++;
             away.played++;
-
 
             home.gf += homeScore;
             home.ga += awayScore;
@@ -557,21 +412,16 @@ async function loadLeagueTable() {
             away.gf += awayScore;
             away.ga += homeScore;
 
-
             if (homeScore > awayScore) {
 
                 home.won++;
                 home.points += 3;
-
                 away.lost++;
 
-            } else if (
-                homeScore < awayScore
-            ) {
+            } else if (homeScore < awayScore) {
 
                 away.won++;
                 away.points += 3;
-
                 home.lost++;
 
             } else {
@@ -586,7 +436,6 @@ async function loadLeagueTable() {
 
         });
 
-
         Object.values(table).forEach(team => {
 
             team.gd =
@@ -594,130 +443,78 @@ async function loadLeagueTable() {
 
         });
 
-
         const sortedTeams =
-            Object.values(table)
-                .sort((a, b) => {
+            Object.values(table).sort((a, b) => {
 
-                    if (
-                        b.points !==
-                        a.points
-                    ) {
-                        return (
-                            b.points -
-                            a.points
-                        );
-                    }
+                if (b.points !== a.points) {
+                    return b.points - a.points;
+                }
 
-                    if (
-                        b.gd !==
-                        a.gd
-                    ) {
-                        return (
-                            b.gd -
-                            a.gd
-                        );
-                    }
+                if (b.gd !== a.gd) {
+                    return b.gd - a.gd;
+                }
 
-                    if (
-                        b.gf !==
-                        a.gf
-                    ) {
-                        return (
-                            b.gf -
-                            a.gf
-                        );
-                    }
+                if (b.gf !== a.gf) {
+                    return b.gf - a.gf;
+                }
 
-                    return a.name.localeCompare(
-                        b.name
-                    );
+                return a.name.localeCompare(b.name);
 
-                });
-
+            });
 
         tableBody.innerHTML = "";
 
+        sortedTeams.forEach((team, index) => {
 
-        sortedTeams.forEach(
-            (team, index) => {
+            const row =
+                document.createElement("tr");
 
-                const row =
-                    document.createElement("tr");
+            const gd =
+                team.gd > 0
+                ? `+${team.gd}`
+                : team.gd;
 
+            row.innerHTML = `
 
-                const gd =
-                    team.gd > 0
-                    ? `+${team.gd}`
-                    : team.gd;
+                <td class="position">
+                    ${index + 1}
+                </td>
 
+                <td>
+                    ${escapeHtml(team.name)}
 
-                row.innerHTML = `
+                    ${
+                        team.short_name
+                        ? `
+                            <small>
+                                ${escapeHtml(
+                                    team.short_name
+                                )}
+                            </small>
+                        `
+                        : ""
+                    }
+                </td>
 
-                    <td class="position">
-                        ${index + 1}
-                    </td>
+                <td>${team.played}</td>
+                <td>${team.won}</td>
+                <td>${team.drawn}</td>
+                <td>${team.lost}</td>
+                <td>${team.gf}</td>
+                <td>${team.ga}</td>
+                <td>${gd}</td>
 
-                    <td>
-                        ${escapeHtml(
-                            team.name
-                        )}
+                <td>
+                    <strong>
+                        ${team.points}
+                    </strong>
+                </td>
 
-                        ${
-                            team.short_name
-                            ? `
-                                <small>
-                                    ${escapeHtml(
-                                        team.short_name
-                                    )}
-                                </small>
-                            `
-                            : ""
-                        }
-                    </td>
+            `;
 
-                    <td>
-                        ${team.played}
-                    </td>
+            tableBody.appendChild(row);
 
-                    <td>
-                        ${team.won}
-                    </td>
-
-                    <td>
-                        ${team.drawn}
-                    </td>
-
-                    <td>
-                        ${team.lost}
-                    </td>
-
-                    <td>
-                        ${team.gf}
-                    </td>
-
-                    <td>
-                        ${team.ga}
-                    </td>
-
-                    <td>
-                        ${gd}
-                    </td>
-
-                    <td>
-                        <strong>
-                            ${team.points}
-                        </strong>
-                    </td>
-
-                `;
-
-
-                tableBody.appendChild(row);
-
-            }
-        );
-
+        });
 
     } catch (error) {
 
@@ -727,20 +524,14 @@ async function loadLeagueTable() {
         );
 
         tableBody.innerHTML = `
-
             <tr>
-
                 <td
                     colspan="10"
                     style="text-align:center;"
                 >
-
                     ⚠️ Unable to Load League Table
-
                 </td>
-
             </tr>
-
         `;
 
     }
@@ -755,19 +546,15 @@ async function loadLeagueTable() {
 async function loadResults() {
 
     const container =
-        document.getElementById(
-            "resultsList"
-        );
+        document.getElementById("resultsList");
 
-    if (!container) {
-        console.error(
-            "Results container not found."
-        );
-        return;
-    }
-
+    if (!container) return;
 
     try {
+
+        // ---------------------------------------------
+        // GET COMPLETED FIXTURES
+        // ---------------------------------------------
 
         const {
             data: fixtures,
@@ -793,54 +580,37 @@ async function loadResults() {
                 ascending: false
             });
 
-        if (fixturesError) {
-            throw fixturesError;
-        }
+        if (fixturesError) throw fixturesError;
 
+        // ---------------------------------------------
+        // NO COMPLETED FIXTURES
+        // ---------------------------------------------
 
         if (!fixtures || fixtures.length === 0) {
 
             container.innerHTML = `
-
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-
-                    <h3>
-                        🏁 No Match Results Yet
-                    </h3>
-
+                <div class="card" style="text-align:center;">
+                    <h3>🏁 No Match Results Yet</h3>
                     <p>
-                        Completed matches will
-                        appear here.
+                        Completed matches will appear here.
                     </p>
-
                 </div>
-
             `;
 
             return;
         }
 
-
         const fixtureIds =
-            fixtures.map(
-                fixture => fixture.id
-            );
-
+            fixtures.map(fixture => fixture.id);
 
         const teamIds = [
             ...new Set(
-                fixtures.flatMap(
-                    fixture => [
-                        fixture.home_team_id,
-                        fixture.away_team_id
-                    ]
-                )
+                fixtures.flatMap(fixture => [
+                    fixture.home_team_id,
+                    fixture.away_team_id
+                ])
             )
         ];
-
 
         const competitionIds = [
             ...new Set(
@@ -851,6 +621,9 @@ async function loadResults() {
             )
         ];
 
+        // ---------------------------------------------
+        // GET RESULTS
+        // ---------------------------------------------
 
         const {
             data: results,
@@ -864,15 +637,13 @@ async function loadResults() {
                 away_score,
                 match_report
             `)
-            .in(
-                "fixture_id",
-                fixtureIds
-            );
+            .in("fixture_id", fixtureIds);
 
-        if (resultsError) {
-            throw resultsError;
-        }
+        if (resultsError) throw resultsError;
 
+        // ---------------------------------------------
+        // GET TEAMS
+        // ---------------------------------------------
 
         const {
             data: teams,
@@ -886,10 +657,11 @@ async function loadResults() {
             `)
             .in("id", teamIds);
 
-        if (teamsError) {
-            throw teamsError;
-        }
+        if (teamsError) throw teamsError;
 
+        // ---------------------------------------------
+        // GET COMPETITIONS
+        // ---------------------------------------------
 
         const {
             data: competitions,
@@ -902,102 +674,13 @@ async function loadResults() {
                 competition_type,
                 season
             `)
-            .in(
-                "id",
-                competitionIds
-            );
+            .in("id", competitionIds);
 
-        if (competitionsError) {
-            throw competitionsError;
-        }
+        if (competitionsError) throw competitionsError;
 
-
-        const {
-            data: goalScorers,
-            error: scorersError
-        } = await supabaseClient
-            .from("goal_scorers")
-            .select(`
-                id,
-                result_id,
-                player_id,
-                minute,
-                is_penalty
-            `)
-            .in(
-                "result_id",
-                (results || []).map(
-                    result => result.id
-                )
-            );
-
-        if (scorersError) {
-            throw scorersError;
-        }
-
-
-        const playerIds = [
-            ...new Set(
-                (goalScorers || []).map(
-                    scorer =>
-                        scorer.player_id
-                )
-            )
-        ];
-
-
-        let players = [];
-
-
-        if (playerIds.length > 0) {
-
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("players")
-                .select(`
-                    id,
-                    name,
-                    jersey_number,
-                    team_id
-                `)
-                .in(
-                    "id",
-                    playerIds
-                );
-
-            if (error) {
-                throw error;
-            }
-
-            players = data || [];
-
-        }
-
-
-        const teamMap = {};
-
-        (teams || []).forEach(team => {
-
-            teamMap[team.id] =
-                team;
-
-        });
-
-
-        const competitionMap = {};
-
-        (competitions || []).forEach(
-            competition => {
-
-                competitionMap[
-                    competition.id
-                ] = competition;
-
-            }
-        );
-
+        // ---------------------------------------------
+        // RESULT MAP
+        // ---------------------------------------------
 
         const resultMap = {};
 
@@ -1008,46 +691,57 @@ async function loadResults() {
 
         });
 
+        // ---------------------------------------------
+        // TEAM MAP
+        // ---------------------------------------------
 
-        const playerMap = {};
+        const teamMap = {};
 
-        players.forEach(player => {
+        (teams || []).forEach(team => {
 
-            playerMap[player.id] =
-                player;
+            teamMap[team.id] =
+                team;
 
         });
 
+        // ---------------------------------------------
+        // COMPETITION MAP
+        // ---------------------------------------------
+
+        const competitionMap = {};
+
+        (competitions || []).forEach(
+            competition => {
+
+                competitionMap[competition.id] =
+                    competition;
+
+            }
+        );
+
+        // ---------------------------------------------
+        // RENDER RESULTS
+        // ---------------------------------------------
 
         container.innerHTML = "";
-
 
         fixtures.forEach(fixture => {
 
             const result =
                 resultMap[fixture.id];
 
-            if (!result) {
-                return;
-            }
-
+            if (!result) return;
 
             const homeTeam =
-                teamMap[
-                    fixture.home_team_id
-                ];
+                teamMap[fixture.home_team_id];
 
             const awayTeam =
-                teamMap[
-                    fixture.away_team_id
-                ];
-
+                teamMap[fixture.away_team_id];
 
             const competition =
                 competitionMap[
                     fixture.competition_id
                 ];
-
 
             const homeName =
                 homeTeam?.name ||
@@ -1057,59 +751,11 @@ async function loadResults() {
                 awayTeam?.name ||
                 "Away Team";
 
-
-            const scorers =
-                (goalScorers || []).filter(
-                    scorer =>
-                        scorer.result_id ===
-                        result.id
-                );
-
-
-            const homeScorers =
-                scorers.filter(
-                    scorer => {
-
-                        const player =
-                            playerMap[
-                                scorer.player_id
-                            ];
-
-                        return (
-                            player &&
-                            player.team_id ===
-                            fixture.home_team_id
-                        );
-
-                    }
-                );
-
-
-            const awayScorers =
-                scorers.filter(
-                    scorer => {
-
-                        const player =
-                            playerMap[
-                                scorer.player_id
-                            ];
-
-                        return (
-                            player &&
-                            player.team_id ===
-                            fixture.away_team_id
-                        );
-
-                    }
-                );
-
-
             const card =
                 document.createElement("div");
 
             card.className =
                 "result-card";
-
 
             card.innerHTML = `
 
@@ -1124,13 +770,11 @@ async function loadResults() {
 
                     <span>
                         ${escapeHtml(
-                            fixture.matchday ||
-                            ""
+                            fixture.matchday || ""
                         )}
                     </span>
 
                 </div>
-
 
                 <div class="result-date">
 
@@ -1148,15 +792,12 @@ async function loadResults() {
 
                 </div>
 
-
                 <div class="result-score">
 
                     <div class="result-team home-team">
 
                         <strong>
-                            ${escapeHtml(
-                                homeName
-                            )}
+                            ${escapeHtml(homeName)}
                         </strong>
 
                         ${
@@ -1173,7 +814,6 @@ async function loadResults() {
 
                     </div>
 
-
                     <div class="score-number">
 
                         <span>
@@ -1182,9 +822,7 @@ async function loadResults() {
                             ) || 0}
                         </span>
 
-                        <span>
-                            -
-                        </span>
+                        <span>-</span>
 
                         <span>
                             ${Number(
@@ -1194,13 +832,10 @@ async function loadResults() {
 
                     </div>
 
-
                     <div class="result-team away-team">
 
                         <strong>
-                            ${escapeHtml(
-                                awayName
-                            )}
+                            ${escapeHtml(awayName)}
                         </strong>
 
                         ${
@@ -1219,189 +854,10 @@ async function loadResults() {
 
                 </div>
 
-
-                <div class="result-goals">
-
-                    <div class="result-goal-column">
-
-                        <h4>
-                            ⚽ ${escapeHtml(
-                                homeName
-                            )} Goals
-                        </h4>
-
-                        ${
-                            homeScorers.length
-                            ? homeScorers
-                                .sort(
-                                    (
-                                        a,
-                                        b
-                                    ) =>
-                                        (
-                                            Number(
-                                                a.minute
-                                            ) || 0
-                                        ) -
-                                        (
-                                            Number(
-                                                b.minute
-                                            ) || 0
-                                        )
-                                )
-                                .map(
-                                    scorer => {
-
-                                        const player =
-                                            playerMap[
-                                                scorer.player_id
-                                            ];
-
-                                        return `
-
-                                            <div
-                                                class="result-scorer"
-                                            >
-
-                                                <strong>
-                                                    ${escapeHtml(
-                                                        player?.name ||
-                                                        "Player"
-                                                    )}
-                                                </strong>
-
-                                                <span>
-
-                                                    ${
-                                                        scorer.minute !==
-                                                        null &&
-                                                        scorer.minute !==
-                                                        undefined
-                                                        ? `${scorer.minute}'`
-                                                        : ""
-                                                    }
-
-                                                    ${
-                                                        scorer.is_penalty
-                                                        ? " • Penalty"
-                                                        : ""
-                                                    }
-
-                                                </span>
-
-                                            </div>
-
-                                        `;
-
-                                    }
-                                )
-                                .join("")
-                            : `
-                                <div
-                                    class="no-scorers"
-                                >
-                                    No goals recorded.
-                                </div>
-                            `
-                        }
-
-                    </div>
-
-
-                    <div class="result-goal-column">
-
-                        <h4>
-                            ⚽ ${escapeHtml(
-                                awayName
-                            )} Goals
-                        </h4>
-
-                        ${
-                            awayScorers.length
-                            ? awayScorers
-                                .sort(
-                                    (
-                                        a,
-                                        b
-                                    ) =>
-                                        (
-                                            Number(
-                                                a.minute
-                                            ) || 0
-                                        ) -
-                                        (
-                                            Number(
-                                                b.minute
-                                            ) || 0
-                                        )
-                                )
-                                .map(
-                                    scorer => {
-
-                                        const player =
-                                            playerMap[
-                                                scorer.player_id
-                                            ];
-
-                                        return `
-
-                                            <div
-                                                class="result-scorer"
-                                            >
-
-                                                <strong>
-                                                    ${escapeHtml(
-                                                        player?.name ||
-                                                        "Player"
-                                                    )}
-                                                </strong>
-
-                                                <span>
-
-                                                    ${
-                                                        scorer.minute !==
-                                                        null &&
-                                                        scorer.minute !==
-                                                        undefined
-                                                        ? `${scorer.minute}'`
-                                                        : ""
-                                                    }
-
-                                                    ${
-                                                        scorer.is_penalty
-                                                        ? " • Penalty"
-                                                        : ""
-                                                    }
-
-                                                </span>
-
-                                            </div>
-
-                                        `;
-
-                                    }
-                                )
-                                .join("")
-                            : `
-                                <div
-                                    class="no-scorers"
-                                >
-                                    No goals recorded.
-                                </div>
-                            `
-                        }
-
-                    </div>
-
-                </div>
-
-
                 ${
                     result.match_report
                     ? `
-                        <div
-                            class="match-report"
-                        >
+                        <div class="match-report">
 
                             <h4>
                                 📝 Match Report
@@ -1418,13 +874,10 @@ async function loadResults() {
                     : ""
                 }
 
-
                 ${
                     fixture.venue
                     ? `
-                        <div
-                            class="result-venue"
-                        >
+                        <div class="result-venue">
                             📍 ${escapeHtml(
                                 fixture.venue
                             )}
@@ -1435,38 +888,22 @@ async function loadResults() {
 
             `;
 
-
             container.appendChild(card);
 
         });
 
-
-        if (
-            container.children.length === 0
-        ) {
+        if (container.children.length === 0) {
 
             container.innerHTML = `
-
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-
-                    <h3>
-                        🏁 No Match Results Yet
-                    </h3>
-
+                <div class="card" style="text-align:center;">
+                    <h3>🏁 No Match Results Yet</h3>
                     <p>
-                        Completed matches will
-                        appear here.
+                        Completed matches will appear here.
                     </p>
-
                 </div>
-
             `;
 
         }
-
 
     } catch (error) {
 
@@ -1476,22 +913,12 @@ async function loadResults() {
         );
 
         container.innerHTML = `
-
-            <div
-                class="card"
-                style="text-align:center;"
-            >
-
-                <h3>
-                    ⚠️ Unable to Load Match Results
-                </h3>
-
+            <div class="card" style="text-align:center;">
+                <h3>⚠️ Unable to Load Match Results</h3>
                 <p>
                     Please try again later.
                 </p>
-
             </div>
-
         `;
 
     }
@@ -1530,7 +957,6 @@ async function loadPlayerLeaders() {
             "redCardsList"
         );
 
-
     if (
         !topScorersList &&
         !topAssistsList &&
@@ -1541,8 +967,11 @@ async function loadPlayerLeaders() {
         return;
     }
 
-
     try {
+
+        // ---------------------------------------------
+        // GET PLAYER MATCH STATS
+        // ---------------------------------------------
 
         const {
             data: stats,
@@ -1558,21 +987,9 @@ async function loadPlayerLeaders() {
                 red_cards
             `);
 
-        if (statsError) {
-            throw statsError;
-        }
+        if (statsError) throw statsError;
 
-
-        const playerIds = [
-            ...new Set(
-                (stats || []).map(
-                    stat => stat.player_id
-                )
-            )
-        ];
-
-
-        if (playerIds.length === 0) {
+        if (!stats || stats.length === 0) {
 
             showEmptyLeader(
                 topScorersList,
@@ -1602,6 +1019,13 @@ async function loadPlayerLeaders() {
             return;
         }
 
+        const playerIds = [
+            ...new Set(
+                stats.map(
+                    stat => stat.player_id
+                )
+            )
+        ];
 
         const {
             data: players,
@@ -1616,10 +1040,7 @@ async function loadPlayerLeaders() {
             `)
             .in("id", playerIds);
 
-        if (playersError) {
-            throw playersError;
-        }
-
+        if (playersError) throw playersError;
 
         const teamIds = [
             ...new Set(
@@ -1630,22 +1051,26 @@ async function loadPlayerLeaders() {
             )
         ];
 
+        let teams = [];
 
-        const {
-            data: teams,
-            error: teamsError
-        } = await supabaseClient
-            .from("teams")
-            .select(`
-                id,
-                name
-            `)
-            .in("id", teamIds);
+        if (teamIds.length > 0) {
 
-        if (teamsError) {
-            throw teamsError;
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("teams")
+                .select(`
+                    id,
+                    name
+                `)
+                .in("id", teamIds);
+
+            if (error) throw error;
+
+            teams = data || [];
+
         }
-
 
         const playerMap = {};
 
@@ -1656,117 +1081,75 @@ async function loadPlayerLeaders() {
 
         });
 
-
         const teamMap = {};
 
-        (teams || []).forEach(team => {
+        teams.forEach(team => {
 
             teamMap[team.id] =
                 team;
 
         });
 
-
         const totals = {};
 
+        stats.forEach(stat => {
 
-        (stats || []).forEach(stat => {
+            const playerId =
+                stat.player_id;
 
-            if (!totals[stat.player_id]) {
+            if (!totals[playerId]) {
 
-                totals[stat.player_id] = {
+                totals[playerId] = {
 
-                    player_id:
-                        stat.player_id,
+                    player_id: playerId,
 
                     appearances: 0,
-
                     goals: 0,
-
                     assists: 0,
-
                     yellow_cards: 0,
-
                     red_cards: 0
 
                 };
 
             }
 
+            totals[playerId].appearances +=
+                Number(stat.appearances) || 0;
 
-            totals[
-                stat.player_id
-            ].appearances +=
-                Number(
-                    stat.appearances
-                ) || 0;
+            totals[playerId].goals +=
+                Number(stat.goals) || 0;
 
+            totals[playerId].assists +=
+                Number(stat.assists) || 0;
 
-            totals[
-                stat.player_id
-            ].goals +=
-                Number(
-                    stat.goals
-                ) || 0;
+            totals[playerId].yellow_cards +=
+                Number(stat.yellow_cards) || 0;
 
-
-            totals[
-                stat.player_id
-            ].assists +=
-                Number(
-                    stat.assists
-                ) || 0;
-
-
-            totals[
-                stat.player_id
-            ].yellow_cards +=
-                Number(
-                    stat.yellow_cards
-                ) || 0;
-
-
-            totals[
-                stat.player_id
-            ].red_cards +=
-                Number(
-                    stat.red_cards
-                ) || 0;
+            totals[playerId].red_cards +=
+                Number(stat.red_cards) || 0;
 
         });
-
 
         const allTotals =
             Object.values(totals);
 
-
         const scorerLeaders =
             [...allTotals]
-                .filter(
-                    item =>
-                        item.goals > 0
-                )
+                .filter(item => item.goals > 0)
                 .sort(
                     (a, b) =>
-                        b.goals -
-                        a.goals
+                        b.goals - a.goals
                 )
                 .slice(0, 5);
-
 
         const assistLeaders =
             [...allTotals]
-                .filter(
-                    item =>
-                        item.assists > 0
-                )
+                .filter(item => item.assists > 0)
                 .sort(
                     (a, b) =>
-                        b.assists -
-                        a.assists
+                        b.assists - a.assists
                 )
                 .slice(0, 5);
-
 
         const appearanceLeaders =
             [...allTotals]
@@ -1781,7 +1164,6 @@ async function loadPlayerLeaders() {
                 )
                 .slice(0, 5);
 
-
         const yellowLeaders =
             [...allTotals]
                 .filter(
@@ -1794,7 +1176,6 @@ async function loadPlayerLeaders() {
                         a.yellow_cards
                 )
                 .slice(0, 5);
-
 
         const redLeaders =
             [...allTotals]
@@ -1809,7 +1190,6 @@ async function loadPlayerLeaders() {
                 )
                 .slice(0, 5);
 
-
         renderLeaderList(
             topScorersList,
             scorerLeaders,
@@ -1817,7 +1197,6 @@ async function loadPlayerLeaders() {
             teamMap,
             "goals"
         );
-
 
         renderLeaderList(
             topAssistsList,
@@ -1827,7 +1206,6 @@ async function loadPlayerLeaders() {
             "assists"
         );
 
-
         renderLeaderList(
             appearancesList,
             appearanceLeaders,
@@ -1835,7 +1213,6 @@ async function loadPlayerLeaders() {
             teamMap,
             "appearances"
         );
-
 
         renderLeaderList(
             yellowCardsList,
@@ -1845,7 +1222,6 @@ async function loadPlayerLeaders() {
             "yellow_cards"
         );
 
-
         renderLeaderList(
             redCardsList,
             redLeaders,
@@ -1854,7 +1230,6 @@ async function loadPlayerLeaders() {
             "red_cards"
         );
 
-
     } catch (error) {
 
         console.error(
@@ -1862,25 +1237,11 @@ async function loadPlayerLeaders() {
             error
         );
 
-        showLeaderError(
-            topScorersList
-        );
-
-        showLeaderError(
-            topAssistsList
-        );
-
-        showLeaderError(
-            appearancesList
-        );
-
-        showLeaderError(
-            yellowCardsList
-        );
-
-        showLeaderError(
-            redCardsList
-        );
+        showLeaderError(topScorersList);
+        showLeaderError(topAssistsList);
+        showLeaderError(appearancesList);
+        showLeaderError(yellowCardsList);
+        showLeaderError(redCardsList);
 
     }
 
@@ -1888,7 +1249,7 @@ async function loadPlayerLeaders() {
 
 
 // =====================================================
-// RENDER PLAYER LEADER
+// RENDER LEADER LIST
 // =====================================================
 
 function renderLeaderList(
@@ -1899,94 +1260,72 @@ function renderLeaderList(
     statName
 ) {
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
+    if (!leaders || leaders.length === 0) {
 
-    if (
-        !leaders ||
-        leaders.length === 0
-    ) {
-
-        container.innerHTML = `
-            <p>
-                No data yet.
-            </p>
-        `;
+        container.innerHTML =
+            `<p>No data yet.</p>`;
 
         return;
     }
-
 
     container.innerHTML = "";
 
+    leaders.forEach((leader, index) => {
 
-    leaders.forEach(
-        (leader, index) => {
+        const player =
+            playerMap[leader.player_id];
 
-            const player =
-                playerMap[
-                    leader.player_id
-                ];
+        const team =
+            player
+            ? teamMap[player.team_id]
+            : null;
 
-            const team =
-                player
-                ? teamMap[player.team_id]
-                : null;
+        const row =
+            document.createElement("div");
 
+        row.className =
+            "leader-row";
 
-            const row =
-                document.createElement(
-                    "div"
-                );
+        row.innerHTML = `
 
-            row.className =
-                "leader-row";
+            <div class="leader-position">
+                ${index + 1}
+            </div>
 
+            <div class="leader-player">
 
-            row.innerHTML = `
+                <strong>
+                    ${escapeHtml(
+                        player?.name ||
+                        "Unknown Player"
+                    )}
+                </strong>
 
-                <div class="leader-position">
-                    ${index + 1}
-                </div>
+                <small>
+                    ${
+                        team?.name
+                        ? escapeHtml(team.name)
+                        : "Unknown Team"
+                    }
+                </small>
 
-                <div class="leader-player">
+            </div>
 
-                    <strong>
-                        ${escapeHtml(
-                            player?.name ||
-                            "Unknown Player"
-                        )}
-                    </strong>
+            <div class="leader-stat">
 
-                    <small>
-                        ${
-                            team?.name
-                            ? escapeHtml(
-                                team.name
-                            )
-                            : "Unknown Team"
-                        }
-                    </small>
+                ${Number(
+                    leader[statName]
+                ) || 0}
 
-                </div>
+            </div>
 
-                <div class="leader-stat">
+        `;
 
-                    ${Number(
-                        leader[statName]
-                    ) || 0}
+        container.appendChild(row);
 
-                </div>
-
-            `;
-
-
-            container.appendChild(row);
-
-        }
-    );
+    });
 
 }
 
@@ -2000,23 +1339,17 @@ function showEmptyLeader(
     message
 ) {
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
     container.innerHTML =
-        `<p>${message}</p>`;
+        `<p>${escapeHtml(message)}</p>`;
 
 }
 
 
-function showLeaderError(
-    container
-) {
+function showLeaderError(container) {
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
     container.innerHTML =
         `<p>Unable to load statistics.</p>`;
@@ -2026,23 +1359,16 @@ function showLeaderError(
 
 function formatDate(dateString) {
 
-    if (!dateString) {
-        return "";
-    }
-
+    if (!dateString) return "";
 
     const date =
         new Date(
             dateString + "T00:00:00"
         );
 
-
-    if (Number.isNaN(
-        date.getTime()
-    )) {
+    if (Number.isNaN(date.getTime())) {
         return dateString;
     }
-
 
     return date.toLocaleDateString(
         "en-KE",
@@ -2058,19 +1384,14 @@ function formatDate(dateString) {
 
 function formatTime(timeString) {
 
-    if (!timeString) {
-        return "";
-    }
-
+    if (!timeString) return "";
 
     const parts =
         timeString.split(":");
 
-
     if (parts.length < 2) {
         return timeString;
     }
-
 
     let hour =
         Number(parts[0]);
@@ -2078,16 +1399,13 @@ function formatTime(timeString) {
     const minute =
         parts[1];
 
-
     const suffix =
         hour >= 12
         ? "PM"
         : "AM";
 
-
     hour =
         hour % 12 || 12;
-
 
     return `${hour}:${minute} ${suffix}`;
 
@@ -2097,25 +1415,10 @@ function formatTime(timeString) {
 function escapeHtml(value) {
 
     return String(value ?? "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
