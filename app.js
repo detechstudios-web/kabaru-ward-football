@@ -1,383 +1,146 @@
-// ======================================================
+// ========================================
 // KABARU WARD FOOTBALL
-// app.js
-// ======================================================
-
-
-
-// ------------------------------------------------------
-// GENERAL HELPERS
-// ------------------------------------------------------
-
-function escapeHtml(value) {
-    if (value === null || value === undefined) return "";
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-// ======================================================
-// 1. TEAM REGISTRATION
-// ======================================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const teamRegistrationForm =
-        document.getElementById("teamRegistrationForm");
-
-    const playersContainer =
-        document.getElementById("playersContainer");
-
-    const addPlayerBtn =
-        document.getElementById("addPlayerBtn");
-
-    const playerCount =
-        document.getElementById("playerCount");
-
-    const registrationMessage =
-        document.getElementById("registrationMessage");
-
-    if (
-        !teamRegistrationForm ||
-        !playersContainer ||
-        !addPlayerBtn
-    ) {
-        return;
-    }
-
-    let players = 0;
-    const MAX_PLAYERS = 20;
-
-
-    function updatePlayerCount() {
-        if (playerCount) {
-            playerCount.textContent =
-                `${players}/${MAX_PLAYERS}`;
-        }
-    }
-
-
-    function createPlayerRow() {
-
-        if (players >= MAX_PLAYERS) {
-            alert("Maximum of 20 players allowed.");
-            return;
-        }
-
-        players++;
-
-        const row = document.createElement("div");
-
-        row.className = "player-row";
-
-        row.innerHTML = `
-            <div class="player-number">
-                <strong>Player ${players}</strong>
-            </div>
-
-            <input
-                type="text"
-                name="player_name"
-                placeholder="Player full name"
-                required
-            >
-
-            <input
-                type="number"
-                name="jersey_number"
-                placeholder="Jersey number"
-                min="1"
-                max="99"
-                required
-            >
-
-            <select name="position" required>
-                <option value="">Select position</option>
-                <option value="Goalkeeper">Goalkeeper</option>
-                <option value="Defender">Defender</option>
-                <option value="Midfielder">Midfielder</option>
-                <option value="Forward">Forward</option>
-            </select>
-
-            <button
-                type="button"
-                class="remove-player-btn"
-            >
-                Remove
-            </button>
-        `;
-
-
-        const removeBtn =
-            row.querySelector(".remove-player-btn");
-
-
-        removeBtn.addEventListener("click", () => {
-
-            row.remove();
-
-            players--;
-
-            updatePlayerNumbers();
-
-            updatePlayerCount();
-        });
-
-
-        playersContainer.appendChild(row);
-
-        updatePlayerCount();
-    }
-
-
-    function updatePlayerNumbers() {
-
-        const rows =
-            playersContainer.querySelectorAll(".player-row");
-
-        rows.forEach((row, index) => {
-
-            const number =
-                row.querySelector(".player-number");
-
-            if (number) {
-                number.innerHTML =
-                    `<strong>Player ${index + 1}</strong>`;
-            }
-
-        });
-    }
-
-
-    addPlayerBtn.addEventListener(
-        "click",
-        createPlayerRow
-    );
-
-
-    // Start with one player
-    createPlayerRow();
-
-
-    teamRegistrationForm.addEventListener(
-        "submit",
-        async (event) => {
-
-            event.preventDefault();
-
-            if (players < 1) {
-                alert("Please add at least one player.");
-                return;
-            }
-
-
-            const formData =
-                new FormData(teamRegistrationForm);
-
-
-            const playerRows =
-                playersContainer.querySelectorAll(".player-row");
-
-
-            const playerData = [];
-
-
-            playerRows.forEach(row => {
-
-                const name =
-                    row.querySelector(
-                        '[name="player_name"]'
-                    ).value.trim();
-
-                const jersey =
-                    row.querySelector(
-                        '[name="jersey_number"]'
-                    ).value;
-
-                const position =
-                    row.querySelector(
-                        '[name="position"]'
-                    ).value;
-
-
-                playerData.push({
-                    player_name: name,
-                    jersey_number: Number(jersey),
-                    position: position
-                });
-
-            });
-
-
-            const teamName =
-                formData.get("teamName")?.trim();
-
-            const shortName =
-                formData.get("shortName")?.trim();
-
-            const teamLocation =
-                formData.get("teamLocation")?.trim();
-
-            const coachName =
-                formData.get("coachName")?.trim();
-
-            const captainName =
-                formData.get("captainName")?.trim();
-
-            const viceCaptainName =
-                formData.get("viceCaptainName")?.trim();
-
-            const disciplineMasterName =
-                formData.get("disciplineMasterName")?.trim();
-
-            const teamPhone =
-                formData.get("teamPhone")?.trim();
-
-            const teamEmail =
-                formData.get("teamEmail")?.trim();
-
-
-            if (registrationMessage) {
-                registrationMessage.textContent =
-                    "Submitting registration...";
-            }
-
-
-            try {
-
-                const { data, error } =
-                    await supabaseClient.rpc(
-                        "submit_team_registration",
-                        {
-                            p_name: teamName,
-                            p_short_name: shortName,
-                            p_location: teamLocation,
-                            p_coach_name: coachName,
-                            p_captain_name: captainName,
-                            p_vice_captain_name:
-                                viceCaptainName,
-                            p_discipline_master_name:
-                                disciplineMasterName,
-                            p_phone: teamPhone,
-                            p_email: teamEmail,
-                            p_players: playerData
-                        }
-                    );
-
-
-                if (error) {
-                    throw error;
-                }
-
-
-                if (registrationMessage) {
-
-                    registrationMessage.innerHTML =
-                        `
-                        <strong>
-                            Registration submitted successfully.
-                        </strong>
-                        <br>
-                        Your team is now awaiting approval.
-                        `;
-                }
-
-
-                teamRegistrationForm.reset();
-
-                playersContainer.innerHTML = "";
-
-                players = 0;
-
-                createPlayerRow();
-
-
-            } catch (error) {
-
-                console.error(
-                    "Registration error:",
-                    error
-                );
-
-
-                if (registrationMessage) {
-
-                    registrationMessage.innerHTML =
-                        `
-                        <strong>
-                            Registration failed.
-                        </strong>
-                        <br>
-                        ${escapeHtml(error.message)}
-                        `;
-                }
-
-            }
-
-        }
-    );
+// PUBLIC WEBSITE APP
+// ========================================
+
+// =====================================================
+// DOM READY
+// =====================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    loadFixtures();
+    loadLeagueTable();
+    loadResults();
+    loadCompetitionStatus();
+    loadPlayerLeaders();
 
 });
 
 
-// ======================================================
-// 2. PUBLIC FIXTURES
-// ======================================================
+// =====================================================
+// COMPETITION STATUS
+// =====================================================
+
+async function loadCompetitionStatus() {
+
+    const statusElement =
+        document.getElementById("competitionStatus");
+
+    if (!statusElement) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("competitions")
+            .select("*")
+            .eq("status", "Active")
+            .order("created_at", {
+                ascending: false
+            })
+            .limit(1);
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+
+            statusElement.textContent =
+                "Competition status: No active competition";
+
+            return;
+        }
+
+        statusElement.textContent =
+            "Competition status: " + data[0].status;
+
+    } catch (error) {
+
+        console.error(
+            "LOAD COMPETITION STATUS ERROR:",
+            error
+        );
+
+        statusElement.textContent =
+            "Competition status: Unable to load";
+
+    }
+
+}
+
+
+// =====================================================
+// UPCOMING FIXTURES
+// =====================================================
 
 async function loadFixtures() {
 
     const container =
-        document.getElementById("fixturesContainer");
+        document.getElementById("upcomingFixtures");
 
-    if (!container) return;
-
-
-    container.innerHTML =
-        "<p>Loading fixtures...</p>";
-
+    if (!container) {
+        console.error(
+            "Upcoming fixtures container not found."
+        );
+        return;
+    }
 
     try {
 
-        const { data: fixtures, error } =
-            await supabaseClient
-                .from("fixtures")
-                .select(`
-                    id,
-                    competition_id,
-                    home_team_id,
-                    away_team_id,
-                    match_date,
-                    kick_off,
-                    venue,
-                    matchday,
-                    status
-                `)
-                .in(
-                    "status",
-                    ["Scheduled", "Published"]
-                )
-                .order(
-                    "match_date",
-                    { ascending: true }
-                )
-                .order(
-                    "kick_off",
-                    { ascending: true }
-                );
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                venue,
+                matchday,
+                status
+            `)
+            .in("status", [
+                "Scheduled",
+                "Published"
+            ])
+            .order("match_date", {
+                ascending: true
+            })
+            .order("kick_off", {
+                ascending: true
+            });
 
-
-        if (error) throw error;
-
+        if (fixturesError) {
+            throw fixturesError;
+        }
 
         if (!fixtures || fixtures.length === 0) {
 
-            container.innerHTML =
-                "<p>No fixtures available yet.</p>";
+            container.innerHTML = `
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        📅 No Upcoming Fixtures
+                    </h3>
+
+                    <p>
+                        New fixtures will appear here
+                        once they are published.
+                    </p>
+                </div>
+            `;
 
             return;
         }
@@ -392,7 +155,6 @@ async function loadFixtures() {
             )
         ];
 
-
         const competitionIds = [
             ...new Set(
                 fixtures.map(
@@ -402,220 +164,305 @@ async function loadFixtures() {
         ];
 
 
-        const { data: teams, error: teamError } =
-            await supabaseClient
-                .from("teams")
-                .select(`
-                    id,
-                    name,
-                    short_name,
-                    logo_url,
-                    registration_status
-                `)
-                .in("id", teamIds)
-                .eq(
-                    "registration_status",
-                    "Approved"
-                );
+        const {
+            data: teams,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name
+            `)
+            .in("id", teamIds);
+
+        if (teamsError) {
+            throw teamsError;
+        }
 
 
-        if (teamError) throw teamError;
+        const {
+            data: competitions,
+            error: competitionsError
+        } = await supabaseClient
+            .from("competitions")
+            .select(`
+                id,
+                name,
+                competition_type,
+                season
+            `)
+            .in("id", competitionIds);
 
-
-        const { data: competitions, error: competitionError } =
-            await supabaseClient
-                .from("competitions")
-                .select(`
-                    id,
-                    name,
-                    season,
-                    status
-                `)
-                .in("id", competitionIds);
-
-
-        if (competitionError) throw competitionError;
+        if (competitionsError) {
+            throw competitionsError;
+        }
 
 
         const teamMap = {};
 
         (teams || []).forEach(team => {
+
             teamMap[team.id] = team;
+
         });
 
 
         const competitionMap = {};
 
-        (competitions || []).forEach(competition => {
-            competitionMap[competition.id] =
-                competition;
-        });
+        (competitions || []).forEach(
+            competition => {
+
+                competitionMap[
+                    competition.id
+                ] = competition;
+
+            }
+        );
 
 
-        container.innerHTML =
-            fixtures.map(fixture => {
-
-                const home =
-                    teamMap[fixture.home_team_id];
-
-                const away =
-                    teamMap[fixture.away_team_id];
-
-                const competition =
-                    competitionMap[
-                        fixture.competition_id
-                    ];
+        container.innerHTML = "";
 
 
-                return `
-                    <div class="fixture-card">
+        fixtures.forEach(fixture => {
 
-                        <div class="fixture-competition">
-                            ${escapeHtml(
-                                competition?.name || ""
-                            )}
-                        </div>
+            const homeTeam =
+                teamMap[fixture.home_team_id];
 
-                        <div class="fixture-matchday">
-                            ${escapeHtml(
-                                fixture.matchday || ""
-                            )}
-                        </div>
+            const awayTeam =
+                teamMap[fixture.away_team_id];
 
-                        <div class="fixture-teams">
+            const competition =
+                competitionMap[
+                    fixture.competition_id
+                ];
 
-                            <span>
-                                ${escapeHtml(
-                                    home?.name || "Home Team"
-                                )}
-                            </span>
 
-                            <strong>VS</strong>
+            const homeName =
+                homeTeam?.name ||
+                "Home Team";
 
-                            <span>
-                                ${escapeHtml(
-                                    away?.name || "Away Team"
-                                )}
-                            </span>
+            const awayName =
+                awayTeam?.name ||
+                "Away Team";
 
-                        </div>
 
-                        <div class="fixture-details">
+            const date = formatDate(
+                fixture.match_date
+            );
 
-                            <span>
-                                📅
-                                ${escapeHtml(
-                                    fixture.match_date || ""
-                                )}
-                            </span>
+            const time = formatTime(
+                fixture.kick_off
+            );
 
-                            <span>
-                                ⏰
-                                ${escapeHtml(
-                                    fixture.kick_off || ""
-                                )}
-                            </span>
 
-                            <span>
-                                📍
-                                ${escapeHtml(
-                                    fixture.venue || ""
-                                )}
-                            </span>
+            const card =
+                document.createElement("div");
 
-                        </div>
+            card.className =
+                "fixture-card";
 
+
+            card.innerHTML = `
+
+                <h3>
+                    ${escapeHtml(
+                        competition?.name ||
+                        "Football Competition"
+                    )}
+                </h3>
+
+                <div class="match">
+
+                    <div class="team">
+                        ${escapeHtml(homeName)}
                     </div>
-                `;
 
-            }).join("");
+                    <div class="vs">
+                        VS
+                    </div>
+
+                    <div class="team">
+                        ${escapeHtml(awayName)}
+                    </div>
+
+                </div>
+
+                <div class="match-info">
+
+                    📅 ${date}
+
+                    ${
+                        fixture.kick_off
+                        ? ` • ⏰ ${time}`
+                        : ""
+                    }
+
+                    ${
+                        fixture.venue
+                        ? ` • 📍 ${escapeHtml(
+                            fixture.venue
+                        )}`
+                        : ""
+                    }
+
+                </div>
+
+                ${
+                    fixture.matchday
+                    ? `
+                        <div
+                            class="match-info"
+                            style="margin-top:8px;"
+                        >
+                            ${escapeHtml(
+                                fixture.matchday
+                            )}
+                        </div>
+                    `
+                    : ""
+                }
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
 
 
     } catch (error) {
 
         console.error(
-            "Error loading fixtures:",
+            "LOAD FIXTURES ERROR:",
             error
         );
 
+        container.innerHTML = `
 
-        container.innerHTML =
-            "<p>Unable to load fixtures.</p>";
+            <div
+                class="card"
+                style="text-align:center;"
+            >
+
+                <h3>
+                    ⚠️ Unable to Load Fixtures
+                </h3>
+
+                <p>
+                    Please try again later.
+                </p>
+
+            </div>
+
+        `;
+
     }
 
 }
 
 
-// ======================================================
-// 3. AUTOMATIC LEAGUE TABLE
-// ======================================================
+// =====================================================
+// LEAGUE TABLE
+// =====================================================
 
 async function loadLeagueTable() {
 
-    const container =
-        document.getElementById("leagueTable");
+    const tableBody =
+        document.getElementById(
+            "leagueTableBody"
+        );
 
-    if (!container) return;
-
-
-    container.innerHTML =
-        "<p>Loading league table...</p>";
-
+    if (!tableBody) {
+        console.error(
+            "League table body not found."
+        );
+        return;
+    }
 
     try {
 
-        const { data: teams, error: teamError } =
-            await supabaseClient
-                .from("teams")
-                .select(`
-                    id,
-                    name,
-                    short_name,
-                    registration_status
-                `)
-                .eq(
-                    "registration_status",
-                    "Approved"
-                );
+        const {
+            data: teams,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name
+            `)
+            .eq(
+                "registration_status",
+                "Approved"
+            )
+            .order("name", {
+                ascending: true
+            });
+
+        if (teamsError) {
+            throw teamsError;
+        }
 
 
-        if (teamError) throw teamError;
+        if (!teams || teams.length === 0) {
+
+            tableBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="10"
+                        style="text-align:center;"
+                    >
+                        No approved teams yet.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
 
 
-        const { data: fixtures, error: fixtureError } =
-            await supabaseClient
-                .from("fixtures")
-                .select(`
-                    id,
-                    home_team_id,
-                    away_team_id,
-                    status
-                `)
-                .in(
-                    "status",
-                    [
-                        "Scheduled",
-                        "Published",
-                        "Completed"
-                    ]
-                );
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                home_team_id,
+                away_team_id,
+                status
+            `)
+            .in("status", [
+                "Scheduled",
+                "Published",
+                "Completed"
+            ]);
+
+        if (fixturesError) {
+            throw fixturesError;
+        }
 
 
-        if (fixtureError) throw fixtureError;
+        const {
+            data: results,
+            error: resultsError
+        } = await supabaseClient
+            .from("results")
+            .select(`
+                id,
+                fixture_id,
+                home_score,
+                away_score
+            `);
 
-
-        const { data: results, error: resultError } =
-            await supabaseClient
-                .from("results")
-                .select(`
-                    id,
-                    fixture_id,
-                    home_score,
-                    away_score
-                `);
-
-
-        if (resultError) throw resultError;
+        if (resultsError) {
+            throw resultsError;
+        }
 
 
         const resultMap = {};
@@ -631,7 +478,7 @@ async function loadLeagueTable() {
         const table = {};
 
 
-        (teams || []).forEach(team => {
+        teams.forEach(team => {
 
             table[team.id] = {
 
@@ -640,7 +487,7 @@ async function loadLeagueTable() {
                 name: team.name,
 
                 short_name:
-                    team.short_name,
+                    team.short_name || "",
 
                 played: 0,
 
@@ -665,7 +512,10 @@ async function loadLeagueTable() {
 
         (fixtures || []).forEach(fixture => {
 
-            if (fixture.status !== "Completed") {
+            if (
+                fixture.status !==
+                "Completed"
+            ) {
                 return;
             }
 
@@ -673,8 +523,9 @@ async function loadLeagueTable() {
             const result =
                 resultMap[fixture.id];
 
-
-            if (!result) return;
+            if (!result) {
+                return;
+            }
 
 
             const home =
@@ -684,35 +535,32 @@ async function loadLeagueTable() {
                 table[fixture.away_team_id];
 
 
-            if (!home || !away) return;
+            if (!home || !away) {
+                return;
+            }
 
 
             const homeScore =
-                Number(result.home_score);
+                Number(result.home_score) || 0;
 
             const awayScore =
-                Number(result.away_score);
+                Number(result.away_score) || 0;
 
 
             home.played++;
-
             away.played++;
 
 
             home.gf += homeScore;
-
             home.ga += awayScore;
 
-
             away.gf += awayScore;
-
             away.ga += homeScore;
 
 
             if (homeScore > awayScore) {
 
                 home.won++;
-
                 home.points += 3;
 
                 away.lost++;
@@ -722,7 +570,6 @@ async function loadLeagueTable() {
             ) {
 
                 away.won++;
-
                 away.points += 3;
 
                 home.lost++;
@@ -730,11 +577,9 @@ async function loadLeagueTable() {
             } else {
 
                 home.drawn++;
-
                 away.drawn++;
 
                 home.points++;
-
                 away.points++;
 
             }
@@ -750,29 +595,38 @@ async function loadLeagueTable() {
         });
 
 
-        const sortedTable =
+        const sortedTeams =
             Object.values(table)
                 .sort((a, b) => {
 
                     if (
-                        b.points !== a.points
+                        b.points !==
+                        a.points
                     ) {
-                        return b.points -
-                            a.points;
+                        return (
+                            b.points -
+                            a.points
+                        );
                     }
 
                     if (
-                        b.gd !== a.gd
+                        b.gd !==
+                        a.gd
                     ) {
-                        return b.gd -
-                            a.gd;
+                        return (
+                            b.gd -
+                            a.gd
+                        );
                     }
 
                     if (
-                        b.gf !== a.gf
+                        b.gf !==
+                        a.gf
                     ) {
-                        return b.gf -
-                            a.gf;
+                        return (
+                            b.gf -
+                            a.gf
+                        );
                     }
 
                     return a.name.localeCompare(
@@ -782,168 +636,189 @@ async function loadLeagueTable() {
                 });
 
 
-        container.innerHTML = `
+        tableBody.innerHTML = "";
 
-            <div class="table-wrapper">
 
-                <table>
+        sortedTeams.forEach(
+            (team, index) => {
 
-                    <thead>
+                const row =
+                    document.createElement("tr");
 
-                        <tr>
 
-                            <th>Pos</th>
-                            <th>Team</th>
-                            <th>P</th>
-                            <th>W</th>
-                            <th>D</th>
-                            <th>L</th>
-                            <th>GF</th>
-                            <th>GA</th>
-                            <th>GD</th>
-                            <th>Pts</th>
+                const gd =
+                    team.gd > 0
+                    ? `+${team.gd}`
+                    : team.gd;
 
-                        </tr>
 
-                    </thead>
+                row.innerHTML = `
 
-                    <tbody>
+                    <td class="position">
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            team.name
+                        )}
 
                         ${
-                            sortedTable.map(
-                                (team, index) => `
-                                    <tr>
-
-                                        <td>
-                                            ${
-                                                index + 1
-                                            }
-                                        </td>
-
-                                        <td>
-                                            <strong>
-                                                ${escapeHtml(
-                                                    team.name
-                                                )}
-                                            </strong>
-                                        </td>
-
-                                        <td>
-                                            ${team.played}
-                                        </td>
-
-                                        <td>
-                                            ${team.won}
-                                        </td>
-
-                                        <td>
-                                            ${team.drawn}
-                                        </td>
-
-                                        <td>
-                                            ${team.lost}
-                                        </td>
-
-                                        <td>
-                                            ${team.gf}
-                                        </td>
-
-                                        <td>
-                                            ${team.ga}
-                                        </td>
-
-                                        <td>
-                                            ${team.gd}
-                                        </td>
-
-                                        <td>
-                                            <strong>
-                                                ${team.points}
-                                            </strong>
-                                        </td>
-
-                                    </tr>
-                                `
-                            ).join("")
+                            team.short_name
+                            ? `
+                                <small>
+                                    ${escapeHtml(
+                                        team.short_name
+                                    )}
+                                </small>
+                            `
+                            : ""
                         }
+                    </td>
 
-                    </tbody>
+                    <td>
+                        ${team.played}
+                    </td>
 
-                </table>
+                    <td>
+                        ${team.won}
+                    </td>
 
-            </div>
+                    <td>
+                        ${team.drawn}
+                    </td>
 
-        `;
+                    <td>
+                        ${team.lost}
+                    </td>
+
+                    <td>
+                        ${team.gf}
+                    </td>
+
+                    <td>
+                        ${team.ga}
+                    </td>
+
+                    <td>
+                        ${gd}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${team.points}
+                        </strong>
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(row);
+
+            }
+        );
 
 
     } catch (error) {
 
         console.error(
-            "Error loading league table:",
+            "LOAD LEAGUE TABLE ERROR:",
             error
         );
 
+        tableBody.innerHTML = `
 
-        container.innerHTML =
-            "<p>Unable to load league table.</p>";
+            <tr>
+
+                <td
+                    colspan="10"
+                    style="text-align:center;"
+                >
+
+                    ⚠️ Unable to Load League Table
+
+                </td>
+
+            </tr>
+
+        `;
+
     }
 
 }
 
 
-// ======================================================
-// 4. PUBLIC MATCH RESULTS
-// ======================================================
+// =====================================================
+// MATCH RESULTS
+// =====================================================
 
 async function loadResults() {
 
     const container =
-        document.getElementById("resultsContainer");
+        document.getElementById(
+            "resultsList"
+        );
 
-    if (!container) return;
-
-
-    container.innerHTML =
-        "<p>Loading results...</p>";
+    if (!container) {
+        console.error(
+            "Results container not found."
+        );
+        return;
+    }
 
 
     try {
 
-        const { data: fixtures, error: fixtureError } =
-            await supabaseClient
-                .from("fixtures")
-                .select(`
-                    id,
-                    competition_id,
-                    home_team_id,
-                    away_team_id,
-                    match_date,
-                    kick_off,
-                    venue,
-                    matchday,
-                    status
-                `)
-                .eq(
-                    "status",
-                    "Completed"
-                )
-                .order(
-                    "match_date",
-                    { ascending: false }
-                )
-                .order(
-                    "kick_off",
-                    { ascending: false }
-                );
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                venue,
+                matchday,
+                status
+            `)
+            .eq("status", "Completed")
+            .order("match_date", {
+                ascending: false
+            })
+            .order("kick_off", {
+                ascending: false
+            });
 
-
-        if (fixtureError) throw fixtureError;
+        if (fixturesError) {
+            throw fixturesError;
+        }
 
 
         if (!fixtures || fixtures.length === 0) {
 
-            container.innerHTML =
-                "<p>No completed matches yet.</p>";
+            container.innerHTML = `
+
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+
+                    <h3>
+                        🏁 No Match Results Yet
+                    </h3>
+
+                    <p>
+                        Completed matches will
+                        appear here.
+                    </p>
+
+                </div>
+
+            `;
 
             return;
         }
@@ -957,10 +832,12 @@ async function loadResults() {
 
         const teamIds = [
             ...new Set(
-                fixtures.flatMap(f => [
-                    f.home_team_id,
-                    f.away_team_id
-                ])
+                fixtures.flatMap(
+                    fixture => [
+                        fixture.home_team_id,
+                        fixture.away_team_id
+                    ]
+                )
             )
         ];
 
@@ -968,75 +845,135 @@ async function loadResults() {
         const competitionIds = [
             ...new Set(
                 fixtures.map(
-                    f => f.competition_id
+                    fixture =>
+                        fixture.competition_id
                 )
             )
         ];
 
 
-        const { data: results, error: resultError } =
-            await supabaseClient
-                .from("results")
-                .select(`
-                    id,
-                    fixture_id,
-                    home_score,
-                    away_score,
-                    match_report
-                `)
-                .in(
-                    "fixture_id",
-                    fixtureIds
-                );
+        const {
+            data: results,
+            error: resultsError
+        } = await supabaseClient
+            .from("results")
+            .select(`
+                id,
+                fixture_id,
+                home_score,
+                away_score,
+                match_report
+            `)
+            .in(
+                "fixture_id",
+                fixtureIds
+            );
+
+        if (resultsError) {
+            throw resultsError;
+        }
 
 
-        if (resultError) throw resultError;
+        const {
+            data: teams,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name
+            `)
+            .in("id", teamIds);
+
+        if (teamsError) {
+            throw teamsError;
+        }
 
 
-        const { data: teams, error: teamError } =
-            await supabaseClient
-                .from("teams")
+        const {
+            data: competitions,
+            error: competitionsError
+        } = await supabaseClient
+            .from("competitions")
+            .select(`
+                id,
+                name,
+                competition_type,
+                season
+            `)
+            .in(
+                "id",
+                competitionIds
+            );
+
+        if (competitionsError) {
+            throw competitionsError;
+        }
+
+
+        const {
+            data: goalScorers,
+            error: scorersError
+        } = await supabaseClient
+            .from("goal_scorers")
+            .select(`
+                id,
+                result_id,
+                player_id,
+                minute,
+                is_penalty
+            `)
+            .in(
+                "result_id",
+                (results || []).map(
+                    result => result.id
+                )
+            );
+
+        if (scorersError) {
+            throw scorersError;
+        }
+
+
+        const playerIds = [
+            ...new Set(
+                (goalScorers || []).map(
+                    scorer =>
+                        scorer.player_id
+                )
+            )
+        ];
+
+
+        let players = [];
+
+
+        if (playerIds.length > 0) {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("players")
                 .select(`
                     id,
                     name,
-                    short_name,
-                    logo_url
-                `)
-                .in("id", teamIds)
-                .eq(
-                    "registration_status",
-                    "Approved"
-                );
-
-
-        if (teamError) throw teamError;
-
-
-        const { data: competitions, error: competitionError } =
-            await supabaseClient
-                .from("competitions")
-                .select(`
-                    id,
-                    name,
-                    season
+                    jersey_number,
+                    team_id
                 `)
                 .in(
                     "id",
-                    competitionIds
+                    playerIds
                 );
 
+            if (error) {
+                throw error;
+            }
 
-        if (competitionError) throw competitionError;
+            players = data || [];
 
-
-        const resultMap = {};
-
-        (results || []).forEach(result => {
-
-            resultMap[result.fixture_id] =
-                result;
-
-        });
+        }
 
 
         const teamMap = {};
@@ -1051,84 +988,25 @@ async function loadResults() {
 
         const competitionMap = {};
 
-        (competitions || []).forEach(competition => {
+        (competitions || []).forEach(
+            competition => {
 
-            competitionMap[competition.id] =
-                competition;
+                competitionMap[
+                    competition.id
+                ] = competition;
+
+            }
+        );
+
+
+        const resultMap = {};
+
+        (results || []).forEach(result => {
+
+            resultMap[result.fixture_id] =
+                result;
 
         });
-
-
-        // ----------------------------------------------
-        // GOAL SCORERS
-        // ----------------------------------------------
-
-        const resultIds =
-            (results || []).map(
-                result => result.id
-            );
-
-
-        let goalScorers = [];
-
-
-        if (resultIds.length > 0) {
-
-            const { data, error } =
-                await supabaseClient
-                    .from("goal_scorers")
-                    .select(`
-                        id,
-                        result_id,
-                        player_id,
-                        minute,
-                        is_penalty
-                    `)
-                    .in(
-                        "result_id",
-                        resultIds
-                    );
-
-
-            if (error) throw error;
-
-            goalScorers = data || [];
-        }
-
-
-        const playerIds = [
-            ...new Set(
-                goalScorers
-                    .map(goal => goal.player_id)
-                    .filter(Boolean)
-            )
-        ];
-
-
-        let players = [];
-
-
-        if (playerIds.length > 0) {
-
-            const { data, error } =
-                await supabaseClient
-                    .from("players")
-                    .select(`
-                        id,
-                        full_name,
-                        jersey_number,
-                        team_id
-                    `)
-                    .in(
-                        "id",
-                        playerIds
-                    );
-
-
-            if (error) throw error;
-
-            players = data || [];
-        }
 
 
         const playerMap = {};
@@ -1141,356 +1019,524 @@ async function loadResults() {
         });
 
 
-        const goalsByResult = {};
+        container.innerHTML = "";
 
 
-        goalScorers.forEach(goal => {
+        fixtures.forEach(fixture => {
 
-            if (!goalsByResult[goal.result_id]) {
+            const result =
+                resultMap[fixture.id];
 
-                goalsByResult[goal.result_id] = [];
-
+            if (!result) {
+                return;
             }
 
 
-            goalsByResult[goal.result_id].push({
+            const homeTeam =
+                teamMap[
+                    fixture.home_team_id
+                ];
 
-                player:
-                    playerMap[goal.player_id],
+            const awayTeam =
+                teamMap[
+                    fixture.away_team_id
+                ];
 
-                minute:
-                    goal.minute,
 
-                is_penalty:
-                    goal.is_penalty
+            const competition =
+                competitionMap[
+                    fixture.competition_id
+                ];
 
-            });
+
+            const homeName =
+                homeTeam?.name ||
+                "Home Team";
+
+            const awayName =
+                awayTeam?.name ||
+                "Away Team";
+
+
+            const scorers =
+                (goalScorers || []).filter(
+                    scorer =>
+                        scorer.result_id ===
+                        result.id
+                );
+
+
+            const homeScorers =
+                scorers.filter(
+                    scorer => {
+
+                        const player =
+                            playerMap[
+                                scorer.player_id
+                            ];
+
+                        return (
+                            player &&
+                            player.team_id ===
+                            fixture.home_team_id
+                        );
+
+                    }
+                );
+
+
+            const awayScorers =
+                scorers.filter(
+                    scorer => {
+
+                        const player =
+                            playerMap[
+                                scorer.player_id
+                            ];
+
+                        return (
+                            player &&
+                            player.team_id ===
+                            fixture.away_team_id
+                        );
+
+                    }
+                );
+
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "result-card";
+
+
+            card.innerHTML = `
+
+                <div class="result-header">
+
+                    <strong>
+                        ${escapeHtml(
+                            competition?.name ||
+                            "Competition"
+                        )}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(
+                            fixture.matchday ||
+                            ""
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="result-date">
+
+                    📅 ${formatDate(
+                        fixture.match_date
+                    )}
+
+                    ${
+                        fixture.kick_off
+                        ? ` • ⏰ ${formatTime(
+                            fixture.kick_off
+                        )}`
+                        : ""
+                    }
+
+                </div>
+
+
+                <div class="result-score">
+
+                    <div class="result-team home-team">
+
+                        <strong>
+                            ${escapeHtml(
+                                homeName
+                            )}
+                        </strong>
+
+                        ${
+                            homeTeam?.short_name
+                            ? `
+                                <small>
+                                    ${escapeHtml(
+                                        homeTeam.short_name
+                                    )}
+                                </small>
+                            `
+                            : ""
+                        }
+
+                    </div>
+
+
+                    <div class="score-number">
+
+                        <span>
+                            ${Number(
+                                result.home_score
+                            ) || 0}
+                        </span>
+
+                        <span>
+                            -
+                        </span>
+
+                        <span>
+                            ${Number(
+                                result.away_score
+                            ) || 0}
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-team away-team">
+
+                        <strong>
+                            ${escapeHtml(
+                                awayName
+                            )}
+                        </strong>
+
+                        ${
+                            awayTeam?.short_name
+                            ? `
+                                <small>
+                                    ${escapeHtml(
+                                        awayTeam.short_name
+                                    )}
+                                </small>
+                            `
+                            : ""
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <div class="result-goals">
+
+                    <div class="result-goal-column">
+
+                        <h4>
+                            ⚽ ${escapeHtml(
+                                homeName
+                            )} Goals
+                        </h4>
+
+                        ${
+                            homeScorers.length
+                            ? homeScorers
+                                .sort(
+                                    (
+                                        a,
+                                        b
+                                    ) =>
+                                        (
+                                            Number(
+                                                a.minute
+                                            ) || 0
+                                        ) -
+                                        (
+                                            Number(
+                                                b.minute
+                                            ) || 0
+                                        )
+                                )
+                                .map(
+                                    scorer => {
+
+                                        const player =
+                                            playerMap[
+                                                scorer.player_id
+                                            ];
+
+                                        return `
+
+                                            <div
+                                                class="result-scorer"
+                                            >
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                                        player?.name ||
+                                                        "Player"
+                                                    )}
+                                                </strong>
+
+                                                <span>
+
+                                                    ${
+                                                        scorer.minute !==
+                                                        null &&
+                                                        scorer.minute !==
+                                                        undefined
+                                                        ? `${scorer.minute}'`
+                                                        : ""
+                                                    }
+
+                                                    ${
+                                                        scorer.is_penalty
+                                                        ? " • Penalty"
+                                                        : ""
+                                                    }
+
+                                                </span>
+
+                                            </div>
+
+                                        `;
+
+                                    }
+                                )
+                                .join("")
+                            : `
+                                <div
+                                    class="no-scorers"
+                                >
+                                    No goals recorded.
+                                </div>
+                            `
+                        }
+
+                    </div>
+
+
+                    <div class="result-goal-column">
+
+                        <h4>
+                            ⚽ ${escapeHtml(
+                                awayName
+                            )} Goals
+                        </h4>
+
+                        ${
+                            awayScorers.length
+                            ? awayScorers
+                                .sort(
+                                    (
+                                        a,
+                                        b
+                                    ) =>
+                                        (
+                                            Number(
+                                                a.minute
+                                            ) || 0
+                                        ) -
+                                        (
+                                            Number(
+                                                b.minute
+                                            ) || 0
+                                        )
+                                )
+                                .map(
+                                    scorer => {
+
+                                        const player =
+                                            playerMap[
+                                                scorer.player_id
+                                            ];
+
+                                        return `
+
+                                            <div
+                                                class="result-scorer"
+                                            >
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                                        player?.name ||
+                                                        "Player"
+                                                    )}
+                                                </strong>
+
+                                                <span>
+
+                                                    ${
+                                                        scorer.minute !==
+                                                        null &&
+                                                        scorer.minute !==
+                                                        undefined
+                                                        ? `${scorer.minute}'`
+                                                        : ""
+                                                    }
+
+                                                    ${
+                                                        scorer.is_penalty
+                                                        ? " • Penalty"
+                                                        : ""
+                                                    }
+
+                                                </span>
+
+                                            </div>
+
+                                        `;
+
+                                    }
+                                )
+                                .join("")
+                            : `
+                                <div
+                                    class="no-scorers"
+                                >
+                                    No goals recorded.
+                                </div>
+                            `
+                        }
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    result.match_report
+                    ? `
+                        <div
+                            class="match-report"
+                        >
+
+                            <h4>
+                                📝 Match Report
+                            </h4>
+
+                            <p>
+                                ${escapeHtml(
+                                    result.match_report
+                                )}
+                            </p>
+
+                        </div>
+                    `
+                    : ""
+                }
+
+
+                ${
+                    fixture.venue
+                    ? `
+                        <div
+                            class="result-venue"
+                        >
+                            📍 ${escapeHtml(
+                                fixture.venue
+                            )}
+                        </div>
+                    `
+                    : ""
+                }
+
+            `;
+
+
+            container.appendChild(card);
 
         });
 
 
-        // ----------------------------------------------
-        // RENDER RESULTS
-        // ----------------------------------------------
+        if (
+            container.children.length === 0
+        ) {
 
-        container.innerHTML =
-            fixtures.map(fixture => {
+            container.innerHTML = `
 
-                const result =
-                    resultMap[fixture.id];
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
 
-                if (!result) return "";
+                    <h3>
+                        🏁 No Match Results Yet
+                    </h3>
 
+                    <p>
+                        Completed matches will
+                        appear here.
+                    </p>
 
-                const home =
-                    teamMap[fixture.home_team_id];
+                </div>
 
-                const away =
-                    teamMap[fixture.away_team_id];
+            `;
 
-
-                const competition =
-                    competitionMap[
-                        fixture.competition_id
-                    ];
-
-
-                const goals =
-                    goalsByResult[result.id] || [];
-
-
-                const goalText =
-                    goals.length > 0
-                        ? `
-                            <div class="result-goals">
-
-                                ${goals.map(goal => {
-
-                                    if (!goal.player) {
-                                        return "";
-                                    }
-
-
-                                    let minuteText = "";
-
-
-                                    if (
-                                        goal.minute !== null &&
-                                        goal.minute !== undefined &&
-                                        goal.minute !== ""
-                                    ) {
-
-                                        minuteText =
-                                            ` ${escapeHtml(
-                                                goal.minute
-                                            )}'`;
-
-                                    }
-
-
-                                    const penaltyText =
-                                        goal.is_penalty
-                                            ? " (P)"
-                                            : "";
-
-
-                                    return `
-                                        <div>
-                                            ⚽
-                                            ${escapeHtml(
-                                                goal.player.full_name
-                                            )}
-                                            ${minuteText}
-                                            ${penaltyText}
-                                        </div>
-                                    `;
-
-                                }).join("")}
-
-                            </div>
-                        `
-                        : "";
-
-
-                return `
-                    <div class="result-card">
-
-                        <div class="result-competition">
-
-                            ${escapeHtml(
-                                competition?.name || ""
-                            )}
-
-                            ${
-                                competition?.season
-                                    ? ` • ${escapeHtml(
-                                        competition.season
-                                      )}`
-                                    : ""
-                            }
-
-                        </div>
-
-
-                        <div class="result-matchday">
-                            ${escapeHtml(
-                                fixture.matchday || ""
-                            )}
-                        </div>
-
-
-                        <div class="result-teams">
-
-                            <span>
-                                ${escapeHtml(
-                                    home?.name ||
-                                    "Home Team"
-                                )}
-                            </span>
-
-
-                            <strong class="result-score">
-
-                                ${result.home_score}
-
-                                -
-
-                                ${result.away_score}
-
-                            </strong>
-
-
-                            <span>
-                                ${escapeHtml(
-                                    away?.name ||
-                                    "Away Team"
-                                )}
-                            </span>
-
-                        </div>
-
-
-                        ${goalText}
-
-
-                        ${
-                            result.match_report
-                                ? `
-                                    <div class="match-report">
-                                        ${escapeHtml(
-                                            result.match_report
-                                        )}
-                                    </div>
-                                  `
-                                : ""
-                        }
-
-
-                        <div class="result-details">
-
-                            📅
-                            ${escapeHtml(
-                                fixture.match_date || ""
-                            )}
-
-                            &nbsp;&nbsp;
-
-                            ⏰
-                            ${escapeHtml(
-                                fixture.kick_off || ""
-                            )}
-
-                            &nbsp;&nbsp;
-
-                            📍
-                            ${escapeHtml(
-                                fixture.venue || ""
-                            )}
-
-                        </div>
-
-                    </div>
-                `;
-
-            }).join("");
-
-
-    } catch (error) {
-
-        console.error(
-            "Error loading results:",
-            error
-        );
-
-
-        container.innerHTML =
-            "<p>Unable to load match results.</p>";
-    }
-
-}
-
-
-// ======================================================
-// 5. COMPETITION STATUS
-// ======================================================
-
-async function loadCompetitionStatus() {
-
-    const container =
-        document.getElementById(
-            "competitionStatus"
-        );
-
-    if (!container) return;
-
-
-    try {
-
-        const { data, error } =
-            await supabaseClient
-                .from("competitions")
-                .select(`
-                    name,
-                    season,
-                    status
-                `)
-                .eq(
-                    "name",
-                    "Kabaru Ward Football League"
-                )
-                .eq(
-                    "season",
-                    "2026"
-                )
-                .maybeSingle();
-
-
-        if (error) throw error;
-
-
-        if (!data) {
-
-            container.textContent =
-                "Competition status: Coming Soon";
-
-            return;
         }
 
 
-        container.textContent =
-            `Competition status: ${data.status}`;
-
-
     } catch (error) {
 
         console.error(
-            "Error loading competition status:",
+            "LOAD MATCH RESULTS ERROR:",
             error
         );
 
+        container.innerHTML = `
 
-        container.textContent =
-            "Competition status: Coming Soon";
+            <div
+                class="card"
+                style="text-align:center;"
+            >
+
+                <h3>
+                    ⚠️ Unable to Load Match Results
+                </h3>
+
+                <p>
+                    Please try again later.
+                </p>
+
+            </div>
+
+        `;
+
     }
 
 }
 
 
-// ======================================================
-// 6. PLAYER LEADERS
-// ======================================================
-//
-// Shows:
-// - Top Scorers
-// - Top Assist Leaders
-// - Most Appearances
-// - Most Yellow Cards
-// - Most Red Cards
-//
-// Uses player_match_stats.
-// No new database column is required.
-// ======================================================
+// =====================================================
+// PLAYER LEADERS
+// =====================================================
 
 async function loadPlayerLeaders() {
 
-    const scorerContainer =
-        document.getElementById("topScorersList") ||
-        document.getElementById("topScorers") ||
-        document.getElementById("topScorersContainer");
+    const topScorersList =
+        document.getElementById(
+            "topScorersList"
+        );
+
+    const topAssistsList =
+        document.getElementById(
+            "topAssistsList"
+        );
+
+    const appearancesList =
+        document.getElementById(
+            "mostAppearancesList"
+        );
+
+    const yellowCardsList =
+        document.getElementById(
+            "yellowCardsList"
+        );
+
+    const redCardsList =
+        document.getElementById(
+            "redCardsList"
+        );
 
 
-    const assistContainer =
-        document.getElementById("topAssistsList") ||
-        document.getElementById("topAssists") ||
-        document.getElementById("topAssistsContainer");
-
-
-    const appearanceContainer =
-        document.getElementById("mostAppearancesList") ||
-        document.getElementById("appearancesList") ||
-        document.getElementById("appearancesContainer");
-
-
-    const yellowContainer =
-        document.getElementById("yellowCardsList") ||
-        document.getElementById("yellowCards") ||
-        document.getElementById("yellowCardsContainer");
-
-
-    const redContainer =
-        document.getElementById("redCardsList") ||
-        document.getElementById("redCards") ||
-        document.getElementById("redCardsContainer");
-
-
-    // If the HTML sections have not been added yet,
-    // do nothing. This keeps all current pages working.
     if (
-        !scorerContainer &&
-        !assistContainer &&
-        !appearanceContainer &&
-        !yellowContainer &&
-        !redContainer
+        !topScorersList &&
+        !topAssistsList &&
+        !appearancesList &&
+        !yellowCardsList &&
+        !redCardsList
     ) {
         return;
     }
@@ -1498,67 +1544,107 @@ async function loadPlayerLeaders() {
 
     try {
 
-        const { data: stats, error: statsError } =
-            await supabaseClient
-                .from("player_match_stats")
-                .select(`
-                    player_id,
-                    appearances,
-                    goals,
-                    assists,
-                    yellow_cards,
-                    red_cards
-                `);
+        const {
+            data: stats,
+            error: statsError
+        } = await supabaseClient
+            .from("player_match_stats")
+            .select(`
+                player_id,
+                appearances,
+                goals,
+                assists,
+                yellow_cards,
+                red_cards
+            `);
+
+        if (statsError) {
+            throw statsError;
+        }
 
 
-        if (statsError) throw statsError;
+        const playerIds = [
+            ...new Set(
+                (stats || []).map(
+                    stat => stat.player_id
+                )
+            )
+        ];
 
 
-        const { data: players, error: playersError } =
-            await supabaseClient
-                .from("players")
-                .select(`
-                    id,
-                    full_name,
-                    jersey_number,
-                    team_id,
-                    registration_status
-                `)
-                .eq(
-                    "registration_status",
-                    "Approved"
-                );
+        if (playerIds.length === 0) {
+
+            showEmptyLeader(
+                topScorersList,
+                "No scorer data yet."
+            );
+
+            showEmptyLeader(
+                topAssistsList,
+                "No assist data yet."
+            );
+
+            showEmptyLeader(
+                appearancesList,
+                "No appearance data yet."
+            );
+
+            showEmptyLeader(
+                yellowCardsList,
+                "No yellow card data yet."
+            );
+
+            showEmptyLeader(
+                redCardsList,
+                "No red card data yet."
+            );
+
+            return;
+        }
 
 
-        if (playersError) throw playersError;
+        const {
+            data: players,
+            error: playersError
+        } = await supabaseClient
+            .from("players")
+            .select(`
+                id,
+                name,
+                jersey_number,
+                team_id
+            `)
+            .in("id", playerIds);
+
+        if (playersError) {
+            throw playersError;
+        }
 
 
-        const { data: teams, error: teamsError } =
-            await supabaseClient
-                .from("teams")
-                .select(`
-                    id,
-                    name,
-                    short_name,
-                    registration_status
-                `)
-                .eq(
-                    "registration_status",
-                    "Approved"
-                );
+        const teamIds = [
+            ...new Set(
+                (players || []).map(
+                    player =>
+                        player.team_id
+                )
+            )
+        ];
 
 
-        if (teamsError) throw teamsError;
+        const {
+            data: teams,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name
+            `)
+            .in("id", teamIds);
 
-
-        const teamMap = {};
-
-        (teams || []).forEach(team => {
-
-            teamMap[team.id] =
-                team;
-
-        });
+        if (teamsError) {
+            throw teamsError;
+        }
 
 
         const playerMap = {};
@@ -1571,26 +1657,27 @@ async function loadPlayerLeaders() {
         });
 
 
-        // ----------------------------------------------
-        // Combine all stats for each player
-        // ----------------------------------------------
+        const teamMap = {};
+
+        (teams || []).forEach(team => {
+
+            teamMap[team.id] =
+                team;
+
+        });
+
 
         const totals = {};
 
 
-        (stats || []).forEach(row => {
+        (stats || []).forEach(stat => {
 
-            if (!playerMap[row.player_id]) {
-                return;
-            }
+            if (!totals[stat.player_id]) {
 
-
-            if (!totals[row.player_id]) {
-
-                totals[row.player_id] = {
+                totals[stat.player_id] = {
 
                     player_id:
-                        row.player_id,
+                        stat.player_id,
 
                     appearances: 0,
 
@@ -1607,429 +1694,428 @@ async function loadPlayerLeaders() {
             }
 
 
-            totals[row.player_id].appearances +=
-                Number(row.appearances || 0);
+            totals[
+                stat.player_id
+            ].appearances +=
+                Number(
+                    stat.appearances
+                ) || 0;
 
 
-            totals[row.player_id].goals +=
-                Number(row.goals || 0);
+            totals[
+                stat.player_id
+            ].goals +=
+                Number(
+                    stat.goals
+                ) || 0;
 
 
-            totals[row.player_id].assists +=
-                Number(row.assists || 0);
+            totals[
+                stat.player_id
+            ].assists +=
+                Number(
+                    stat.assists
+                ) || 0;
 
 
-            totals[row.player_id].yellow_cards +=
-                Number(row.yellow_cards || 0);
+            totals[
+                stat.player_id
+            ].yellow_cards +=
+                Number(
+                    stat.yellow_cards
+                ) || 0;
 
 
-            totals[row.player_id].red_cards +=
-                Number(row.red_cards || 0);
+            totals[
+                stat.player_id
+            ].red_cards +=
+                Number(
+                    stat.red_cards
+                ) || 0;
 
         });
 
 
-        const leaders =
-            Object.values(totals).map(stat => {
-
-                const player =
-                    playerMap[stat.player_id];
+        const allTotals =
+            Object.values(totals);
 
 
-                const team =
-                    teamMap[player.team_id];
-
-
-                return {
-
-                    ...stat,
-
-                    player,
-
-                    team
-
-                };
-
-            });
-
-
-        // ----------------------------------------------
-        // Sort the different leader lists
-        // ----------------------------------------------
-
-        const topScorers =
-            [...leaders]
-                .filter(player =>
-                    player.goals > 0
+        const scorerLeaders =
+            [...allTotals]
+                .filter(
+                    item =>
+                        item.goals > 0
                 )
-                .sort((a, b) => {
-
-                    if (
-                        b.goals !== a.goals
-                    ) {
-                        return b.goals -
-                            a.goals;
-                    }
-
-                    if (
-                        b.assists !== a.assists
-                    ) {
-                        return b.assists -
-                            a.assists;
-                    }
-
-                    return a.player.full_name
-                        .localeCompare(
-                            b.player.full_name
-                        );
-
-                })
-                .slice(0, 10);
-
-
-        const topAssists =
-            [...leaders]
-                .filter(player =>
-                    player.assists > 0
+                .sort(
+                    (a, b) =>
+                        b.goals -
+                        a.goals
                 )
-                .sort((a, b) => {
-
-                    if (
-                        b.assists !== a.assists
-                    ) {
-                        return b.assists -
-                            a.assists;
-                    }
-
-                    if (
-                        b.goals !== a.goals
-                    ) {
-                        return b.goals -
-                            a.goals;
-                    }
-
-                    return a.player.full_name
-                        .localeCompare(
-                            b.player.full_name
-                        );
-
-                })
-                .slice(0, 10);
+                .slice(0, 5);
 
 
-        const mostAppearances =
-            [...leaders]
-                .filter(player =>
-                    player.appearances > 0
+        const assistLeaders =
+            [...allTotals]
+                .filter(
+                    item =>
+                        item.assists > 0
                 )
-                .sort((a, b) => {
+                .sort(
+                    (a, b) =>
+                        b.assists -
+                        a.assists
+                )
+                .slice(0, 5);
 
-                    if (
-                        b.appearances !==
+
+        const appearanceLeaders =
+            [...allTotals]
+                .filter(
+                    item =>
+                        item.appearances > 0
+                )
+                .sort(
+                    (a, b) =>
+                        b.appearances -
                         a.appearances
-                    ) {
-                        return b.appearances -
-                            a.appearances;
-                    }
-
-                    return a.player.full_name
-                        .localeCompare(
-                            b.player.full_name
-                        );
-
-                })
-                .slice(0, 10);
-
-
-        const yellowCards =
-            [...leaders]
-                .filter(player =>
-                    player.yellow_cards > 0
                 )
-                .sort((a, b) => {
+                .slice(0, 5);
 
-                    if (
-                        b.yellow_cards !==
+
+        const yellowLeaders =
+            [...allTotals]
+                .filter(
+                    item =>
+                        item.yellow_cards > 0
+                )
+                .sort(
+                    (a, b) =>
+                        b.yellow_cards -
                         a.yellow_cards
-                    ) {
-                        return b.yellow_cards -
-                            a.yellow_cards;
-                    }
-
-                    return a.player.full_name
-                        .localeCompare(
-                            b.player.full_name
-                        );
-
-                })
-                .slice(0, 10);
-
-
-        const redCards =
-            [...leaders]
-                .filter(player =>
-                    player.red_cards > 0
                 )
-                .sort((a, b) => {
+                .slice(0, 5);
 
-                    if (
-                        b.red_cards !==
+
+        const redLeaders =
+            [...allTotals]
+                .filter(
+                    item =>
+                        item.red_cards > 0
+                )
+                .sort(
+                    (a, b) =>
+                        b.red_cards -
                         a.red_cards
-                    ) {
-                        return b.red_cards -
-                            a.red_cards;
-                    }
+                )
+                .slice(0, 5);
 
-                    return a.player.full_name
-                        .localeCompare(
-                            b.player.full_name
-                        );
-
-                })
-                .slice(0, 10);
-
-
-        // ----------------------------------------------
-        // Render helper
-        // ----------------------------------------------
-
-        function renderLeaderList(
-            container,
-            list,
-            statName,
-            emptyText
-        ) {
-
-            if (!container) return;
-
-
-            if (!list.length) {
-
-                container.innerHTML =
-                    `<p>${emptyText}</p>`;
-
-                return;
-            }
-
-
-            container.innerHTML =
-                list.map(
-                    (item, index) => {
-
-                        const player =
-                            item.player;
-
-
-                        const team =
-                            item.team;
-
-
-                        let value = 0;
-
-
-                        if (
-                            statName ===
-                            "goals"
-                        ) {
-                            value =
-                                item.goals;
-                        }
-
-
-                        if (
-                            statName ===
-                            "assists"
-                        ) {
-                            value =
-                                item.assists;
-                        }
-
-
-                        if (
-                            statName ===
-                            "appearances"
-                        ) {
-                            value =
-                                item.appearances;
-                        }
-
-
-                        if (
-                            statName ===
-                            "yellow_cards"
-                        ) {
-                            value =
-                                item.yellow_cards;
-                        }
-
-
-                        if (
-                            statName ===
-                            "red_cards"
-                        ) {
-                            value =
-                                item.red_cards;
-                        }
-
-
-                        return `
-                            <div class="leader-row">
-
-                                <div class="leader-position">
-                                    ${index + 1}
-                                </div>
-
-
-                                <div class="leader-player">
-
-                                    <strong>
-                                        ${escapeHtml(
-                                            player.full_name
-                                        )}
-                                    </strong>
-
-
-                                    <small>
-
-                                        ${
-                                            team
-                                                ? escapeHtml(
-                                                    team.name
-                                                  )
-                                                : "Team"
-                                        }
-
-                                        ${
-                                            player.jersey_number
-                                                ? ` • #${escapeHtml(
-                                                    player.jersey_number
-                                                  )}`
-                                                : ""
-                                        }
-
-                                    </small>
-
-                                </div>
-
-
-                                <div class="leader-stat">
-
-                                    <strong>
-                                        ${value}
-                                    </strong>
-
-                                </div>
-
-                            </div>
-                        `;
-
-                    }
-                ).join("");
-
-        }
-
-
-        // ----------------------------------------------
-        // Display all leader sections
-        // ----------------------------------------------
 
         renderLeaderList(
-            scorerContainer,
-            topScorers,
-            "goals",
-            "No goalscorers yet."
+            topScorersList,
+            scorerLeaders,
+            playerMap,
+            teamMap,
+            "goals"
         );
 
 
         renderLeaderList(
-            assistContainer,
-            topAssists,
-            "assists",
-            "No assist leaders yet."
+            topAssistsList,
+            assistLeaders,
+            playerMap,
+            teamMap,
+            "assists"
         );
 
 
         renderLeaderList(
-            appearanceContainer,
-            mostAppearances,
-            "appearances",
-            "No appearances yet."
+            appearancesList,
+            appearanceLeaders,
+            playerMap,
+            teamMap,
+            "appearances"
         );
 
 
         renderLeaderList(
-            yellowContainer,
-            yellowCards,
-            "yellow_cards",
-            "No yellow cards yet."
+            yellowCardsList,
+            yellowLeaders,
+            playerMap,
+            teamMap,
+            "yellow_cards"
         );
 
 
         renderLeaderList(
-            redContainer,
-            redCards,
-            "red_cards",
-            "No red cards yet."
+            redCardsList,
+            redLeaders,
+            playerMap,
+            teamMap,
+            "red_cards"
         );
 
 
     } catch (error) {
 
         console.error(
-            "Error loading player leaders:",
+            "LOAD PLAYER LEADERS ERROR:",
             error
         );
 
+        showLeaderError(
+            topScorersList
+        );
 
-        const containers = [
-            scorerContainer,
-            assistContainer,
-            appearanceContainer,
-            yellowContainer,
-            redContainer
-        ];
+        showLeaderError(
+            topAssistsList
+        );
 
+        showLeaderError(
+            appearancesList
+        );
 
-        containers.forEach(container => {
+        showLeaderError(
+            yellowCardsList
+        );
 
-            if (container) {
-
-                container.innerHTML =
-                    "<p>Unable to load player statistics.</p>";
-
-            }
-
-        });
+        showLeaderError(
+            redCardsList
+        );
 
     }
 
 }
 
 
-// ======================================================
-// 7. LOAD PUBLIC DATA
-// ======================================================
+// =====================================================
+// RENDER PLAYER LEADER
+// =====================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+function renderLeaderList(
+    container,
+    leaders,
+    playerMap,
+    teamMap,
+    statName
+) {
 
-        loadFixtures();
-
-        loadLeagueTable();
-
-        loadResults();
-
-        loadCompetitionStatus();
-
-        loadPlayerLeaders();
-
+    if (!container) {
+        return;
     }
-);
 
 
-// Also keep competition status available
-// if this script is loaded after the page has
-// already started loading.
+    if (
+        !leaders ||
+        leaders.length === 0
+    ) {
 
-loadCompetitionStatus();
+        container.innerHTML = `
+            <p>
+                No data yet.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    leaders.forEach(
+        (leader, index) => {
+
+            const player =
+                playerMap[
+                    leader.player_id
+                ];
+
+            const team =
+                player
+                ? teamMap[player.team_id]
+                : null;
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "leader-row";
+
+
+            row.innerHTML = `
+
+                <div class="leader-position">
+                    ${index + 1}
+                </div>
+
+                <div class="leader-player">
+
+                    <strong>
+                        ${escapeHtml(
+                            player?.name ||
+                            "Unknown Player"
+                        )}
+                    </strong>
+
+                    <small>
+                        ${
+                            team?.name
+                            ? escapeHtml(
+                                team.name
+                            )
+                            : "Unknown Team"
+                        }
+                    </small>
+
+                </div>
+
+                <div class="leader-stat">
+
+                    ${Number(
+                        leader[statName]
+                    ) || 0}
+
+                </div>
+
+            `;
+
+
+            container.appendChild(row);
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// HELPERS
+// =====================================================
+
+function showEmptyLeader(
+    container,
+    message
+) {
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML =
+        `<p>${message}</p>`;
+
+}
+
+
+function showLeaderError(
+    container
+) {
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML =
+        `<p>Unable to load statistics.</p>`;
+
+}
+
+
+function formatDate(dateString) {
+
+    if (!dateString) {
+        return "";
+    }
+
+
+    const date =
+        new Date(
+            dateString + "T00:00:00"
+        );
+
+
+    if (Number.isNaN(
+        date.getTime()
+    )) {
+        return dateString;
+    }
+
+
+    return date.toLocaleDateString(
+        "en-KE",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+function formatTime(timeString) {
+
+    if (!timeString) {
+        return "";
+    }
+
+
+    const parts =
+        timeString.split(":");
+
+
+    if (parts.length < 2) {
+        return timeString;
+    }
+
+
+    let hour =
+        Number(parts[0]);
+
+    const minute =
+        parts[1];
+
+
+    const suffix =
+        hour >= 12
+        ? "PM"
+        : "AM";
+
+
+    hour =
+        hour % 12 || 12;
+
+
+    return `${hour}:${minute} ${suffix}`;
+
+}
+
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
