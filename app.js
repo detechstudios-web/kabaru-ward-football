@@ -1,92 +1,212 @@
-
 // ========================================
 // KABARU WARD FOOTBALL
-// PUBLIC WEBSITE APP
+// MAIN WEBSITE APP
 // ========================================
 
-// =====================================================
-// DOM READY
-// =====================================================
+document.addEventListener("DOMContentLoaded", async function () {
 
-document.addEventListener("DOMContentLoaded", function () {
+    // ========================================
+    // MAIN ELEMENTS
+    // ========================================
 
-    loadFixtures();
-    loadLeagueTable();
-    loadResults();
-    loadCompetitionStatus();
-    loadPlayerLeaders();
+    const competitionNameEl =
+        document.getElementById("competitionName");
 
-});
+    const competitionSeasonEl =
+        document.getElementById("competitionSeason");
 
-
-// =====================================================
-// COMPETITION STATUS
-// =====================================================
-
-async function loadCompetitionStatus() {
-
-    const statusElement =
+    const competitionStatusEl =
         document.getElementById("competitionStatus");
 
-    if (!statusElement) return;
+    const tableBody =
+        document.getElementById("leagueTableBody");
 
-    try {
+    const fixturesContainer =
+        document.getElementById("fixturesContainer");
 
-        const { data, error } =
-            await supabaseClient
-                .from("competitions")
-                .select("id, name, status, created_at")
-                .eq("status", "Active")
-                .order("created_at", {
-                    ascending: false
-                })
-                .limit(1);
+    const resultsContainer =
+        document.getElementById("resultsContainer");
 
-        if (error) throw error;
+    const topScorersContainer =
+        document.getElementById("topScorers");
 
-        if (!data || data.length === 0) {
+    const assistLeadersContainer =
+        document.getElementById("assistLeaders");
 
-            statusElement.textContent =
-                "Competition status: No active competition";
+    const appearanceLeadersContainer =
+        document.getElementById("appearanceLeaders");
+
+    const yellowCardLeadersContainer =
+        document.getElementById("yellowCardLeaders");
+
+    const redCardLeadersContainer =
+        document.getElementById("redCardLeaders");
+
+
+    // ========================================
+    // HELPER
+    // ========================================
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function formatDate(dateValue) {
+
+        if (!dateValue) {
+            return "";
+        }
+
+        const date = new Date(dateValue + "T00:00:00");
+
+        if (isNaN(date.getTime())) {
+            return dateValue;
+        }
+
+        return date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+    }
+
+
+    function formatTime(timeValue) {
+
+        if (!timeValue) {
+            return "";
+        }
+
+        const parts = timeValue.split(":");
+
+        if (parts.length < 2) {
+            return timeValue;
+        }
+
+        let hour = Number(parts[0]);
+        const minute = parts[1];
+
+        const ampm = hour >= 12 ? "PM" : "AM";
+
+        hour = hour % 12;
+
+        if (hour === 0) {
+            hour = 12;
+        }
+
+        return hour + ":" + minute + " " + ampm;
+    }
+
+
+    // ========================================
+    // CURRENT COMPETITION
+    // ========================================
+
+    let currentCompetition = null;
+
+
+    async function loadCompetitionStatus() {
+
+        if (!competitionNameEl &&
+            !competitionSeasonEl &&
+            !competitionStatusEl) {
+            return;
+        }
+
+        const { data, error } = await supabaseClient
+            .from("competitions")
+            .select("*")
+            .eq("status", "Active")
+            .order("created_at", {
+                ascending: false
+            })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) {
+
+            console.error(
+                "Competition error:",
+                error
+            );
+
+            if (competitionStatusEl) {
+                competitionStatusEl.textContent =
+                    "Unable to load competition";
+            }
 
             return;
         }
 
-        statusElement.textContent =
-            "Competition status: " + data[0].status;
+        currentCompetition = data;
 
-    } catch (error) {
 
-        console.error(
-            "LOAD COMPETITION STATUS ERROR:",
-            error
-        );
+        if (!data) {
 
-        statusElement.textContent =
-            "Competition status: Unable to load";
+            if (competitionNameEl) {
+                competitionNameEl.textContent =
+                    "No Active Competition";
+            }
 
+            if (competitionSeasonEl) {
+                competitionSeasonEl.textContent = "";
+            }
+
+            if (competitionStatusEl) {
+                competitionStatusEl.textContent =
+                    "Coming Soon";
+            }
+
+            return;
+        }
+
+
+        if (competitionNameEl) {
+            competitionNameEl.textContent =
+                data.name || "Kabaru Ward Football";
+        }
+
+
+        if (competitionSeasonEl) {
+            competitionSeasonEl.textContent =
+                data.season
+                    ? "Season " + data.season
+                    : "";
+        }
+
+
+        if (competitionStatusEl) {
+            competitionStatusEl.textContent =
+                data.status || "Active";
+        }
     }
 
-}
+
+    // ========================================
+    // LOAD FIXTURES
+    // ========================================
+
+    async function loadFixtures() {
+
+        if (!fixturesContainer) {
+            return;
+        }
+
+        fixturesContainer.innerHTML =
+            "<p>Loading fixtures...</p>";
 
 
-// =====================================================
-// UPCOMING FIXTURES
-// =====================================================
-
-async function loadFixtures() {
-
-    const container =
-        document.getElementById("upcomingFixtures");
-
-    if (!container) return;
-
-    try {
-
-        const {
-            data: fixtures,
-            error
-        } = await supabaseClient
+        let query = supabaseClient
             .from("fixtures")
             .select(`
                 id,
@@ -97,12 +217,21 @@ async function loadFixtures() {
                 kick_off,
                 venue,
                 matchday,
-                status
+                status,
+                home_team:teams!fixtures_home_team_id_fkey(
+                    id,
+                    name
+                ),
+                away_team:teams!fixtures_away_team_id_fkey(
+                    id,
+                    name
+                ),
+                competition:competitions(
+                    id,
+                    name,
+                    season
+                )
             `)
-            .in("status", [
-                "Scheduled",
-                "Published"
-            ])
             .order("match_date", {
                 ascending: true
             })
@@ -110,294 +239,280 @@ async function loadFixtures() {
                 ascending: true
             });
 
-        if (error) throw error;
 
-        if (!fixtures || fixtures.length === 0) {
+        if (currentCompetition) {
 
-            container.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>📅 No Upcoming Fixtures</h3>
-                    <p>
-                        New fixtures will appear here
-                        once they are published.
-                    </p>
-                </div>
-            `;
+            query = query.eq(
+                "competition_id",
+                currentCompetition.id
+            );
+        }
+
+
+        const { data, error } = await query;
+
+
+        if (error) {
+
+            console.error(
+                "Fixtures error:",
+                error
+            );
+
+            fixturesContainer.innerHTML =
+                "<p>Unable to load fixtures.</p>";
 
             return;
         }
 
-        const teamIds = [
-            ...new Set(
-                fixtures.flatMap(f => [
-                    f.home_team_id,
-                    f.away_team_id
-                ])
-            )
-        ];
 
-        const competitionIds = [
-            ...new Set(
-                fixtures.map(
-                    f => f.competition_id
-                )
-            )
-        ];
+        const fixtures = (data || []).filter(function (fixture) {
 
-        const {
-            data: teams,
-            error: teamsError
-        } = await supabaseClient
-            .from("teams")
-            .select(`
-                id,
-                name,
-                short_name
-            `)
-            .in("id", teamIds);
-
-        if (teamsError) throw teamsError;
-
-        const {
-            data: competitions,
-            error: competitionsError
-        } = await supabaseClient
-            .from("competitions")
-            .select(`
-                id,
-                name,
-                competition_type,
-                season
-            `)
-            .in("id", competitionIds);
-
-        if (competitionsError) throw competitionsError;
-
-        const teamMap = {};
-
-        (teams || []).forEach(team => {
-            teamMap[team.id] = team;
+            return fixture.status !== "Completed" &&
+                   fixture.status !== "Cancelled";
         });
 
-        const competitionMap = {};
 
-        (competitions || []).forEach(competition => {
-            competitionMap[competition.id] =
-                competition;
-        });
+        if (fixtures.length === 0) {
 
-        container.innerHTML = "";
+            fixturesContainer.innerHTML =
+                "<p>No upcoming fixtures.</p>";
 
-        fixtures.forEach(fixture => {
+            return;
+        }
 
-            const homeTeam =
-                teamMap[fixture.home_team_id];
 
-            const awayTeam =
-                teamMap[fixture.away_team_id];
+        fixturesContainer.innerHTML = "";
 
-            const competition =
-                competitionMap[
-                    fixture.competition_id
-                ];
+
+        fixtures.forEach(function (fixture) {
 
             const homeName =
-                homeTeam?.name || "Home Team";
+                fixture.home_team?.name ||
+                "Home Team";
 
             const awayName =
-                awayTeam?.name || "Away Team";
+                fixture.away_team?.name ||
+                "Away Team";
+
 
             const card =
                 document.createElement("div");
 
-            card.className =
-                "fixture-card";
+            card.className = "fixture-card";
+
 
             card.innerHTML = `
 
-                <h3>
-                    ${escapeHtml(
-                        competition?.name ||
-                        "Football Competition"
-                    )}
-                </h3>
+                <div class="fixture-date">
+                    ${escapeHtml(formatDate(fixture.match_date))}
+                </div>
 
-                <div class="match">
+                <div class="fixture-match">
 
-                    <div class="team">
+                    <div class="fixture-team">
                         ${escapeHtml(homeName)}
                     </div>
 
-                    <div class="vs">
+                    <div class="fixture-vs">
                         VS
                     </div>
 
-                    <div class="team">
+                    <div class="fixture-team">
                         ${escapeHtml(awayName)}
                     </div>
 
                 </div>
 
-                <div class="match-info">
-
-                    📅 ${formatDate(
-                        fixture.match_date
-                    )}
+                <div class="fixture-details">
 
                     ${
                         fixture.kick_off
-                        ? ` • ⏰ ${formatTime(
-                            fixture.kick_off
-                        )}`
-                        : ""
+                            ? escapeHtml(
+                                formatTime(
+                                    fixture.kick_off
+                                )
+                            )
+                            : ""
                     }
 
                     ${
                         fixture.venue
-                        ? ` • 📍 ${escapeHtml(
-                            fixture.venue
-                        )}`
-                        : ""
+                            ? " • " +
+                              escapeHtml(
+                                  fixture.venue
+                              )
+                            : ""
+                    }
+
+                    ${
+                        fixture.matchday
+                            ? " • Matchday " +
+                              escapeHtml(
+                                  fixture.matchday
+                              )
+                            : ""
                     }
 
                 </div>
 
-                ${
-                    fixture.matchday
-                    ? `
-                        <div
-                            class="match-info"
-                            style="margin-top:8px;"
-                        >
-                            ${escapeHtml(
-                                fixture.matchday
-                            )}
-                        </div>
-                    `
-                    : ""
-                }
-
             `;
 
-            container.appendChild(card);
 
+            fixturesContainer.appendChild(card);
         });
-
-    } catch (error) {
-
-        console.error(
-            "LOAD FIXTURES ERROR:",
-            error
-        );
-
-        container.innerHTML = `
-            <div class="card" style="text-align:center;">
-                <h3>⚠️ Unable to Load Fixtures</h3>
-                <p>Please try again later.</p>
-            </div>
-        `;
-
     }
 
-}
+
+    // ========================================
+    // LOAD LEAGUE TABLE
+    // ========================================
+
+    async function loadLeagueTable() {
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML =
+            "<tr><td colspan='9'>Loading table...</td></tr>";
 
 
-// =====================================================
-// LEAGUE TABLE
-// =====================================================
+        const { data: teams, error: teamsError } =
+            await supabaseClient
+                .from("teams")
+                .select("id,name")
+                .eq("registration_status", "Approved")
+                .order("name");
 
-async function loadLeagueTable() {
 
-    const tableBody =
-        document.getElementById(
-            "leagueTableBody"
-        );
+        if (teamsError) {
 
-    if (!tableBody) return;
-
-    try {
-
-        const {
-            data: teams,
-            error: teamsError
-        } = await supabaseClient
-            .from("teams")
-            .select(`
-                id,
-                name,
-                short_name
-            `)
-            .eq(
-                "registration_status",
-                "Approved"
+            console.error(
+                "Teams error:",
+                teamsError
             );
 
-        if (teamsError) throw teamsError;
-
-        if (!teams || teams.length === 0) {
-
-            tableBody.innerHTML = `
-                <tr>
-                    <td
-                        colspan="10"
-                        style="text-align:center;"
-                    >
-                        No approved teams yet.
-                    </td>
-                </tr>
-            `;
+            tableBody.innerHTML =
+                "<tr><td colspan='9'>Unable to load table.</td></tr>";
 
             return;
         }
 
+
+        if (!teams || teams.length === 0) {
+
+            tableBody.innerHTML =
+                "<tr><td colspan='9'>No approved teams.</td></tr>";
+
+            return;
+        }
+
+
+        let fixtureQuery =
+            supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    home_team_id,
+                    away_team_id,
+                    status,
+                    competition_id
+                `)
+                .eq("status", "Completed");
+
+
+        if (currentCompetition) {
+
+            fixtureQuery =
+                fixtureQuery.eq(
+                    "competition_id",
+                    currentCompetition.id
+                );
+        }
+
+
         const {
             data: fixtures,
             error: fixturesError
-        } = await supabaseClient
-            .from("fixtures")
-            .select(`
-                id,
-                home_team_id,
-                away_team_id,
-                status
-            `)
-            .eq("status", "Completed");
+        } = await fixtureQuery;
 
-        if (fixturesError) throw fixturesError;
 
-        const {
-            data: results,
-            error: resultsError
-        } = await supabaseClient
-            .from("results")
-            .select(`
-                id,
-                fixture_id,
-                home_score,
-                away_score
-            `);
+        if (fixturesError) {
 
-        if (resultsError) throw resultsError;
+            console.error(
+                "Table fixtures error:",
+                fixturesError
+            );
+
+            tableBody.innerHTML =
+                "<tr><td colspan='9'>Unable to load table.</td></tr>";
+
+            return;
+        }
+
+
+        const fixtureIds =
+            (fixtures || []).map(function (f) {
+                return f.id;
+            });
+
+
+        let results = [];
+
+
+        if (fixtureIds.length > 0) {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("results")
+                .select(`
+                    id,
+                    fixture_id,
+                    home_score,
+                    away_score
+                `)
+                .in("fixture_id", fixtureIds);
+
+
+            if (error) {
+
+                console.error(
+                    "Results error:",
+                    error
+                );
+
+                tableBody.innerHTML =
+                    "<tr><td colspan='9'>Unable to load results.</td></tr>";
+
+                return;
+            }
+
+            results = data || [];
+        }
+
 
         const resultMap = {};
 
-        (results || []).forEach(result => {
+
+        results.forEach(function (result) {
 
             resultMap[result.fixture_id] =
                 result;
-
         });
 
-        const table = {};
 
-        teams.forEach(team => {
+        const stats = {};
 
-            table[team.id] = {
+
+        teams.forEach(function (team) {
+
+            stats[team.id] = {
 
                 id: team.id,
                 name: team.name,
-                short_name:
-                    team.short_name || "",
 
                 played: 0,
                 won: 0,
@@ -406,43 +521,53 @@ async function loadLeagueTable() {
 
                 gf: 0,
                 ga: 0,
+
                 gd: 0,
-
                 points: 0
-
             };
-
         });
 
-        (fixtures || []).forEach(fixture => {
+
+        (fixtures || []).forEach(function (fixture) {
 
             const result =
                 resultMap[fixture.id];
 
-            if (!result) return;
+
+            if (!result) {
+                return;
+            }
+
 
             const home =
-                table[fixture.home_team_id];
+                stats[fixture.home_team_id];
 
             const away =
-                table[fixture.away_team_id];
+                stats[fixture.away_team_id];
 
-            if (!home || !away) return;
+
+            if (!home || !away) {
+                return;
+            }
+
 
             const homeScore =
-                Number(result.home_score) || 0;
+                Number(result.home_score || 0);
 
             const awayScore =
-                Number(result.away_score) || 0;
+                Number(result.away_score || 0);
+
 
             home.played++;
             away.played++;
+
 
             home.gf += homeScore;
             home.ga += awayScore;
 
             away.gf += awayScore;
             away.ga += homeScore;
+
 
             if (homeScore > awayScore) {
 
@@ -451,9 +576,7 @@ async function loadLeagueTable() {
 
                 away.lost++;
 
-            } else if (
-                homeScore < awayScore
-            ) {
+            } else if (homeScore < awayScore) {
 
                 away.won++;
                 away.points += 3;
@@ -467,232 +590,190 @@ async function loadLeagueTable() {
 
                 home.points++;
                 away.points++;
-
             }
-
         });
 
-        Object.values(table).forEach(team => {
+
+        Object.values(stats).forEach(function (team) {
 
             team.gd =
                 team.gf - team.ga;
-
         });
 
-        const sortedTeams =
-            Object.values(table).sort(
-                (a, b) => {
 
-                    if (
-                        b.points !==
-                        a.points
-                    ) {
-                        return (
-                            b.points -
-                            a.points
-                        );
-                    }
+        const sorted =
+            Object.values(stats).sort(function (a, b) {
 
-                    if (
-                        b.gd !==
-                        a.gd
-                    ) {
-                        return (
-                            b.gd -
-                            a.gd
-                        );
-                    }
-
-                    if (
-                        b.gf !==
-                        a.gf
-                    ) {
-                        return (
-                            b.gf -
-                            a.gf
-                        );
-                    }
-
-                    return a.name.localeCompare(
-                        b.name
-                    );
-
+                if (b.points !== a.points) {
+                    return b.points - a.points;
                 }
-            );
+
+                if (b.gd !== a.gd) {
+                    return b.gd - a.gd;
+                }
+
+                if (b.gf !== a.gf) {
+                    return b.gf - a.gf;
+                }
+
+                return a.name.localeCompare(b.name);
+            });
+
 
         tableBody.innerHTML = "";
 
-        sortedTeams.forEach(
-            (team, index) => {
 
-                const row =
-                    document.createElement("tr");
+        sorted.forEach(function (team, index) {
 
-                const gd =
-                    team.gd > 0
-                    ? `+${team.gd}`
-                    : team.gd;
+            const row =
+                document.createElement("tr");
 
-                row.innerHTML = `
 
-                    <td class="position">
-                        ${index + 1}
-                    </td>
+            row.innerHTML = `
 
-                    <td>
-                        ${escapeHtml(
-                            team.name
-                        )}
-
-                        ${
-                            team.short_name
-                            ? `
-                                <small>
-                                    ${escapeHtml(
-                                        team.short_name
-                                    )}
-                                </small>
-                            `
-                            : ""
-                        }
-                    </td>
-
-                    <td>${team.played}</td>
-                    <td>${team.won}</td>
-                    <td>${team.drawn}</td>
-                    <td>${team.lost}</td>
-                    <td>${team.gf}</td>
-                    <td>${team.ga}</td>
-                    <td>${gd}</td>
-
-                    <td>
-                        <strong>
-                            ${team.points}
-                        </strong>
-                    </td>
-
-                `;
-
-                tableBody.appendChild(row);
-
-            }
-        );
-
-    } catch (error) {
-
-        console.error(
-            "LOAD LEAGUE TABLE ERROR:",
-            error
-        );
-
-        tableBody.innerHTML = `
-            <tr>
-                <td
-                    colspan="10"
-                    style="text-align:center;"
-                >
-                    ⚠️ Unable to Load League Table
+                <td class="position">
+                    ${index + 1}
                 </td>
-            </tr>
-        `;
 
+                <td>
+                    ${escapeHtml(team.name)}
+                </td>
+
+                <td>
+                    ${team.played}
+                </td>
+
+                <td>
+                    ${team.won}
+                </td>
+
+                <td>
+                    ${team.drawn}
+                </td>
+
+                <td>
+                    ${team.lost}
+                </td>
+
+                <td>
+                    ${team.gf}
+                </td>
+
+                <td>
+                    ${team.ga}
+                </td>
+
+                <td>
+                    <strong>
+                        ${team.points}
+                    </strong>
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(row);
+        });
     }
 
-}
+
+    // ========================================
+    // LOAD MATCH RESULTS
+    // ========================================
+
+    async function loadResults() {
+
+        if (!resultsContainer) {
+            return;
+        }
+
+        resultsContainer.innerHTML =
+            "<p>Loading results...</p>";
 
 
-// =====================================================
-// MATCH RESULTS
-// =====================================================
+        let query =
+            supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    venue,
+                    matchday,
+                    status,
 
-async function loadResults() {
+                    home_team:teams!fixtures_home_team_id_fkey(
+                        id,
+                        name
+                    ),
 
-    const container =
-        document.getElementById(
-            "resultsList"
-        );
+                    away_team:teams!fixtures_away_team_id_fkey(
+                        id,
+                        name
+                    ),
 
-    if (!container) return;
+                    competition:competitions(
+                        id,
+                        name,
+                        season
+                    )
+                `)
+                .eq("status", "Completed")
+                .order("match_date", {
+                    ascending: false
+                })
+                .order("kick_off", {
+                    ascending: false
+                });
 
-    try {
+
+        if (currentCompetition) {
+
+            query =
+                query.eq(
+                    "competition_id",
+                    currentCompetition.id
+                );
+        }
+
 
         const {
             data: fixtures,
-            error: fixturesError
-        } = await supabaseClient
-            .from("fixtures")
-            .select(`
-                id,
-                competition_id,
-                home_team_id,
-                away_team_id,
-                match_date,
-                kick_off,
-                venue,
-                matchday,
-                status
-            `)
-            .eq("status", "Completed")
-            .order("match_date", {
-                ascending: false
-            })
-            .order("kick_off", {
-                ascending: false
-            });
+            error: fixtureError
+        } = await query;
 
-        if (fixturesError) {
-            throw fixturesError;
-        }
 
-        if (!fixtures || fixtures.length === 0) {
+        if (fixtureError) {
 
-            container.innerHTML = `
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-                    <h3>
-                        🏁 No Match Results Yet
-                    </h3>
+            console.error(
+                "Result fixtures error:",
+                fixtureError
+            );
 
-                    <p>
-                        Completed matches will
-                        appear here.
-                    </p>
-                </div>
-            `;
+            resultsContainer.innerHTML =
+                "<p>Unable to load results.</p>";
 
             return;
         }
 
+
+        if (!fixtures || fixtures.length === 0) {
+
+            resultsContainer.innerHTML =
+                "<p>No match results yet.</p>";
+
+            return;
+        }
+
+
         const fixtureIds =
-            fixtures.map(
-                fixture => fixture.id
-            );
+            fixtures.map(function (fixture) {
+                return fixture.id;
+            });
 
-        const teamIds = [
-            ...new Set(
-                fixtures.flatMap(
-                    fixture => [
-                        fixture.home_team_id,
-                        fixture.away_team_id
-                    ]
-                )
-            )
-        ];
-
-        const competitionIds = [
-            ...new Set(
-                fixtures.map(
-                    fixture =>
-                        fixture.competition_id
-                )
-            )
-        ];
-
-        // ---------------------------------------------
-        // RESULTS
-        // ---------------------------------------------
 
         const {
             data: results,
@@ -704,72 +785,44 @@ async function loadResults() {
                 fixture_id,
                 home_score,
                 away_score,
-                match_report
+                match_report,
+                created_at
             `)
-            .in(
-                "fixture_id",
-                fixtureIds
-            );
+            .in("fixture_id", fixtureIds);
+
 
         if (resultsError) {
-            throw resultsError;
-        }
 
-        // ---------------------------------------------
-        // TEAMS
-        // ---------------------------------------------
-
-        const {
-            data: teams,
-            error: teamsError
-        } = await supabaseClient
-            .from("teams")
-            .select(`
-                id,
-                name,
-                short_name
-            `)
-            .in("id", teamIds);
-
-        if (teamsError) {
-            throw teamsError;
-        }
-
-        // ---------------------------------------------
-        // COMPETITIONS
-        // ---------------------------------------------
-
-        const {
-            data: competitions,
-            error: competitionsError
-        } = await supabaseClient
-            .from("competitions")
-            .select(`
-                id,
-                name,
-                competition_type,
-                season
-            `)
-            .in(
-                "id",
-                competitionIds
+            console.error(
+                "Results loading error:",
+                resultsError
             );
 
-        if (competitionsError) {
-            throw competitionsError;
+            resultsContainer.innerHTML =
+                "<p>Unable to load match results.</p>";
+
+            return;
         }
 
-        // ---------------------------------------------
-        // GOAL SCORERS
-        // ---------------------------------------------
 
-        let goalScorers = [];
-        let scorerPlayers = [];
+        const resultMap = {};
+
+
+        (results || []).forEach(function (result) {
+
+            resultMap[result.fixture_id] =
+                result;
+        });
+
 
         const resultIds =
-            (results || []).map(
-                result => result.id
-            );
+            (results || []).map(function (result) {
+                return result.id;
+            });
+
+
+        let goalRows = [];
+
 
         if (resultIds.length > 0) {
 
@@ -783,297 +836,147 @@ async function loadResults() {
                     result_id,
                     player_id,
                     minute,
+                    assist_player_id,
                     is_penalty
                 `)
-                .in(
-                    "result_id",
-                    resultIds
-                )
+                .in("result_id", resultIds)
                 .order("minute", {
                     ascending: true
                 });
 
+
             if (error) {
 
                 console.error(
-                    "LOAD GOAL SCORERS ERROR:",
+                    "Goal scorers error:",
                     error
                 );
 
             } else {
 
-                goalScorers =
-                    data || [];
-
-                const scorerPlayerIds = [
-                    ...new Set(
-                        goalScorers.map(
-                            scorer =>
-                                scorer.player_id
-                        )
-                    )
-                ];
-
-                if (
-                    scorerPlayerIds.length > 0
-                ) {
-
-                    const {
-                        data: playerData,
-                        error: playerError
-                    } = await supabaseClient
-                        .from("players")
-                        .select(`
-                            id,
-                            name,
-                            jersey_number,
-                            team_id
-                        `)
-                        .in(
-                            "id",
-                            scorerPlayerIds
-                        );
-
-                    if (playerError) {
-
-                        console.error(
-                            "LOAD SCORER PLAYERS ERROR:",
-                            playerError
-                        );
-
-                    } else {
-
-                        scorerPlayers =
-                            playerData || [];
-
-                    }
-
-                }
-
+                goalRows = data || [];
             }
-
         }
 
-        // ---------------------------------------------
-        // MAPS
-        // ---------------------------------------------
 
-        const resultMap = {};
+        const playerIds = [];
 
-        (results || []).forEach(result => {
 
-            resultMap[result.fixture_id] =
-                result;
+        goalRows.forEach(function (goal) {
 
-        });
-
-        const teamMap = {};
-
-        (teams || []).forEach(team => {
-
-            teamMap[team.id] =
-                team;
-
-        });
-
-        const competitionMap = {};
-
-        (competitions || []).forEach(
-            competition => {
-
-                competitionMap[
-                    competition.id
-                ] = competition;
-
+            if (goal.player_id) {
+                playerIds.push(
+                    goal.player_id
+                );
             }
-        );
 
-        const scorerPlayerMap = {};
+            if (goal.assist_player_id) {
+                playerIds.push(
+                    goal.assist_player_id
+                );
+            }
+        });
 
-        scorerPlayers.forEach(player => {
 
-            scorerPlayerMap[player.id] =
+        let players = [];
+
+
+        if (playerIds.length > 0) {
+
+            const uniquePlayerIds =
+                [...new Set(playerIds)];
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("players")
+                .select(`
+                    id,
+                    team_id,
+                    full_name,
+                    jersey_number,
+                    position
+                `)
+                .in("id", uniquePlayerIds);
+
+
+            if (error) {
+
+                console.error(
+                    "Players error:",
+                    error
+                );
+
+            } else {
+
+                players = data || [];
+            }
+        }
+
+
+        const playerMap = {};
+
+
+        players.forEach(function (player) {
+
+            playerMap[player.id] =
                 player;
-
         });
 
-        const scorersByResult = {};
 
-        goalScorers.forEach(scorer => {
+        resultsContainer.innerHTML = "";
 
-            if (
-                !scorersByResult[
-                    scorer.result_id
-                ]
-            ) {
 
-                scorersByResult[
-                    scorer.result_id
-                ] = [];
-
-            }
-
-            scorersByResult[
-                scorer.result_id
-            ].push(scorer);
-
-        });
-
-        // ---------------------------------------------
-        // RENDER RESULTS
-        // ---------------------------------------------
-
-        container.innerHTML = "";
-
-        fixtures.forEach(fixture => {
+        fixtures.forEach(function (fixture) {
 
             const result =
                 resultMap[fixture.id];
 
-            if (!result) return;
 
-            const homeTeam =
-                teamMap[
-                    fixture.home_team_id
-                ];
+            if (!result) {
+                return;
+            }
 
-            const awayTeam =
-                teamMap[
-                    fixture.away_team_id
-                ];
-
-            const competition =
-                competitionMap[
-                    fixture.competition_id
-                ];
 
             const homeName =
-                homeTeam?.name ||
+                fixture.home_team?.name ||
                 "Home Team";
 
             const awayName =
-                awayTeam?.name ||
+                fixture.away_team?.name ||
                 "Away Team";
 
-            const matchScorers =
-                scorersByResult[
-                    result.id
-                ] || [];
 
-            // -----------------------------------------
-            // SCORER HTML
-            // -----------------------------------------
+            const goals =
+                goalRows.filter(function (goal) {
 
-            let scorerHtml = "";
+                    return goal.result_id === result.id;
+                });
 
-            if (
-                matchScorers.length > 0
-            ) {
 
-                scorerHtml = `
-                    <div class="match-scorers">
+            const homeGoals =
+                goals.filter(function (goal) {
 
-                        <h4>
-                            ⚽ Goal Scorers
-                        </h4>
+                    return goal.player_id &&
+                        playerMap[goal.player_id] &&
+                        playerMap[goal.player_id].team_id ===
+                            fixture.home_team_id;
 
-                        <div
-                            style="
-                                display:flex;
-                                flex-direction:column;
-                                gap:6px;
-                            "
-                        >
+                });
 
-                            ${matchScorers
-                                .map(
-                                    scorer => {
 
-                                        const player =
-                                            scorerPlayerMap[
-                                                scorer.player_id
-                                            ];
+            const awayGoals =
+                goals.filter(function (goal) {
 
-                                        const playerName =
-                                            player?.name ||
-                                            "Unknown Player";
+                    return goal.player_id &&
+                        playerMap[goal.player_id] &&
+                        playerMap[goal.player_id].team_id ===
+                            fixture.away_team_id;
 
-                                        const minute =
-                                            scorer.minute !== null &&
-                                            scorer.minute !== undefined &&
-                                            scorer.minute !== ""
-                                            ? `${scorer.minute}'`
-                                            : "";
+                });
 
-                                        const penalty =
-                                            scorer.is_penalty
-                                            ? " (P)"
-                                            : "";
-
-                                        return `
-                                            <div>
-                                                ⚽
-                                                <strong>
-                                                    ${escapeHtml(
-                                                        playerName
-                                                    )}
-                                                </strong>
-
-                                                ${
-                                                    minute
-                                                    ? `
-                                                        <span>
-                                                            ${escapeHtml(
-                                                                minute
-                                                            )}
-                                                        </span>
-                                                    `
-                                                    : ""
-                                                }
-
-                                                ${
-                                                    penalty
-                                                    ? `
-                                                        <small>
-                                                            ${penalty}
-                                                        </small>
-                                                    `
-                                                    : ""
-                                                }
-                                            </div>
-                                        `;
-
-                                    }
-                                )
-                                .join("")}
-
-                        </div>
-
-                    </div>
-                `;
-
-            } else {
-
-                scorerHtml = `
-                    <div
-                        class="match-scorers"
-                        style="
-                            margin-top:12px;
-                            padding:10px;
-                        "
-                    >
-                        <h4>
-                            ⚽ Goal Scorers
-                        </h4>
-
-                        <p>
-                            Scorer information not
-                            available for this match.
-                        </p>
-                    </div>
-                `;
-
-            }
 
             const card =
                 document.createElement("div");
@@ -1081,121 +984,126 @@ async function loadResults() {
             card.className =
                 "result-card";
 
-            card.innerHTML = `
 
-                <div class="result-header">
+            let scorerHtml = "";
 
-                    <strong>
-                        ${escapeHtml(
-                            competition?.name ||
-                            "Competition"
-                        )}
-                    </strong>
 
-                    <span>
-                        ${escapeHtml(
-                            fixture.matchday || ""
-                        )}
-                    </span>
+            if (goals.length > 0) {
 
-                </div>
+                scorerHtml = `
 
-                <div class="result-date">
-
-                    📅 ${formatDate(
-                        fixture.match_date
-                    )}
-
-                    ${
-                        fixture.kick_off
-                        ? ` • ⏰ ${formatTime(
-                            fixture.kick_off
-                        )}`
-                        : ""
-                    }
-
-                </div>
-
-                <div class="result-score">
-
-                    <div
-                        class="result-team home-team"
-                    >
+                    <div class="result-scorers">
 
                         <strong>
-                            ${escapeHtml(
-                                homeName
-                            )}
+                            Goal Scorers
                         </strong>
 
-                        ${
-                            homeTeam?.short_name
-                            ? `
-                                <small>
-                                    ${escapeHtml(
-                                        homeTeam.short_name
-                                    )}
-                                </small>
-                            `
-                            : ""
-                        }
+                        <div class="scorers-columns">
+
+                            <div class="home-scorers">
+
+                                <div class="scorer-team-title">
+                                    ${escapeHtml(homeName)}
+                                </div>
+
+                                ${
+                                    homeGoals.length
+                                        ? homeGoals.map(function (goal) {
+
+                                            const player =
+                                                playerMap[
+                                                    goal.player_id
+                                                ];
+
+                                            const playerName =
+                                                player?.full_name ||
+                                                "Unknown Player";
+
+                                            const minute =
+                                                goal.minute !== null &&
+                                                goal.minute !== undefined
+                                                    ? goal.minute + "'"
+                                                    : "";
+
+                                            const penalty =
+                                                goal.is_penalty
+                                                    ? " (P)"
+                                                    : "";
+
+                                            return `
+                                                <div class="scorer">
+                                                    ${escapeHtml(playerName)}
+                                                    ${escapeHtml(minute)}
+                                                    ${penalty}
+                                                </div>
+                                            `;
+
+                                        }).join("")
+                                        : "<div>No goals</div>"
+                                }
+
+                            </div>
+
+
+                            <div class="away-scorers">
+
+                                <div class="scorer-team-title">
+                                    ${escapeHtml(awayName)}
+                                </div>
+
+                                ${
+                                    awayGoals.length
+                                        ? awayGoals.map(function (goal) {
+
+                                            const player =
+                                                playerMap[
+                                                    goal.player_id
+                                                ];
+
+                                            const playerName =
+                                                player?.full_name ||
+                                                "Unknown Player";
+
+                                            const minute =
+                                                goal.minute !== null &&
+                                                goal.minute !== undefined
+                                                    ? goal.minute + "'"
+                                                    : "";
+
+                                            const penalty =
+                                                goal.is_penalty
+                                                    ? " (P)"
+                                                    : "";
+
+                                            return `
+                                                <div class="scorer">
+                                                    ${escapeHtml(playerName)}
+                                                    ${escapeHtml(minute)}
+                                                    ${penalty}
+                                                </div>
+                                            `;
+
+                                        }).join("")
+                                        : "<div>No goals</div>"
+                                }
+
+                            </div>
+
+                        </div>
 
                     </div>
+                `;
+            }
 
-                    <div class="score-number">
 
-                        <span>
-                            ${Number(
-                                result.home_score
-                            ) || 0}
-                        </span>
-
-                        <span>-</span>
-
-                        <span>
-                            ${Number(
-                                result.away_score
-                            ) || 0}
-                        </span>
-
-                    </div>
-
-                    <div
-                        class="result-team away-team"
-                    >
-
-                        <strong>
-                            ${escapeHtml(
-                                awayName
-                            )}
-                        </strong>
-
-                        ${
-                            awayTeam?.short_name
-                            ? `
-                                <small>
-                                    ${escapeHtml(
-                                        awayTeam.short_name
-                                    )}
-                                </small>
-                            `
-                            : ""
-                        }
-
-                    </div>
-
-                </div>
-
-                ${scorerHtml}
-
-                ${
-                    result.match_report
+            const report =
+                result.match_report
                     ? `
                         <div class="match-report">
 
-                            <h4>
-                                📝 Match Report
-                            </h4>
+                            <strong>
+                                Match Report
+                            </strong>
 
                             <p>
                                 ${escapeHtml(
@@ -1205,131 +1113,132 @@ async function loadResults() {
 
                         </div>
                     `
-                    : ""
-                }
+                    : "";
 
-                ${
-                    fixture.venue
-                    ? `
-                        <div class="result-venue">
-                            📍 ${escapeHtml(
-                                fixture.venue
-                            )}
-                        </div>
-                    `
-                    : ""
-                }
+
+            card.innerHTML = `
+
+                <div class="result-date">
+                    ${escapeHtml(
+                        formatDate(
+                            fixture.match_date
+                        )
+                    )}
+                </div>
+
+                <div class="result-match">
+
+                    <div class="result-team">
+                        ${escapeHtml(homeName)}
+                    </div>
+
+                    <div class="result-score">
+
+                        <strong>
+                            ${Number(result.home_score || 0)}
+                        </strong>
+
+                        <span>
+                            -
+                        </span>
+
+                        <strong>
+                            ${Number(result.away_score || 0)}
+                        </strong>
+
+                    </div>
+
+                    <div class="result-team">
+                        ${escapeHtml(awayName)}
+                    </div>
+
+                </div>
+
+                <div class="result-details">
+
+                    ${
+                        fixture.kick_off
+                            ? escapeHtml(
+                                formatTime(
+                                    fixture.kick_off
+                                )
+                            )
+                            : ""
+                    }
+
+                    ${
+                        fixture.venue
+                            ? " • " +
+                              escapeHtml(
+                                  fixture.venue
+                              )
+                            : ""
+                    }
+
+                </div>
+
+                ${scorerHtml}
+
+                ${report}
 
             `;
 
-            container.appendChild(card);
 
+            resultsContainer.appendChild(card);
         });
 
+
+        if (resultsContainer.innerHTML.trim() === "") {
+
+            resultsContainer.innerHTML =
+                "<p>No match results yet.</p>";
+        }
+    }
+
+
+    // ========================================
+    // PLAYER LEADERS
+    // ========================================
+
+    async function loadPlayerLeaders() {
+
+        const leaderContainers = [
+
+            topScorersContainer,
+            assistLeadersContainer,
+            appearanceLeadersContainer,
+            yellowCardLeadersContainer,
+            redCardLeadersContainer
+
+        ];
+
+
         if (
-            container.children.length === 0
+            leaderContainers.every(function (element) {
+                return !element;
+            })
         ) {
-
-            container.innerHTML = `
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-                    <h3>
-                        🏁 No Match Results Yet
-                    </h3>
-
-                    <p>
-                        Completed matches will
-                        appear here.
-                    </p>
-                </div>
-            `;
-
+            return;
         }
 
-    } catch (error) {
 
-        console.error(
-            "LOAD MATCH RESULTS ERROR:",
-            error
-        );
+        leaderContainers.forEach(function (element) {
 
-        container.innerHTML = `
-            <div
-                class="card"
-                style="text-align:center;"
-            >
-                <h3>
-                    ⚠️ Unable to Load Match Results
-                </h3>
+            if (element) {
+                element.innerHTML =
+                    "<p>Loading...</p>";
+            }
+        });
 
-                <p>
-                    Please try again later.
-                </p>
-            </div>
-        `;
-
-    }
-
-}
-
-
-// =====================================================
-// PLAYER LEADERS
-// =====================================================
-
-async function loadPlayerLeaders() {
-
-    const topScorersList =
-        document.getElementById(
-            "topScorersList"
-        );
-
-    const topAssistsList =
-        document.getElementById(
-            "topAssistsList"
-        );
-
-    const appearancesList =
-        document.getElementById(
-            "mostAppearancesList"
-        );
-
-    const yellowCardsList =
-        document.getElementById(
-            "yellowCardsList"
-        );
-
-    const redCardsList =
-        document.getElementById(
-            "redCardsList"
-        );
-
-    if (
-        !topScorersList &&
-        !topAssistsList &&
-        !appearancesList &&
-        !yellowCardsList &&
-        !redCardsList
-    ) {
-        return;
-    }
-
-    // =================================================
-    // PLAYER MATCH STATS
-    // =================================================
-
-    let stats = [];
-
-    try {
 
         const {
-            data,
-            error
+            data: stats,
+            error: statsError
         } = await supabaseClient
             .from("player_match_stats")
             .select(`
+                id,
+                result_id,
                 player_id,
                 appearances,
                 goals,
@@ -1338,54 +1247,42 @@ async function loadPlayerLeaders() {
                 red_cards
             `);
 
-        if (error) {
+
+        if (statsError) {
 
             console.error(
-                "PLAYER MATCH STATS ERROR:",
-                error
+                "Player stats error:",
+                statsError
             );
 
-            // Do not destroy the entire
-            // leaders section.
-            stats = [];
+            leaderContainers.forEach(function (element) {
 
-        } else {
+                if (element) {
+                    element.innerHTML =
+                        "<p>Unable to load player statistics.</p>";
+                }
+            });
 
-            stats = data || [];
-
+            return;
         }
 
-    } catch (error) {
 
-        console.error(
-            "PLAYER STATS REQUEST ERROR:",
-            error
-        );
+        const allStats =
+            stats || [];
 
-        stats = [];
 
-    }
+        const playerIds =
+            [...new Set(
+                allStats.map(function (stat) {
+                    return stat.player_id;
+                })
+            )];
 
-    // =================================================
-    // GET PLAYERS
-    // =================================================
 
-    let players = [];
+        let players = [];
 
-    try {
 
-        const playerIds = [
-            ...new Set(
-                stats.map(
-                    stat =>
-                        stat.player_id
-                )
-            )
-        ];
-
-        if (
-            playerIds.length > 0
-        ) {
+        if (playerIds.length > 0) {
 
             const {
                 data,
@@ -1394,59 +1291,40 @@ async function loadPlayerLeaders() {
                 .from("players")
                 .select(`
                     id,
-                    name,
+                    team_id,
+                    full_name,
                     jersey_number,
-                    team_id
+                    position
                 `)
-                .in(
-                    "id",
-                    playerIds
-                );
+                .in("id", playerIds);
+
 
             if (error) {
 
                 console.error(
-                    "LEADER PLAYERS ERROR:",
+                    "Leader players error:",
                     error
                 );
 
             } else {
 
                 players = data || [];
-
             }
-
         }
 
-    } catch (error) {
 
-        console.error(
-            "GET LEADER PLAYERS ERROR:",
-            error
-        );
+        const teamIds =
+            [...new Set(
+                players.map(function (player) {
+                    return player.team_id;
+                })
+            )];
 
-    }
 
-    // =================================================
-    // GET TEAMS
-    // =================================================
+        let teams = [];
 
-    let teams = [];
 
-    try {
-
-        const teamIds = [
-            ...new Set(
-                players.map(
-                    player =>
-                        player.team_id
-                )
-            )
-        ];
-
-        if (
-            teamIds.length > 0
-        ) {
+        if (teamIds.length > 0) {
 
             const {
                 data,
@@ -1457,483 +1335,411 @@ async function loadPlayerLeaders() {
                     id,
                     name
                 `)
-                .in(
-                    "id",
-                    teamIds
-                );
+                .in("id", teamIds);
+
 
             if (error) {
 
                 console.error(
-                    "LEADER TEAMS ERROR:",
+                    "Leader teams error:",
                     error
                 );
 
             } else {
 
                 teams = data || [];
+            }
+        }
 
+
+        const playerMap = {};
+        const teamMap = {};
+
+
+        players.forEach(function (player) {
+
+            playerMap[player.id] =
+                player;
+        });
+
+
+        teams.forEach(function (team) {
+
+            teamMap[team.id] =
+                team;
+        });
+
+
+        const totals = {};
+
+
+        allStats.forEach(function (stat) {
+
+            if (!totals[stat.player_id]) {
+
+                totals[stat.player_id] = {
+
+                    player_id:
+                        stat.player_id,
+
+                    appearances: 0,
+                    goals: 0,
+                    assists: 0,
+                    yellow_cards: 0,
+                    red_cards: 0
+                };
+            }
+
+
+            totals[stat.player_id].appearances +=
+                Number(stat.appearances || 0);
+
+            totals[stat.player_id].goals +=
+                Number(stat.goals || 0);
+
+            totals[stat.player_id].assists +=
+                Number(stat.assists || 0);
+
+            totals[stat.player_id].yellow_cards +=
+                Number(stat.yellow_cards || 0);
+
+            totals[stat.player_id].red_cards +=
+                Number(stat.red_cards || 0);
+        });
+
+
+        const leaderData =
+            Object.values(totals).map(function (total) {
+
+                const player =
+                    playerMap[total.player_id];
+
+                const team =
+                    player
+                        ? teamMap[player.team_id]
+                        : null;
+
+
+                return {
+
+                    ...total,
+
+                    playerName:
+                        player?.full_name ||
+                        "Unknown Player",
+
+                    teamName:
+                        team?.name ||
+                        "Unknown Team"
+                };
+
+            });
+
+
+        function renderLeaderList(
+            container,
+            data,
+            valueKey,
+            emptyText
+        ) {
+
+            if (!container) {
+                return;
+            }
+
+
+            if (!data || data.length === 0) {
+
+                container.innerHTML =
+                    "<p>" + emptyText + "</p>";
+
+                return;
+            }
+
+
+            container.innerHTML = "";
+
+
+            data.forEach(function (item, index) {
+
+                const row =
+                    document.createElement("div");
+
+                row.className =
+                    "leader-row";
+
+
+                row.innerHTML = `
+
+                    <div class="leader-rank">
+                        ${index + 1}
+                    </div>
+
+                    <div class="leader-info">
+
+                        <strong>
+                            ${escapeHtml(
+                                item.playerName
+                            )}
+                        </strong>
+
+                        <span>
+                            ${escapeHtml(
+                                item.teamName
+                            )}
+                        </span>
+
+                    </div>
+
+                    <div class="leader-value">
+                        ${item[valueKey]}
+                    </div>
+
+                `;
+
+
+                container.appendChild(row);
+            });
+        }
+
+
+        const topScorers =
+            [...leaderData]
+                .filter(function (item) {
+                    return item.goals > 0;
+                })
+                .sort(function (a, b) {
+
+                    if (b.goals !== a.goals) {
+                        return b.goals - a.goals;
+                    }
+
+                    return a.playerName.localeCompare(
+                        b.playerName
+                    );
+                })
+                .slice(0, 10);
+
+
+        const assistLeaders =
+            [...leaderData]
+                .filter(function (item) {
+                    return item.assists > 0;
+                })
+                .sort(function (a, b) {
+
+                    if (b.assists !== a.assists) {
+                        return b.assists - a.assists;
+                    }
+
+                    return a.playerName.localeCompare(
+                        b.playerName
+                    );
+                })
+                .slice(0, 10);
+
+
+        const appearanceLeaders =
+            [...leaderData]
+                .filter(function (item) {
+                    return item.appearances > 0;
+                })
+                .sort(function (a, b) {
+
+                    if (b.appearances !== a.appearances) {
+                        return b.appearances - a.appearances;
+                    }
+
+                    return a.playerName.localeCompare(
+                        b.playerName
+                    );
+                })
+                .slice(0, 10);
+
+
+        const yellowCardLeaders =
+            [...leaderData]
+                .filter(function (item) {
+                    return item.yellow_cards > 0;
+                })
+                .sort(function (a, b) {
+
+                    if (
+                        b.yellow_cards !==
+                        a.yellow_cards
+                    ) {
+                        return (
+                            b.yellow_cards -
+                            a.yellow_cards
+                        );
+                    }
+
+                    return a.playerName.localeCompare(
+                        b.playerName
+                    );
+                })
+                .slice(0, 10);
+
+
+        const redCardLeaders =
+            [...leaderData]
+                .filter(function (item) {
+                    return item.red_cards > 0;
+                })
+                .sort(function (a, b) {
+
+                    if (
+                        b.red_cards !==
+                        a.red_cards
+                    ) {
+                        return (
+                            b.red_cards -
+                            a.red_cards
+                        );
+                    }
+
+                    return a.playerName.localeCompare(
+                        b.playerName
+                    );
+                })
+                .slice(0, 10);
+
+
+        renderLeaderList(
+            topScorersContainer,
+            topScorers,
+            "goals",
+            "No goals yet."
+        );
+
+
+        renderLeaderList(
+            assistLeadersContainer,
+            assistLeaders,
+            "assists",
+            "No assists yet."
+        );
+
+
+        renderLeaderList(
+            appearanceLeadersContainer,
+            appearanceLeaders,
+            "appearances",
+            "No appearances yet."
+        );
+
+
+        renderLeaderList(
+            yellowCardLeadersContainer,
+            yellowCardLeaders,
+            "yellow_cards",
+            "No yellow cards yet."
+        );
+
+
+        renderLeaderList(
+            redCardLeadersContainer,
+            redCardLeaders,
+            "red_cards",
+            "No red cards yet."
+        );
+    }
+
+
+    // ========================================
+    // SCORER COLUMN STYLING
+    // ========================================
+
+    const style =
+        document.createElement("style");
+
+
+    style.textContent = `
+
+        .scorers-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .home-scorers,
+        .away-scorers {
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.03);
+        }
+
+        .scorer-team-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .scorer {
+            margin: 5px 0;
+        }
+
+        .leader-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .leader-rank {
+            width: 28px;
+            font-weight: bold;
+        }
+
+        .leader-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .leader-info span {
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+
+        .leader-value {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 600px) {
+
+            .scorers-columns {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
 
         }
 
-    } catch (error) {
+    `;
 
-        console.error(
-            "GET LEADER TEAMS ERROR:",
-            error
-        );
 
-    }
+    document.head.appendChild(style);
 
-    // =================================================
-    // MAPS
-    // =================================================
 
-    const playerMap = {};
+    // ========================================
+    // INITIAL LOAD
+    // ========================================
 
-    players.forEach(player => {
+    await loadCompetitionStatus();
 
-        playerMap[player.id] =
-            player;
+    await Promise.all([
 
-    });
+        loadFixtures(),
 
-    const teamMap = {};
+        loadLeagueTable(),
 
-    teams.forEach(team => {
+        loadResults(),
 
-        teamMap[team.id] =
-            team;
+        loadPlayerLeaders()
 
-    });
+    ]);
 
-    // =================================================
-    // TOTAL PLAYER STATS
-    // =================================================
 
-    const totals = {};
-
-    stats.forEach(stat => {
-
-        const playerId =
-            stat.player_id;
-
-        if (
-            !totals[playerId]
-        ) {
-
-            totals[playerId] = {
-
-                player_id: playerId,
-
-                appearances: 0,
-                goals: 0,
-                assists: 0,
-                yellow_cards: 0,
-                red_cards: 0
-
-            };
-
-        }
-
-        totals[playerId].appearances +=
-            Number(
-                stat.appearances
-            ) || 0;
-
-        totals[playerId].goals +=
-            Number(
-                stat.goals
-            ) || 0;
-
-        totals[playerId].assists +=
-            Number(
-                stat.assists
-            ) || 0;
-
-        totals[playerId].yellow_cards +=
-            Number(
-                stat.yellow_cards
-            ) || 0;
-
-        totals[playerId].red_cards +=
-            Number(
-                stat.red_cards
-            ) || 0;
-
-    });
-
-    const allTotals =
-        Object.values(totals);
-
-    // =================================================
-    // LEADER LISTS
-    // =================================================
-
-    const scorerLeaders =
-        [...allTotals]
-            .filter(
-                item =>
-                    item.goals > 0
-            )
-            .sort(
-                (a, b) =>
-                    b.goals -
-                    a.goals
-            )
-            .slice(0, 5);
-
-    const assistLeaders =
-        [...allTotals]
-            .filter(
-                item =>
-                    item.assists > 0
-            )
-            .sort(
-                (a, b) =>
-                    b.assists -
-                    a.assists
-            )
-            .slice(0, 5);
-
-    const appearanceLeaders =
-        [...allTotals]
-            .filter(
-                item =>
-                    item.appearances > 0
-            )
-            .sort(
-                (a, b) =>
-                    b.appearances -
-                    a.appearances
-            )
-            .slice(0, 5);
-
-    const yellowLeaders =
-        [...allTotals]
-            .filter(
-                item =>
-                    item.yellow_cards > 0
-            )
-            .sort(
-                (a, b) =>
-                    b.yellow_cards -
-                    a.yellow_cards
-            )
-            .slice(0, 5);
-
-    const redLeaders =
-        [...allTotals]
-            .filter(
-                item =>
-                    item.red_cards > 0
-            )
-            .sort(
-                (a, b) =>
-                    b.red_cards -
-                    a.red_cards
-            )
-            .slice(0, 5);
-
-    // =================================================
-    // RENDER PLAYER STATS
-    // =================================================
-
-    if (
-        stats.length === 0
-    ) {
-
-        showEmptyLeader(
-            topScorersList,
-            "No scorer data yet."
-        );
-
-        showEmptyLeader(
-            topAssistsList,
-            "No assist data yet."
-        );
-
-        showEmptyLeader(
-            appearancesList,
-            "No appearance data yet."
-        );
-
-        showEmptyLeader(
-            yellowCardsList,
-            "No yellow card data yet."
-        );
-
-        showEmptyLeader(
-            redCardsList,
-            "No red card data yet."
-        );
-
-        return;
-
-    }
-
-    renderLeaderList(
-        topScorersList,
-        scorerLeaders,
-        playerMap,
-        teamMap,
-        "goals"
-    );
-
-    renderLeaderList(
-        topAssistsList,
-        assistLeaders,
-        playerMap,
-        teamMap,
-        "assists"
-    );
-
-    renderLeaderList(
-        appearancesList,
-        appearanceLeaders,
-        playerMap,
-        teamMap,
-        "appearances"
-    );
-
-    renderLeaderList(
-        yellowCardsList,
-        yellowLeaders,
-        playerMap,
-        teamMap,
-        "yellow_cards"
-    );
-
-    renderLeaderList(
-        redCardsList,
-        redLeaders,
-        playerMap,
-        teamMap,
-        "red_cards"
-    );
-
-}
-
-
-// =====================================================
-// RENDER LEADER LIST
-// =====================================================
-
-function renderLeaderList(
-    container,
-    leaders,
-    playerMap,
-    teamMap,
-    statName
-) {
-
-    if (!container) return;
-
-    if (
-        !leaders ||
-        leaders.length === 0
-    ) {
-
-        container.innerHTML =
-            `<p>No data yet.</p>`;
-
-        return;
-
-    }
-
-    container.innerHTML = "";
-
-    leaders.forEach(
-        (leader, index) => {
-
-            const player =
-                playerMap[
-                    leader.player_id
-                ];
-
-            const team =
-                player
-                ? teamMap[
-                    player.team_id
-                ]
-                : null;
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "leader-row";
-
-            row.innerHTML = `
-
-                <div class="leader-position">
-                    ${index + 1}
-                </div>
-
-                <div class="leader-player">
-
-                    <strong>
-                        ${escapeHtml(
-                            player?.name ||
-                            "Unknown Player"
-                        )}
-                    </strong>
-
-                    <small>
-                        ${
-                            team?.name
-                            ? escapeHtml(
-                                team.name
-                            )
-                            : "Unknown Team"
-                        }
-                    </small>
-
-                </div>
-
-                <div class="leader-stat">
-
-                    ${Number(
-                        leader[statName]
-                    ) || 0}
-
-                </div>
-
-            `;
-
-            container.appendChild(row);
-
-        }
-    );
-
-}
-
-
-// =====================================================
-// EMPTY LEADER
-// =====================================================
-
-function showEmptyLeader(
-    container,
-    message
-) {
-
-    if (!container) return;
-
-    container.innerHTML =
-        `<p>${escapeHtml(
-            message
-        )}</p>`;
-
-}
-
-
-// =====================================================
-// DATE FORMAT
-// =====================================================
-
-function formatDate(dateString) {
-
-    if (!dateString) return "";
-
-    const date =
-        new Date(
-            dateString +
-            "T00:00:00"
-        );
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return dateString;
-
-    }
-
-    return date.toLocaleDateString(
-        "en-KE",
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
-        }
-    );
-
-}
-
-
-// =====================================================
-// TIME FORMAT
-// =====================================================
-
-function formatTime(timeString) {
-
-    if (!timeString) return "";
-
-    const parts =
-        timeString.split(":");
-
-    if (
-        parts.length < 2
-    ) {
-
-        return timeString;
-
-    }
-
-    let hour =
-        Number(parts[0]);
-
-    const minute =
-        parts[1];
-
-    const suffix =
-        hour >= 12
-        ? "PM"
-        : "AM";
-
-    hour =
-        hour % 12 || 12;
-
-    return `${hour}:${minute} ${suffix}`;
-
-}
-
-
-// =====================================================
-// ESCAPE HTML
-// =====================================================
-
-function escapeHtml(value) {
-
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
+});
