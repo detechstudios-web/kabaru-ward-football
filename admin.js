@@ -310,85 +310,176 @@ document.addEventListener("DOMContentLoaded", async function () {
     // LOAD COMPETITIONS
     // ========================================
 
-    async function loadCompetitions() {
-
-        if (!competitionSelect) return;
-
-
-        competitionSelect.innerHTML =
-            "<option value=''>Loading competitions...</option>";
-
-
-        try {
-
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("competitions")
-                .select(
-                    "id, name, competition_type, season, status"
-                )
-                .order("name", {
-                    ascending: true
-                });
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            competitionSelect.innerHTML =
-                "<option value=''>Select competition</option>";
-
-
-            if (!data || data.length === 0) {
-
-                competitionSelect.innerHTML =
-                    "<option value=''>No competitions found</option>";
-
+    
                 return;
             }
 
+
+            async function loadCompetitions() {
+
+    const competitionsList =
+        document.getElementById("competitionsList");
+
+    const competitionSelect =
+        document.getElementById("competitionSelect");
+
+    if (!competitionsList) return;
+
+    competitionsList.innerHTML =
+        '<div class="empty-message">Loading competitions...</div>';
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("competitions")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        // ========================================
+        // LOAD COMPETITIONS INTO FIXTURE DROPDOWN
+        // ========================================
+
+        if (competitionSelect) {
+
+            competitionSelect.innerHTML =
+                '<option value="">Select competition</option>';
 
             data.forEach(function (competition) {
 
                 const option =
                     document.createElement("option");
 
-
-                option.value =
-                    competition.id;
-
+                option.value = competition.id;
 
                 option.textContent =
                     competition.name +
-                    (
-                        competition.season
-                            ? " - " + competition.season
-                            : ""
-                    );
+                    " — " +
+                    competition.season;
 
-
-                competitionSelect.appendChild(
-                    option
-                );
+                competitionSelect.appendChild(option);
 
             });
-
-
-        } catch (error) {
-
-            console.error(
-                "Competition loading error:",
-                error
-            );
-
-
-            competitionSelect.innerHTML =
-                "<option value=''>Unable to load competitions</option>";
         }
+
+        // ========================================
+        // NO COMPETITIONS
+        // ========================================
+
+        if (!data || data.length === 0) {
+
+            competitionsList.innerHTML =
+                '<div class="empty-message">' +
+                'No competitions have been created yet.' +
+                '</div>';
+
+            return;
+        }
+
+        // ========================================
+        // DISPLAY COMPETITIONS
+        // ========================================
+
+        let html = "";
+
+        data.forEach(function (competition) {
+
+            const startDate =
+                competition.start_date
+                    ? formatDate(competition.start_date)
+                    : "Not set";
+
+            const endDate =
+                competition.end_date
+                    ? formatDate(competition.end_date)
+                    : "Not set";
+
+            const status =
+                competition.status || "Upcoming";
+
+            html += `
+
+                <div class="admin-card"
+                     style="margin-top:15px; border-left:5px solid #16803c;">
+
+                    <h3>
+                        🏆 ${escapeHtml(competition.name)}
+                    </h3>
+
+                    <div class="team-details">
+
+                        <div class="detail">
+                            <strong>Type</strong><br>
+                            ${escapeHtml(competition.competition_type)}
+                        </div>
+
+                        <div class="detail">
+                            <strong>Season</strong><br>
+                            ${escapeHtml(competition.season || "Not set")}
+                        </div>
+
+                        <div class="detail">
+                            <strong>Start Date</strong><br>
+                            ${startDate}
+                        </div>
+
+                        <div class="detail">
+                            <strong>End Date</strong><br>
+                            ${endDate}
+                        </div>
+
+                        <div class="detail">
+                            <strong>Status</strong><br>
+                            ${escapeHtml(status)}
+                        </div>
+
+                    </div>
+
+                    ${
+                        competition.description
+                            ? `
+                                <p>
+                                    ${escapeHtml(
+                                        competition.description
+                                    )}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+            `;
+
+        });
+
+        competitionsList.innerHTML = html;
+
+    } catch (error) {
+
+        console.error(
+            "LOAD COMPETITIONS ERROR:",
+            error
+        );
+
+        competitionsList.innerHTML =
+            '<div class="empty-message">' +
+            '❌ Unable to load competitions: ' +
+            escapeHtml(
+                error.message ||
+                "Unknown error"
+            ) +
+            '</div>';
+    }
+}
     }
 
 
