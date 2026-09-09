@@ -1,3 +1,4 @@
+
 // ========================================
 // KABARU WARD FOOTBALL
 // ADMIN DASHBOARD
@@ -17,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const logoutBtn =
         document.getElementById("logoutBtn");
+
 
     // ========================================
     // FIXTURE ELEMENTS
@@ -123,10 +125,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("competitionForm");
 
     const createCompetitionButton =
-        document.getElementById("createCompetitionButton");
+        document.getElementById(
+            "createCompetitionButton"
+        );
 
     const competitionFormMessage =
-        document.getElementById("competitionFormMessage");
+        document.getElementById(
+            "competitionFormMessage"
+        );
 
 
     // ========================================
@@ -150,12 +156,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (!statusMessage) return;
 
-        statusMessage.textContent = message;
+        statusMessage.textContent =
+            message;
 
-        statusMessage.style.display = "block";
+        statusMessage.style.display =
+            "block";
 
         statusMessage.className =
-            "status-message " + (type || "");
+            "status-message " +
+            (type || "");
     }
 
 
@@ -163,12 +172,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (!fixtureFormMessage) return;
 
-        fixtureFormMessage.textContent = message;
+        fixtureFormMessage.textContent =
+            message;
 
-        fixtureFormMessage.style.display = "block";
+        fixtureFormMessage.style.display =
+            "block";
 
         fixtureFormMessage.className =
-            "fixture-form-message " + (type || "");
+            "fixture-form-message " +
+            (type || "");
     }
 
 
@@ -176,12 +188,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (!resultFormMessage) return;
 
-        resultFormMessage.textContent = message;
+        resultFormMessage.textContent =
+            message;
 
-        resultFormMessage.style.display = "block";
+        resultFormMessage.style.display =
+            "block";
 
         resultFormMessage.className =
-            "result-form-message " + (type || "");
+            "result-form-message " +
+            (type || "");
     }
 
 
@@ -191,7 +206,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function supabaseReady() {
 
-        if (typeof window.supabase === "undefined") {
+        if (
+            typeof window.supabase ===
+            "undefined"
+        ) {
 
             showMessage(
                 "❌ Supabase library did not load.",
@@ -203,7 +221,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         if (
-            typeof supabaseClient === "undefined" ||
+            typeof supabaseClient ===
+                "undefined" ||
             !supabaseClient
         ) {
 
@@ -232,7 +251,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 try {
 
-                    logoutBtn.disabled = true;
+                    logoutBtn.disabled =
+                        true;
 
                     logoutBtn.textContent =
                         "Logging out...";
@@ -241,7 +261,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const {
                         error
                     } =
-                        await supabaseClient.auth.signOut();
+                        await supabaseClient
+                            .auth
+                            .signOut();
 
 
                     if (error) {
@@ -261,7 +283,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     );
 
 
-                    logoutBtn.disabled = false;
+                    logoutBtn.disabled =
+                        false;
 
                     logoutBtn.textContent =
                         "Logout";
@@ -301,7 +324,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 },
                 error: userError
             } =
-                await supabaseClient.auth.getUser();
+                await supabaseClient
+                    .auth
+                    .getUser();
 
 
             if (userError) {
@@ -409,7 +434,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         competitionsList.innerHTML =
-            '<div class="empty-message">Loading competitions...</div>';
+            '<div class="empty-message">' +
+            'Loading competitions...' +
+            '</div>';
 
 
         try {
@@ -441,7 +468,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (competitionSelect) {
 
                 competitionSelect.innerHTML =
-                    '<option value="">Select competition</option>';
+                    '<option value="">' +
+                    'Select competition' +
+                    '</option>';
 
 
                 (data || []).forEach(
@@ -466,9 +495,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             );
 
 
-                        competitionSelect.appendChild(
-                            option
-                        );
+                        competitionSelect
+                            .appendChild(
+                                option
+                            );
 
                     }
                 );
@@ -538,7 +568,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 )}
                             </h3>
 
-
                             <div class="team-details">
 
                                 <div class="detail">
@@ -549,7 +578,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     )}
                                 </div>
 
-
                                 <div class="detail">
                                     <strong>Season</strong><br>
                                     ${escapeHtml(
@@ -558,18 +586,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     )}
                                 </div>
 
-
                                 <div class="detail">
                                     <strong>Start Date</strong><br>
                                     ${startDate}
                                 </div>
 
-
                                 <div class="detail">
                                     <strong>End Date</strong><br>
                                     ${endDate}
                                 </div>
-
 
                                 <div class="detail">
                                     <strong>Status</strong><br>
@@ -579,7 +604,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 </div>
 
                             </div>
-
 
                             ${
                                 competition.description
@@ -724,10 +748,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                         : "";
 
 
-                // ========================================
-                // VALIDATION
-                // ========================================
-
                 if (!name) {
 
                     competitionFormMessage.textContent =
@@ -800,18 +820,29 @@ document.addEventListener("DOMContentLoaded", async function () {
                         await supabaseClient
                             .from("competitions")
                             .insert({
-                                name: name,
+
+                                name:
+                                    name,
+
                                 competition_type:
                                     competitionType,
-                                season: season,
+
+                                season:
+                                    season,
+
                                 start_date:
                                     startDate,
+
                                 end_date:
                                     endDate,
-                                status: status,
+
+                                status:
+                                    status,
+
                                 description:
                                     description ||
                                     null
+
                             })
                             .select()
                             .single();
@@ -1370,7 +1401,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         fixturesList.innerHTML =
-            "<div class='empty-message'>Loading fixtures...</div>";
+            "<div class='empty-message'>" +
+            "Loading fixtures..." +
+            "</div>";
 
 
         try {
@@ -1409,7 +1442,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             ) {
 
                 fixturesList.innerHTML =
-                    "<div class='empty-message'>No fixtures have been created yet.</div>";
+                    "<div class='empty-message'>" +
+                    "No fixtures have been created yet." +
+                    "</div>";
 
                 return;
             }
@@ -1563,7 +1598,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                             )}
                         </h3>
 
-
                         <p>
                             🏆
                             ${escapeHtml(
@@ -1573,14 +1607,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                             )}
                         </p>
 
-
                         <p>
                             📅
                             ${formatDate(
                                 fixture.match_date
                             )}
                         </p>
-
 
                         <p>
                             ⏰
@@ -1589,14 +1621,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                             )}
                         </p>
 
-
                         <p>
                             📍
                             ${escapeHtml(
                                 fixture.venue || "-"
                             )}
                         </p>
-
 
                         <p>
                             🔢
@@ -1605,7 +1635,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 "-"
                             )}
                         </p>
-
 
                         <p>
                             📢
@@ -1616,7 +1645,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 )}
                             </strong>
                         </p>
-
 
                         <button
                             type="button"
@@ -1817,7 +1845,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             ) {
 
                 resultFixtureSelect.innerHTML =
-                    "<option value=''>No available fixtures</option>";
+                    "<option value=''>" +
+                    "No available fixtures" +
+                    "</option>";
 
                 resultFixtures = [];
 
@@ -1878,7 +1908,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             ) {
 
                 resultFixtureSelect.innerHTML =
-                    "<option value=''>All fixtures already have results</option>";
+                    "<option value=''>" +
+                    "All fixtures already have results" +
+                    "</option>";
 
                 return;
             }
@@ -1954,7 +1986,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             resultFixtureSelect.innerHTML =
-                "<option value=''>Select fixture</option>";
+                "<option value=''>" +
+                "Select fixture" +
+                "</option>";
 
 
             availableFixtures.forEach(
@@ -2033,9 +2067,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                         );
 
 
-                    resultFixtureSelect.appendChild(
-                        option
-                    );
+                    resultFixtureSelect
+                        .appendChild(
+                            option
+                        );
 
                 }
             );
@@ -2050,7 +2085,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             resultFixtureSelect.innerHTML =
-                "<option value=''>Unable to load fixtures</option>";
+                "<option value=''>" +
+                "Unable to load fixtures" +
+                "</option>";
         }
     }
 
@@ -2588,6 +2625,262 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
+    // CREATE APPEARANCE SECTION
+    // ========================================
+
+    function createAppearanceSection() {
+
+        if (
+            !resultScoreSection ||
+            !currentFixture
+        ) {
+            return;
+        }
+
+
+        const existing =
+            document.getElementById(
+                "appearanceSection"
+            );
+
+
+        if (existing) {
+            existing.remove();
+        }
+
+
+        const section =
+            document.createElement(
+                "div"
+            );
+
+
+        section.id =
+            "appearanceSection";
+
+
+        section.className =
+            "admin-card";
+
+
+        section.style.marginTop =
+            "25px";
+
+
+        section.innerHTML = `
+
+            <h3>
+                👥 Player Appearances
+            </h3>
+
+            <p>
+                Select every player who appeared
+                in this match.
+            </p>
+
+            <div style="margin-top:15px;">
+
+                <h4>
+                    ${escapeHtml(
+                        resultHomeTeamName
+                            ? resultHomeTeamName.textContent
+                            : "Home Team"
+                    )}
+                </h4>
+
+                <div id="homeAppearances"></div>
+
+            </div>
+
+            <div style="margin-top:20px;">
+
+                <h4>
+                    ${escapeHtml(
+                        resultAwayTeamName
+                            ? resultAwayTeamName.textContent
+                            : "Away Team"
+                    )}
+                </h4>
+
+                <div id="awayAppearances"></div>
+
+            </div>
+
+        `;
+
+
+        resultScoreSection.appendChild(
+            section
+        );
+
+
+        const homeContainer =
+            document.getElementById(
+                "homeAppearances"
+            );
+
+
+        const awayContainer =
+            document.getElementById(
+                "awayAppearances"
+            );
+
+
+        if (homeContainer) {
+
+            homePlayers.forEach(
+                function (player) {
+
+                    homeContainer.innerHTML += `
+
+                        <label style="
+                            display:block;
+                            margin:8px 0;
+                            padding:8px;
+                        ">
+
+                            <input
+                                type="checkbox"
+                                class="appearance-player"
+                                value="${player.id}"
+                                data-team="home"
+                            >
+
+                            ${escapeHtml(
+                                player.full_name
+                            )}
+
+                            ${
+                                player.jersey_number
+                                    ? " (#" +
+                                      escapeHtml(
+                                          player.jersey_number
+                                      ) +
+                                      ")"
+                                    : ""
+                            }
+
+                        </label>
+
+                    `;
+
+                }
+            );
+        }
+
+
+        if (awayContainer) {
+
+            awayPlayers.forEach(
+                function (player) {
+
+                    awayContainer.innerHTML += `
+
+                        <label style="
+                            display:block;
+                            margin:8px 0;
+                            padding:8px;
+                        ">
+
+                            <input
+                                type="checkbox"
+                                class="appearance-player"
+                                value="${player.id}"
+                                data-team="away"
+                            >
+
+                            ${escapeHtml(
+                                player.full_name
+                            )}
+
+                            ${
+                                player.jersey_number
+                                    ? " (#" +
+                                      escapeHtml(
+                                          player.jersey_number
+                                      ) +
+                                      ")"
+                                    : ""
+                            }
+
+                        </label>
+
+                    `;
+
+                }
+            );
+        }
+    }
+
+
+    // ========================================
+    // GET APPEARANCES
+    // ========================================
+
+    function getAppearancePlayers() {
+
+        const checkboxes =
+            document.querySelectorAll(
+                ".appearance-player:checked"
+            );
+
+
+        const playerIds = [];
+
+
+        checkboxes.forEach(
+            function (checkbox) {
+
+                playerIds.push(
+                    Number(
+                        checkbox.value
+                    )
+                );
+
+            }
+        );
+
+
+        return playerIds;
+    }
+
+
+    // ========================================
+    // VALIDATE APPEARANCES
+    // ========================================
+
+    function validateAppearances() {
+
+        const appearances =
+            getAppearancePlayers();
+
+
+        if (
+            appearances.length === 0
+        ) {
+
+            return {
+
+                valid: false,
+
+                message:
+                    "Please select at least one player who appeared in the match."
+
+            };
+        }
+
+
+        return {
+
+            valid: true,
+
+            message: ""
+
+        };
+    }
+
+
+    // ========================================
     // FIXTURE SELECTION
     // ========================================
 
@@ -2618,6 +2911,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         resultScoreSection.style.display =
                             "none";
+                    }
+
+
+                    const appearanceSection =
+                        document.getElementById(
+                            "appearanceSection"
+                        );
+
+
+                    if (appearanceSection) {
+                        appearanceSection.remove();
                     }
 
 
@@ -2859,6 +3163,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
 
 
+                    createAppearanceSection();
+
+
                     updateGoalWarnings();
 
 
@@ -2950,10 +3257,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // VALIDATE MINUTES
+    // VALIDATE GOAL MINUTES
     // ========================================
 
-    function validateMinutes(
+    function validateGoalMinutes(
         container,
         teamName
     ) {
@@ -2961,8 +3268,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!container) {
 
             return {
+
                 valid: true,
+
                 message: ""
+
             };
         }
 
@@ -3058,6 +3368,59 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
+    // VALIDATE SCORERS ARE APPEARANCES
+    // ========================================
+
+    function validateScorersAreAppearances(
+        scorerData,
+        appearancePlayers
+    ) {
+
+        const appearanceSet =
+            new Set(
+                appearancePlayers
+            );
+
+
+        for (
+            let i = 0;
+            i < scorerData.length;
+            i++
+        ) {
+
+            const playerId =
+                scorerData[i].player_id;
+
+
+            if (
+                !appearanceSet.has(
+                    playerId
+                )
+            ) {
+
+                return {
+
+                    valid: false,
+
+                    message:
+                        "Every goal scorer must also be marked as having appeared in the match."
+
+                };
+            }
+        }
+
+
+        return {
+
+            valid: true,
+
+            message: ""
+
+        };
+    }
+
+
+    // ========================================
     // SAVE RESULT
     // ========================================
 
@@ -3128,8 +3491,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
+                // ========================================
+                // VALIDATE GOAL MINUTES
+                // ========================================
+
                 const homeValidation =
-                    validateMinutes(
+                    validateGoalMinutes(
                         homeGoalsContainer,
                         "home"
                     );
@@ -3148,7 +3515,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 const awayValidation =
-                    validateMinutes(
+                    validateGoalMinutes(
                         awayGoalsContainer,
                         "away"
                     );
@@ -3166,6 +3533,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
+                // ========================================
+                // GET GOAL DATA
+                // ========================================
+
                 const homeScorers =
                     getScorerData(
                         homeGoalsContainer
@@ -3177,6 +3548,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                         awayGoalsContainer
                     );
 
+
+                // ========================================
+                // CHECK GOAL COUNTS
+                // ========================================
 
                 if (
                     homeScorers.length !==
@@ -3207,6 +3582,68 @@ document.addEventListener("DOMContentLoaded", async function () {
                         " but you entered " +
                         awayScorers.length +
                         " away goal(s).",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                // ========================================
+                // GET APPEARANCES
+                // ========================================
+
+                const appearanceValidation =
+                    validateAppearances();
+
+
+                if (
+                    !appearanceValidation.valid
+                ) {
+
+                    showResultMessage(
+                        "❌ " +
+                        appearanceValidation.message,
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                const appearancePlayers =
+                    getAppearancePlayers();
+
+
+                // ========================================
+                // GET ALL GOALS
+                // ========================================
+
+                const allGoals =
+                    [
+                        ...homeScorers,
+                        ...awayScorers
+                    ];
+
+
+                // ========================================
+                // SCORERS MUST HAVE APPEARED
+                // ========================================
+
+                const scorerAppearanceValidation =
+                    validateScorersAreAppearances(
+                        allGoals,
+                        appearancePlayers
+                    );
+
+
+                if (
+                    !scorerAppearanceValidation.valid
+                ) {
+
+                    showResultMessage(
+                        "❌ " +
+                        scorerAppearanceValidation.message,
                         "error"
                     );
 
@@ -3304,43 +3741,43 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     // ========================================
                     // INSERT GOAL SCORERS
+                    // KEEP MINUTES
                     // ========================================
-
-                    const allGoals =
-                        [
-                            ...homeScorers,
-                            ...awayScorers
-                        ].map(
-                            function (goal) {
-
-                                return {
-
-                                    result_id:
-                                        result.id,
-
-                                    player_id:
-                                        goal.player_id,
-
-                                    minute:
-                                        goal.minute
-
-                                };
-
-                            }
-                        );
-
 
                     if (
                         allGoals.length > 0
                     ) {
 
+                        const goalRows =
+                            allGoals.map(
+                                function (goal) {
+
+                                    return {
+
+                                        result_id:
+                                            result.id,
+
+                                        player_id:
+                                            goal.player_id,
+
+                                        minute:
+                                            goal.minute
+
+                                    };
+
+                                }
+                            );
+
+
                         const {
                             error: goalError
                         } =
                             await supabaseClient
-                                .from("goal_scorers")
+                                .from(
+                                    "goal_scorers"
+                                )
                                 .insert(
-                                    allGoals
+                                    goalRows
                                 );
 
 
@@ -3354,8 +3791,116 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     result.id
                                 );
 
-
                             throw goalError;
+                        }
+                    }
+
+
+                    // ========================================
+                    // CALCULATE PLAYER GOALS
+                    // ========================================
+
+                    const goalCounts = {};
+
+
+                    allGoals.forEach(
+                        function (goal) {
+
+                            goalCounts[
+                                goal.player_id
+                            ] =
+                                (
+                                    goalCounts[
+                                        goal.player_id
+                                    ] || 0
+                                ) + 1;
+
+                        }
+                    );
+
+
+                    // ========================================
+                    // CREATE PLAYER MATCH STATS
+                    // ========================================
+
+                    const playerStats =
+                        appearancePlayers.map(
+                            function (playerId) {
+
+                                return {
+
+                                    result_id:
+                                        result.id,
+
+                                    player_id:
+                                        playerId,
+
+                                    appearances:
+                                        1,
+
+                                    goals:
+                                        goalCounts[
+                                            playerId
+                                        ] || 0,
+
+                                    assists:
+                                        0,
+
+                                    yellow_cards:
+                                        0,
+
+                                    red_cards:
+                                        0
+
+                                };
+
+                            }
+                        );
+
+
+                    // ========================================
+                    // INSERT PLAYER MATCH STATS
+                    // ========================================
+
+                    if (
+                        playerStats.length > 0
+                    ) {
+
+                        const {
+                            error: statsError
+                        } =
+                            await supabaseClient
+                                .from(
+                                    "player_match_stats"
+                                )
+                                .insert(
+                                    playerStats
+                                );
+
+
+                        if (statsError) {
+
+                            await supabaseClient
+                                .from(
+                                    "goal_scorers"
+                                )
+                                .delete()
+                                .eq(
+                                    "result_id",
+                                    result.id
+                                );
+
+
+                            await supabaseClient
+                                .from("results")
+                                .delete()
+                                .eq(
+                                    "id",
+                                    result.id
+                                );
+
+
+                            throw statsError;
                         }
                     }
 
@@ -3424,6 +3969,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         awayGoalsContainer.innerHTML =
                             "";
+                    }
+
+
+                    const appearanceSection =
+                        document.getElementById(
+                            "appearanceSection"
+                        );
+
+
+                    if (appearanceSection) {
+                        appearanceSection.remove();
                     }
 
 
@@ -3523,7 +4079,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         pendingTeams.innerHTML =
-            "<div class='empty-message'>Loading registrations...</div>";
+            "<div class='empty-message'>" +
+            "Loading registrations..." +
+            "</div>";
 
 
         try {
@@ -3560,7 +4118,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             ) {
 
                 pendingTeams.innerHTML =
-                    "<div class='empty-message'>🎉 No pending team registrations.</div>";
+                    "<div class='empty-message'>" +
+                    "🎉 No pending team registrations." +
+                    "</div>";
 
                 return;
             }
@@ -3627,7 +4187,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     </tr>
 
                                 </thead>
-
 
                                 <tbody>
 
@@ -3721,7 +4280,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                             )}
                         </div>
 
-
                         <div class="detail">
                             <strong>Coach</strong><br>
                             ${escapeHtml(
@@ -3729,7 +4287,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 "-"
                             )}
                         </div>
-
 
                         <div class="detail">
                             <strong>Captain</strong><br>
@@ -3739,7 +4296,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                             )}
                         </div>
 
-
                         <div class="detail">
                             <strong>Vice Captain</strong><br>
                             ${escapeHtml(
@@ -3747,7 +4303,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 "-"
                             )}
                         </div>
-
 
                         <div class="detail">
                             <strong>Discipline Master</strong><br>
@@ -3757,7 +4312,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                             )}
                         </div>
 
-
                         <div class="detail">
                             <strong>Phone</strong><br>
                             ${escapeHtml(
@@ -3765,7 +4319,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 "-"
                             )}
                         </div>
-
 
                         <div class="detail">
                             <strong>Email</strong><br>
@@ -4177,20 +4730,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
 
-    const isAdmin = await checkAdmin();
+    const isAdmin =
+        await checkAdmin();
 
-if (!isAdmin) {
-    return;
-}
+
+    if (!isAdmin) {
+        return;
+    }
+
 
     console.log(
         "Loading admin dashboard data..."
     );
 
-
-    // Load everything independently.
-    // This prevents one failed section from
-    // stopping all the other sections.
 
     await loadCompetitions();
 
@@ -4210,3 +4762,4 @@ if (!isAdmin) {
     );
 
 });
+
