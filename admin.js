@@ -4177,13 +4177,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
 
-    const isAdmin =
-        await checkAdmin();
+    const isAdmin = await checkAdmin();
 
+if (!isAdmin) {
+    alert("ADMIN CHECK FAILED. Check the message at the top of the dashboard.");
+    return;
+}
 
-    if (!isAdmin) {
-        return;
-    }
+alert("ADMIN CHECK PASSED. Loading dashboard data...");
 
 
     console.log(
