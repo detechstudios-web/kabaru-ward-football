@@ -1664,6 +1664,200 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 </script>
 
+<!-- =====================================================
+     PLAYER LEADERS
+====================================================== -->
 
+<section id="player-leaders" class="player-leaders-section">
+
+    <div class="section-heading">
+        <span>⚽ PLAYER STATISTICS</span>
+        <h2>Player Leaders</h2>
+        <p>Top performers in the Kabaru Ward Football League</p>
+    </div>
+
+
+    <div class="leaders-grid">
+
+        <!-- TOP SCORERS -->
+        <div class="leader-card">
+
+            <h3>⚽ Top Scorers</h3>
+
+            <div id="topScorersList">
+                <p>Loading top scorers...</p>
+            </div>
+
+        </div>
+
+
+        <!-- TOP ASSISTS -->
+        <div class="leader-card">
+
+            <h3>🎯 Assist Leaders</h3>
+
+            <div id="topAssistsList">
+                <p>Loading assist leaders...</p>
+            </div>
+
+        </div>
+
+
+        <!-- MOST APPEARANCES -->
+        <div class="leader-card">
+
+            <h3>👕 Most Appearances</h3>
+
+            <div id="mostAppearancesList">
+                <p>Loading appearances...</p>
+            </div>
+
+        </div>
+
+
+        <!-- YELLOW CARDS -->
+        <div class="leader-card">
+
+            <h3>🟨 Yellow Cards</h3>
+
+            <div id="yellowCardsList">
+                <p>Loading yellow cards...</p>
+            </div>
+
+        </div>
+
+
+        <!-- RED CARDS -->
+        <div class="leader-card">
+
+            <h3>🟥 Red Cards</h3>
+
+            <div id="redCardsList">
+                <p>Loading red cards...</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<style>
+
+.player-leaders-section {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.section-heading span {
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.section-heading h2 {
+    margin: 8px 0;
+    font-size: 30px;
+}
+
+.section-heading p {
+    margin: 0;
+    opacity: 0.7;
+}
+
+
+.leaders-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+
+.leader-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+
+.leader-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+
+.leader-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.leader-row:last-child {
+    border-bottom: none;
+}
+
+
+.leader-position {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+
+.leader-player {
+    flex: 1;
+}
+
+
+.leader-player strong {
+    display: block;
+}
+
+
+.leader-player small {
+    display: block;
+    margin-top: 3px;
+    opacity: 0.65;
+}
+
+
+.leader-stat {
+    min-width: 35px;
+    text-align: center;
+    font-size: 18px;
+}
+
+
+@media (max-width: 700px) {
+
+    .leaders-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .player-leaders-section {
+        padding: 30px 15px;
+    }
+
+    .section-heading h2 {
+        font-size: 25px;
+    }
+
+}
+
+</style>
 </body>
 </html>
