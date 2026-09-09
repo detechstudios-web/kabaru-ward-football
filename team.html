@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,6 +82,7 @@ header {
     justify-content: center;
     font-size: 40px;
     font-weight: bold;
+    overflow: hidden;
 }
 
 .team-hero h1 {
@@ -130,7 +132,7 @@ header {
 
 .squad-table {
     width: 100%;
-    min-width: 600px;
+    min-width: 850px;
     border-collapse: collapse;
 }
 
@@ -151,6 +153,15 @@ header {
 }
 
 .jersey {
+    font-weight: bold;
+    color: #073b25;
+}
+
+.player-name {
+    font-weight: bold;
+}
+
+.stat-number {
     font-weight: bold;
     color: #073b25;
 }
@@ -226,6 +237,7 @@ footer span {
 }
 
 @media (max-width: 700px) {
+
     .container {
         padding: 25px 12px;
     }
@@ -237,6 +249,7 @@ footer span {
     .team-hero {
         padding: 30px 18px;
     }
+
 }
 </style>
 </head>
@@ -244,7 +257,9 @@ footer span {
 <body>
 
 <header>
+
     <div class="navbar">
+
         <div class="logo">
             KABARU <span>⚽</span> FOOTBALL
         </div>
@@ -252,8 +267,11 @@ footer span {
         <a href="index.html#teams" class="back-link">
             ← Teams
         </a>
+
     </div>
+
 </header>
+
 
 <main>
 
@@ -262,8 +280,13 @@ footer span {
         <div id="teamContent">
 
             <div class="loading">
+
                 <h2>⚽ Loading Team Profile...</h2>
-                <p>Please wait while we load the team information.</p>
+
+                <p>
+                    Please wait while we load the team information.
+                </p>
+
             </div>
 
         </div>
@@ -271,6 +294,7 @@ footer span {
     </div>
 
 </main>
+
 
 <footer>
 
@@ -284,9 +308,11 @@ footer span {
 
 </footer>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
+
 
 <script>
 
@@ -301,29 +327,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     const teamId =
         params.get("id");
 
+
     if (!teamId) {
 
         teamContent.innerHTML = `
+
             <div class="error">
+
                 <h2>⚠️ Team Not Found</h2>
-                <p>No team was selected.</p>
+
+                <p>
+                    No team was selected.
+                </p>
+
                 <br>
-                <a href="index.html#teams" class="back-button">
+
+                <a
+                    href="index.html#teams"
+                    class="back-button"
+                >
                     ← Back to Teams
                 </a>
+
             </div>
+
         `;
 
         return;
     }
 
+
     try {
+
+        /* =========================
+           LOAD TEAM
+        ========================= */
 
         const {
             data: team,
             error: teamError
         } = await supabaseClient
+
             .from("teams")
+
             .select(`
                 id,
                 name,
@@ -334,9 +380,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 captain_name,
                 vice_captain_name,
                 discipline_master_name,
-                phone,
-                email,
                 registration_status,
+
                 players (
                     id,
                     full_name,
@@ -346,35 +391,238 @@ document.addEventListener("DOMContentLoaded", async () => {
                     registration_status
                 )
             `)
+
             .eq("id", teamId)
-            .eq("registration_status", "Approved")
+
+            .eq(
+                "registration_status",
+                "Approved"
+            )
+
             .single();
 
+
         if (teamError) {
+
             throw teamError;
+
         }
 
+
         if (!team) {
-            throw new Error("Team not found.");
+
+            throw new Error(
+                "Team not found."
+            );
+
         }
+
+
+        /* =========================
+           APPROVED PLAYERS
+        ========================= */
 
         const players =
             (team.players || [])
+
                 .filter(player =>
-                    player.registration_status === "Approved"
+                    player.registration_status ===
+                    "Approved"
                 )
+
                 .sort((a, b) => {
+
                     return (
-                        Number(a.jersey_number || 999) -
-                        Number(b.jersey_number || 999)
+                        Number(
+                            a.jersey_number || 999
+                        )
+                        -
+                        Number(
+                            b.jersey_number || 999
+                        )
                     );
+
                 });
+
+
+        /* =========================
+           LOAD PLAYER STATISTICS
+        ========================= */
+
+        let playerStats = [];
+
+
+        if (players.length > 0) {
+
+            const playerIds =
+                players.map(
+                    player => player.id
+                );
+
+
+            const {
+                data: stats,
+                error: statsError
+            } = await supabaseClient
+
+                .from("player_match_stats")
+
+                .select(`
+                    id,
+                    player_id,
+                    result_id,
+                    goals,
+                    assists,
+                    yellow_cards,
+                    red_cards
+                `)
+
+                .in(
+                    "player_id",
+                    playerIds
+                );
+
+
+            if (statsError) {
+
+                console.error(
+                    "PLAYER STATS ERROR:",
+                    statsError
+                );
+
+            } else {
+
+                playerStats =
+                    stats || [];
+
+            }
+
+        }
+
+
+        /* =========================
+           CALCULATE PLAYER TOTALS
+        ========================= */
+
+        const totals = {};
+
+
+        players.forEach(player => {
+
+            totals[player.id] = {
+
+                appearances: 0,
+
+                goals: 0,
+
+                assists: 0,
+
+                yellow: 0,
+
+                red: 0
+
+            };
+
+        });
+
+
+        playerStats.forEach(stat => {
+
+            if (!totals[stat.player_id]) {
+                return;
+            }
+
+
+            /*
+             * Every player_match_stats
+             * record represents one
+             * player appearance/stat line.
+             */
+
+            totals[stat.player_id]
+                .appearances += 1;
+
+
+            totals[stat.player_id].goals +=
+                Number(
+                    stat.goals || 0
+                );
+
+
+            totals[stat.player_id].assists +=
+                Number(
+                    stat.assists || 0
+                );
+
+
+            totals[stat.player_id].yellow +=
+                Number(
+                    stat.yellow_cards || 0
+                );
+
+
+            totals[stat.player_id].red +=
+                Number(
+                    stat.red_cards || 0
+                );
+
+        });
+
+
+        /* =========================
+           TEAM TOTALS
+        ========================= */
+
+        const teamStats = {
+
+            appearances: 0,
+
+            goals: 0,
+
+            assists: 0,
+
+            yellow: 0,
+
+            red: 0
+
+        };
+
+
+        Object.values(totals).forEach(stat => {
+
+            teamStats.appearances +=
+                stat.appearances;
+
+            teamStats.goals +=
+                stat.goals;
+
+            teamStats.assists +=
+                stat.assists;
+
+            teamStats.yellow +=
+                stat.yellow;
+
+            teamStats.red +=
+                stat.red;
+
+        });
+
+
+        /* =========================
+           PAGE TITLE
+        ========================= */
 
         document.title =
             `${team.name} - Kabaru Ward Football`;
 
+
         const initials =
             getInitials(team.name);
+
+
+        /* =========================
+           DISPLAY PAGE
+        ========================= */
 
         teamContent.innerHTML = `
 
@@ -383,8 +631,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             <section class="team-hero">
 
                 <div class="team-badge">
-                    ${team.logo_url
+
+                    ${
+                        team.logo_url
+
                         ? `
+
                             <img
                                 src="${escapeHtml(team.logo_url)}"
                                 alt="${escapeHtml(team.name)} logo"
@@ -392,31 +644,46 @@ document.addEventListener("DOMContentLoaded", async () => {
                                     width:100%;
                                     height:100%;
                                     object-fit:cover;
-                                    border-radius:50%;
                                 "
                             >
+
                         `
+
                         : initials
+
                     }
+
                 </div>
+
 
                 <h1>
                     ${escapeHtml(team.name)}
                 </h1>
 
+
                 ${
                     team.short_name
+
                     ? `
+
                         <p>
-                            ${escapeHtml(team.short_name)}
+                            ${escapeHtml(
+                                team.short_name
+                            )}
                         </p>
+
                     `
+
                     : ""
+
                 }
 
+
                 <p>
-                    📍 ${escapeHtml(
-                        team.location || "Kabaru Ward"
+                    📍
+                    ${escapeHtml(
+                        team.location ||
+                        "Kabaru Ward"
                     )}
                 </p>
 
@@ -431,60 +698,198 @@ document.addEventListener("DOMContentLoaded", async () => {
                     🏟️ Team Information
                 </h2>
 
+
                 <div class="details-grid">
 
+
                     <div class="detail">
-                        <strong>Team Name</strong>
+
+                        <strong>
+                            Team Name
+                        </strong>
+
                         ${escapeHtml(team.name)}
+
                     </div>
 
+
                     <div class="detail">
-                        <strong>Short Name</strong>
+
+                        <strong>
+                            Short Name
+                        </strong>
+
                         ${escapeHtml(
-                            team.short_name || "Not provided"
+                            team.short_name ||
+                            "Not provided"
                         )}
+
                     </div>
 
+
                     <div class="detail">
-                        <strong>📍 Location</strong>
+
+                        <strong>
+                            📍 Location
+                        </strong>
+
                         ${escapeHtml(
-                            team.location || "Not provided"
+                            team.location ||
+                            "Not provided"
                         )}
+
                     </div>
 
+
                     <div class="detail">
-                        <strong>👔 Coach</strong>
+
+                        <strong>
+                            👔 Coach
+                        </strong>
+
                         ${escapeHtml(
-                            team.coach_name || "Not provided"
+                            team.coach_name ||
+                            "Not provided"
                         )}
+
                     </div>
 
+
                     <div class="detail">
-                        <strong>🧑‍✈️ Captain</strong>
+
+                        <strong>
+                            🧑‍✈️ Captain
+                        </strong>
+
                         ${escapeHtml(
-                            team.captain_name || "Not provided"
+                            team.captain_name ||
+                            "Not provided"
                         )}
+
                     </div>
 
+
                     <div class="detail">
-                        <strong>Vice Captain</strong>
+
+                        <strong>
+                            Vice Captain
+                        </strong>
+
                         ${escapeHtml(
-                            team.vice_captain_name || "Not provided"
+                            team.vice_captain_name ||
+                            "Not provided"
                         )}
+
                     </div>
 
+
                     <div class="detail">
-                        <strong>Discipline Master</strong>
+
+                        <strong>
+                            Discipline Master
+                        </strong>
+
                         ${escapeHtml(
                             team.discipline_master_name ||
                             "Not provided"
                         )}
+
                     </div>
 
+
                     <div class="detail">
-                        <strong>👥 Squad Size</strong>
-                        ${players.length} players
+
+                        <strong>
+                            👥 Squad Size
+                        </strong>
+
+                        ${players.length}
+                        players
+
                     </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- TEAM STATISTICS -->
+
+            <section class="section">
+
+                <h2>
+                    📊 Team Statistics
+                </h2>
+
+
+                <div class="stats-grid">
+
+
+                    <div class="stat-card">
+
+                        <strong>
+                            ${teamStats.appearances}
+                        </strong>
+
+                        <span>
+                            Player Appearances
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <strong>
+                            ${teamStats.goals}
+                        </strong>
+
+                        <span>
+                            Goals
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <strong>
+                            ${teamStats.assists}
+                        </strong>
+
+                        <span>
+                            Assists
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <strong>
+                            ${teamStats.yellow}
+                        </strong>
+
+                        <span>
+                            Yellow Cards
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <strong>
+                            ${teamStats.red}
+                        </strong>
+
+                        <span>
+                            Red Cards
+                        </span>
+
+                    </div>
+
 
                 </div>
 
@@ -499,66 +904,152 @@ document.addEventListener("DOMContentLoaded", async () => {
                     👥 ${escapeHtml(team.name)} Squad
                 </h2>
 
+
                 ${
                     players.length === 0
+
                     ? `
+
                         <div class="empty">
-                            No approved players registered for this team yet.
+
+                            No approved players
+                            registered for this
+                            team yet.
+
                         </div>
+
                     `
+
                     : `
+
                         <div class="squad-wrapper">
 
-                            <table class="squad-table">
+                            <table
+                                class="squad-table"
+                            >
 
                                 <thead>
 
                                     <tr>
+
                                         <th>#</th>
-                                        <th>Player</th>
-                                        <th>Position</th>
+
+                                        <th>
+                                            Player
+                                        </th>
+
+                                        <th>
+                                            Position
+                                        </th>
+
+                                        <th>
+                                            👕 Appearances
+                                        </th>
+
+                                        <th>
+                                            ⚽ Goals
+                                        </th>
+
+                                        <th>
+                                            🎯 Assists
+                                        </th>
+
+                                        <th>
+                                            🟨
+                                        </th>
+
+                                        <th>
+                                            🟥
+                                        </th>
+
                                     </tr>
 
                                 </thead>
 
+
                                 <tbody>
 
-                                    ${players.map(player => `
+                                    ${players.map(player => {
 
-                                        <tr>
+                                        const stat =
+                                            totals[player.id];
 
-                                            <td class="jersey">
-                                                ${escapeHtml(
-                                                    player.jersey_number ||
-                                                    "-"
-                                                )}
-                                            </td>
 
-                                            <td>
-                                                <strong>
+                                        return `
+
+                                            <tr>
+
+                                                <td
+                                                    class="jersey"
+                                                >
+                                                    ${escapeHtml(
+                                                        player.jersey_number ||
+                                                        "-"
+                                                    )}
+                                                </td>
+
+
+                                                <td
+                                                    class="player-name"
+                                                >
                                                     ${escapeHtml(
                                                         player.full_name
                                                     )}
-                                                </strong>
-                                            </td>
+                                                </td>
 
-                                            <td>
-                                                ${escapeHtml(
-                                                    player.position ||
-                                                    "Not specified"
-                                                )}
-                                            </td>
 
-                                        </tr>
+                                                <td>
+                                                    ${escapeHtml(
+                                                        player.position ||
+                                                        "Not specified"
+                                                    )}
+                                                </td>
 
-                                    `).join("")}
+
+                                                <td
+                                                    class="stat-number"
+                                                >
+                                                    ${stat.appearances}
+                                                </td>
+
+
+                                                <td
+                                                    class="stat-number"
+                                                >
+                                                    ${stat.goals}
+                                                </td>
+
+
+                                                <td
+                                                    class="stat-number"
+                                                >
+                                                    ${stat.assists}
+                                                </td>
+
+
+                                                <td>
+                                                    ${stat.yellow}
+                                                </td>
+
+
+                                                <td>
+                                                    ${stat.red}
+                                                </td>
+
+                                            </tr>
+
+                                        `;
+
+                                    }).join("")}
 
                                 </tbody>
 
                             </table>
 
                         </div>
+
                     `
+
                 }
 
             </section>
@@ -569,42 +1060,101 @@ document.addEventListener("DOMContentLoaded", async () => {
             <section class="section">
 
                 <h2>
-                    📊 Squad Summary
+                    👥 Squad Summary
                 </h2>
+
 
                 <div class="stats-grid">
 
-                    <div class="stat-card">
-                        <strong>${players.length}</strong>
-                        <span>Players</span>
-                    </div>
 
                     <div class="stat-card">
-                        <strong>${countPosition(players, "Goalkeeper")}</strong>
-                        <span>Goalkeepers</span>
+
+                        <strong>
+                            ${players.length}
+                        </strong>
+
+                        <span>
+                            Players
+                        </span>
+
                     </div>
 
-                    <div class="stat-card">
-                        <strong>${countPosition(players, "Defender")}</strong>
-                        <span>Defenders</span>
-                    </div>
 
                     <div class="stat-card">
-                        <strong>${countPosition(players, "Midfielder")}</strong>
-                        <span>Midfielders</span>
+
+                        <strong>
+                            ${countPosition(
+                                players,
+                                "Goalkeeper"
+                            )}
+                        </strong>
+
+                        <span>
+                            Goalkeepers
+                        </span>
+
                     </div>
 
+
                     <div class="stat-card">
-                        <strong>${countPosition(players, "Forward")}</strong>
-                        <span>Forwards</span>
+
+                        <strong>
+                            ${countPosition(
+                                players,
+                                "Defender"
+                            )}
+                        </strong>
+
+                        <span>
+                            Defenders
+                        </span>
+
                     </div>
+
+
+                    <div class="stat-card">
+
+                        <strong>
+                            ${countPosition(
+                                players,
+                                "Midfielder"
+                            )}
+                        </strong>
+
+                        <span>
+                            Midfielders
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <strong>
+                            ${countPosition(
+                                players,
+                                "Forward"
+                            )}
+                        </strong>
+
+                        <span>
+                            Forwards
+                        </span>
+
+                    </div>
+
 
                 </div>
 
             </section>
 
 
-            <div style="text-align:center; margin-top:25px;">
+            <div
+                style="
+                    text-align:center;
+                    margin-top:25px;
+                "
+            >
 
                 <a
                     href="index.html#teams"
@@ -617,12 +1167,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         `;
 
+
     } catch (error) {
 
         console.error(
             "TEAM PROFILE ERROR:",
             error
         );
+
 
         teamContent.innerHTML = `
 
@@ -632,15 +1184,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ⚠️ Unable to Load Team
                 </h2>
 
+
                 <p>
-                    We could not load this team profile.
+                    We could not load this
+                    team profile.
                 </p>
+
 
                 <p style="margin-top:8px;">
-                    Please return to the teams page and try again.
+
+                    Please return to the
+                    teams page and try again.
+
                 </p>
 
+
                 <br>
+
 
                 <a
                     href="index.html#teams"
@@ -656,13 +1216,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    function countPosition(players, position) {
+    function countPosition(
+        players,
+        position
+    ) {
 
         return players.filter(player => {
 
             return String(
                 player.position || ""
-            ).toLowerCase() ===
+            )
+            .toLowerCase()
+            ===
             position.toLowerCase();
 
         }).length;
@@ -673,12 +1238,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     function getInitials(name) {
 
         return String(name)
+
             .split(/\s+/)
+
             .filter(Boolean)
+
             .slice(0, 2)
+
             .map(word =>
-                word.charAt(0).toUpperCase()
+                word
+                    .charAt(0)
+                    .toUpperCase()
             )
+
             .join("");
 
     }
@@ -686,17 +1258,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function escapeHtml(value) {
 
-        return String(value ?? "")
+        return String(
+            value ?? ""
+        )
 
-            .replace(/&/g, "&amp;")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-            .replace(/</g, "&lt;")
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-            .replace(/>/g, "&gt;")
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-            .replace(/"/g, "&quot;")
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-            .replace(/'/g, "&#039;");
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
     }
 
@@ -706,3 +1295,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 </body>
 </html>
+```
