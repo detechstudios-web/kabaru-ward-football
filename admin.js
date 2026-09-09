@@ -3326,7 +3326,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
-
 // ========================================
 // COMPETITION MANAGER
 // ========================================
@@ -3334,10 +3333,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 const competitionForm =
     document.getElementById("competitionForm");
 
-if (competitionForm) {
+const createCompetitionButton =
+    competitionForm
+        ? competitionForm.querySelector("button[type='submit']")
+        : null;
 
-    competitionForm.addEventListener(
-        "submit",
+if (competitionForm && createCompetitionButton) {
+
+    createCompetitionButton.addEventListener(
+        "click",
         async function (event) {
 
             event.preventDefault();
@@ -3382,8 +3386,28 @@ if (competitionForm) {
                     "competitionDescription"
                 ).value.trim();
 
+            if (!name) {
+                message.textContent =
+                    "❌ Please enter the competition name.";
+                return;
+            }
+
+            if (!competitionType) {
+                message.textContent =
+                    "❌ Please select the competition type.";
+                return;
+            }
+
+            if (!season) {
+                message.textContent =
+                    "❌ Please enter the season.";
+                return;
+            }
+
             message.textContent =
                 "Saving competition...";
+
+            createCompetitionButton.disabled = true;
 
             try {
 
@@ -3419,6 +3443,8 @@ if (competitionForm) {
 
                 competitionForm.reset();
 
+                await loadCompetitions();
+
             } catch (error) {
 
                 console.error(
@@ -3432,7 +3458,14 @@ if (competitionForm) {
                         error.message ||
                         "Unknown error"
                     );
+
+            } finally {
+
+                createCompetitionButton.disabled =
+                    false;
+
             }
+
         }
     );
 }
