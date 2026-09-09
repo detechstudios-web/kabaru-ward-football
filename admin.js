@@ -1,4 +1,3 @@
-
 // ========================================
 // KABARU WARD FOOTBALL
 // ADMIN DASHBOARD
@@ -2201,10 +2200,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     // CREATE PLAYER OPTIONS
     // ========================================
 
-    function createPlayerOptions(players) {
+    function createPlayerOptions(
+        players,
+        placeholder
+    ) {
 
         let html =
-            "<option value=''>Select scorer</option>";
+            "<option value=''>" +
+            escapeHtml(
+                placeholder ||
+                "Select player"
+            ) +
+            "</option>";
 
 
         players.forEach(
@@ -2240,6 +2247,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
+    // CREATE ASSIST OPTIONS
+    // ========================================
+
+    function createAssistOptions(
+        players
+    ) {
+
+        return createPlayerOptions(
+            players,
+            "No assist"
+        );
+    }
+
+
+    // ========================================
     // ADD SCORER ROW
     // ========================================
 
@@ -2264,6 +2286,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             "goal-entry";
 
 
+        row.style.display =
+            "grid";
+
+        row.style.gridTemplateColumns =
+            "minmax(150px, 1fr) minmax(80px, 100px) minmax(150px, 1fr) auto auto";
+
+        row.style.gap =
+            "8px";
+
+        row.style.alignItems =
+            "center";
+
+        row.style.marginBottom =
+            "10px";
+
+
         row.innerHTML = `
 
             <select
@@ -2272,25 +2310,57 @@ document.addEventListener("DOMContentLoaded", async function () {
             >
 
                 ${createPlayerOptions(
-                    players
+                    players,
+                    "Select scorer"
                 )}
 
             </select>
 
 
             <input
-                type="text"
-                class="scorer-minutes"
-                placeholder="12, 44, 67"
+                type="number"
+                class="scorer-minute"
+                placeholder="Minute"
+                min="1"
+                max="130"
                 inputmode="numeric"
                 autocomplete="off"
             >
 
 
+            <select
+                class="assist-player"
+                data-side="${side}"
+            >
+
+                ${createAssistOptions(
+                    players
+                )}
+
+            </select>
+
+
+            <label style="
+                display:flex;
+                align-items:center;
+                gap:5px;
+                white-space:nowrap;
+            ">
+
+                <input
+                    type="checkbox"
+                    class="goal-penalty"
+                >
+
+                Penalty
+
+            </label>
+
+
             <button
                 type="button"
                 class="remove-goal-btn"
-                title="Remove scorer"
+                title="Remove goal"
             >
                 ✕
             </button>
@@ -2326,7 +2396,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const minuteInput =
             row.querySelector(
-                ".scorer-minutes"
+                ".scorer-minute"
             );
 
 
@@ -2367,19 +2437,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // PARSE GOAL MINUTES
+    // GET MINUTE FROM ROW
     // ========================================
 
-    function getMinutesFromRow(row) {
+    function getMinuteFromRow(row) {
 
         const input =
             row.querySelector(
-                ".scorer-minutes"
+                ".scorer-minute"
             );
 
 
         if (!input) {
-            return [];
+            return null;
         }
 
 
@@ -2388,33 +2458,27 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         if (!value) {
-            return [];
+            return null;
         }
 
 
-        return value
-            .split(",")
-            .map(
-                function (item) {
+        const minute =
+            Number(value);
 
-                    return item.trim();
 
-                }
-            )
-            .filter(
-                function (item) {
+        if (
+            !Number.isInteger(
+                minute
+            ) ||
+            minute < 1 ||
+            minute > 130
+        ) {
 
-                    return item !== "";
+            return null;
+        }
 
-                }
-            )
-            .map(
-                function (item) {
 
-                    return Number(item);
-
-                }
-            );
+        return minute;
     }
 
 
@@ -2447,6 +2511,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                     );
 
 
+                const assistSelect =
+                    row.querySelector(
+                        ".assist-player"
+                    );
+
+
+                const penaltyCheckbox =
+                    row.querySelector(
+                        ".goal-penalty"
+                    );
+
+
                 if (!playerSelect) {
                     return;
                 }
@@ -2456,10 +2532,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                     playerSelect.value;
 
 
-                const minutes =
-                    getMinutesFromRow(
+                const minute =
+                    getMinuteFromRow(
                         row
                     );
+
+
+                const assistPlayerId =
+                    assistSelect
+                        ? assistSelect.value
+                        : "";
+
+
+                const isPenalty =
+                    penaltyCheckbox
+                        ? penaltyCheckbox.checked
+                        : false;
 
 
                 if (!playerId) {
@@ -2467,23 +2555,32 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
-                minutes.forEach(
-                    function (minute) {
+                if (minute === null) {
+                    return;
+                }
 
-                        scorerData.push({
 
-                            player_id:
-                                Number(
-                                    playerId
-                                ),
+                scorerData.push({
 
-                            minute:
-                                minute
+                    player_id:
+                        Number(
+                            playerId
+                        ),
 
-                        });
+                    minute:
+                        minute,
 
-                    }
-                );
+                    assist_player_id:
+                        assistPlayerId
+                            ? Number(
+                                assistPlayerId
+                              )
+                            : null,
+
+                    is_penalty:
+                        isPenalty
+
+                });
 
             }
         );
@@ -2516,14 +2613,26 @@ document.addEventListener("DOMContentLoaded", async function () {
         rows.forEach(
             function (row) {
 
-                const minutes =
-                    getMinutesFromRow(
+                const playerSelect =
+                    row.querySelector(
+                        ".scorer-player"
+                    );
+
+
+                const minute =
+                    getMinuteFromRow(
                         row
                     );
 
 
-                count +=
-                    minutes.length;
+                if (
+                    playerSelect &&
+                    playerSelect.value &&
+                    minute !== null
+                ) {
+
+                    count++;
+                }
 
             }
         );
@@ -2881,6 +2990,248 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
+    // VALIDATE SCORERS ARE APPEARANCES
+    // ========================================
+
+    function validateScorersAreAppearances(
+        scorerData,
+        appearancePlayers
+    ) {
+
+        const appearanceSet =
+            new Set(
+                appearancePlayers
+            );
+
+
+        for (
+            let i = 0;
+            i < scorerData.length;
+            i++
+        ) {
+
+            const playerId =
+                scorerData[i].player_id;
+
+
+            if (
+                !appearanceSet.has(
+                    playerId
+                )
+            ) {
+
+                return {
+
+                    valid: false,
+
+                    message:
+                        "Every goal scorer must also be marked as having appeared in the match."
+
+                };
+            }
+        }
+
+
+        return {
+
+            valid: true,
+
+            message: ""
+
+        };
+    }
+
+
+    // ========================================
+    // VALIDATE ASSIST PROVIDERS
+    // ========================================
+
+    function validateAssistProviders(
+        scorerData,
+        appearancePlayers
+    ) {
+
+        const appearanceSet =
+            new Set(
+                appearancePlayers
+            );
+
+
+        for (
+            let i = 0;
+            i < scorerData.length;
+            i++
+        ) {
+
+            const assistPlayerId =
+                scorerData[i].assist_player_id;
+
+
+            if (!assistPlayerId) {
+                continue;
+            }
+
+
+            // Assist provider must have appeared
+            if (
+                !appearanceSet.has(
+                    assistPlayerId
+                )
+            ) {
+
+                return {
+
+                    valid: false,
+
+                    message:
+                        "Every assist provider must also be marked as having appeared in the match."
+
+                };
+            }
+
+
+            // An assist provider cannot be the scorer
+            if (
+                Number(
+                    assistPlayerId
+                ) ===
+                Number(
+                    scorerData[i].player_id
+                )
+            ) {
+
+                return {
+
+                    valid: false,
+
+                    message:
+                        "A player cannot be recorded as assisting their own goal."
+
+                };
+            }
+        }
+
+
+        return {
+
+            valid: true,
+
+            message: ""
+
+        };
+    }
+
+
+    // ========================================
+    // VALIDATE GOAL MINUTES
+    // ========================================
+
+    function validateGoalMinutes(
+        container,
+        teamName
+    ) {
+
+        if (!container) {
+
+            return {
+
+                valid: true,
+
+                message: ""
+
+            };
+        }
+
+
+        const rows =
+            container.querySelectorAll(
+                ".goal-entry"
+            );
+
+
+        for (
+            let i = 0;
+            i < rows.length;
+            i++
+        ) {
+
+            const row =
+                rows[i];
+
+
+            const playerSelect =
+                row.querySelector(
+                    ".scorer-player"
+                );
+
+
+            const minuteInput =
+                row.querySelector(
+                    ".scorer-minute"
+                );
+
+
+            const playerId =
+                playerSelect
+                    ? playerSelect.value
+                    : "";
+
+
+            const minute =
+                getMinuteFromRow(
+                    row
+                );
+
+
+            if (
+                playerId &&
+                minute === null
+            ) {
+
+                return {
+
+                    valid: false,
+
+                    message:
+                        "Please enter a valid goal minute between 1 and 130 for " +
+                        teamName +
+                        " scorer #" +
+                        (i + 1) +
+                        "."
+
+                };
+            }
+
+
+            if (
+                minuteInput &&
+                minuteInput.value.trim() &&
+                minute === null
+            ) {
+
+                return {
+
+                    valid: false,
+
+                    message:
+                        "Goal minutes must be whole numbers between 1 and 130."
+
+                };
+            }
+        }
+
+
+        return {
+
+            valid: true,
+
+            message: ""
+
+        };
+    }
+
+
+    // ========================================
     // FIXTURE SELECTION
     // ========================================
 
@@ -3193,7 +3544,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // ADD HOME SCORER
+    // ADD HOME GOAL
     // ========================================
 
     if (addHomeGoalBtn) {
@@ -3214,7 +3565,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // ADD AWAY SCORER
+    // ADD AWAY GOAL
     // ========================================
 
     if (addAwayGoalBtn) {
@@ -3257,170 +3608,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // VALIDATE GOAL MINUTES
-    // ========================================
-
-    function validateGoalMinutes(
-        container,
-        teamName
-    ) {
-
-        if (!container) {
-
-            return {
-
-                valid: true,
-
-                message: ""
-
-            };
-        }
-
-
-        const rows =
-            container.querySelectorAll(
-                ".goal-entry"
-            );
-
-
-        for (
-            let i = 0;
-            i < rows.length;
-            i++
-        ) {
-
-            const row =
-                rows[i];
-
-
-            const playerSelect =
-                row.querySelector(
-                    ".scorer-player"
-                );
-
-
-            const minutes =
-                getMinutesFromRow(
-                    row
-                );
-
-
-            if (
-                playerSelect &&
-                playerSelect.value &&
-                minutes.length === 0
-            ) {
-
-                return {
-
-                    valid: false,
-
-                    message:
-                        "Please enter the goal minute(s) for " +
-                        teamName +
-                        " scorer #" +
-                        (i + 1) +
-                        "."
-
-                };
-            }
-
-
-            for (
-                let j = 0;
-                j < minutes.length;
-                j++
-            ) {
-
-                const minute =
-                    minutes[j];
-
-
-                if (
-                    !Number.isInteger(
-                        minute
-                    ) ||
-                    minute < 1 ||
-                    minute > 130
-                ) {
-
-                    return {
-
-                        valid: false,
-
-                        message:
-                            "Goal minutes must be whole numbers between 1 and 130."
-
-                    };
-                }
-            }
-        }
-
-
-        return {
-
-            valid: true,
-
-            message: ""
-
-        };
-    }
-
-
-    // ========================================
-    // VALIDATE SCORERS ARE APPEARANCES
-    // ========================================
-
-    function validateScorersAreAppearances(
-        scorerData,
-        appearancePlayers
-    ) {
-
-        const appearanceSet =
-            new Set(
-                appearancePlayers
-            );
-
-
-        for (
-            let i = 0;
-            i < scorerData.length;
-            i++
-        ) {
-
-            const playerId =
-                scorerData[i].player_id;
-
-
-            if (
-                !appearanceSet.has(
-                    playerId
-                )
-            ) {
-
-                return {
-
-                    valid: false,
-
-                    message:
-                        "Every goal scorer must also be marked as having appeared in the match."
-
-                };
-            }
-        }
-
-
-        return {
-
-            valid: true,
-
-            message: ""
-
-        };
-    }
-
-
-    // ========================================
     // SAVE RESULT
     // ========================================
 
@@ -3456,6 +3643,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             : 0
                     );
 
+
+                // ========================================
+                // VALIDATE SCORES
+                // ========================================
 
                 if (
                     !Number.isInteger(
@@ -3651,6 +3842,31 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
+                // ========================================
+                // ASSISTS MUST BE VALID
+                // ========================================
+
+                const assistValidation =
+                    validateAssistProviders(
+                        allGoals,
+                        appearancePlayers
+                    );
+
+
+                if (
+                    !assistValidation.valid
+                ) {
+
+                    showResultMessage(
+                        "❌ " +
+                        assistValidation.message,
+                        "error"
+                    );
+
+                    return;
+                }
+
+
                 try {
 
                     saveResultBtn.disabled =
@@ -3741,7 +3957,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     // ========================================
                     // INSERT GOAL SCORERS
-                    // KEEP MINUTES
                     // ========================================
 
                     if (
@@ -3761,7 +3976,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                                             goal.player_id,
 
                                         minute:
-                                            goal.minute
+                                            goal.minute,
+
+                                        assist_player_id:
+                                            goal.assist_player_id,
+
+                                        is_penalty:
+                                            goal.is_penalty
 
                                     };
 
@@ -3784,7 +4005,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         if (goalError) {
 
                             await supabaseClient
-                                .from("results")
+                                .from(
+                                    "results"
+                                )
                                 .delete()
                                 .eq(
                                     "id",
@@ -3820,6 +4043,34 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     // ========================================
+                    // CALCULATE PLAYER ASSISTS
+                    // ========================================
+
+                    const assistCounts = {};
+
+
+                    allGoals.forEach(
+                        function (goal) {
+
+                            if (
+                                goal.assist_player_id
+                            ) {
+
+                                assistCounts[
+                                    goal.assist_player_id
+                                ] =
+                                    (
+                                        assistCounts[
+                                            goal.assist_player_id
+                                        ] || 0
+                                    ) + 1;
+                            }
+
+                        }
+                    );
+
+
+                    // ========================================
                     // CREATE PLAYER MATCH STATS
                     // ========================================
 
@@ -3844,7 +4095,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         ] || 0,
 
                                     assists:
-                                        0,
+                                        assistCounts[
+                                            playerId
+                                        ] || 0,
 
                                     yellow_cards:
                                         0,
@@ -3892,7 +4145,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                             await supabaseClient
-                                .from("results")
+                                .from(
+                                    "results"
+                                )
                                 .delete()
                                 .eq(
                                     "id",
@@ -4762,4 +5017,3 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
 });
-
