@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Team Profile | Kabaru Ward Football</title>
+<title>Team Profile - Kabaru Ward Football</title>
 
 <style>
-
 * {
     margin: 0;
     padding: 0;
@@ -24,17 +23,16 @@ body {
 header {
     background: #073b25;
     color: white;
-    padding: 18px;
     box-shadow: 0 3px 12px rgba(0,0,0,.2);
 }
 
-.header-inner {
+.navbar {
     max-width: 1100px;
     margin: auto;
+    padding: 14px 18px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 15px;
+    justify-content: space-between;
 }
 
 .logo {
@@ -57,13 +55,13 @@ header {
 }
 
 .container {
-    max-width: 1050px;
+    max-width: 1100px;
     margin: auto;
     padding: 35px 18px;
 }
 
-.team-header {
-    background: #073b25;
+.team-hero {
+    background: linear-gradient(135deg, #073b25, #0c6240);
     color: white;
     border-radius: 18px;
     padding: 35px 25px;
@@ -71,78 +69,85 @@ header {
     margin-bottom: 25px;
 }
 
-.team-icon {
-    font-size: 55px;
-    margin-bottom: 10px;
+.team-badge {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    background: #f5c542;
+    color: #073b25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
 }
 
-.team-header h1 {
-    color: #f5c542;
+.team-hero h1 {
     font-size: clamp(30px, 7vw, 48px);
     margin-bottom: 5px;
 }
 
-.team-short-name {
-    opacity: .9;
-    font-size: 18px;
-}
-
-.team-location {
-    margin-top: 10px;
+.team-hero p {
     opacity: .9;
 }
 
-.details {
+.section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.07);
+}
+
+.section h2 {
+    color: #073b25;
+    margin-bottom: 18px;
+}
+
+.details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 12px;
 }
 
-.detail-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+.detail {
+    background: #f5f7f6;
+    border-radius: 10px;
+    padding: 15px;
 }
 
-.detail-card strong {
+.detail strong {
     display: block;
     color: #073b25;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
-.section-title {
-    color: #073b25;
-    margin-bottom: 15px;
-}
-
-.squad-card {
-    background: white;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+.squad-wrapper {
+    width: 100%;
+    overflow-x: auto;
 }
 
 .squad-table {
     width: 100%;
+    min-width: 600px;
     border-collapse: collapse;
 }
 
 .squad-table th {
     background: #073b25;
     color: white;
-    padding: 13px 8px;
+    padding: 12px 8px;
     text-align: left;
 }
 
 .squad-table td {
-    padding: 13px 8px;
-    border-bottom: 1px solid #e7ebe8;
+    padding: 12px 8px;
+    border-bottom: 1px solid #e5ebe7;
 }
 
-.squad-table tr:last-child td {
-    border-bottom: none;
+.squad-table tr:hover {
+    background: #f5f7f6;
 }
 
 .jersey {
@@ -150,98 +155,122 @@ header {
     color: #073b25;
 }
 
-.status {
-    display: inline-block;
-    background: #e7f6ed;
-    color: #176b3c;
-    padding: 4px 9px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: bold;
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
 }
 
-.message {
-    background: white;
-    padding: 30px;
-    border-radius: 14px;
+.stat-card {
+    background: #f5f7f6;
+    border-radius: 10px;
+    padding: 18px 10px;
     text-align: center;
-    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 26px;
+    color: #073b25;
+}
+
+.stat-card span {
+    font-size: 12px;
+    color: #657169;
+}
+
+.loading {
+    text-align: center;
+    padding: 50px 20px;
 }
 
 .error {
-    color: #a33;
+    background: #fdeaea;
+    border: 1px solid #e0a2a2;
+    color: #8b2222;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+}
+
+.empty {
+    text-align: center;
+    padding: 25px;
+    color: #657169;
+}
+
+.back-button {
+    display: inline-block;
+    background: #073b25;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background: #0c6240;
 }
 
 footer {
     background: #062719;
     color: white;
     text-align: center;
-    padding: 25px 18px;
-    margin-top: 30px;
+    padding: 28px 18px;
+    margin-top: 20px;
 }
 
 footer span {
     color: #f5c542;
 }
 
-@media (max-width: 600px) {
-
-    .header-inner {
-        flex-direction: column;
-        text-align: center;
+@media (max-width: 700px) {
+    .container {
+        padding: 25px 12px;
     }
 
-    .squad-table {
-        font-size: 13px;
+    .section {
+        padding: 18px;
     }
 
-    .squad-table th,
-    .squad-table td {
-        padding: 10px 6px;
+    .team-hero {
+        padding: 30px 18px;
     }
-
 }
-
 </style>
 </head>
 
 <body>
 
 <header>
-
-    <div class="header-inner">
-
+    <div class="navbar">
         <div class="logo">
             KABARU <span>⚽</span> FOOTBALL
         </div>
 
-        <a
-            href="index.html#teams"
-            class="back-link"
-        >
-            ← Back to Teams
+        <a href="index.html#teams" class="back-link">
+            ← Teams
         </a>
-
     </div>
-
 </header>
-
 
 <main>
 
-<div class="container">
+    <div class="container">
 
-    <div
-        id="teamContent"
-        class="message"
-    >
-        Loading team profile...
+        <div id="teamContent">
+
+            <div class="loading">
+                <h2>⚽ Loading Team Profile...</h2>
+                <p>Please wait while we load the team information.</p>
+            </div>
+
+        </div>
+
     </div>
 
-</div>
-
 </main>
-
 
 <footer>
 
@@ -255,28 +284,16 @@ footer span {
 
 </footer>
 
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
 
-
 <script>
-
-// ========================================
-// KABARU WARD FOOTBALL
-// TEAM PROFILE
-// ========================================
 
 document.addEventListener("DOMContentLoaded", async () => {
 
     const teamContent =
         document.getElementById("teamContent");
-
-
-    // ========================================
-    // GET TEAM ID FROM URL
-    // ========================================
 
     const params =
         new URLSearchParams(window.location.search);
@@ -284,116 +301,103 @@ document.addEventListener("DOMContentLoaded", async () => {
     const teamId =
         params.get("id");
 
-
     if (!teamId) {
 
         teamContent.innerHTML = `
-            <h2 class="error">
-                ⚠️ Team Not Found
-            </h2>
-
-            <p>
-                No team was specified.
-            </p>
-
-            <p style="margin-top:15px;">
-                <a href="index.html#teams">
-                    Return to Registered Teams
+            <div class="error">
+                <h2>⚠️ Team Not Found</h2>
+                <p>No team was selected.</p>
+                <br>
+                <a href="index.html#teams" class="back-button">
+                    ← Back to Teams
                 </a>
-            </p>
+            </div>
         `;
 
         return;
     }
 
-
-    // ========================================
-    // LOAD TEAM
-    // ========================================
-
     try {
 
         const {
             data: team,
-            error
+            error: teamError
         } = await supabaseClient
-
             .from("teams")
-
             .select(`
                 id,
                 name,
                 short_name,
+                logo_url,
                 location,
                 coach_name,
                 captain_name,
                 vice_captain_name,
                 discipline_master_name,
+                phone,
+                email,
                 registration_status,
-
                 players (
                     id,
                     full_name,
                     jersey_number,
                     position,
+                    photo_url,
                     registration_status
                 )
             `)
-
             .eq("id", teamId)
-
             .eq("registration_status", "Approved")
-
             .single();
 
-
-        if (error) {
-            throw error;
+        if (teamError) {
+            throw teamError;
         }
-
 
         if (!team) {
-
-            throw new Error(
-                "This team does not exist or has not been approved."
-            );
-
+            throw new Error("Team not found.");
         }
 
-
-        // ========================================
-        // APPROVED PLAYERS ONLY
-        // ========================================
-
         const players =
-            (team.players || []).filter(
-                player =>
+            (team.players || [])
+                .filter(player =>
                     player.registration_status === "Approved"
-            );
+                )
+                .sort((a, b) => {
+                    return (
+                        Number(a.jersey_number || 999) -
+                        Number(b.jersey_number || 999)
+                    );
+                });
 
+        document.title =
+            `${team.name} - Kabaru Ward Football`;
 
-        // ========================================
-        // SORT PLAYERS BY JERSEY NUMBER
-        // ========================================
-
-        players.sort(
-            (a, b) =>
-                a.jersey_number - b.jersey_number
-        );
-
-
-        // ========================================
-        // DISPLAY PROFILE
-        // ========================================
-
-        teamContent.className = "";
+        const initials =
+            getInitials(team.name);
 
         teamContent.innerHTML = `
 
-            <div class="team-header">
+            <!-- TEAM HEADER -->
 
-                <div class="team-icon">
-                    ⚽
+            <section class="team-hero">
+
+                <div class="team-badge">
+                    ${team.logo_url
+                        ? `
+                            <img
+                                src="${escapeHtml(team.logo_url)}"
+                                alt="${escapeHtml(team.name)} logo"
+                                style="
+                                    width:100%;
+                                    height:100%;
+                                    object-fit:cover;
+                                    border-radius:50%;
+                                "
+                            >
+                        `
+                        : initials
+                    }
                 </div>
 
                 <h1>
@@ -403,145 +407,215 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ${
                     team.short_name
                     ? `
-                        <div class="team-short-name">
+                        <p>
                             ${escapeHtml(team.short_name)}
-                        </div>
+                        </p>
                     `
                     : ""
                 }
 
-                <div class="team-location">
+                <p>
                     📍 ${escapeHtml(
-                        team.location || "Location not provided"
+                        team.location || "Kabaru Ward"
                     )}
+                </p>
+
+            </section>
+
+
+            <!-- TEAM INFORMATION -->
+
+            <section class="section">
+
+                <h2>
+                    🏟️ Team Information
+                </h2>
+
+                <div class="details-grid">
+
+                    <div class="detail">
+                        <strong>Team Name</strong>
+                        ${escapeHtml(team.name)}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Short Name</strong>
+                        ${escapeHtml(
+                            team.short_name || "Not provided"
+                        )}
+                    </div>
+
+                    <div class="detail">
+                        <strong>📍 Location</strong>
+                        ${escapeHtml(
+                            team.location || "Not provided"
+                        )}
+                    </div>
+
+                    <div class="detail">
+                        <strong>👔 Coach</strong>
+                        ${escapeHtml(
+                            team.coach_name || "Not provided"
+                        )}
+                    </div>
+
+                    <div class="detail">
+                        <strong>🧑‍✈️ Captain</strong>
+                        ${escapeHtml(
+                            team.captain_name || "Not provided"
+                        )}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Vice Captain</strong>
+                        ${escapeHtml(
+                            team.vice_captain_name || "Not provided"
+                        )}
+                    </div>
+
+                    <div class="detail">
+                        <strong>Discipline Master</strong>
+                        ${escapeHtml(
+                            team.discipline_master_name ||
+                            "Not provided"
+                        )}
+                    </div>
+
+                    <div class="detail">
+                        <strong>👥 Squad Size</strong>
+                        ${players.length} players
+                    </div>
+
                 </div>
 
-            </div>
+            </section>
 
 
-            <div class="details">
+            <!-- SQUAD -->
 
-                <div class="detail-card">
-                    <strong>👔 Coach</strong>
-                    ${escapeHtml(
-                        team.coach_name || "Not provided"
-                    )}
-                </div>
+            <section class="section">
 
-                <div class="detail-card">
-                    <strong>🧑‍✈️ Captain</strong>
-                    ${escapeHtml(
-                        team.captain_name || "Not provided"
-                    )}
-                </div>
-
-                <div class="detail-card">
-                    <strong>Vice Captain</strong>
-                    ${escapeHtml(
-                        team.vice_captain_name || "Not provided"
-                    )}
-                </div>
-
-                <div class="detail-card">
-                    <strong>Discipline Master</strong>
-                    ${escapeHtml(
-                        team.discipline_master_name || "Not provided"
-                    )}
-                </div>
-
-            </div>
-
-
-            <h2 class="section-title">
-                👥 Squad (${players.length}/20)
-            </h2>
-
-
-            <div class="squad-card">
+                <h2>
+                    👥 ${escapeHtml(team.name)} Squad
+                </h2>
 
                 ${
-                    players.length > 0
-
+                    players.length === 0
                     ? `
+                        <div class="empty">
+                            No approved players registered for this team yet.
+                        </div>
+                    `
+                    : `
+                        <div class="squad-wrapper">
 
-                        <table class="squad-table">
+                            <table class="squad-table">
 
-                            <thead>
-
-                                <tr>
-                                    <th>#</th>
-                                    <th>Player</th>
-                                    <th>Jersey</th>
-                                    <th>Position</th>
-                                    <th>Status</th>
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                ${players.map((player, index) => `
+                                <thead>
 
                                     <tr>
-
-                                        <td>
-                                            ${index + 1}
-                                        </td>
-
-                                        <td>
-                                            <strong>
-                                                ${escapeHtml(
-                                                    player.full_name
-                                                )}
-                                            </strong>
-                                        </td>
-
-                                        <td class="jersey">
-                                            #${player.jersey_number}
-                                        </td>
-
-                                        <td>
-                                            ${escapeHtml(
-                                                player.position
-                                            )}
-                                        </td>
-
-                                        <td>
-                                            <span class="status">
-                                                Approved
-                                            </span>
-                                        </td>
-
+                                        <th>#</th>
+                                        <th>Player</th>
+                                        <th>Position</th>
                                     </tr>
 
-                                `).join("")}
+                                </thead>
 
-                            </tbody>
+                                <tbody>
 
-                        </table>
+                                    ${players.map(player => `
 
-                    `
+                                        <tr>
 
-                    : `
+                                            <td class="jersey">
+                                                ${escapeHtml(
+                                                    player.jersey_number ||
+                                                    "-"
+                                                )}
+                                            </td>
 
-                        <div class="message">
-                            <p>
-                                No approved players have been
-                                registered for this team yet.
-                            </p>
+                                            <td>
+                                                <strong>
+                                                    ${escapeHtml(
+                                                        player.full_name
+                                                    )}
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                ${escapeHtml(
+                                                    player.position ||
+                                                    "Not specified"
+                                                )}
+                                            </td>
+
+                                        </tr>
+
+                                    `).join("")}
+
+                                </tbody>
+
+                            </table>
+
                         </div>
-
                     `
                 }
+
+            </section>
+
+
+            <!-- SQUAD SUMMARY -->
+
+            <section class="section">
+
+                <h2>
+                    📊 Squad Summary
+                </h2>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <strong>${players.length}</strong>
+                        <span>Players</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <strong>${countPosition(players, "Goalkeeper")}</strong>
+                        <span>Goalkeepers</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <strong>${countPosition(players, "Defender")}</strong>
+                        <span>Defenders</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <strong>${countPosition(players, "Midfielder")}</strong>
+                        <span>Midfielders</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <strong>${countPosition(players, "Forward")}</strong>
+                        <span>Forwards</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <div style="text-align:center; margin-top:25px;">
+
+                <a
+                    href="index.html#teams"
+                    class="back-button"
+                >
+                    ← Back to All Teams
+                </a>
 
             </div>
 
         `;
-
-
-        document.title =
-            `${team.name} | Kabaru Ward Football`;
-
 
     } catch (error) {
 
@@ -550,44 +624,69 @@ document.addEventListener("DOMContentLoaded", async () => {
             error
         );
 
-
-        teamContent.className =
-            "message error";
-
-
         teamContent.innerHTML = `
 
-            <h2>
-                ⚠️ Unable to Load Team
-            </h2>
+            <div class="error">
 
-            <p>
-                ${escapeHtml(
-                    error.message ||
-                    "Something went wrong while loading this team."
-                )}
-            </p>
+                <h2>
+                    ⚠️ Unable to Load Team
+                </h2>
 
-            <p style="margin-top:15px;">
+                <p>
+                    We could not load this team profile.
+                </p>
 
-                <a href="index.html#teams">
-                    ← Return to Registered Teams
+                <p style="margin-top:8px;">
+                    Please return to the teams page and try again.
+                </p>
+
+                <br>
+
+                <a
+                    href="index.html#teams"
+                    class="back-button"
+                >
+                    ← Back to Teams
                 </a>
 
-            </p>
+            </div>
 
         `;
 
     }
 
 
-    // ========================================
-    // HTML ESCAPING
-    // ========================================
+    function countPosition(players, position) {
+
+        return players.filter(player => {
+
+            return String(
+                player.position || ""
+            ).toLowerCase() ===
+            position.toLowerCase();
+
+        }).length;
+
+    }
+
+
+    function getInitials(name) {
+
+        return String(name)
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(word =>
+                word.charAt(0).toUpperCase()
+            )
+            .join("");
+
+    }
+
 
     function escapeHtml(value) {
 
-        return String(value)
+        return String(value ?? "")
 
             .replace(/&/g, "&amp;")
 
