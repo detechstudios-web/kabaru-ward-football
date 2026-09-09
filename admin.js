@@ -5,22 +5,55 @@
 
 document.addEventListener("DOMContentLoaded", async function () {
 
-    const pendingTeams = document.getElementById("pendingTeams");
-    const statusMessage = document.getElementById("statusMessage");
-    const logoutBtn = document.getElementById("logoutBtn");
+    // ========================================
+    // MAIN ELEMENTS
+    // ========================================
 
-    const fixtureForm = document.getElementById("fixtureForm");
-    const competitionSelect = document.getElementById("competitionSelect");
-    const homeTeamSelect = document.getElementById("homeTeamSelect");
-    const awayTeamSelect = document.getElementById("awayTeamSelect");
-    const venueSelect = document.getElementById("venueSelect");
-    const fixturesList = document.getElementById("fixturesList");
-    const fixtureFormMessage = document.getElementById("fixtureFormMessage");
+    const pendingTeams =
+        document.getElementById("pendingTeams");
 
-    const matchday = document.getElementById("matchday");
-    const matchDate = document.getElementById("matchDate");
-    const kickOff = document.getElementById("kickOff");
-    const fixtureStatus = document.getElementById("fixtureStatus");
+    const statusMessage =
+        document.getElementById("statusMessage");
+
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
+    // ========================================
+    // FIXTURE ELEMENTS
+    // ========================================
+
+    const fixtureForm =
+        document.getElementById("fixtureForm");
+
+    const competitionSelect =
+        document.getElementById("competitionSelect");
+
+    const homeTeamSelect =
+        document.getElementById("homeTeamSelect");
+
+    const awayTeamSelect =
+        document.getElementById("awayTeamSelect");
+
+    const venueSelect =
+        document.getElementById("venueSelect");
+
+    const fixturesList =
+        document.getElementById("fixturesList");
+
+    const fixtureFormMessage =
+        document.getElementById("fixtureFormMessage");
+
+    const matchday =
+        document.getElementById("matchday");
+
+    const matchDate =
+        document.getElementById("matchDate");
+
+    const kickOff =
+        document.getElementById("kickOff");
+
+    const fixtureStatus =
+        document.getElementById("fixtureStatus");
 
 
     // ========================================
@@ -83,18 +116,34 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
+    // COMPETITION MANAGER ELEMENTS
+    // ========================================
+
+    const competitionForm =
+        document.getElementById("competitionForm");
+
+    const createCompetitionButton =
+        document.getElementById("createCompetitionButton");
+
+    const competitionFormMessage =
+        document.getElementById("competitionFormMessage");
+
+
+    // ========================================
     // RESULT DATA
     // ========================================
 
     let resultFixtures = [];
+
     let currentFixture = null;
 
     let homePlayers = [];
+
     let awayPlayers = [];
 
 
     // ========================================
-    // MESSAGE
+    // MESSAGE HELPERS
     // ========================================
 
     function showMessage(message, type) {
@@ -102,7 +151,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!statusMessage) return;
 
         statusMessage.textContent = message;
+
         statusMessage.style.display = "block";
+
         statusMessage.className =
             "status-message " + (type || "");
     }
@@ -113,7 +164,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!fixtureFormMessage) return;
 
         fixtureFormMessage.textContent = message;
+
         fixtureFormMessage.style.display = "block";
+
         fixtureFormMessage.className =
             "fixture-form-message " + (type || "");
     }
@@ -124,7 +177,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!resultFormMessage) return;
 
         resultFormMessage.textContent = message;
+
         resultFormMessage.style.display = "block";
+
         resultFormMessage.className =
             "result-form-message " + (type || "");
     }
@@ -171,42 +226,59 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (logoutBtn) {
 
-        logoutBtn.addEventListener("click", async function () {
+        logoutBtn.addEventListener(
+            "click",
+            async function () {
 
-            try {
+                try {
 
-                logoutBtn.disabled = true;
-                logoutBtn.textContent = "Logging out...";
+                    logoutBtn.disabled = true;
 
-
-                const { error } =
-                    await supabaseClient.auth.signOut();
+                    logoutBtn.textContent =
+                        "Logging out...";
 
 
-                if (error) {
-                    throw error;
+                    const {
+                        error
+                    } =
+                        await supabaseClient.auth.signOut();
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    window.location.href =
+                        "admin-login.html";
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Logout error:",
+                        error
+                    );
+
+
+                    logoutBtn.disabled = false;
+
+                    logoutBtn.textContent =
+                        "Logout";
+
+
+                    showMessage(
+                        "Logout failed: " +
+                        (
+                            error.message ||
+                            "Unknown error"
+                        ),
+                        "error"
+                    );
                 }
 
-
-                window.location.href =
-                    "admin-login.html";
-
-
-            } catch (error) {
-
-                console.error("Logout error:", error);
-
-                logoutBtn.disabled = false;
-                logoutBtn.textContent = "Logout";
-
-                showMessage(
-                    "Logout failed: " +
-                    (error.message || "Unknown error"),
-                    "error"
-                );
             }
-
-        });
+        );
     }
 
 
@@ -228,7 +300,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     user
                 },
                 error: userError
-            } = await supabaseClient.auth.getUser();
+            } =
+                await supabaseClient.auth.getUser();
 
 
             if (userError) {
@@ -250,15 +323,24 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: admin,
                 error: adminError
-            } = await supabaseClient
-                .from("admin_users")
-                .select("user_id, role")
-                .eq("user_id", user.id)
-                .in("role", [
-                    "admin",
-                    "super_admin"
-                ])
-                .maybeSingle();
+            } =
+                await supabaseClient
+                    .from("admin_users")
+                    .select(
+                        "user_id, role"
+                    )
+                    .eq(
+                        "user_id",
+                        user.id
+                    )
+                    .in(
+                        "role",
+                        [
+                            "admin",
+                            "super_admin"
+                        ]
+                    )
+                    .maybeSingle();
 
 
             if (adminError) {
@@ -296,7 +378,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             showMessage(
                 "❌ Admin verification failed: " +
-                (error.message || "Unknown error"),
+                (
+                    error.message ||
+                    "Unknown error"
+                ),
                 "error"
             );
 
@@ -310,176 +395,490 @@ document.addEventListener("DOMContentLoaded", async function () {
     // LOAD COMPETITIONS
     // ========================================
 
-    
+    async function loadCompetitions() {
+
+        const competitionsList =
+            document.getElementById(
+                "competitionsList"
+            );
+
+
+        if (!competitionsList) {
+            return;
+        }
+
+
+        competitionsList.innerHTML =
+            '<div class="empty-message">Loading competitions...</div>';
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("competitions")
+                    .select("*")
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            // ========================================
+            // LOAD COMPETITIONS INTO FIXTURE DROPDOWN
+            // ========================================
+
+            if (competitionSelect) {
+
+                competitionSelect.innerHTML =
+                    '<option value="">Select competition</option>';
+
+
+                (data || []).forEach(
+                    function (competition) {
+
+                        const option =
+                            document.createElement(
+                                "option"
+                            );
+
+
+                        option.value =
+                            competition.id;
+
+
+                        option.textContent =
+                            competition.name +
+                            " — " +
+                            (
+                                competition.season ||
+                                ""
+                            );
+
+
+                        competitionSelect.appendChild(
+                            option
+                        );
+
+                    }
+                );
+            }
+
+
+            // ========================================
+            // NO COMPETITIONS
+            // ========================================
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                competitionsList.innerHTML =
+                    '<div class="empty-message">' +
+                    'No competitions have been created yet.' +
+                    '</div>';
+
                 return;
             }
 
 
-            async function loadCompetitions() {
+            // ========================================
+            // DISPLAY COMPETITIONS
+            // ========================================
 
-    const competitionsList =
-        document.getElementById("competitionsList");
+            let html = "";
 
-    const competitionSelect =
-        document.getElementById("competitionSelect");
 
-    if (!competitionsList) return;
+            data.forEach(
+                function (competition) {
 
-    competitionsList.innerHTML =
-        '<div class="empty-message">Loading competitions...</div>';
+                    const startDate =
+                        competition.start_date
+                            ? formatDate(
+                                competition.start_date
+                            )
+                            : "Not set";
 
-    try {
 
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("competitions")
-            .select("*")
-            .order("created_at", {
-                ascending: false
-            });
+                    const endDate =
+                        competition.end_date
+                            ? formatDate(
+                                competition.end_date
+                            )
+                            : "Not set";
 
-        if (error) {
-            throw error;
-        }
 
-        // ========================================
-        // LOAD COMPETITIONS INTO FIXTURE DROPDOWN
-        // ========================================
+                    const status =
+                        competition.status ||
+                        "Upcoming";
 
-        if (competitionSelect) {
 
-            competitionSelect.innerHTML =
-                '<option value="">Select competition</option>';
+                    html += `
 
-            data.forEach(function (competition) {
+                        <div
+                            class="admin-card"
+                            style="margin-top:15px; border-left:5px solid #16803c;"
+                        >
 
-                const option =
-                    document.createElement("option");
+                            <h3>
+                                🏆
+                                ${escapeHtml(
+                                    competition.name
+                                )}
+                            </h3>
 
-                option.value = competition.id;
 
-                option.textContent =
-                    competition.name +
-                    " — " +
-                    competition.season;
+                            <div class="team-details">
 
-                competitionSelect.appendChild(option);
+                                <div class="detail">
+                                    <strong>Type</strong><br>
+                                    ${escapeHtml(
+                                        competition.competition_type ||
+                                        "-"
+                                    )}
+                                </div>
 
-            });
-        }
 
-        // ========================================
-        // NO COMPETITIONS
-        // ========================================
+                                <div class="detail">
+                                    <strong>Season</strong><br>
+                                    ${escapeHtml(
+                                        competition.season ||
+                                        "Not set"
+                                    )}
+                                </div>
 
-        if (!data || data.length === 0) {
+
+                                <div class="detail">
+                                    <strong>Start Date</strong><br>
+                                    ${startDate}
+                                </div>
+
+
+                                <div class="detail">
+                                    <strong>End Date</strong><br>
+                                    ${endDate}
+                                </div>
+
+
+                                <div class="detail">
+                                    <strong>Status</strong><br>
+                                    ${escapeHtml(
+                                        status
+                                    )}
+                                </div>
+
+                            </div>
+
+
+                            ${
+                                competition.description
+                                    ? `
+                                        <p>
+                                            ${escapeHtml(
+                                                competition.description
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                    `;
+                }
+            );
+
+
+            competitionsList.innerHTML =
+                html;
+
+
+        } catch (error) {
+
+            console.error(
+                "LOAD COMPETITIONS ERROR:",
+                error
+            );
+
 
             competitionsList.innerHTML =
                 '<div class="empty-message">' +
-                'No competitions have been created yet.' +
+                '❌ Unable to load competitions: ' +
+                escapeHtml(
+                    error.message ||
+                    "Unknown error"
+                ) +
                 '</div>';
-
-            return;
         }
+    }
 
-        // ========================================
-        // DISPLAY COMPETITIONS
-        // ========================================
 
-        let html = "";
+    // ========================================
+    // CREATE COMPETITION
+    // ========================================
 
-        data.forEach(function (competition) {
+    if (createCompetitionButton) {
 
-            const startDate =
-                competition.start_date
-                    ? formatDate(competition.start_date)
-                    : "Not set";
+        createCompetitionButton.addEventListener(
+            "click",
+            async function () {
 
-            const endDate =
-                competition.end_date
-                    ? formatDate(competition.end_date)
-                    : "Not set";
+                console.log(
+                    "CREATE COMPETITION BUTTON CLICKED"
+                );
 
-            const status =
-                competition.status || "Upcoming";
 
-            html += `
+                const nameInput =
+                    document.getElementById(
+                        "competitionName"
+                    );
 
-                <div class="admin-card"
-                     style="margin-top:15px; border-left:5px solid #16803c;">
+                const typeInput =
+                    document.getElementById(
+                        "competitionType"
+                    );
 
-                    <h3>
-                        🏆 ${escapeHtml(competition.name)}
-                    </h3>
+                const seasonInput =
+                    document.getElementById(
+                        "competitionSeason"
+                    );
 
-                    <div class="team-details">
+                const startDateInput =
+                    document.getElementById(
+                        "competitionStartDate"
+                    );
 
-                        <div class="detail">
-                            <strong>Type</strong><br>
-                            ${escapeHtml(competition.competition_type)}
-                        </div>
+                const endDateInput =
+                    document.getElementById(
+                        "competitionEndDate"
+                    );
 
-                        <div class="detail">
-                            <strong>Season</strong><br>
-                            ${escapeHtml(competition.season || "Not set")}
-                        </div>
+                const statusInput =
+                    document.getElementById(
+                        "competitionStatus"
+                    );
 
-                        <div class="detail">
-                            <strong>Start Date</strong><br>
-                            ${startDate}
-                        </div>
+                const descriptionInput =
+                    document.getElementById(
+                        "competitionDescription"
+                    );
 
-                        <div class="detail">
-                            <strong>End Date</strong><br>
-                            ${endDate}
-                        </div>
 
-                        <div class="detail">
-                            <strong>Status</strong><br>
-                            ${escapeHtml(status)}
-                        </div>
+                if (!competitionFormMessage) {
+                    return;
+                }
 
-                    </div>
 
-                    ${
-                        competition.description
-                            ? `
-                                <p>
-                                    ${escapeHtml(
-                                        competition.description
-                                    )}
-                                </p>
-                              `
-                            : ""
+                const name =
+                    nameInput
+                        ? nameInput.value.trim()
+                        : "";
+
+
+                const competitionType =
+                    typeInput
+                        ? typeInput.value
+                        : "";
+
+
+                const season =
+                    seasonInput
+                        ? seasonInput.value.trim()
+                        : "";
+
+
+                const startDate =
+                    startDateInput &&
+                    startDateInput.value
+                        ? startDateInput.value
+                        : null;
+
+
+                const endDate =
+                    endDateInput &&
+                    endDateInput.value
+                        ? endDateInput.value
+                        : null;
+
+
+                const status =
+                    statusInput
+                        ? statusInput.value
+                        : "Upcoming";
+
+
+                const description =
+                    descriptionInput
+                        ? descriptionInput.value.trim()
+                        : "";
+
+
+                // ========================================
+                // VALIDATION
+                // ========================================
+
+                if (!name) {
+
+                    competitionFormMessage.textContent =
+                        "❌ Please enter the competition name.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+
+
+                if (!competitionType) {
+
+                    competitionFormMessage.textContent =
+                        "❌ Please select the competition type.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+
+
+                if (!season) {
+
+                    competitionFormMessage.textContent =
+                        "❌ Please enter the season.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+
+
+                if (
+                    startDate &&
+                    endDate &&
+                    endDate < startDate
+                ) {
+
+                    competitionFormMessage.textContent =
+                        "❌ End date cannot be before start date.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+
+
+                competitionFormMessage.textContent =
+                    "Saving competition...";
+
+                competitionFormMessage.style.display =
+                    "block";
+
+
+                createCompetitionButton.disabled =
+                    true;
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient
+                            .from("competitions")
+                            .insert({
+                                name: name,
+                                competition_type:
+                                    competitionType,
+                                season: season,
+                                start_date:
+                                    startDate,
+                                end_date:
+                                    endDate,
+                                status: status,
+                                description:
+                                    description ||
+                                    null
+                            })
+                            .select()
+                            .single();
+
+
+                    if (error) {
+                        throw error;
                     }
 
-                </div>
 
-            `;
+                    console.log(
+                        "Competition created successfully:",
+                        data
+                    );
 
-        });
 
-        competitionsList.innerHTML = html;
+                    competitionFormMessage.textContent =
+                        "✅ Competition created successfully!";
 
-    } catch (error) {
 
-        console.error(
-            "LOAD COMPETITIONS ERROR:",
-            error
+                    competitionFormMessage.style.display =
+                        "block";
+
+
+                    if (competitionForm) {
+                        competitionForm.reset();
+                    }
+
+
+                    await loadCompetitions();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "CREATE COMPETITION ERROR:",
+                        error
+                    );
+
+
+                    competitionFormMessage.textContent =
+                        "❌ Unable to create competition: " +
+                        (
+                            error.message ||
+                            "Unknown error"
+                        );
+
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+
+                } finally {
+
+                    createCompetitionButton.disabled =
+                        false;
+                }
+
+            }
         );
 
-        competitionsList.innerHTML =
-            '<div class="empty-message">' +
-            '❌ Unable to load competitions: ' +
-            escapeHtml(
-                error.message ||
-                "Unknown error"
-            ) +
-            '</div>';
-    }
-}
+    } else {
+
+        console.warn(
+            "CREATE COMPETITION BUTTON NOT FOUND. " +
+            "Make sure the button has id='createCompetitionButton'."
+        );
     }
 
 
@@ -509,18 +908,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data,
                 error
-            } = await supabaseClient
-                .from("teams")
-                .select(
-                    "id, name, short_name"
-                )
-                .eq(
-                    "registration_status",
-                    "Approved"
-                )
-                .order("name", {
-                    ascending: true
-                });
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .select(
+                        "id, name, short_name"
+                    )
+                    .eq(
+                        "registration_status",
+                        "Approved"
+                    )
+                    .order(
+                        "name",
+                        {
+                            ascending: true
+                        }
+                    );
 
 
             if (error) {
@@ -535,7 +938,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "<option value=''>Select away team</option>";
 
 
-            if (!data || data.length === 0) {
+            if (
+                !data ||
+                data.length === 0
+            ) {
 
                 homeTeamSelect.innerHTML =
                     "<option value=''>No approved teams</option>";
@@ -547,47 +953,59 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            data.forEach(function (team) {
+            data.forEach(
+                function (team) {
 
-                const name =
-                    team.name +
-                    (
-                        team.short_name
-                            ? " (" +
-                              team.short_name +
-                              ")"
-                            : ""
+                    const name =
+                        team.name +
+                        (
+                            team.short_name
+                                ? " (" +
+                                  team.short_name +
+                                  ")"
+                                : ""
+                        );
+
+
+                    const homeOption =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    homeOption.value =
+                        team.id;
+
+
+                    homeOption.textContent =
+                        name;
+
+
+                    homeTeamSelect.appendChild(
+                        homeOption
                     );
 
 
-                const homeOption =
-                    document.createElement("option");
-
-                homeOption.value =
-                    team.id;
-
-                homeOption.textContent =
-                    name;
-
-                homeTeamSelect.appendChild(
-                    homeOption
-                );
+                    const awayOption =
+                        document.createElement(
+                            "option"
+                        );
 
 
-                const awayOption =
-                    document.createElement("option");
+                    awayOption.value =
+                        team.id;
 
-                awayOption.value =
-                    team.id;
 
-                awayOption.textContent =
-                    name;
+                    awayOption.textContent =
+                        name;
 
-                awayTeamSelect.appendChild(
-                    awayOption
-                );
 
-            });
+                    awayTeamSelect.appendChild(
+                        awayOption
+                    );
+
+                }
+            );
 
 
         } catch (error) {
@@ -613,7 +1031,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function loadVenues() {
 
-        if (!venueSelect) return;
+        if (!venueSelect) {
+            return;
+        }
 
 
         venueSelect.innerHTML =
@@ -625,14 +1045,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data,
                 error
-            } = await supabaseClient
-                .from("venues")
-                .select(
-                    "id, name, location"
-                )
-                .order("name", {
-                    ascending: true
-                });
+            } =
+                await supabaseClient
+                    .from("venues")
+                    .select(
+                        "id, name, location"
+                    )
+                    .order(
+                        "name",
+                        {
+                            ascending: true
+                        }
+                    );
 
 
             if (error) {
@@ -644,7 +1068,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "<option value=''>Select venue</option>";
 
 
-            if (!data || data.length === 0) {
+            if (
+                !data ||
+                data.length === 0
+            ) {
 
                 venueSelect.innerHTML =
                     "<option value=''>No venues found</option>";
@@ -653,30 +1080,35 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            data.forEach(function (venue) {
+            data.forEach(
+                function (venue) {
 
-                const option =
-                    document.createElement("option");
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
 
 
-                option.value =
-                    venue.name;
+                    option.value =
+                        venue.name;
 
 
-                option.textContent =
-                    venue.name +
-                    (
-                        venue.location
-                            ? " - " + venue.location
-                            : ""
+                    option.textContent =
+                        venue.name +
+                        (
+                            venue.location
+                                ? " - " +
+                                  venue.location
+                                : ""
+                        );
+
+
+                    venueSelect.appendChild(
+                        option
                     );
 
-
-                venueSelect.appendChild(
-                    option
-                );
-
-            });
+                }
+            );
 
 
         } catch (error) {
@@ -707,28 +1139,51 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 const competitionId =
-                    competitionSelect.value;
+                    competitionSelect
+                        ? competitionSelect.value
+                        : "";
+
 
                 const homeTeamId =
-                    homeTeamSelect.value;
+                    homeTeamSelect
+                        ? homeTeamSelect.value
+                        : "";
+
 
                 const awayTeamId =
-                    awayTeamSelect.value;
+                    awayTeamSelect
+                        ? awayTeamSelect.value
+                        : "";
+
 
                 const venue =
-                    venueSelect.value;
+                    venueSelect
+                        ? venueSelect.value
+                        : "";
+
 
                 const matchdayValue =
-                    matchday.value.trim();
+                    matchday
+                        ? matchday.value.trim()
+                        : "";
+
 
                 const matchDateValue =
-                    matchDate.value;
+                    matchDate
+                        ? matchDate.value
+                        : "";
+
 
                 const kickOffValue =
-                    kickOff.value;
+                    kickOff
+                        ? kickOff.value
+                        : "";
+
 
                 const statusValue =
-                    fixtureStatus.value;
+                    fixtureStatus
+                        ? fixtureStatus.value
+                        : "Scheduled";
 
 
                 if (!competitionId) {
@@ -821,41 +1276,44 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     const {
                         error
-                    } = await supabaseClient
-                        .from("fixtures")
-                        .insert({
-                            competition_id:
-                                Number(
-                                    competitionId
-                                ),
+                    } =
+                        await supabaseClient
+                            .from("fixtures")
+                            .insert({
 
-                            home_team_id:
-                                Number(
-                                    homeTeamId
-                                ),
+                                competition_id:
+                                    Number(
+                                        competitionId
+                                    ),
 
-                            away_team_id:
-                                Number(
-                                    awayTeamId
-                                ),
+                                home_team_id:
+                                    Number(
+                                        homeTeamId
+                                    ),
 
-                            match_date:
-                                matchDateValue,
+                                away_team_id:
+                                    Number(
+                                        awayTeamId
+                                    ),
 
-                            kick_off:
-                                kickOffValue,
+                                match_date:
+                                    matchDateValue,
 
-                            venue:
-                                venue,
+                                kick_off:
+                                    kickOffValue,
 
-                            matchday:
-                                matchdayValue ||
-                                null,
+                                venue:
+                                    venue,
 
-                            status:
-                                statusValue ||
-                                "Scheduled"
-                        });
+                                matchday:
+                                    matchdayValue ||
+                                    null,
+
+                                status:
+                                    statusValue ||
+                                    "Scheduled"
+
+                            });
 
 
                     if (error) {
@@ -906,7 +1364,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function loadFixtures() {
 
-        if (!fixturesList) return;
+        if (!fixturesList) {
+            return;
+        }
 
 
         fixturesList.innerHTML =
@@ -918,17 +1378,24 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: fixtures,
                 error
-            } = await supabaseClient
-                .from("fixtures")
-                .select(
-                    "id, competition_id, home_team_id, away_team_id, match_date, kick_off, venue, matchday, status"
-                )
-                .order("match_date", {
-                    ascending: true
-                })
-                .order("kick_off", {
-                    ascending: true
-                });
+            } =
+                await supabaseClient
+                    .from("fixtures")
+                    .select(
+                        "id, competition_id, home_team_id, away_team_id, match_date, kick_off, venue, matchday, status"
+                    )
+                    .order(
+                        "match_date",
+                        {
+                            ascending: true
+                        }
+                    )
+                    .order(
+                        "kick_off",
+                        {
+                            ascending: true
+                        }
+                    );
 
 
             if (error) {
@@ -936,7 +1403,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            if (!fixtures || fixtures.length === 0) {
+            if (
+                !fixtures ||
+                fixtures.length === 0
+            ) {
 
                 fixturesList.innerHTML =
                     "<div class='empty-message'>No fixtures have been created yet.</div>";
@@ -947,25 +1417,29 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const teamIds = [
                 ...new Set(
-                    fixtures.flatMap(function (fixture) {
+                    fixtures.flatMap(
+                        function (fixture) {
 
-                        return [
-                            fixture.home_team_id,
-                            fixture.away_team_id
-                        ];
+                            return [
+                                fixture.home_team_id,
+                                fixture.away_team_id
+                            ];
 
-                    })
+                        }
+                    )
                 )
             ];
 
 
             const competitionIds = [
                 ...new Set(
-                    fixtures.map(function (fixture) {
+                    fixtures.map(
+                        function (fixture) {
 
-                        return fixture.competition_id;
+                            return fixture.competition_id;
 
-                    })
+                        }
+                    )
                 )
             ];
 
@@ -973,15 +1447,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: teams,
                 error: teamsError
-            } = await supabaseClient
-                .from("teams")
-                .select(
-                    "id, name, short_name"
-                )
-                .in(
-                    "id",
-                    teamIds
-                );
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .select(
+                        "id, name, short_name"
+                    )
+                    .in(
+                        "id",
+                        teamIds
+                    );
 
 
             if (teamsError) {
@@ -992,15 +1467,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: competitions,
                 error: competitionsError
-            } = await supabaseClient
-                .from("competitions")
-                .select(
-                    "id, name, season"
-                )
-                .in(
-                    "id",
-                    competitionIds
-                );
+            } =
+                await supabaseClient
+                    .from("competitions")
+                    .select(
+                        "id, name, season"
+                    )
+                    .in(
+                        "id",
+                        competitionIds
+                    );
 
 
             if (competitionsError) {
@@ -1008,151 +1484,178 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            fixturesList.innerHTML = "";
+            fixturesList.innerHTML =
+                "";
 
 
-            fixtures.forEach(function (fixture) {
+            fixtures.forEach(
+                function (fixture) {
 
-                const home =
-                    (teams || []).find(function (team) {
+                    const home =
+                        (teams || []).find(
+                            function (team) {
 
-                        return Number(team.id) ===
-                            Number(
-                                fixture.home_team_id
-                            );
+                                return Number(
+                                    team.id
+                                ) ===
+                                Number(
+                                    fixture.home_team_id
+                                );
 
-                    });
-
-
-                const away =
-                    (teams || []).find(function (team) {
-
-                        return Number(team.id) ===
-                            Number(
-                                fixture.away_team_id
-                            );
-
-                    });
+                            }
+                        );
 
 
-                const competition =
-                    (competitions || []).find(
-                        function (item) {
+                    const away =
+                        (teams || []).find(
+                            function (team) {
 
-                            return Number(item.id) ===
+                                return Number(
+                                    team.id
+                                ) ===
+                                Number(
+                                    fixture.away_team_id
+                                );
+
+                            }
+                        );
+
+
+                    const competition =
+                        (competitions || []).find(
+                            function (item) {
+
+                                return Number(
+                                    item.id
+                                ) ===
                                 Number(
                                     fixture.competition_id
                                 );
 
-                        }
-                    );
-
-
-                const card =
-                    document.createElement("div");
-
-
-                card.className =
-                    "admin-card";
-
-
-                card.innerHTML = `
-
-                    <h3>
-                        ⚽
-                        ${escapeHtml(
-                            home
-                                ? home.name
-                                : "Unknown Team"
-                        )}
-                        vs
-                        ${escapeHtml(
-                            away
-                                ? away.name
-                                : "Unknown Team"
-                        )}
-                    </h3>
-
-                    <p>
-                        🏆
-                        ${escapeHtml(
-                            competition
-                                ? competition.name
-                                : "Unknown Competition"
-                        )}
-                    </p>
-
-                    <p>
-                        📅
-                        ${formatDate(
-                            fixture.match_date
-                        )}
-                    </p>
-
-                    <p>
-                        ⏰
-                        ${formatTime(
-                            fixture.kick_off
-                        )}
-                    </p>
-
-                    <p>
-                        📍
-                        ${escapeHtml(
-                            fixture.venue || "-"
-                        )}
-                    </p>
-
-                    <p>
-                        🔢
-                        ${escapeHtml(
-                            fixture.matchday ||
-                            "-"
-                        )}
-                    </p>
-
-                    <p>
-                        📢
-                        <strong>
-                            ${escapeHtml(
-                                fixture.status ||
-                                "-"
-                            )}
-                        </strong>
-                    </p>
-
-                    <button
-                        class="admin-btn delete-fixture-btn"
-                        data-id="${fixture.id}">
-                        🗑️ Delete Fixture
-                    </button>
-
-                `;
-
-
-                fixturesList.appendChild(
-                    card
-                );
-
-
-                const deleteButton =
-                    card.querySelector(
-                        ".delete-fixture-btn"
-                    );
-
-
-                deleteButton.addEventListener(
-                    "click",
-                    function () {
-
-                        deleteFixture(
-                            fixture.id
+                            }
                         );
 
-                    }
-                );
 
-            });
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    card.className =
+                        "admin-card";
+
+
+                    card.innerHTML = `
+
+                        <h3>
+                            ⚽
+                            ${escapeHtml(
+                                home
+                                    ? home.name
+                                    : "Unknown Team"
+                            )}
+                            vs
+                            ${escapeHtml(
+                                away
+                                    ? away.name
+                                    : "Unknown Team"
+                            )}
+                        </h3>
+
+
+                        <p>
+                            🏆
+                            ${escapeHtml(
+                                competition
+                                    ? competition.name
+                                    : "Unknown Competition"
+                            )}
+                        </p>
+
+
+                        <p>
+                            📅
+                            ${formatDate(
+                                fixture.match_date
+                            )}
+                        </p>
+
+
+                        <p>
+                            ⏰
+                            ${formatTime(
+                                fixture.kick_off
+                            )}
+                        </p>
+
+
+                        <p>
+                            📍
+                            ${escapeHtml(
+                                fixture.venue || "-"
+                            )}
+                        </p>
+
+
+                        <p>
+                            🔢
+                            ${escapeHtml(
+                                fixture.matchday ||
+                                "-"
+                            )}
+                        </p>
+
+
+                        <p>
+                            📢
+                            <strong>
+                                ${escapeHtml(
+                                    fixture.status ||
+                                    "-"
+                                )}
+                            </strong>
+                        </p>
+
+
+                        <button
+                            type="button"
+                            class="admin-btn delete-fixture-btn"
+                            data-id="${fixture.id}"
+                        >
+                            🗑️ Delete Fixture
+                        </button>
+
+                    `;
+
+
+                    fixturesList.appendChild(
+                        card
+                    );
+
+
+                    const deleteButton =
+                        card.querySelector(
+                            ".delete-fixture-btn"
+                        );
+
+
+                    if (deleteButton) {
+
+                        deleteButton.addEventListener(
+                            "click",
+                            function () {
+
+                                deleteFixture(
+                                    fixture.id
+                                );
+
+                            }
+                        );
+                    }
+
+                }
+            );
 
 
         } catch (error) {
@@ -1164,6 +1667,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             fixturesList.innerHTML = `
+
                 <div class="admin-card">
 
                     <h3>
@@ -1178,6 +1682,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     </p>
 
                 </div>
+
             `;
         }
     }
@@ -1202,13 +1707,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const {
                 error
-            } = await supabaseClient
-                .from("fixtures")
-                .delete()
-                .eq(
-                    "id",
-                    id
-                );
+            } =
+                await supabaseClient
+                    .from("fixtures")
+                    .delete()
+                    .eq(
+                        "id",
+                        id
+                    );
 
 
             if (error) {
@@ -1251,7 +1757,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function loadResultFixtures() {
 
-        if (!resultFixtureSelect) return;
+        if (!resultFixtureSelect) {
+            return;
+        }
 
 
         resultFixtureSelect.innerHTML =
@@ -1263,29 +1771,39 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: fixtures,
                 error: fixturesError
-            } = await supabaseClient
-                .from("fixtures")
-                .select(`
-                    id,
-                    competition_id,
-                    home_team_id,
-                    away_team_id,
-                    match_date,
-                    kick_off,
-                    venue,
-                    matchday,
-                    status
-                `)
-                .in("status", [
-                    "Scheduled",
-                    "Published"
-                ])
-                .order("match_date", {
-                    ascending: true
-                })
-                .order("kick_off", {
-                    ascending: true
-                });
+            } =
+                await supabaseClient
+                    .from("fixtures")
+                    .select(`
+                        id,
+                        competition_id,
+                        home_team_id,
+                        away_team_id,
+                        match_date,
+                        kick_off,
+                        venue,
+                        matchday,
+                        status
+                    `)
+                    .in(
+                        "status",
+                        [
+                            "Scheduled",
+                            "Published"
+                        ]
+                    )
+                    .order(
+                        "match_date",
+                        {
+                            ascending: true
+                        }
+                    )
+                    .order(
+                        "kick_off",
+                        {
+                            ascending: true
+                        }
+                    );
 
 
             if (fixturesError) {
@@ -1293,10 +1811,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            if (!fixtures || fixtures.length === 0) {
+            if (
+                !fixtures ||
+                fixtures.length === 0
+            ) {
 
                 resultFixtureSelect.innerHTML =
                     "<option value=''>No available fixtures</option>";
+
+                resultFixtures = [];
 
                 return;
             }
@@ -1305,9 +1828,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: existingResults,
                 error: resultsError
-            } = await supabaseClient
-                .from("results")
-                .select("fixture_id");
+            } =
+                await supabaseClient
+                    .from("results")
+                    .select(
+                        "fixture_id"
+                    );
 
 
             if (resultsError) {
@@ -1318,27 +1844,38 @@ document.addEventListener("DOMContentLoaded", async function () {
             const completedFixtureIds =
                 new Set(
                     (existingResults || []).map(
-                        result =>
-                            Number(result.fixture_id)
+                        function (result) {
+
+                            return Number(
+                                result.fixture_id
+                            );
+
+                        }
                     )
                 );
 
 
             const availableFixtures =
-                fixtures.filter(function (fixture) {
+                fixtures.filter(
+                    function (fixture) {
 
-                    return !completedFixtureIds.has(
-                        Number(fixture.id)
-                    );
+                        return !completedFixtureIds.has(
+                            Number(
+                                fixture.id
+                            )
+                        );
 
-                });
+                    }
+                );
 
 
             resultFixtures =
                 availableFixtures;
 
 
-            if (availableFixtures.length === 0) {
+            if (
+                availableFixtures.length === 0
+            ) {
 
                 resultFixtureSelect.innerHTML =
                     "<option value=''>All fixtures already have results</option>";
@@ -1379,15 +1916,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: teams,
                 error: teamsError
-            } = await supabaseClient
-                .from("teams")
-                .select(
-                    "id, name, short_name"
-                )
-                .in(
-                    "id",
-                    teamIds
-                );
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .select(
+                        "id, name, short_name"
+                    )
+                    .in(
+                        "id",
+                        teamIds
+                    );
 
 
             if (teamsError) {
@@ -1398,15 +1936,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: competitions,
                 error: competitionsError
-            } = await supabaseClient
-                .from("competitions")
-                .select(
-                    "id, name, season"
-                )
-                .in(
-                    "id",
-                    competitionIds
-                );
+            } =
+                await supabaseClient
+                    .from("competitions")
+                    .select(
+                        "id, name, season"
+                    )
+                    .in(
+                        "id",
+                        competitionIds
+                    );
 
 
             if (competitionsError) {
@@ -1418,74 +1957,88 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "<option value=''>Select fixture</option>";
 
 
-            availableFixtures.forEach(function (fixture) {
+            availableFixtures.forEach(
+                function (fixture) {
 
-                const home =
-                    (teams || []).find(function (team) {
+                    const home =
+                        (teams || []).find(
+                            function (team) {
 
-                        return Number(team.id) ===
-                            Number(
-                                fixture.home_team_id
-                            );
+                                return Number(
+                                    team.id
+                                ) ===
+                                Number(
+                                    fixture.home_team_id
+                                );
 
-                    });
-
-
-                const away =
-                    (teams || []).find(function (team) {
-
-                        return Number(team.id) ===
-                            Number(
-                                fixture.away_team_id
-                            );
-
-                    });
+                            }
+                        );
 
 
-                const competition =
-                    (competitions || []).find(
-                        function (item) {
+                    const away =
+                        (teams || []).find(
+                            function (team) {
 
-                            return Number(item.id) ===
+                                return Number(
+                                    team.id
+                                ) ===
+                                Number(
+                                    fixture.away_team_id
+                                );
+
+                            }
+                        );
+
+
+                    const competition =
+                        (competitions || []).find(
+                            function (item) {
+
+                                return Number(
+                                    item.id
+                                ) ===
                                 Number(
                                     fixture.competition_id
                                 );
 
-                        }
+                            }
+                        );
+
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        fixture.id;
+
+
+                    option.textContent =
+                        (
+                            home
+                                ? home.name
+                                : "Unknown Home Team"
+                        ) +
+                        " vs " +
+                        (
+                            away
+                                ? away.name
+                                : "Unknown Away Team"
+                        ) +
+                        " — " +
+                        formatDate(
+                            fixture.match_date
+                        );
+
+
+                    resultFixtureSelect.appendChild(
+                        option
                     );
 
-
-                const option =
-                    document.createElement("option");
-
-
-                option.value =
-                    fixture.id;
-
-
-                option.textContent =
-                    (
-                        home
-                            ? home.name
-                            : "Unknown Home Team"
-                    ) +
-                    " vs " +
-                    (
-                        away
-                            ? away.name
-                            : "Unknown Away Team"
-                    ) +
-                    " — " +
-                    formatDate(
-                        fixture.match_date
-                    );
-
-
-                resultFixtureSelect.appendChild(
-                    option
-                );
-
-            });
+                }
+            );
 
 
         } catch (error) {
@@ -1514,6 +2067,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         homePlayers = [];
+
         awayPlayers = [];
 
 
@@ -1522,33 +2076,34 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: players,
                 error
-            } = await supabaseClient
-                .from("players")
-                .select(`
-                    id,
-                    team_id,
-                    full_name,
-                    jersey_number,
-                    position,
-                    registration_status
-                `)
-                .in(
-                    "team_id",
-                    [
-                        currentFixture.home_team_id,
-                        currentFixture.away_team_id
-                    ]
-                )
-                .eq(
-                    "registration_status",
-                    "Approved"
-                )
-                .order(
-                    "jersey_number",
-                    {
-                        ascending: true
-                    }
-                );
+            } =
+                await supabaseClient
+                    .from("players")
+                    .select(`
+                        id,
+                        team_id,
+                        full_name,
+                        jersey_number,
+                        position,
+                        registration_status
+                    `)
+                    .in(
+                        "team_id",
+                        [
+                            currentFixture.home_team_id,
+                            currentFixture.away_team_id
+                        ]
+                    )
+                    .eq(
+                        "registration_status",
+                        "Approved"
+                    )
+                    .order(
+                        "jersey_number",
+                        {
+                            ascending: true
+                        }
+                    );
 
 
             if (error) {
@@ -1556,32 +2111,40 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            (players || []).forEach(function (player) {
+            (players || []).forEach(
+                function (player) {
 
-                if (
-                    Number(player.team_id) ===
-                    Number(
-                        currentFixture.home_team_id
-                    )
-                ) {
+                    if (
+                        Number(
+                            player.team_id
+                        ) ===
+                        Number(
+                            currentFixture.home_team_id
+                        )
+                    ) {
 
-                    homePlayers.push(player);
+                        homePlayers.push(
+                            player
+                        );
+                    }
+
+
+                    if (
+                        Number(
+                            player.team_id
+                        ) ===
+                        Number(
+                            currentFixture.away_team_id
+                        )
+                    ) {
+
+                        awayPlayers.push(
+                            player
+                        );
+                    }
 
                 }
-
-
-                if (
-                    Number(player.team_id) ===
-                    Number(
-                        currentFixture.away_team_id
-                    )
-                ) {
-
-                    awayPlayers.push(player);
-
-                }
-
-            });
+            );
 
 
         } catch (error) {
@@ -1607,26 +2170,32 @@ document.addEventListener("DOMContentLoaded", async function () {
             "<option value=''>Select scorer</option>";
 
 
-        players.forEach(function (player) {
+        players.forEach(
+            function (player) {
 
-            html += `
-                <option value="${player.id}">
-                    ${escapeHtml(
-                        player.full_name
-                    )}
-                    ${
-                        player.jersey_number
-                            ? " (#" +
-                              escapeHtml(
-                                  player.jersey_number
-                              ) +
-                              ")"
-                            : ""
-                    }
-                </option>
-            `;
+                html += `
 
-        });
+                    <option value="${player.id}">
+
+                        ${escapeHtml(
+                            player.full_name
+                        )}
+
+                        ${
+                            player.jersey_number
+                                ? " (#" +
+                                  escapeHtml(
+                                      player.jersey_number
+                                  ) +
+                                  ")"
+                                : ""
+                        }
+
+                    </option>
+
+                `;
+            }
+        );
 
 
         return html;
@@ -1643,11 +2212,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         side
     ) {
 
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
 
         const row =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         row.className =
@@ -1658,9 +2231,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             <select
                 class="scorer-player"
-                data-side="${side}">
+                data-side="${side}"
+            >
 
-                ${createPlayerOptions(players)}
+                ${createPlayerOptions(
+                    players
+                )}
 
             </select>
 
@@ -1670,22 +2246,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                 class="scorer-minutes"
                 placeholder="12, 44, 67"
                 inputmode="numeric"
-                autocomplete="off">
+                autocomplete="off"
+            >
 
 
             <button
                 type="button"
                 class="remove-goal-btn"
-                title="Remove scorer">
-
+                title="Remove scorer"
+            >
                 ✕
-
             </button>
 
         `;
 
 
-        container.appendChild(row);
+        container.appendChild(
+            row
+        );
 
 
         const removeButton =
@@ -1694,16 +2272,19 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-        removeButton.addEventListener(
-            "click",
-            function () {
+        if (removeButton) {
 
-                row.remove();
+            removeButton.addEventListener(
+                "click",
+                function () {
 
-                updateGoalWarnings();
+                    row.remove();
 
-            }
-        );
+                    updateGoalWarnings();
+
+                }
+            );
+        }
 
 
         const minuteInput =
@@ -1712,14 +2293,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-        minuteInput.addEventListener(
-            "input",
-            function () {
+        if (minuteInput) {
 
-                updateGoalWarnings();
+            minuteInput.addEventListener(
+                "input",
+                function () {
 
-            }
-        );
+                    updateGoalWarnings();
+
+                }
+            );
+        }
 
 
         const playerSelect =
@@ -1728,14 +2312,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-        playerSelect.addEventListener(
-            "change",
-            function () {
+        if (playerSelect) {
 
-                updateGoalWarnings();
+            playerSelect.addEventListener(
+                "change",
+                function () {
 
-            }
-        );
+                    updateGoalWarnings();
+
+                }
+            );
+        }
 
 
         updateGoalWarnings();
@@ -1770,21 +2357,27 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         return value
             .split(",")
-            .map(function (item) {
+            .map(
+                function (item) {
 
-                return item.trim();
+                    return item.trim();
 
-            })
-            .filter(function (item) {
+                }
+            )
+            .filter(
+                function (item) {
 
-                return item !== "";
+                    return item !== "";
 
-            })
-            .map(function (item) {
+                }
+            )
+            .map(
+                function (item) {
 
-                return Number(item);
+                    return Number(item);
 
-            });
+                }
+            );
     }
 
 
@@ -1792,9 +2385,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // GET SCORER DATA
     // ========================================
 
-    function getScorerData(
-        container
-    ) {
+    function getScorerData(container) {
 
         if (!container) {
             return [];
@@ -1810,47 +2401,55 @@ document.addEventListener("DOMContentLoaded", async function () {
         const scorerData = [];
 
 
-        rows.forEach(function (row) {
+        rows.forEach(
+            function (row) {
 
-            const playerSelect =
-                row.querySelector(
-                    ".scorer-player"
+                const playerSelect =
+                    row.querySelector(
+                        ".scorer-player"
+                    );
+
+
+                if (!playerSelect) {
+                    return;
+                }
+
+
+                const playerId =
+                    playerSelect.value;
+
+
+                const minutes =
+                    getMinutesFromRow(
+                        row
+                    );
+
+
+                if (!playerId) {
+                    return;
+                }
+
+
+                minutes.forEach(
+                    function (minute) {
+
+                        scorerData.push({
+
+                            player_id:
+                                Number(
+                                    playerId
+                                ),
+
+                            minute:
+                                minute
+
+                        });
+
+                    }
                 );
 
-
-            if (!playerSelect) {
-                return;
             }
-
-
-            const playerId =
-                playerSelect.value;
-
-
-            const minutes =
-                getMinutesFromRow(row);
-
-
-            if (!playerId) {
-                return;
-            }
-
-
-            minutes.forEach(function (minute) {
-
-                scorerData.push({
-
-                    player_id:
-                        Number(playerId),
-
-                    minute:
-                        minute
-
-                });
-
-            });
-
-        });
+        );
 
 
         return scorerData;
@@ -1877,15 +2476,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         let count = 0;
 
 
-        rows.forEach(function (row) {
+        rows.forEach(
+            function (row) {
 
-            const minutes =
-                getMinutesFromRow(row);
+                const minutes =
+                    getMinutesFromRow(
+                        row
+                    );
 
 
-            count += minutes.length;
+                count +=
+                    minutes.length;
 
-        });
+            }
+        );
 
 
         return count;
@@ -1898,22 +2502,31 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function updateGoalWarnings() {
 
-        if (!homeScore || !awayScore) {
+        if (
+            !homeScore ||
+            !awayScore
+        ) {
             return;
         }
 
 
         const homeTotal =
-            Number(homeScore.value) || 0;
+            Number(
+                homeScore.value
+            ) || 0;
+
 
         const awayTotal =
-            Number(awayScore.value) || 0;
+            Number(
+                awayScore.value
+            ) || 0;
 
 
         const enteredHomeGoals =
             countGoals(
                 homeGoalsContainer
             );
+
 
         const enteredAwayGoals =
             countGoals(
@@ -1931,6 +2544,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 homeGoalWarning.style.display =
                     "block";
 
+
                 homeGoalWarning.textContent =
                     "⚠️ Score is " +
                     homeTotal +
@@ -1942,9 +2556,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 homeGoalWarning.style.display =
                     "none";
-
             }
-
         }
 
 
@@ -1958,6 +2570,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 awayGoalWarning.style.display =
                     "block";
 
+
                 awayGoalWarning.textContent =
                     "⚠️ Score is " +
                     awayTotal +
@@ -1969,11 +2582,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 awayGoalWarning.style.display =
                     "none";
-
             }
-
         }
-
     }
 
 
@@ -1993,17 +2603,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 if (!fixtureId) {
 
-                    currentFixture = null;
+                    currentFixture =
+                        null;
+
 
                     if (selectedFixtureInfo) {
+
                         selectedFixtureInfo.style.display =
                             "none";
                     }
 
+
                     if (resultScoreSection) {
+
                         resultScoreSection.style.display =
                             "none";
                     }
+
 
                     return;
                 }
@@ -2049,18 +2665,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const {
                         data: teams,
                         error: teamsError
-                    } = await supabaseClient
-                        .from("teams")
-                        .select(
-                            "id, name, short_name"
-                        )
-                        .in(
-                            "id",
-                            [
-                                currentFixture.home_team_id,
-                                currentFixture.away_team_id
-                            ]
-                        );
+                    } =
+                        await supabaseClient
+                            .from("teams")
+                            .select(
+                                "id, name, short_name"
+                            )
+                            .in(
+                                "id",
+                                [
+                                    currentFixture.home_team_id,
+                                    currentFixture.away_team_id
+                                ]
+                            );
 
 
                     if (teamsError) {
@@ -2111,18 +2728,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     if (resultHomeTeamName) {
+
                         resultHomeTeamName.textContent =
                             homeName;
                     }
 
 
                     if (resultAwayTeamName) {
+
                         resultAwayTeamName.textContent =
                             awayName;
                     }
 
 
                     if (homeGoalTeamLabel) {
+
                         homeGoalTeamLabel.textContent =
                             homeName +
                             " goal scorers";
@@ -2130,6 +2750,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     if (awayGoalTeamLabel) {
+
                         awayGoalTeamLabel.textContent =
                             awayName +
                             " goal scorers";
@@ -2141,16 +2762,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                         selectedFixtureInfo.innerHTML = `
 
                             <strong>
-                                ⚽ ${escapeHtml(homeName)}
+                                ⚽
+                                ${escapeHtml(
+                                    homeName
+                                )}
                                 vs
-                                ${escapeHtml(awayName)}
+                                ${escapeHtml(
+                                    awayName
+                                )}
                             </strong>
 
                             <br>
 
                             🏆 Matchday:
                             ${escapeHtml(
-                                currentFixture.matchday || "-"
+                                currentFixture.matchday ||
+                                "-"
                             )}
 
                             <br>
@@ -2171,10 +2798,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             📍
                             ${escapeHtml(
-                                currentFixture.venue || "-"
+                                currentFixture.venue ||
+                                "-"
                             )}
 
                         `;
+
 
                         selectedFixtureInfo.style.display =
                             "block";
@@ -2182,37 +2811,49 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     if (homeGoalsContainer) {
-                        homeGoalsContainer.innerHTML = "";
+
+                        homeGoalsContainer.innerHTML =
+                            "";
                     }
 
 
                     if (awayGoalsContainer) {
-                        awayGoalsContainer.innerHTML = "";
+
+                        awayGoalsContainer.innerHTML =
+                            "";
                     }
 
 
                     if (homeScore) {
-                        homeScore.value = 0;
+
+                        homeScore.value =
+                            0;
                     }
 
 
                     if (awayScore) {
-                        awayScore.value = 0;
+
+                        awayScore.value =
+                            0;
                     }
 
 
                     if (matchReport) {
-                        matchReport.value = "";
+
+                        matchReport.value =
+                            "";
                     }
 
 
                     if (resultScoreSection) {
+
                         resultScoreSection.style.display =
                             "block";
                     }
 
 
                     if (resultFormMessage) {
+
                         resultFormMessage.style.display =
                             "none";
                     }
@@ -2296,7 +2937,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             "input",
             updateGoalWarnings
         );
-
     }
 
 
@@ -2306,7 +2946,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             "input",
             updateGoalWarnings
         );
-
     }
 
 
@@ -2320,6 +2959,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     ) {
 
         if (!container) {
+
             return {
                 valid: true,
                 message: ""
@@ -2350,7 +2990,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             const minutes =
-                getMinutesFromRow(row);
+                getMinutesFromRow(
+                    row
+                );
 
 
             if (
@@ -2371,7 +3013,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                         "."
 
                 };
-
             }
 
 
@@ -2386,7 +3027,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 if (
-                    !Number.isInteger(minute) ||
+                    !Number.isInteger(
+                        minute
+                    ) ||
                     minute < 1 ||
                     minute > 130
                 ) {
@@ -2399,11 +3042,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                             "Goal minutes must be whole numbers between 1 and 130."
 
                     };
-
                 }
-
             }
-
         }
 
 
@@ -2439,10 +3079,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 const homeFinalScore =
-                    Number(homeScore.value);
+                    Number(
+                        homeScore
+                            ? homeScore.value
+                            : 0
+                    );
+
 
                 const awayFinalScore =
-                    Number(awayScore.value);
+                    Number(
+                        awayScore
+                            ? awayScore.value
+                            : 0
+                    );
 
 
                 if (
@@ -2570,6 +3219,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     saveResultBtn.disabled =
                         true;
 
+
                     saveResultBtn.textContent =
                         "Saving Result...";
 
@@ -2581,20 +3231,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     // ========================================
-                    // CHECK IF RESULT ALREADY EXISTS
+                    // CHECK EXISTING RESULT
                     // ========================================
 
                     const {
                         data: existingResult,
                         error: existingError
-                    } = await supabaseClient
-                        .from("results")
-                        .select("id")
-                        .eq(
-                            "fixture_id",
-                            currentFixture.id
-                        )
-                        .maybeSingle();
+                    } =
+                        await supabaseClient
+                            .from("results")
+                            .select(
+                                "id"
+                            )
+                            .eq(
+                                "fixture_id",
+                                currentFixture.id
+                            )
+                            .maybeSingle();
 
 
                     if (existingError) {
@@ -2607,7 +3260,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                         throw new Error(
                             "This fixture already has a result."
                         );
-
                     }
 
 
@@ -2618,29 +3270,31 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const {
                         data: result,
                         error: resultError
-                    } = await supabaseClient
-                        .from("results")
-                        .insert({
+                    } =
+                        await supabaseClient
+                            .from("results")
+                            .insert({
 
-                            fixture_id:
-                                currentFixture.id,
+                                fixture_id:
+                                    currentFixture.id,
 
-                            home_score:
-                                homeFinalScore,
+                                home_score:
+                                    homeFinalScore,
 
-                            away_score:
-                                awayFinalScore,
+                                away_score:
+                                    awayFinalScore,
 
-                            match_report:
-                                matchReport
-                                    ? matchReport.value.trim() || null
-                                    : null
+                                match_report:
+                                    matchReport
+                                        ? matchReport.value.trim() ||
+                                          null
+                                        : null
 
-                        })
-                        .select(
-                            "id"
-                        )
-                        .single();
+                            })
+                            .select(
+                                "id"
+                            )
+                            .single();
 
 
                     if (resultError) {
@@ -2652,42 +3306,46 @@ document.addEventListener("DOMContentLoaded", async function () {
                     // INSERT GOAL SCORERS
                     // ========================================
 
-                    const allGoals = [
-                        ...homeScorers,
-                        ...awayScorers
-                    ].map(function (goal) {
+                    const allGoals =
+                        [
+                            ...homeScorers,
+                            ...awayScorers
+                        ].map(
+                            function (goal) {
 
-                        return {
+                                return {
 
-                            result_id:
-                                result.id,
+                                    result_id:
+                                        result.id,
 
-                            player_id:
-                                goal.player_id,
+                                    player_id:
+                                        goal.player_id,
 
-                            minute:
-                                goal.minute
+                                    minute:
+                                        goal.minute
 
-                        };
+                                };
 
-                    });
+                            }
+                        );
 
 
-                    if (allGoals.length > 0) {
+                    if (
+                        allGoals.length > 0
+                    ) {
 
                         const {
                             error: goalError
-                        } = await supabaseClient
-                            .from("goal_scorers")
-                            .insert(
-                                allGoals
-                            );
+                        } =
+                            await supabaseClient
+                                .from("goal_scorers")
+                                .insert(
+                                    allGoals
+                                );
 
 
                         if (goalError) {
 
-                            // Try to remove the result
-                            // if goal insertion fails.
                             await supabaseClient
                                 .from("results")
                                 .delete()
@@ -2696,9 +3354,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     result.id
                                 );
 
+
                             throw goalError;
                         }
-
                     }
 
 
@@ -2708,26 +3366,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     const {
                         error: fixtureUpdateError
-                    } = await supabaseClient
-                        .from("fixtures")
-                        .update({
+                    } =
+                        await supabaseClient
+                            .from("fixtures")
+                            .update({
 
-                            status:
-                                "Completed"
+                                status:
+                                    "Completed"
 
-                        })
-                        .eq(
-                            "id",
-                            currentFixture.id
-                        );
+                            })
+                            .eq(
+                                "id",
+                                currentFixture.id
+                            );
 
 
-                    if (fixtureUpdateError) {
+                    if (
+                        fixtureUpdateError
+                    ) {
 
                         console.error(
                             "Fixture status update error:",
                             fixtureUpdateError
                         );
+
 
                         throw new Error(
                             "Result was saved, but the fixture could not be marked Completed. " +
@@ -2752,43 +3414,56 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     if (homeGoalsContainer) {
-                        homeGoalsContainer.innerHTML = "";
+
+                        homeGoalsContainer.innerHTML =
+                            "";
                     }
 
 
                     if (awayGoalsContainer) {
-                        awayGoalsContainer.innerHTML = "";
+
+                        awayGoalsContainer.innerHTML =
+                            "";
                     }
 
 
                     if (homeScore) {
-                        homeScore.value = 0;
+
+                        homeScore.value =
+                            0;
                     }
 
 
                     if (awayScore) {
-                        awayScore.value = 0;
+
+                        awayScore.value =
+                            0;
                     }
 
 
                     if (matchReport) {
-                        matchReport.value = "";
+
+                        matchReport.value =
+                            "";
                     }
 
 
                     if (resultScoreSection) {
+
                         resultScoreSection.style.display =
                             "none";
                     }
 
 
                     if (selectedFixtureInfo) {
+
                         selectedFixtureInfo.style.display =
                             "none";
                     }
 
 
-                    currentFixture = null;
+                    currentFixture =
+                        null;
 
 
                     await loadFixtures();
@@ -2797,7 +3472,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     if (resultFixtureSelect) {
-                        resultFixtureSelect.value = "";
+
+                        resultFixtureSelect.value =
+                            "";
                     }
 
 
@@ -2824,9 +3501,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     saveResultBtn.disabled =
                         false;
 
+
                     saveResultBtn.textContent =
                         "💾 SAVE RESULT";
-
                 }
 
             }
@@ -2840,7 +3517,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     async function loadPendingTeams() {
 
-        if (!pendingTeams) return;
+        if (!pendingTeams) {
+            return;
+        }
 
 
         pendingTeams.innerHTML =
@@ -2852,21 +3531,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             const {
                 data: teams,
                 error
-            } = await supabaseClient
-                .from("teams")
-                .select(
-                    "id, name, short_name, location, coach_name, captain_name, vice_captain_name, discipline_master_name, phone, email, registration_status, created_at"
-                )
-                .eq(
-                    "registration_status",
-                    "Pending"
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .select(
+                        "id, name, short_name, location, coach_name, captain_name, vice_captain_name, discipline_master_name, phone, email, registration_status, created_at"
+                    )
+                    .eq(
+                        "registration_status",
+                        "Pending"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
 
 
             if (error) {
@@ -2874,7 +3554,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            if (!teams || teams.length === 0) {
+            if (
+                !teams ||
+                teams.length === 0
+            ) {
 
                 pendingTeams.innerHTML =
                     "<div class='empty-message'>🎉 No pending team registrations.</div>";
@@ -2883,7 +3566,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            pendingTeams.innerHTML = "";
+            pendingTeams.innerHTML =
+                "";
 
 
             for (
@@ -2893,21 +3577,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const {
                     data: players,
                     error: playersError
-                } = await supabaseClient
-                    .from("players")
-                    .select(
-                        "id, full_name, jersey_number, position, registration_status"
-                    )
-                    .eq(
-                        "team_id",
-                        team.id
-                    )
-                    .order(
-                        "jersey_number",
-                        {
-                            ascending: true
-                        }
-                    );
+                } =
+                    await supabaseClient
+                        .from("players")
+                        .select(
+                            "id, full_name, jersey_number, position, registration_status"
+                        )
+                        .eq(
+                            "team_id",
+                            team.id
+                        )
+                        .order(
+                            "jersey_number",
+                            {
+                                ascending: true
+                            }
+                        );
 
 
                 if (playersError) {
@@ -2925,6 +3610,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     playersHtml = `
+
                         <div style="overflow-x:auto;">
 
                             <table class="players-table">
@@ -2941,6 +3627,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     </tr>
 
                                 </thead>
+
 
                                 <tbody>
 
@@ -2990,12 +3677,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                             </table>
 
                         </div>
+
                     `;
                 }
 
 
                 const card =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
 
 
                 card.className =
@@ -3011,84 +3701,108 @@ document.addEventListener("DOMContentLoaded", async function () {
                         )}
                     </h2>
 
+
                     <p>
                         <strong>Short Name:</strong>
                         ${escapeHtml(
-                            team.short_name || "-"
+                            team.short_name ||
+                            "-"
                         )}
                     </p>
+
 
                     <div class="team-details">
 
                         <div class="detail">
                             <strong>Location</strong><br>
                             ${escapeHtml(
-                                team.location || "-"
+                                team.location ||
+                                "-"
                             )}
                         </div>
+
 
                         <div class="detail">
                             <strong>Coach</strong><br>
                             ${escapeHtml(
-                                team.coach_name || "-"
+                                team.coach_name ||
+                                "-"
                             )}
                         </div>
+
 
                         <div class="detail">
                             <strong>Captain</strong><br>
                             ${escapeHtml(
-                                team.captain_name || "-"
+                                team.captain_name ||
+                                "-"
                             )}
                         </div>
+
 
                         <div class="detail">
                             <strong>Vice Captain</strong><br>
                             ${escapeHtml(
-                                team.vice_captain_name || "-"
+                                team.vice_captain_name ||
+                                "-"
                             )}
                         </div>
+
 
                         <div class="detail">
                             <strong>Discipline Master</strong><br>
                             ${escapeHtml(
-                                team.discipline_master_name || "-"
+                                team.discipline_master_name ||
+                                "-"
                             )}
                         </div>
+
 
                         <div class="detail">
                             <strong>Phone</strong><br>
                             ${escapeHtml(
-                                team.phone || "-"
+                                team.phone ||
+                                "-"
                             )}
                         </div>
+
 
                         <div class="detail">
                             <strong>Email</strong><br>
                             ${escapeHtml(
-                                team.email || "-"
+                                team.email ||
+                                "-"
                             )}
                         </div>
 
                     </div>
+
 
                     <h3>
                         👥 Players
                         (${players ? players.length : 0}/20)
                     </h3>
 
+
                     ${playersHtml}
+
 
                     <div style="margin-top:20px;">
 
                         <button
+                            type="button"
                             class="admin-btn approve-btn"
-                            data-id="${team.id}">
+                            data-id="${team.id}"
+                        >
                             ✅ Approve Team
                         </button>
 
+
                         <button
+                            type="button"
                             class="admin-btn reject-btn"
-                            data-id="${team.id}">
+                            data-id="${team.id}"
+                        >
                             ❌ Reject Team
                         </button>
 
@@ -3102,11 +3816,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
 
 
-                card
-                    .querySelector(
+                const approveButton =
+                    card.querySelector(
                         ".approve-btn"
-                    )
-                    .addEventListener(
+                    );
+
+
+                if (approveButton) {
+
+                    approveButton.addEventListener(
                         "click",
                         function () {
 
@@ -3116,13 +3834,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         }
                     );
+                }
 
 
-                card
-                    .querySelector(
+                const rejectButton =
+                    card.querySelector(
                         ".reject-btn"
-                    )
-                    .addEventListener(
+                    );
+
+
+                if (rejectButton) {
+
+                    rejectButton.addEventListener(
                         "click",
                         function () {
 
@@ -3132,6 +3855,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         }
                     );
+                }
             }
 
 
@@ -3184,16 +3908,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const {
                 error: teamError
-            } = await supabaseClient
-                .from("teams")
-                .update({
-                    registration_status:
-                        "Approved"
-                })
-                .eq(
-                    "id",
-                    id
-                );
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .update({
+                        registration_status:
+                            "Approved"
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
 
 
             if (teamError) {
@@ -3203,16 +3928,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const {
                 error: playerError
-            } = await supabaseClient
-                .from("players")
-                .update({
-                    registration_status:
-                        "Approved"
-                })
-                .eq(
-                    "team_id",
-                    id
-                );
+            } =
+                await supabaseClient
+                    .from("players")
+                    .update({
+                        registration_status:
+                            "Approved"
+                    })
+                    .eq(
+                        "team_id",
+                        id
+                    );
 
 
             if (playerError) {
@@ -3270,16 +3996,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const {
                 error: teamError
-            } = await supabaseClient
-                .from("teams")
-                .update({
-                    registration_status:
-                        "Rejected"
-                })
-                .eq(
-                    "id",
-                    id
-                );
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .update({
+                        registration_status:
+                            "Rejected"
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
 
 
             if (teamError) {
@@ -3289,16 +4016,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const {
                 error: playerError
-            } = await supabaseClient
-                .from("players")
-                .update({
-                    registration_status:
-                        "Rejected"
-                })
-                .eq(
-                    "team_id",
-                    id
-                );
+            } =
+                await supabaseClient
+                    .from("players")
+                    .update({
+                        registration_status:
+                            "Rejected"
+                    })
+                    .eq(
+                        "team_id",
+                        id
+                    );
 
 
             if (playerError) {
@@ -3377,11 +4105,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         const hour =
-            Number(parts[0]);
+            Number(
+                parts[0]
+            );
 
 
         const minute =
-            parts[1] || "00";
+            parts[1] ||
+            "00";
 
 
         const period =
@@ -3391,7 +4122,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         const displayHour =
-            hour % 12 || 12;
+            hour % 12 ||
+            12;
 
 
         return (
@@ -3410,171 +4142,31 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function escapeHtml(value) {
 
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        return String(
+            value
+        )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
     }
 
-// ========================================
-// COMPETITION MANAGER
-// ========================================
-
-const createCompetitionButton =
-    document.getElementById("createCompetitionButton");
-
-if (createCompetitionButton) {
-
-    createCompetitionButton.addEventListener(
-        "click",
-        async function () {
-
-            console.log("CREATE COMPETITION BUTTON CLICKED");
-
-            const message =
-                document.getElementById(
-                    "competitionFormMessage"
-                );
-
-            const name =
-                document.getElementById(
-                    "competitionName"
-                ).value.trim();
-
-            const competitionType =
-                document.getElementById(
-                    "competitionType"
-                ).value;
-
-            const season =
-                document.getElementById(
-                    "competitionSeason"
-                ).value.trim();
-
-            const startDate =
-                document.getElementById(
-                    "competitionStartDate"
-                ).value || null;
-
-            const endDate =
-                document.getElementById(
-                    "competitionEndDate"
-                ).value || null;
-
-            const status =
-                document.getElementById(
-                    "competitionStatus"
-                ).value;
-
-            const description =
-                document.getElementById(
-                    "competitionDescription"
-                ).value.trim();
-
-            if (!name) {
-                message.textContent =
-                    "❌ Please enter the competition name.";
-                message.style.display = "block";
-                return;
-            }
-
-            if (!competitionType) {
-                message.textContent =
-                    "❌ Please select the competition type.";
-                message.style.display = "block";
-                return;
-            }
-
-            if (!season) {
-                message.textContent =
-                    "❌ Please enter the season.";
-                message.style.display = "block";
-                return;
-            }
-
-            message.textContent =
-                "Saving competition...";
-
-            message.style.display = "block";
-
-            createCompetitionButton.disabled = true;
-
-            try {
-
-                const {
-                    data,
-                    error
-                } = await supabaseClient
-                    .from("competitions")
-                    .insert({
-                        name: name,
-                        competition_type: competitionType,
-                        season: season,
-                        start_date: startDate,
-                        end_date: endDate,
-                        status: status,
-                        description: description || null
-                    })
-                    .select()
-                    .single();
-
-                if (error) {
-                    throw error;
-                }
-
-                console.log(
-                    "Competition created successfully:",
-                    data
-                );
-
-                message.textContent =
-                    "✅ Competition created successfully!";
-
-                message.style.display = "block";
-
-                document.getElementById(
-                    "competitionForm"
-                ).reset();
-
-                if (typeof loadCompetitions === "function") {
-                    await loadCompetitions();
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "CREATE COMPETITION ERROR:",
-                    error
-                );
-
-                message.textContent =
-                    "❌ Unable to create competition: " +
-                    (
-                        error.message ||
-                        "Unknown error"
-                    );
-
-                message.style.display = "block";
-
-            } finally {
-
-                createCompetitionButton.disabled = false;
-
-            }
-
-        }
-    );
-
-} else {
-
-    console.error(
-        "CREATE COMPETITION BUTTON NOT FOUND"
-    );
-
-}
-            
 
     // ========================================
     // START DASHBOARD
@@ -3593,6 +4185,15 @@ if (createCompetitionButton) {
         return;
     }
 
+
+    console.log(
+        "Loading admin dashboard data..."
+    );
+
+
+    // Load everything independently.
+    // This prevents one failed section from
+    // stopping all the other sections.
 
     await loadCompetitions();
 
