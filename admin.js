@@ -4678,3 +4678,339 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     <h3>
                         ❌ Unable to Load
+                </h3>
+
+                    <p>
+                        ${escapeHtml(
+                            error.message ||
+                            "Unknown error"
+                        )}
+                    </p>
+
+                </div>
+
+            `;
+        }
+    }
+
+
+    // ========================================
+    // APPROVE TEAM
+    // ========================================
+
+    async function approveTeam(id) {
+
+        if (
+            !confirm(
+                "Approve this team and all its players?"
+            )
+        ) {
+            return;
+        }
+
+
+        try {
+
+            const {
+                error: teamError
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .update({
+                        registration_status:
+                            "Approved"
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (teamError) {
+                throw teamError;
+            }
+
+
+            const {
+                error: playerError
+            } =
+                await supabaseClient
+                    .from("players")
+                    .update({
+                        registration_status:
+                            "Approved"
+                    })
+                    .eq(
+                        "team_id",
+                        id
+                    );
+
+
+            if (playerError) {
+                throw playerError;
+            }
+
+
+            alert(
+                "✅ Team approved successfully!"
+            );
+
+
+            await loadPendingTeams();
+
+            await loadApprovedTeams();
+
+            await loadResultFixtures();
+
+
+        } catch (error) {
+
+            console.error(
+                "Approve team error:",
+                error
+            );
+
+
+            alert(
+                "Unable to approve team: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+        }
+    }
+
+
+    // ========================================
+    // REJECT TEAM
+    // ========================================
+
+    async function rejectTeam(id) {
+
+        if (
+            !confirm(
+                "Reject this team registration?"
+            )
+        ) {
+            return;
+        }
+
+
+        try {
+
+            const {
+                error: teamError
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .update({
+                        registration_status:
+                            "Rejected"
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (teamError) {
+                throw teamError;
+            }
+
+
+            const {
+                error: playerError
+            } =
+                await supabaseClient
+                    .from("players")
+                    .update({
+                        registration_status:
+                            "Rejected"
+                    })
+                    .eq(
+                        "team_id",
+                        id
+                    );
+
+
+            if (playerError) {
+                throw playerError;
+            }
+
+
+            alert(
+                "Team registration rejected."
+            );
+
+
+            await loadPendingTeams();
+
+
+        } catch (error) {
+
+            console.error(
+                "Reject team error:",
+                error
+            );
+
+
+            alert(
+                "Unable to reject team: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+        }
+    }
+
+
+    // ========================================
+    // FORMAT DATE
+    // ========================================
+
+    function formatDate(value) {
+
+        if (!value) {
+            return "-";
+        }
+
+
+        const date =
+            new Date(
+                value + "T00:00:00"
+            );
+
+
+        return date.toLocaleDateString(
+            "en-KE",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
+    }
+
+
+    // ========================================
+    // FORMAT TIME
+    // ========================================
+
+    function formatTime(value) {
+
+        if (!value) {
+            return "-";
+        }
+
+
+        const parts =
+            value.split(":");
+
+
+        const hour =
+            Number(
+                parts[0]
+            );
+
+
+        const minute =
+            parts[1] ||
+            "00";
+
+
+        const period =
+            hour >= 12
+                ? "PM"
+                : "AM";
+
+
+        const displayHour =
+            hour % 12 ||
+            12;
+
+
+        return (
+            displayHour +
+            ":" +
+            minute +
+            " " +
+            period
+        );
+    }
+
+
+    // ========================================
+    // ESCAPE HTML
+    // ========================================
+
+    function escapeHtml(value) {
+
+        return String(
+            value
+        )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+    }
+
+
+    // ========================================
+    // START DASHBOARD
+    // ========================================
+
+    console.log(
+        "Kabaru Ward Football Admin JS started."
+    );
+
+
+    const isAdmin =
+        await checkAdmin();
+
+
+    if (!isAdmin) {
+        return;
+    }
+
+
+    console.log(
+        "Loading admin dashboard data..."
+    );
+
+
+    await loadCompetitions();
+
+    await loadApprovedTeams();
+
+    await loadVenues();
+
+    await loadFixtures();
+
+    await loadResultFixtures();
+
+    await loadPendingTeams();
+
+
+    console.log(
+        "Kabaru Ward Football Admin Dashboard loaded."
+    );
+
+});
