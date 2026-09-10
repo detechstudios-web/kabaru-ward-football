@@ -14,10 +14,10 @@
 
 <style>
 
-/* ========================================
+/* =====================================================
    KABARU WARD FOOTBALL
    FIXTURES CENTRE
-======================================== */
+   ===================================================== */
 
 * {
     margin: 0;
@@ -26,24 +26,44 @@
 }
 
 :root {
+
     --green-dark: #04351f;
     --green: #075b35;
     --green-light: #0b7545;
+
     --gold: #f5c542;
     --gold-light: #ffe082;
+
     --white: #ffffff;
+
     --light: #f5f7f6;
     --text: #173126;
     --muted: #68776f;
+
     --border: #dfe7e2;
-    --shadow: 0 10px 30px rgba(4, 53, 31, 0.10);
+
+    --shadow:
+        0 10px 30px rgba(4, 53, 31, 0.10);
+
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     background: var(--light);
+
     color: var(--text);
+
     line-height: 1.6;
+
 }
 
 a {
@@ -51,546 +71,989 @@ a {
     color: inherit;
 }
 
-/* ========================================
+/* =====================================================
    HEADER
-======================================== */
+   ===================================================== */
 
 header {
+
     background:
         linear-gradient(
             135deg,
             var(--green-dark),
             var(--green)
         );
+
     color: var(--white);
+
     padding: 18px 20px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+
+    box-shadow:
+        0 4px 18px rgba(0,0,0,0.15);
+
     position: sticky;
+
     top: 0;
+
     z-index: 1000;
+
 }
 
 .header-inner {
+
     max-width: 1150px;
+
     margin: auto;
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
+
     gap: 20px;
+
 }
 
 .brand {
+
     display: flex;
+
     align-items: center;
+
     gap: 12px;
+
 }
 
 .brand-ball {
+
     width: 46px;
+
     height: 46px;
+
     border-radius: 50%;
+
     background: var(--gold);
+
     color: var(--green-dark);
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     font-size: 25px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.18);
+
 }
 
 .brand h1 {
+
     font-size: 22px;
+
     line-height: 1.1;
+
 }
 
 .brand p {
+
     font-size: 12px;
+
     opacity: 0.82;
+
     margin-top: 3px;
+
 }
 
 .home-link {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.25);
+
+    background:
+        rgba(255,255,255,0.12);
+
+    border:
+        1px solid rgba(255,255,255,0.25);
+
     padding: 10px 15px;
+
     border-radius: 10px;
+
     font-weight: 700;
+
     transition: 0.2s;
+
 }
 
 .home-link:hover {
+
     background: var(--gold);
+
     color: var(--green-dark);
+
 }
 
-/* ========================================
+/* =====================================================
    HERO
-======================================== */
+   ===================================================== */
 
 .hero {
+
     background:
         linear-gradient(
             135deg,
             var(--green-dark),
             var(--green-light)
         );
+
     color: white;
+
     padding: 55px 20px 70px;
+
     text-align: center;
+
 }
 
 .hero-content {
+
     max-width: 850px;
+
     margin: auto;
+
 }
 
 .hero-kicker {
+
     display: inline-block;
-    background: rgba(245,197,66,0.16);
+
+    background:
+        rgba(245,197,66,0.16);
+
     color: var(--gold-light);
-    border: 1px solid rgba(245,197,66,0.35);
+
+    border:
+        1px solid rgba(245,197,66,0.35);
+
     padding: 7px 14px;
+
     border-radius: 30px;
+
     font-size: 12px;
+
     font-weight: 800;
+
     letter-spacing: 1px;
+
     margin-bottom: 16px;
+
 }
 
 .hero h2 {
+
     font-size: 42px;
+
     margin-bottom: 12px;
+
 }
 
 .hero h2 span {
+
     color: var(--gold);
+
 }
 
 .hero p {
+
     max-width: 650px;
+
     margin: auto;
-    color: rgba(255,255,255,0.85);
+
+    color:
+        rgba(255,255,255,0.85);
+
 }
 
-/* ========================================
-   MAIN CONTAINER
-======================================== */
+/* =====================================================
+   MAIN
+   ===================================================== */
 
 .container {
+
     max-width: 1150px;
+
     margin: auto;
+
     padding: 0 20px;
+
 }
 
 .main-content {
+
     margin-top: -28px;
+
     position: relative;
+
     z-index: 2;
+
 }
 
-/* ========================================
-   FILTER CARD
-======================================== */
+/* =====================================================
+   FILTERS
+   ===================================================== */
 
 .filters-card {
+
     background: white;
+
     border-radius: 18px;
+
     padding: 22px;
+
     box-shadow: var(--shadow);
-    border: 1px solid var(--border);
+
+    border:
+        1px solid var(--border);
+
     margin-bottom: 30px;
+
 }
 
 .filters-title {
+
     margin-bottom: 18px;
+
 }
 
 .filters-title h3 {
+
     color: var(--green-dark);
+
     font-size: 20px;
+
 }
 
 .filters-title p {
+
     color: var(--muted);
+
     font-size: 14px;
+
 }
 
 .filters-grid {
+
     display: grid;
+
     grid-template-columns:
         repeat(3, 1fr);
+
     gap: 15px;
+
 }
 
 .filter-group label {
+
     display: block;
+
     font-weight: 700;
+
     font-size: 13px;
+
     margin-bottom: 7px;
+
     color: var(--green-dark);
+
 }
 
 .filter-group select {
+
     width: 100%;
+
     padding: 12px 13px;
-    border: 1px solid var(--border);
+
+    border:
+        1px solid var(--border);
+
     border-radius: 10px;
+
     background: white;
+
     color: var(--text);
+
     font-size: 14px;
+
     outline: none;
+
 }
 
 .filter-group select:focus {
+
     border-color: var(--green);
+
     box-shadow:
         0 0 0 3px rgba(7,91,53,0.10);
+
 }
 
-/* ========================================
-   SECTION HEADER
-======================================== */
+/* =====================================================
+   SECTION HEADING
+   ===================================================== */
 
 .section-heading {
+
     display: flex;
+
     justify-content: space-between;
+
     align-items: end;
+
     gap: 15px;
+
     margin-bottom: 18px;
+
 }
 
 .section-heading h3 {
+
     color: var(--green-dark);
+
     font-size: 25px;
+
 }
 
 .section-heading p {
+
     color: var(--muted);
+
     font-size: 14px;
+
 }
 
-/* ========================================
+/* =====================================================
    FIXTURE GROUP
-======================================== */
+   ===================================================== */
 
 .fixture-group {
+
     margin-bottom: 35px;
+
 }
 
 .matchday-title {
+
     display: flex;
+
     align-items: center;
+
     gap: 10px;
+
     margin-bottom: 13px;
+
 }
 
 .matchday-badge {
+
     background: var(--green-dark);
+
     color: var(--gold);
+
     padding: 7px 13px;
+
     border-radius: 8px;
+
     font-size: 12px;
+
     font-weight: 800;
+
     text-transform: uppercase;
+
+    white-space: nowrap;
+
 }
 
 .matchday-line {
+
     height: 1px;
+
     background: var(--border);
+
     flex: 1;
+
 }
 
-/* ========================================
-   FIXTURE CARD
-======================================== */
+/* =====================================================
+   FIXTURE LIST
+   ===================================================== */
 
 .fixtures-list {
+
     display: grid;
+
     gap: 15px;
+
 }
 
+/* =====================================================
+   FIXTURE CARD
+   ===================================================== */
+
 .fixture-card {
+
     background: white;
-    border: 1px solid var(--border);
+
+    border:
+        1px solid var(--border);
+
     border-radius: 17px;
+
     overflow: hidden;
-    box-shadow: 0 5px 18px rgba(4,53,31,0.06);
+
+    box-shadow:
+        0 5px 18px rgba(4,53,31,0.06);
+
     transition:
         transform 0.2s,
         box-shadow 0.2s;
+
 }
 
 .fixture-card:hover {
+
     transform: translateY(-2px);
+
     box-shadow: var(--shadow);
+
 }
 
+/* =====================================================
+   FIXTURE TOP
+   ===================================================== */
+
 .fixture-top {
+
     padding: 12px 16px;
+
     background: #f8faf9;
-    border-bottom: 1px solid var(--border);
+
+    border-bottom:
+        1px solid var(--border);
+
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
+
     gap: 10px;
+
 }
 
 .competition-name {
+
     font-size: 12px;
+
     font-weight: 800;
+
     color: var(--green);
+
 }
 
 .fixture-status {
+
     font-size: 11px;
+
     font-weight: 800;
+
     padding: 5px 9px;
+
     border-radius: 20px;
+
 }
 
 .status-scheduled {
+
     background: #e8f2ed;
+
     color: var(--green-dark);
+
 }
 
 .status-published {
+
     background: #e8f2ed;
+
     color: var(--green-dark);
+
 }
 
 .status-completed {
+
     background: #fff4c9;
+
     color: #725600;
+
 }
 
 .status-postponed {
+
     background: #fff0df;
+
     color: #9a4f00;
+
 }
 
 .status-cancelled {
+
     background: #fde8e8;
+
     color: #a32121;
+
 }
 
+/* =====================================================
+   FIXTURE MAIN
+   ===================================================== */
+
 .fixture-main {
+
     padding: 22px 18px;
+
 }
 
 .fixture-date {
+
     text-align: center;
+
     margin-bottom: 18px;
+
 }
 
 .fixture-date strong {
+
     display: block;
+
     color: var(--green-dark);
+
     font-size: 17px;
+
 }
 
 .fixture-date span {
+
     color: var(--muted);
+
     font-size: 13px;
+
 }
 
+/* =====================================================
+   TEAMS
+   ===================================================== */
+
 .teams-row {
+
     display: grid;
+
     grid-template-columns:
         1fr
         120px
         1fr;
+
     align-items: center;
+
     gap: 15px;
+
 }
 
 .team {
+
     display: flex;
+
     align-items: center;
+
     gap: 12px;
+
 }
 
 .team.home {
+
     justify-content: flex-end;
+
     text-align: right;
+
 }
 
 .team.away {
+
     justify-content: flex-start;
+
     text-align: left;
+
 }
 
 .team-logo {
+
     width: 62px;
+
     height: 62px;
+
     border-radius: 50%;
+
     object-fit: cover;
-    border: 3px solid var(--green);
+
+    border:
+        3px solid var(--green);
+
     background: #f0f4f2;
+
     flex-shrink: 0;
+
 }
 
 .team-placeholder {
+
     width: 62px;
+
     height: 62px;
+
     border-radius: 50%;
-    border: 3px solid var(--green);
+
+    border:
+        3px solid var(--green);
+
     background: #f0f4f2;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     font-size: 27px;
+
     flex-shrink: 0;
+
 }
 
 .team-name {
+
     font-weight: 800;
+
     color: var(--green-dark);
+
     font-size: 16px;
+
 }
 
 .team-short {
+
     display: block;
+
     color: var(--muted);
+
     font-size: 11px;
+
     margin-top: 2px;
+
 }
 
+/* =====================================================
+   MATCH TIME / SCORE
+   ===================================================== */
+
 .match-time {
+
     text-align: center;
+
 }
 
 .match-time strong {
+
     display: block;
+
     color: var(--green-dark);
+
     font-size: 25px;
+
 }
 
 .match-time span {
+
     display: block;
+
     color: var(--muted);
+
     font-size: 11px;
+
     margin-top: 2px;
+
 }
 
 .score-box {
+
     display: flex;
+
     justify-content: center;
+
     align-items: center;
+
     gap: 10px;
+
 }
 
 .score {
+
     background: var(--green-dark);
+
     color: white;
+
     min-width: 42px;
+
     padding: 5px 8px;
+
     border-radius: 8px;
+
     font-size: 23px;
+
     font-weight: 900;
+
 }
 
 .score-separator {
+
     color: var(--muted);
+
     font-weight: 800;
+
 }
 
+/* =====================================================
+   FIXTURE BOTTOM
+   ===================================================== */
+
 .fixture-bottom {
+
     padding: 13px 16px;
-    border-top: 1px solid var(--border);
+
+    border-top:
+        1px solid var(--border);
+
     background: #fbfcfb;
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
+
     gap: 12px;
+
 }
 
 .fixture-info {
+
     display: flex;
+
     flex-wrap: wrap;
+
     gap: 14px;
+
     color: var(--muted);
+
     font-size: 12px;
+
 }
 
 .fixture-info span {
+
     display: inline-flex;
+
     align-items: center;
+
     gap: 4px;
+
 }
 
 .details-btn {
+
     background: var(--green);
+
     color: white;
+
     padding: 8px 12px;
+
     border-radius: 8px;
+
     font-size: 12px;
+
     font-weight: 800;
+
     white-space: nowrap;
+
 }
 
 .details-btn:hover {
+
     background: var(--green-dark);
+
 }
 
-/* ========================================
+/* =====================================================
+   RECENT RESULTS HEADER
+   ===================================================== */
+
+.results-label {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    background: #fff4c9;
+
+    color: #725600;
+
+    border:
+        1px solid #ead68a;
+
+    padding: 6px 11px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    margin-bottom: 10px;
+
+}
+
+/* =====================================================
+   UPCOMING HEADER
+   ===================================================== */
+
+.upcoming-label {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    background: #e8f2ed;
+
+    color: var(--green-dark);
+
+    border:
+        1px solid #c8ddd2;
+
+    padding: 6px 11px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    margin-bottom: 10px;
+
+}
+
+/* =====================================================
    EMPTY / LOADING
-======================================== */
+   ===================================================== */
 
 .empty-state {
+
     background: white;
-    border: 1px solid var(--border);
+
+    border:
+        1px solid var(--border);
+
     border-radius: 16px;
+
     padding: 45px 20px;
+
     text-align: center;
-    box-shadow: 0 5px 18px rgba(4,53,31,0.05);
+
+    box-shadow:
+        0 5px 18px rgba(4,53,31,0.05);
+
 }
 
 .empty-icon {
+
     font-size: 42px;
+
     margin-bottom: 10px;
+
 }
 
 .empty-state h3 {
+
     color: var(--green-dark);
+
     margin-bottom: 6px;
+
 }
 
 .empty-state p {
+
     color: var(--muted);
+
     font-size: 14px;
+
 }
 
 .loading {
+
     text-align: center;
+
     padding: 40px;
+
     color: var(--muted);
+
 }
 
-/* ========================================
+/* =====================================================
    FOOTER
-======================================== */
+   ===================================================== */
 
 footer {
+
     margin-top: 60px;
+
     background: var(--green-dark);
+
     color: white;
+
     text-align: center;
+
     padding: 30px 20px;
+
 }
 
 footer strong {
+
     color: var(--gold);
+
 }
 
 footer p {
+
     font-size: 13px;
+
     opacity: 0.75;
+
     margin-top: 5px;
+
 }
 
-/* ========================================
+/* =====================================================
    RESPONSIVE
-======================================== */
+   ===================================================== */
 
 @media (max-width: 800px) {
 
@@ -603,11 +1066,14 @@ footer p {
     }
 
     .teams-row {
+
         grid-template-columns:
             1fr
             95px
             1fr;
+
         gap: 8px;
+
     }
 
     .team {
@@ -616,8 +1082,10 @@ footer p {
 
     .team-logo,
     .team-placeholder {
+
         width: 52px;
         height: 52px;
+
     }
 
     .team-name {
@@ -645,18 +1113,27 @@ footer p {
     }
 
     .brand-ball {
+
         width: 40px;
         height: 40px;
+
         font-size: 21px;
+
     }
 
     .home-link {
+
         padding: 8px 10px;
+
         font-size: 12px;
+
     }
 
     .hero {
-        padding: 42px 18px 58px;
+
+        padding:
+            42px 18px 58px;
+
     }
 
     .hero h2 {
@@ -692,36 +1169,52 @@ footer p {
     }
 
     .teams-row {
+
         grid-template-columns:
             minmax(0, 1fr)
             72px
             minmax(0, 1fr);
+
     }
 
     .team {
+
         flex-direction: column;
+
         gap: 5px;
+
     }
 
     .team.home {
+
         flex-direction: column;
+
         text-align: center;
+
     }
 
     .team.away {
+
         flex-direction: column;
+
         text-align: center;
+
     }
 
     .team-logo,
     .team-placeholder {
+
         width: 50px;
         height: 50px;
+
     }
 
     .team-name {
+
         font-size: 13px;
+
         line-height: 1.25;
+
     }
 
     .team-short {
@@ -733,26 +1226,46 @@ footer p {
     }
 
     .fixture-bottom {
+
         align-items: flex-start;
+
         flex-direction: column;
+
     }
 
     .details-btn {
+
         width: 100%;
+
         text-align: center;
+
     }
 
+}
+
+/* =====================================================
+   SECTION SPACING
+   ===================================================== */
+
+.fixtures-section {
+    margin-bottom: 45px;
+}
+
+.no-results {
+    margin-bottom: 35px;
 }
 
 </style>
 
 </head>
 
+
 <body>
 
-<!-- ========================================
+
+<!-- =====================================================
      HEADER
-======================================== -->
+     ===================================================== -->
 
 <header>
 
@@ -781,6 +1294,7 @@ footer p {
 
         </a>
 
+
         <a
             href="index.html"
             class="home-link"
@@ -793,9 +1307,9 @@ footer p {
 </header>
 
 
-<!-- ========================================
+<!-- =====================================================
      HERO
-======================================== -->
+     ===================================================== -->
 
 <section class="hero">
 
@@ -820,18 +1334,18 @@ footer p {
 </section>
 
 
-<!-- ========================================
+<!-- =====================================================
      MAIN
-======================================== -->
+     ===================================================== -->
 
 <main>
 
 <div class="container main-content">
 
 
-<!-- ========================================
+<!-- =====================================================
      FILTERS
-======================================== -->
+     ===================================================== -->
 
 <section class="filters-card">
 
@@ -850,6 +1364,7 @@ footer p {
 
 
     <div class="filters-grid">
+
 
         <div class="filter-group">
 
@@ -925,14 +1440,15 @@ footer p {
 
         </div>
 
+
     </div>
 
 </section>
 
 
-<!-- ========================================
-     FIXTURES
-======================================== -->
+<!-- =====================================================
+     FIXTURES AREA
+     ===================================================== -->
 
 <section>
 
@@ -941,7 +1457,7 @@ footer p {
         <div>
 
             <h3>
-                📅 Fixtures
+                📅 Fixtures & Results
             </h3>
 
             <p id="fixtureCount">
@@ -956,7 +1472,9 @@ footer p {
     <div id="fixturesContainer">
 
         <div class="loading">
+
             ⚽ Loading fixtures...
+
         </div>
 
     </div>
@@ -969,14 +1487,14 @@ footer p {
 </main>
 
 
-<!-- ========================================
+<!-- =====================================================
      FOOTER
-======================================== -->
+     ===================================================== -->
 
 <footer>
 
     <strong>
-        Kabaru Ward Football
+        KABARU WARD FOOTBALL
     </strong>
 
     <p>
@@ -987,18 +1505,18 @@ footer p {
 </footer>
 
 
-<!-- ========================================
+<!-- =====================================================
      SUPABASE
-======================================== -->
+     ===================================================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js?v=3"></script>
 
 
-<!-- ========================================
-     FIXTURES APP
-======================================== -->
+<!-- =====================================================
+     FIXTURES APPLICATION
+     ===================================================== -->
 
 <script>
 
@@ -1007,29 +1525,33 @@ document.addEventListener(
     async function () {
 
 
-        /* ========================================
+        /* =================================================
            ELEMENTS
-        ======================================== */
+           ================================================= */
 
         const fixturesContainer =
             document.getElementById(
                 "fixturesContainer"
             );
 
+
         const fixtureCount =
             document.getElementById(
                 "fixtureCount"
             );
+
 
         const competitionFilter =
             document.getElementById(
                 "competitionFilter"
             );
 
+
         const statusFilter =
             document.getElementById(
                 "statusFilter"
             );
+
 
         const matchdayFilter =
             document.getElementById(
@@ -1037,9 +1559,9 @@ document.addEventListener(
             );
 
 
-        /* ========================================
+        /* =================================================
            DATA
-        ======================================== */
+           ================================================= */
 
         let allFixtures = [];
 
@@ -1050,31 +1572,128 @@ document.addEventListener(
         let allResults = [];
 
 
-        /* ========================================
+        /* =================================================
            ESCAPE HTML
-        ======================================== */
+           ================================================= */
 
         function escapeHtml(value) {
 
-            if (value === null ||
-                value === undefined) {
+            if (
+                value === null ||
+                value === undefined
+            ) {
 
                 return "";
 
             }
 
             return String(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
         }
 
 
-        /* ========================================
+        /* =================================================
+           NORMALIZE STATUS
+           ================================================= */
+
+        function normalizedStatus(status) {
+
+            return String(
+                status || ""
+            )
+                .trim()
+                .toLowerCase();
+
+        }
+
+
+        /* =================================================
+           IS COMPLETED
+           ================================================= */
+
+        function isCompleted(fixture) {
+
+            return (
+                normalizedStatus(
+                    fixture.status
+                ) === "completed"
+            );
+
+        }
+
+
+        /* =================================================
+           IS UPCOMING
+           ================================================= */
+
+        function isUpcoming(fixture) {
+
+            const status =
+                normalizedStatus(
+                    fixture.status
+                );
+
+            return (
+                status !== "completed" &&
+                status !== "cancelled"
+            );
+
+        }
+
+
+        /* =================================================
+           DATE VALUE
+           ================================================= */
+
+        function dateTimeValue(fixture) {
+
+            const date =
+                String(
+                    fixture.match_date || ""
+                );
+
+            const time =
+                String(
+                    fixture.kick_off || "00:00:00"
+                );
+
+            return (
+                date +
+                " " +
+                time
+            );
+
+        }
+
+
+        /* =================================================
            FORMAT DATE
-        ======================================== */
+           ================================================= */
 
         function formatDate(dateString) {
 
@@ -1084,7 +1703,8 @@ document.addEventListener(
 
             const date =
                 new Date(
-                    dateString + "T00:00:00"
+                    dateString +
+                    "T00:00:00"
                 );
 
             return date.toLocaleDateString(
@@ -1100,9 +1720,9 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            FORMAT SHORT DATE
-        ======================================== */
+           ================================================= */
 
         function formatShortDate(dateString) {
 
@@ -1112,7 +1732,8 @@ document.addEventListener(
 
             const date =
                 new Date(
-                    dateString + "T00:00:00"
+                    dateString +
+                    "T00:00:00"
                 );
 
             return date.toLocaleDateString(
@@ -1127,9 +1748,9 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            FORMAT TIME
-        ======================================== */
+           ================================================= */
 
         function formatTime(timeString) {
 
@@ -1151,7 +1772,9 @@ document.addEventListener(
                 parts[1];
 
             const suffix =
-                hour >= 12 ? "PM" : "AM";
+                hour >= 12
+                    ? "PM"
+                    : "AM";
 
             hour =
                 hour % 12 || 12;
@@ -1167,17 +1790,19 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            GET TEAM
-        ======================================== */
+           ================================================= */
 
         function getTeam(id) {
 
             return allTeams.find(
                 function (team) {
 
-                    return Number(team.id) ===
-                        Number(id);
+                    return (
+                        Number(team.id) ===
+                        Number(id)
+                    );
 
                 }
             );
@@ -1185,18 +1810,21 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            GET COMPETITION
-        ======================================== */
+           ================================================= */
 
         function getCompetition(id) {
 
             return allCompetitions.find(
                 function (competition) {
 
-                    return Number(
-                        competition.id
-                    ) === Number(id);
+                    return (
+                        Number(
+                            competition.id
+                        ) ===
+                        Number(id)
+                    );
 
                 }
             );
@@ -1204,18 +1832,21 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            GET RESULT
-        ======================================== */
+           ================================================= */
 
         function getResult(fixtureId) {
 
             return allResults.find(
                 function (result) {
 
-                    return Number(
-                        result.fixture_id
-                    ) === Number(fixtureId);
+                    return (
+                        Number(
+                            result.fixture_id
+                        ) ===
+                        Number(fixtureId)
+                    );
 
                 }
             );
@@ -1223,31 +1854,38 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            LOAD DATA
-        ======================================== */
+           ================================================= */
 
         async function loadData() {
 
-            fixturesContainer.innerHTML =
-                `
+            fixturesContainer.innerHTML = `
+
                 <div class="loading">
+
                     ⚽ Loading fixtures...
+
                 </div>
-                `;
+
+            `;
+
 
             try {
 
-                /* ========================================
+
+                /* =========================================
                    LOAD FIXTURES
-                ======================================== */
+                   ========================================= */
 
                 const {
                     data: fixtures,
                     error: fixturesError
                 } =
                     await supabaseClient
+
                         .from("fixtures")
+
                         .select(`
                             id,
                             competition_id,
@@ -1259,12 +1897,14 @@ document.addEventListener(
                             matchday,
                             status
                         `)
+
                         .order(
                             "match_date",
                             {
                                 ascending: true
                             }
                         )
+
                         .order(
                             "kick_off",
                             {
@@ -1282,9 +1922,9 @@ document.addEventListener(
                     fixtures || [];
 
 
-                /* ========================================
+                /* =========================================
                    LOAD TEAMS
-                ======================================== */
+                   ========================================= */
 
                 const teamIds = [
                     ...new Set(
@@ -1309,7 +1949,9 @@ document.addEventListener(
                         error: teamsError
                     } =
                         await supabaseClient
+
                             .from("teams")
+
                             .select(`
                                 id,
                                 name,
@@ -1317,6 +1959,7 @@ document.addEventListener(
                                 logo_url,
                                 registration_status
                             `)
+
                             .in(
                                 "id",
                                 teamIds
@@ -1327,15 +1970,16 @@ document.addEventListener(
                         throw teamsError;
                     }
 
+
                     allTeams =
                         teams || [];
 
                 }
 
 
-                /* ========================================
+                /* =========================================
                    LOAD COMPETITIONS
-                ======================================== */
+                   ========================================= */
 
                 const competitionIds = [
                     ...new Set(
@@ -1359,7 +2003,9 @@ document.addEventListener(
                         error: competitionsError
                     } =
                         await supabaseClient
+
                             .from("competitions")
+
                             .select(`
                                 id,
                                 name,
@@ -1367,6 +2013,7 @@ document.addEventListener(
                                 competition_type,
                                 status
                             `)
+
                             .in(
                                 "id",
                                 competitionIds
@@ -1377,15 +2024,16 @@ document.addEventListener(
                         throw competitionsError;
                     }
 
+
                     allCompetitions =
                         competitions || [];
 
                 }
 
 
-                /* ========================================
+                /* =========================================
                    LOAD RESULTS
-                ======================================== */
+                   ========================================= */
 
                 const fixtureIds =
                     allFixtures.map(
@@ -1397,20 +2045,25 @@ document.addEventListener(
                     );
 
 
-                if (fixtureIds.length > 0) {
+                if (
+                    fixtureIds.length > 0
+                ) {
 
                     const {
                         data: results,
                         error: resultsError
                     } =
                         await supabaseClient
+
                             .from("results")
+
                             .select(`
                                 id,
                                 fixture_id,
                                 home_score,
                                 away_score
                             `)
+
                             .in(
                                 "fixture_id",
                                 fixtureIds
@@ -1420,6 +2073,7 @@ document.addEventListener(
                     if (resultsError) {
                         throw resultsError;
                     }
+
 
                     allResults =
                         results || [];
@@ -1439,11 +2093,13 @@ document.addEventListener(
                     error
                 );
 
+
                 fixtureCount.textContent =
                     "Unable to load fixtures.";
 
-                fixturesContainer.innerHTML =
-                    `
+
+                fixturesContainer.innerHTML = `
+
                     <div class="empty-state">
 
                         <div class="empty-icon">
@@ -1460,32 +2116,38 @@ document.addEventListener(
                         </p>
 
                     </div>
-                    `;
+
+                `;
 
             }
 
         }
 
 
-        /* ========================================
+        /* =================================================
            POPULATE FILTERS
-        ======================================== */
+           ================================================= */
 
         function populateFilters() {
 
-            /* ========================================
-               COMPETITIONS
-            ======================================== */
 
-            competitionFilter.innerHTML =
-                `
+            /* =========================================
+               COMPETITIONS
+               ========================================= */
+
+            competitionFilter.innerHTML = `
+
                 <option value="all">
                     All Competitions
                 </option>
-                `;
+
+            `;
 
 
-            allCompetitions
+            [
+                ...allCompetitions
+            ]
+
                 .sort(
                     function (a, b) {
 
@@ -1496,6 +2158,7 @@ document.addEventListener(
 
                     }
                 )
+
                 .forEach(
                     function (competition) {
 
@@ -1504,8 +2167,10 @@ document.addEventListener(
                                 "option"
                             );
 
+
                         option.value =
                             competition.id;
+
 
                         option.textContent =
                             competition.name +
@@ -1516,6 +2181,7 @@ document.addEventListener(
                                     : ""
                             );
 
+
                         competitionFilter
                             .appendChild(
                                 option
@@ -1525,13 +2191,16 @@ document.addEventListener(
                 );
 
 
-            /* ========================================
+            /* =========================================
                MATCHDAYS
-            ======================================== */
+               ========================================= */
 
             const matchdays = [
+
                 ...new Set(
+
                     allFixtures
+
                         .map(
                             function (fixture) {
 
@@ -1539,16 +2208,21 @@ document.addEventListener(
 
                             }
                         )
+
                         .filter(
                             function (value) {
 
-                                return value !== null &&
+                                return (
+                                    value !== null &&
                                     value !== undefined &&
-                                    String(value).trim() !== "";
+                                    String(value).trim() !== ""
+                                );
 
                             }
                         )
+
                 )
+
             ];
 
 
@@ -1564,6 +2238,7 @@ document.addEventListener(
                                 )
                         );
 
+
                     const numB =
                         Number(
                             String(b)
@@ -1572,6 +2247,7 @@ document.addEventListener(
                                     ""
                                 )
                         );
+
 
                     if (
                         !Number.isNaN(numA) &&
@@ -1582,6 +2258,7 @@ document.addEventListener(
 
                     }
 
+
                     return String(a)
                         .localeCompare(
                             String(b)
@@ -1591,12 +2268,13 @@ document.addEventListener(
             );
 
 
-            matchdayFilter.innerHTML =
-                `
+            matchdayFilter.innerHTML = `
+
                 <option value="all">
                     All Matchdays
                 </option>
-                `;
+
+            `;
 
 
             matchdays.forEach(
@@ -1607,16 +2285,21 @@ document.addEventListener(
                             "option"
                         );
 
+
                     option.value =
                         String(matchday);
+
 
                     option.textContent =
                         String(matchday)
                             .toLowerCase()
                             .startsWith("matchday")
+
                             ? String(matchday)
+
                             : "Matchday " +
                               String(matchday);
+
 
                     matchdayFilter
                         .appendChild(
@@ -1629,40 +2312,60 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            STATUS CLASS
-        ======================================== */
+           ================================================= */
 
         function getStatusClass(status) {
 
             const clean =
-                String(status || "")
-                    .toLowerCase();
+                normalizedStatus(status);
 
-            if (clean === "completed") {
+
+            if (
+                clean === "completed"
+            ) {
+
                 return "status-completed";
+
             }
 
-            if (clean === "postponed") {
+
+            if (
+                clean === "postponed"
+            ) {
+
                 return "status-postponed";
+
             }
 
-            if (clean === "cancelled") {
+
+            if (
+                clean === "cancelled"
+            ) {
+
                 return "status-cancelled";
+
             }
 
-            if (clean === "published") {
+
+            if (
+                clean === "published"
+            ) {
+
                 return "status-published";
+
             }
+
 
             return "status-scheduled";
 
         }
 
 
-        /* ========================================
+        /* =================================================
            STATUS LABEL
-        ======================================== */
+           ================================================= */
 
         function getStatusLabel(status) {
 
@@ -1675,18 +2378,20 @@ document.addEventListener(
         }
 
 
-        /* ========================================
+        /* =================================================
            TEAM HTML
-        ======================================== */
+           ================================================= */
 
         function renderTeam(
             team,
             alignment
         ) {
 
+
             if (!team) {
 
                 return `
+
                     <div class="team ${alignment}">
 
                         <div class="team-placeholder">
@@ -1702,6 +2407,7 @@ document.addEventListener(
                         </div>
 
                     </div>
+
                 `;
 
             }
@@ -1727,14 +2433,17 @@ document.addEventListener(
 
             if (team.logo_url) {
 
-                logoHtml =
-                    `
+                logoHtml = `
+
                     <img
                         src="${escapeHtml(team.logo_url)}"
                         alt="${teamName} logo"
                         class="team-logo"
                         loading="lazy"
-                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                        onerror="
+                            this.style.display='none';
+                            this.nextElementSibling.style.display='flex';
+                        "
                     >
 
                     <div
@@ -1743,396 +2452,449 @@ document.addEventListener(
                     >
                         ⚽
                     </div>
-                    `;
+
+                `;
 
             } else {
 
-                logoHtml =
-                    `
+                logoHtml = `
+
                     <div class="team-placeholder">
                         ⚽
                     </div>
-                    `;
+
+                `;
 
             }
 
 
             return `
+
                 <a
-                    href="team.html?id=${team.id}"
+                    href="team.html?id=${encodeURIComponent(team.id)}"
                     class="team ${alignment}"
                 >
 
-                    ${alignment === "home"
-                        ? `
-                            <div>
-                                <div class="team-name">
-                                    ${teamName}
+                    ${
+                        alignment === "home"
+
+                            ? `
+
+                                <div>
+
+                                    <div class="team-name">
+                                        ${teamName}
+                                    </div>
+
+                                    ${
+                                        shortName
+
+                                            ? `
+
+                                                <span class="team-short">
+                                                    ${shortName}
+                                                </span>
+
+                                              `
+
+                                            : ""
+                                    }
+
                                 </div>
 
-                                ${
-                                    shortName
-                                        ? `
-                                            <span class="team-short">
-                                                ${shortName}
-                                            </span>
-                                          `
-                                        : ""
-                                }
-                            </div>
+                                ${logoHtml}
 
-                            ${logoHtml}
-                          `
-                        : `
-                            ${logoHtml}
+                              `
 
-                            <div>
-                                <div class="team-name">
-                                    ${teamName}
+                            : `
+
+                                ${logoHtml}
+
+                                <div>
+
+                                    <div class="team-name">
+                                        ${teamName}
+                                    </div>
+
+                                    ${
+                                        shortName
+
+                                            ? `
+
+                                                <span class="team-short">
+                                                    ${shortName}
+                                                </span>
+
+                                              `
+
+                                            : ""
+                                    }
+
                                 </div>
 
-                                ${
-                                    shortName
-                                        ? `
-                                            <span class="team-short">
-                                                ${shortName}
-                                            </span>
-                                          `
-                                        : ""
-                                }
-                            </div>
-                          `
+                              `
                     }
 
                 </a>
+
             `;
 
         }
 
 
-        /* ========================================
-           RENDER FIXTURES
-        ======================================== */
+        /* =================================================
+           SORT FIXTURES
+           
+           IMPORTANT:
+           
+           1. COMPLETED RESULTS FIRST
+           2. NEWEST COMPLETED RESULT FIRST
+           3. UPCOMING FIXTURES AFTER RESULTS
+           4. NEAREST UPCOMING FIXTURE FIRST
+           5. CANCELLED FIXTURES LAST
+           ================================================= */
 
-        function renderFixtures() {
+        function sortFixturesForDisplay(
+            fixtures
+        ) {
 
-            const competitionValue =
-                competitionFilter.value;
-
-            const statusValue =
-                statusFilter.value;
-
-            const matchdayValue =
-                matchdayFilter.value;
-
-
-            let filtered =
-                allFixtures.filter(
-                    function (fixture) {
-
-
-                        /* Competition */
-
-                        if (
-                            competitionValue !== "all" &&
-                            String(
-                                fixture.competition_id
-                            ) !==
-                            String(
-                                competitionValue
-                            )
-                        ) {
-
-                            return false;
-
-                        }
-
-
-                        /* Status */
-
-                        if (
-                            statusValue === "upcoming"
-                        ) {
-
-                            if (
-                                String(
-                                    fixture.status
-                                ).toLowerCase()
-                                === "completed" ||
-                                String(
-                                    fixture.status
-                                ).toLowerCase()
-                                === "cancelled"
-                            ) {
-
-                                return false;
-
-                            }
-
-                        } else if (
-                            statusValue !== "all"
-                        ) {
-
-                            if (
-                                String(
-                                    fixture.status
-                                ) !==
-                                String(
-                                    statusValue
-                                )
-                            ) {
-
-                                return false;
-
-                            }
-
-                        }
-
-
-                        /* Matchday */
-
-                        if (
-                            matchdayValue !== "all" &&
-                            String(
-                                fixture.matchday
-                            ) !==
-                            String(
-                                matchdayValue
-                            )
-                        ) {
-
-                            return false;
-
-                        }
-
-
-                        return true;
-
-                    }
-                );
-
-
-            fixtureCount.textContent =
-                filtered.length +
-                (
-                    filtered.length === 1
-                        ? " fixture"
-                        : " fixtures"
-                );
-
-
-            if (
-                filtered.length === 0
-            ) {
-
-                fixturesContainer.innerHTML =
-                    `
-                    <div class="empty-state">
-
-                        <div class="empty-icon">
-                            📅
-                        </div>
-
-                        <h3>
-                            No Fixtures Found
-                        </h3>
-
-                        <p>
-                            There are no fixtures
-                            matching your selected
-                            filters.
-                        </p>
-
-                    </div>
-                    `;
-
-                return;
-
-            }
-
-
-            /* ========================================
-               GROUP BY MATCHDAY
-            ======================================== */
-
-            const groups = {};
-
-
-            filtered.forEach(
-                function (fixture) {
-
-                    const key =
-                        fixture.matchday ||
-                        "Other Fixtures";
-
-
-                    if (!groups[key]) {
-                        groups[key] = [];
-                    }
-
-
-                    groups[key].push(
-                        fixture
-                    );
-
-                }
-            );
-
-
-            const groupKeys =
-                Object.keys(groups);
-
-
-            groupKeys.sort(
+            return [
+                ...fixtures
+            ].sort(
                 function (a, b) {
 
-                    const numA =
-                        Number(
-                            String(a)
-                                .replace(
-                                    /[^0-9]/g,
-                                    ""
-                                )
+
+                    const aStatus =
+                        normalizedStatus(
+                            a.status
                         );
 
-                    const numB =
-                        Number(
-                            String(b)
-                                .replace(
-                                    /[^0-9]/g,
-                                    ""
+
+                    const bStatus =
+                        normalizedStatus(
+                            b.status
+                        );
+
+
+                    const aCompleted =
+                        aStatus === "completed";
+
+
+                    const bCompleted =
+                        bStatus === "completed";
+
+
+                    /* =====================================
+                       COMPLETED VS NON-COMPLETED
+                       ===================================== */
+
+                    if (
+                        aCompleted !==
+                        bCompleted
+                    ) {
+
+                        return aCompleted
+                            ? -1
+                            : 1;
+
+                    }
+
+
+                    /* =====================================
+                       BOTH COMPLETED
+                       NEWEST RESULT FIRST
+                       ===================================== */
+
+                    if (
+                        aCompleted &&
+                        bCompleted
+                    ) {
+
+                        const dateCompare =
+                            String(
+                                b.match_date || ""
+                            ).localeCompare(
+                                String(
+                                    a.match_date || ""
                                 )
+                            );
+
+
+                        if (
+                            dateCompare !== 0
+                        ) {
+
+                            return dateCompare;
+
+                        }
+
+
+                        return String(
+                            b.kick_off || ""
+                        ).localeCompare(
+                            String(
+                                a.kick_off || ""
+                            )
+                        );
+
+                    }
+
+
+                    /* =====================================
+                       BOTH UPCOMING / OTHER
+                       NEAREST FIRST
+                       ===================================== */
+
+                    const dateCompare =
+                        String(
+                            a.match_date || ""
+                        ).localeCompare(
+                            String(
+                                b.match_date || ""
+                            )
                         );
 
 
                     if (
-                        !Number.isNaN(numA) &&
-                        !Number.isNaN(numB)
+                        dateCompare !== 0
                     ) {
 
-                        return numA - numB;
+                        return dateCompare;
 
                     }
 
 
-                    return String(a)
-                        .localeCompare(
-                            String(b)
-                        );
+                    return String(
+                        a.kick_off || ""
+                    ).localeCompare(
+                        String(
+                            b.kick_off || ""
+                        )
+                    );
 
                 }
             );
-
-
-            let html = "";
-
-
-            groupKeys.forEach(
-                function (groupKey) {
-
-                    const fixtures =
-                        groups[groupKey];
-
-
-                    fixtures.sort(
-                        function (a, b) {
-
-                            const dateCompare =
-                                String(
-                                    a.match_date || ""
-                                ).localeCompare(
-                                    String(
-                                        b.match_date || ""
-                                    )
-                                );
-
-                            if (
-                                dateCompare !== 0
-                            ) {
-
-                                return dateCompare;
-
-                            }
-
-                            return String(
-                                a.kick_off || ""
-                            ).localeCompare(
-                                String(
-                                    b.kick_off || ""
-                                )
-                            );
-
-                        }
-                    );
-
-
-                    html +=
-                        `
-                        <div class="fixture-group">
-
-                            <div class="matchday-title">
-
-                                <span class="matchday-badge">
-                                    ${
-                                        groupKey
-                                            .toLowerCase()
-                                            .startsWith(
-                                                "matchday"
-                                            )
-                                            ? escapeHtml(
-                                                groupKey
-                                            )
-                                            : "MATCHDAY " +
-                                              escapeHtml(
-                                                groupKey
-                                              )
-                                    }
-                                </span>
-
-                                <div class="matchday-line"></div>
-
-                            </div>
-
-                            <div class="fixtures-list">
-                        `;
-
-
-                    fixtures.forEach(
-                        function (fixture) {
-
-                            html +=
-                                renderFixture(
-                                    fixture
-                                );
-
-                        }
-                    );
-
-
-                    html +=
-                        `
-                            </div>
-
-                        </div>
-                        `;
-
-                }
-            );
-
-
-            fixturesContainer.innerHTML =
-                html;
 
         }
 
 
-        /* ========================================
-           RENDER SINGLE FIXTURE
-        ======================================== */
+        /* =================================================
+           GROUP SORT
+           
+           Completed matchday groups:
+           newest group first.
+           
+           Upcoming matchday groups:
+           nearest group first.
+           ================================================= */
 
-        function renderFixture(
+        function sortGroups(
+            groups
+        ) {
+
+            const keys =
+                Object.keys(groups);
+
+
+            return keys.sort(
+                function (a, b) {
+
+                    const aFixtures =
+                        groups[a] || [];
+
+
+                    const bFixtures =
+                        groups[b] || [];
+
+
+                    const aHasCompleted =
+                        aFixtures.some(
+                            function (fixture) {
+
+                                return isCompleted(
+                                    fixture
+                                );
+
+                            }
+                        );
+
+
+                    const bHasCompleted =
+                        bFixtures.some(
+                            function (fixture) {
+
+                                return isCompleted(
+                                    fixture
+                                );
+
+                            }
+                        );
+
+
+                    /* =====================================
+                       COMPLETED GROUPS FIRST
+                       ===================================== */
+
+                    if (
+                        aHasCompleted !==
+                        bHasCompleted
+                    ) {
+
+                        return aHasCompleted
+                            ? -1
+                            : 1;
+
+                    }
+
+
+                    /* =====================================
+                       COMPLETED GROUPS
+                       NEWEST FIRST
+                       ===================================== */
+
+                    if (
+                        aHasCompleted &&
+                        bHasCompleted
+                    ) {
+
+                        const latestA =
+                            aFixtures.reduce(
+                                function (
+                                    latest,
+                                    fixture
+                                ) {
+
+                                    const value =
+                                        dateTimeValue(
+                                            fixture
+                                        );
+
+                                    return (
+                                        value >
+                                        latest
+                                    )
+                                        ? value
+                                        : latest;
+
+                                },
+                                ""
+                            );
+
+
+                        const latestB =
+                            bFixtures.reduce(
+                                function (
+                                    latest,
+                                    fixture
+                                ) {
+
+                                    const value =
+                                        dateTimeValue(
+                                            fixture
+                                        );
+
+                                    return (
+                                        value >
+                                        latest
+                                    )
+                                        ? value
+                                        : latest;
+
+                                },
+                                ""
+                            );
+
+
+                        return latestB.localeCompare(
+                            latestA
+                        );
+
+                    }
+
+
+                    /* =====================================
+                       UPCOMING GROUPS
+                       NEAREST FIRST
+                       ===================================== */
+
+                    const earliestA =
+                        aFixtures.reduce(
+                            function (
+                                earliest,
+                                fixture
+                            ) {
+
+                                const value =
+                                    dateTimeValue(
+                                        fixture
+                                    );
+
+
+                                if (!earliest) {
+                                    return value;
+                                }
+
+
+                                return (
+                                    value <
+                                    earliest
+                                )
+                                    ? value
+                                    : earliest;
+
+                            },
+                            ""
+                        );
+
+
+                    const earliestB =
+                        bFixtures.reduce(
+                            function (
+                                earliest,
+                                fixture
+                            ) {
+
+                                const value =
+                                    dateTimeValue(
+                                        fixture
+                                    );
+
+
+                                if (!earliest) {
+                                    return value;
+                                }
+
+
+                                return (
+                                    value <
+                                    earliest
+                                )
+                                    ? value
+                                    : earliest;
+
+                            },
+                            ""
+                        );
+
+
+                    return earliestA.localeCompare(
+                        earliestB
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =================================================
+           RENDER SINGLE FIXTURE
+           ================================================= */
+
+        function renderFixtureCard(
             fixture
         ) {
+
 
             const home =
                 getTeam(
@@ -2158,33 +2920,33 @@ document.addEventListener(
                 );
 
 
+            const completed =
+                isCompleted(
+                    fixture
+                );
+
+
             const status =
                 fixture.status ||
                 "Scheduled";
 
 
-            const isCompleted =
-                String(status)
-                    .toLowerCase()
-                    === "completed";
-
-
             const competitionName =
                 competition
                     ? competition.name
-                    : "Kabaru Ward Football";
+                    : "Competition";
 
 
             let centreHtml = "";
 
 
             if (
-                isCompleted &&
+                completed &&
                 result
             ) {
 
-                centreHtml =
-                    `
+                centreHtml = `
+
                     <div class="match-time">
 
                         <div class="score-box">
@@ -2212,12 +2974,13 @@ document.addEventListener(
                         </span>
 
                     </div>
-                    `;
+
+                `;
 
             } else {
 
-                centreHtml =
-                    `
+                centreHtml = `
+
                     <div class="match-time">
 
                         <strong>
@@ -2233,7 +2996,8 @@ document.addEventListener(
                         </span>
 
                     </div>
-                    `;
+
+                `;
 
             }
 
@@ -2242,41 +3006,56 @@ document.addEventListener(
 
 
             if (
-                isCompleted &&
+                completed &&
                 result
             ) {
 
-                detailsButton =
-                    `
+                detailsButton = `
+
                     <a
-                        href="match-details.html?id=${fixture.id}"
+                        href="match-details.html?id=${encodeURIComponent(result.id)}"
                         class="details-btn"
                     >
                         View Match Details →
                     </a>
-                    `;
+
+                `;
 
             }
 
 
             return `
-                <article class="fixture-card">
+
+                <article
+                    class="fixture-card"
+                    data-fixture-id="${escapeHtml(fixture.id)}"
+                >
+
 
                     <div class="fixture-top">
 
                         <span class="competition-name">
+
                             🏆
+
                             ${escapeHtml(
                                 competitionName
                             )}
+
                         </span>
 
+
                         <span
-                            class="fixture-status ${getStatusClass(status)}"
+                            class="
+                                fixture-status
+                                ${getStatusClass(status)}
+                            "
                         >
+
                             ${escapeHtml(
                                 getStatusLabel(status)
                             )}
+
                         </span>
 
                     </div>
@@ -2284,28 +3063,34 @@ document.addEventListener(
 
                     <div class="fixture-main">
 
+
                         <div class="fixture-date">
 
                             <strong>
+
                                 ${escapeHtml(
                                     formatShortDate(
                                         fixture.match_date
                                     )
                                 )}
+
                             </strong>
 
                             <span>
+
                                 ${escapeHtml(
                                     formatDate(
                                         fixture.match_date
                                     )
                                 )}
+
                             </span>
 
                         </div>
 
 
                         <div class="teams-row">
+
 
                             ${renderTeam(
                                 home,
@@ -2321,51 +3106,761 @@ document.addEventListener(
                                 "away"
                             )}
 
+
                         </div>
+
 
                     </div>
 
 
                     <div class="fixture-bottom">
 
+
                         <div class="fixture-info">
 
+
                             <span>
+
                                 🏟️
+
                                 ${escapeHtml(
                                     fixture.venue ||
                                     "Venue TBC"
                                 )}
+
                             </span>
+
 
                             ${
                                 fixture.matchday
+
                                     ? `
+
                                         <span>
+
                                             📌
+
                                             ${escapeHtml(
                                                 fixture.matchday
                                             )}
+
                                         </span>
+
                                       `
+
                                     : ""
                             }
 
+
                         </div>
+
 
                         ${detailsButton}
 
+
                     </div>
 
+
                 </article>
+
             `;
 
         }
 
 
-        /* ========================================
+        /* =================================================
+           FILTER FIXTURES
+           ================================================= */
+
+        function getFilteredFixtures() {
+
+            const competitionValue =
+                competitionFilter.value;
+
+
+            const statusValue =
+                statusFilter.value;
+
+
+            const matchdayValue =
+                matchdayFilter.value;
+
+
+            return allFixtures.filter(
+                function (fixture) {
+
+
+                    /* =====================================
+                       COMPETITION
+                       ===================================== */
+
+                    if (
+                        competitionValue !==
+                        "all"
+                    ) {
+
+                        if (
+                            String(
+                                fixture.competition_id
+                            ) !==
+                            String(
+                                competitionValue
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+                    }
+
+
+                    /* =====================================
+                       STATUS
+                       ===================================== */
+
+                    if (
+                        statusValue ===
+                        "upcoming"
+                    ) {
+
+                        const cleanStatus =
+                            normalizedStatus(
+                                fixture.status
+                            );
+
+
+                        if (
+                            cleanStatus ===
+                            "completed" ||
+                            cleanStatus ===
+                            "cancelled"
+                        ) {
+
+                            return false;
+
+                        }
+
+                    }
+
+                    else if (
+                        statusValue !==
+                        "all"
+                    ) {
+
+                        if (
+                            String(
+                                fixture.status
+                            ) !==
+                            String(
+                                statusValue
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+                    }
+
+
+                    /* =====================================
+                       MATCHDAY
+                       ===================================== */
+
+                    if (
+                        matchdayValue !==
+                        "all"
+                    ) {
+
+                        if (
+                            String(
+                                fixture.matchday
+                            ) !==
+                            String(
+                                matchdayValue
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+                    }
+
+
+                    return true;
+
+                }
+            );
+
+        }
+
+
+        /* =================================================
+           RENDER FIXTURES
+           ================================================= */
+
+        function renderFixtures() {
+
+
+            let filtered =
+                getFilteredFixtures();
+
+
+            fixtureCount.textContent =
+                filtered.length +
+                (
+                    filtered.length === 1
+                        ? " fixture"
+                        : " fixtures"
+                );
+
+
+            if (
+                filtered.length === 0
+            ) {
+
+                fixturesContainer.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            📅
+                        </div>
+
+                        <h3>
+                            No Fixtures Found
+                        </h3>
+
+                        <p>
+                            There are no fixtures
+                            matching your selected
+                            filters.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            /* =================================================
+               SORT ALL FIXTURES
+               
+               THIS IS THE IMPORTANT FIX.
+               
+               COMPLETED:
+               NEWEST → OLDEST
+               
+               UPCOMING:
+               NEAREST → FURTHEST
+               ================================================= */
+
+            filtered =
+                sortFixturesForDisplay(
+                    filtered
+                );
+
+
+            /* =================================================
+               SPLIT COMPLETED / UPCOMING
+               ================================================= */
+
+            const completedFixtures =
+                filtered.filter(
+                    function (fixture) {
+
+                        return isCompleted(
+                            fixture
+                        );
+
+                    }
+                );
+
+
+            const upcomingFixtures =
+                filtered.filter(
+                    function (fixture) {
+
+                        return isUpcoming(
+                            fixture
+                        );
+
+                    }
+                );
+
+
+            const cancelledFixtures =
+                filtered.filter(
+                    function (fixture) {
+
+                        return (
+                            normalizedStatus(
+                                fixture.status
+                            ) === "cancelled"
+                        );
+
+                    }
+                );
+
+
+            let html = "";
+
+
+            /* =================================================
+               RECENT RESULTS
+               ================================================= */
+
+            if (
+                completedFixtures.length > 0
+            ) {
+
+
+                html += `
+
+                    <section
+                        class="fixtures-section"
+                    >
+
+                        <div
+                            class="results-label"
+                        >
+                            🏁 RECENT RESULTS
+                        </div>
+
+                `;
+
+
+                /*
+                 * Group completed results by matchday.
+                 */
+
+                const resultGroups = {};
+
+
+                completedFixtures.forEach(
+                    function (fixture) {
+
+                        const key =
+                            fixture.matchday ||
+                            "Previous Matches";
+
+
+                        if (
+                            !resultGroups[key]
+                        ) {
+
+                            resultGroups[key] = [];
+
+                        }
+
+
+                        resultGroups[key].push(
+                            fixture
+                        );
+
+                    }
+                );
+
+
+                const resultGroupKeys =
+                    sortGroups(
+                        resultGroups
+                    );
+
+
+                resultGroupKeys.forEach(
+                    function (groupKey) {
+
+
+                        const groupFixtures =
+                            resultGroups[
+                                groupKey
+                            ];
+
+
+                        groupFixtures.sort(
+                            function (a, b) {
+
+                                const dateCompare =
+                                    String(
+                                        b.match_date ||
+                                        ""
+                                    ).localeCompare(
+                                        String(
+                                            a.match_date ||
+                                            ""
+                                        )
+                                    );
+
+
+                                if (
+                                    dateCompare !==
+                                    0
+                                ) {
+
+                                    return dateCompare;
+
+                                }
+
+
+                                return String(
+                                    b.kick_off ||
+                                    ""
+                                ).localeCompare(
+                                    String(
+                                        a.kick_off ||
+                                        ""
+                                    )
+                                );
+
+                            }
+                        );
+
+
+                        html += `
+
+                            <div
+                                class="fixture-group"
+                            >
+
+                                <div
+                                    class="matchday-title"
+                                >
+
+                                    <span
+                                        class="matchday-badge"
+                                    >
+
+                                        ${escapeHtml(
+                                            String(
+                                                groupKey
+                                            )
+                                                .toLowerCase()
+                                                .startsWith(
+                                                    "matchday"
+                                                )
+                                                ? groupKey
+                                                : "Matchday " +
+                                                  groupKey
+                                        )}
+
+                                    </span>
+
+                                    <span
+                                        class="matchday-line"
+                                    ></span>
+
+                                </div>
+
+
+                                <div
+                                    class="fixtures-list"
+                                >
+
+                        `;
+
+
+                        groupFixtures.forEach(
+                            function (fixture) {
+
+                                html +=
+                                    renderFixtureCard(
+                                        fixture
+                                    );
+
+                            }
+                        );
+
+
+                        html += `
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+
+                html += `
+
+                    </section>
+
+                `;
+
+            }
+
+
+            /* =================================================
+               UPCOMING FIXTURES
+               ================================================= */
+
+            if (
+                upcomingFixtures.length > 0
+            ) {
+
+
+                html += `
+
+                    <section
+                        class="fixtures-section"
+                    >
+
+                        <div
+                            class="upcoming-label"
+                        >
+                            📅 UPCOMING FIXTURES
+                        </div>
+
+                `;
+
+
+                const upcomingGroups = {};
+
+
+                upcomingFixtures.forEach(
+                    function (fixture) {
+
+                        const key =
+                            fixture.matchday ||
+                            "Upcoming Matches";
+
+
+                        if (
+                            !upcomingGroups[key]
+                        ) {
+
+                            upcomingGroups[key] = [];
+
+                        }
+
+
+                        upcomingGroups[key].push(
+                            fixture
+                        );
+
+                    }
+                );
+
+
+                const upcomingGroupKeys =
+                    sortGroups(
+                        upcomingGroups
+                    );
+
+
+                upcomingGroupKeys.forEach(
+                    function (groupKey) {
+
+
+                        const groupFixtures =
+                            upcomingGroups[
+                                groupKey
+                            ];
+
+
+                        groupFixtures.sort(
+                            function (a, b) {
+
+                                const dateCompare =
+                                    String(
+                                        a.match_date ||
+                                        ""
+                                    ).localeCompare(
+                                        String(
+                                            b.match_date ||
+                                            ""
+                                        )
+                                    );
+
+
+                                if (
+                                    dateCompare !==
+                                    0
+                                ) {
+
+                                    return dateCompare;
+
+                                }
+
+
+                                return String(
+                                    a.kick_off ||
+                                    ""
+                                ).localeCompare(
+                                    String(
+                                        b.kick_off ||
+                                        ""
+                                    )
+                                );
+
+                            }
+                        );
+
+
+                        html += `
+
+                            <div
+                                class="fixture-group"
+                            >
+
+                                <div
+                                    class="matchday-title"
+                                >
+
+                                    <span
+                                        class="matchday-badge"
+                                    >
+
+                                        ${escapeHtml(
+                                            String(
+                                                groupKey
+                                            )
+                                                .toLowerCase()
+                                                .startsWith(
+                                                    "matchday"
+                                                )
+                                                ? groupKey
+                                                : "Matchday " +
+                                                  groupKey
+                                        )}
+
+                                    </span>
+
+                                    <span
+                                        class="matchday-line"
+                                    ></span>
+
+                                </div>
+
+
+                                <div
+                                    class="fixtures-list"
+                                >
+
+                        `;
+
+
+                        groupFixtures.forEach(
+                            function (fixture) {
+
+                                html +=
+                                    renderFixtureCard(
+                                        fixture
+                                    );
+
+                            }
+                        );
+
+
+                        html += `
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+
+                html += `
+
+                    </section>
+
+                `;
+
+            }
+
+
+            /* =================================================
+               CANCELLED FIXTURES
+               ================================================= */
+
+            if (
+                cancelledFixtures.length > 0
+            ) {
+
+
+                cancelledFixtures.sort(
+                    function (a, b) {
+
+                        return String(
+                            b.match_date || ""
+                        ).localeCompare(
+                            String(
+                                a.match_date || ""
+                            )
+                        );
+
+                    }
+                );
+
+
+                html += `
+
+                    <section
+                        class="fixtures-section"
+                    >
+
+                        <div
+                            class="results-label"
+                            style="
+                                background:#fde8e8;
+                                color:#a32121;
+                                border-color:#efc2c2;
+                            "
+                        >
+                            ❌ CANCELLED FIXTURES
+                        </div>
+
+                        <div
+                            class="fixtures-list"
+                        >
+
+                `;
+
+
+                cancelledFixtures.forEach(
+                    function (fixture) {
+
+                        html +=
+                            renderFixtureCard(
+                                fixture
+                            );
+
+                    }
+                );
+
+
+                html += `
+
+                        </div>
+
+                    </section>
+
+                `;
+
+            }
+
+
+            fixturesContainer.innerHTML =
+                html;
+
+        }
+
+
+        /* =================================================
            FILTER EVENTS
-        ======================================== */
+           ================================================= */
 
         competitionFilter.addEventListener(
             "change",
@@ -2385,16 +3880,19 @@ document.addEventListener(
         );
 
 
-        /* ========================================
+        /* =================================================
            START
-        ======================================== */
+           ================================================= */
 
         await loadData();
 
+
     }
+
 );
 
 </script>
+
 
 </body>
 
