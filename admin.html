@@ -10,391 +10,597 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
+        :root {
+            --green-dark:#04351f;
+            --green:#075b35;
+            --green-light:#0b7545;
+            --gold:#f5c542;
+            --gold-light:#ffe082;
+            --cream:#f7f9f7;
+            --text:#183027;
+            --muted:#6b7b73;
+            --border:#e2e9e5;
+            --danger:#c62828;
+            --blue:#1976d2;
+            --shadow:0 10px 30px rgba(4,53,31,.08);
+        }
+
+        * {
+            box-sizing:border-box;
+        }
+
+        body {
+            margin:0;
+            font-family:Arial,Helvetica,sans-serif;
+            background:linear-gradient(
+                180deg,
+                #eef5f1 0,
+                #f8faf9 45%,
+                #eef4f0 100%
+            );
+            color:var(--text);
+        }
 
         .admin-container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 20px;
+            max-width:1250px;
+            margin:0 auto;
+            padding:24px 18px 60px;
         }
 
         .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            position:relative;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+            margin:0 0 28px;
+            padding:26px 28px;
+            border-radius:20px;
+            background:linear-gradient(
+                135deg,
+                var(--green-dark),
+                var(--green)
+            );
+            color:#fff;
+            box-shadow:
+                0 14px 35px rgba(4,53,31,.18);
+            overflow:hidden;
+        }
+
+        .admin-header:after {
+            content:"⚽";
+            position:absolute;
+            right:110px;
+            top:-28px;
+            font-size:130px;
+            opacity:.07;
+            transform:rotate(-12deg);
         }
 
         .admin-header h1 {
-            margin: 0;
+            margin:0;
+            font-size:clamp(24px,4vw,34px);
+            letter-spacing:-.5px;
+            position:relative;
+            z-index:1;
+        }
+
+        .admin-header p {
+            margin:7px 0 0;
+            color:#d9eee2;
+            position:relative;
+            z-index:1;
+        }
+
+        .admin-btn {
+            border:0;
+            padding:11px 18px;
+            border-radius:10px;
+            cursor:pointer;
+            font-weight:800;
+            margin-right:8px;
+            margin-top:8px;
+            transition:.2s;
+            box-shadow:
+                0 4px 10px rgba(0,0,0,.08);
+        }
+
+        .admin-btn:hover {
+            transform:translateY(-1px);
+            filter:brightness(1.04);
+        }
+
+        .logout-btn {
+            background:#fff;
+            color:var(--green-dark);
+            position:relative;
+            z-index:2;
+        }
+
+        .approve-btn {
+            background:var(--green);
+            color:#fff;
+        }
+
+        .reject-btn {
+            background:var(--danger);
+            color:#fff;
+        }
+
+        .create-fixture-btn {
+            background:var(--green);
+            color:#fff;
+            padding:12px 22px;
+        }
+
+        .delete-fixture-btn {
+            background:var(--danger);
+            color:#fff;
+            padding:8px 14px;
         }
 
         .admin-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            background:rgba(255,255,255,.96);
+            border:1px solid var(--border);
+            border-radius:18px;
+            padding:24px;
+            margin-bottom:22px;
+            box-shadow:var(--shadow);
         }
 
-        .registration-card {
-            border-left: 5px solid #f0a500;
+        .admin-card h2 {
+            margin:0 0 7px;
+            color:var(--green-dark);
+            font-size:22px;
         }
 
-        .fixture-card {
-            border-left: 5px solid #16803c;
-        }
-
-        .result-card {
-            border-left: 5px solid #1976d2;
+        .admin-card>p,
+        .section-heading p {
+            color:var(--muted);
+            margin:0 0 18px;
+            line-height:1.5;
         }
 
         .section-heading {
-            margin-top: 40px;
-            margin-bottom: 20px;
+            margin:38px 2px 15px;
+        }
+
+        .section-heading h2 {
+            margin:0;
+            color:var(--green-dark);
+            font-size:24px;
+        }
+
+        .section-heading p {
+            margin-top:5px;
+        }
+
+        .registration-card {
+            border-left:5px solid var(--gold);
+        }
+
+        .fixture-card {
+            border-left:5px solid var(--green);
+        }
+
+        .result-card {
+            border-left:5px solid var(--blue);
+        }
+
+        .result-manager {
+            border-left:5px solid var(--blue);
         }
 
         .team-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-            margin: 15px 0;
+            display:grid;
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(220px,1fr)
+                );
+            gap:12px;
+            margin:15px 0;
         }
 
         .detail {
-            padding: 10px;
-            background: #f7f7f7;
-            border-radius: 6px;
+            padding:13px;
+            background:#f5f8f6;
+            border:1px solid var(--border);
+            border-radius:10px;
+        }
+
+        .detail strong {
+            color:var(--green-dark);
         }
 
         .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
+            display:grid;
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(220px,1fr)
+                );
+            gap:16px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
+            display:flex;
+            flex-direction:column;
         }
 
         .form-group label {
-            font-weight: bold;
-            margin-bottom: 6px;
+            font-weight:800;
+            margin-bottom:7px;
+            color:#29453a;
+            font-size:14px;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 15px;
-            background: #fff;
-            box-sizing: border-box;
+            padding:13px;
+            border:1px solid #ccd8d1;
+            border-radius:10px;
+            font-size:15px;
+            background:#fff;
+            color:var(--text);
+            outline:none;
+            transition:.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color:var(--green-light);
+            box-shadow:
+                0 0 0 3px rgba(11,117,69,.1);
         }
 
         .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
+            min-height:120px;
+            resize:vertical;
         }
 
         .full-width {
-            grid-column: 1 / -1;
+            grid-column:1/-1;
         }
 
         .players-table,
         .fixtures-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+            width:100%;
+            border-collapse:separate;
+            border-spacing:0;
+            margin-top:15px;
+            overflow:hidden;
         }
 
         .players-table th,
         .players-table td,
         .fixtures-table th,
         .fixtures-table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
+            padding:12px;
+            border-bottom:1px solid var(--border);
+            text-align:left;
         }
 
         .players-table th,
         .fixtures-table th {
-            background: #f5f5f5;
+            background:var(--green-dark);
+            color:#fff;
+            font-size:13px;
+            text-transform:uppercase;
+            letter-spacing:.3px;
         }
 
-        .admin-btn {
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-right: 8px;
-            margin-top: 8px;
+        .players-table tr:last-child td,
+        .fixtures-table tr:last-child td {
+            border-bottom:0;
         }
 
-        .approve-btn {
-            background: #16803c;
-            color: white;
+        .players-table tr:hover td,
+        .fixtures-table tr:hover td {
+            background:#f7faf8;
         }
 
-        .reject-btn {
-            background: #c62828;
-            color: white;
+        .fixtures-wrapper {
+            overflow-x:auto;
+            border-radius:12px;
         }
 
-        .logout-btn {
-            background: #333;
-            color: white;
-        }
-
-        .create-fixture-btn {
-            background: #16803c;
-            color: white;
-            padding: 12px 22px;
-        }
-
-        .delete-fixture-btn {
-            background: #c62828;
-            color: white;
-            padding: 8px 14px;
-        }
-
-        .status-message {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
+        .status-message,
+        .fixture-form-message,
+        .result-form-message {
+            padding:13px 15px;
+            border-radius:10px;
+            margin-bottom:18px;
+            display:none;
         }
 
         .empty-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: #777;
-        }
-
-        .fixture-form-message,
-        .result-form-message {
-            padding: 12px;
-            border-radius: 7px;
-            margin-top: 15px;
-            display: none;
+            text-align:center;
+            padding:45px 20px;
+            color:var(--muted);
+            background:#f8faf9;
+            border:1px dashed #cbd8d0;
+            border-radius:12px;
         }
 
         .fixture-info {
-            background: #f7f7f7;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        /* ========================================
-           RESULT MANAGER
-        ======================================== */
-
-        .result-manager {
-            border-left: 5px solid #1976d2;
+            background:#f3f7f5;
+            padding:16px;
+            border:1px solid var(--border);
+            border-radius:12px;
+            margin-bottom:15px;
         }
 
         .result-score-grid {
-            display: grid;
-            grid-template-columns: 1fr 150px 60px 150px 1fr;
-            align-items: center;
-            gap: 15px;
-            margin: 25px 0;
-            text-align: center;
+            display:grid;
+            grid-template-columns:
+                1fr 130px 50px 130px 1fr;
+            align-items:center;
+            gap:14px;
+            margin:25px 0;
+            text-align:center;
         }
 
         .result-team-name {
-            font-size: 20px;
-            font-weight: bold;
+            font-size:20px;
+            font-weight:800;
+            color:var(--green-dark);
         }
 
         .result-score-input {
-            width: 100%;
-            text-align: center;
-            font-size: 32px !important;
-            font-weight: bold;
-            padding: 12px !important;
-            box-sizing: border-box;
+            width:100%;
+            text-align:center;
+            font-size:32px !important;
+            font-weight:900;
+            padding:12px !important;
         }
 
         .score-dash {
-            font-size: 30px;
-            font-weight: bold;
+            font-size:30px;
+            font-weight:bold;
         }
 
         .goals-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 25px;
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+            margin-top:25px;
         }
 
         .goals-column {
-            background: #f8f8f8;
-            border-radius: 10px;
-            padding: 18px;
+            background:#f7faf8;
+            border:1px solid var(--border);
+            border-radius:14px;
+            padding:18px;
         }
 
         .goals-column.home-goals {
-            border-top: 4px solid #16803c;
+            border-top:4px solid var(--green);
         }
 
         .goals-column.away-goals {
-            border-top: 4px solid #1976d2;
+            border-top:4px solid var(--blue);
         }
 
         .goals-column h3 {
-            margin-top: 0;
-            margin-bottom: 5px;
+            margin:0 0 5px;
+            color:var(--green-dark);
         }
 
         .goal-column-subtitle {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 15px;
+            color:var(--muted);
+            font-size:14px;
+            margin-bottom:15px;
         }
 
         .goal-entry {
-            display: grid;
-            grid-template-columns: 1fr 90px 42px;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 10px;
+            display:grid;
+            grid-template-columns:
+                1fr 90px 42px;
+            gap:8px;
+            align-items:center;
+            margin-bottom:10px;
         }
 
         .goal-entry select,
         .goal-entry input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            background: #fff;
-            box-sizing: border-box;
+            width:100%;
+            padding:10px;
+            border:1px solid #ccd8d1;
+            border-radius:8px;
+            font-size:14px;
+            background:#fff;
         }
 
         .remove-goal-btn {
-            border: none;
-            background: #c62828;
-            color: white;
-            width: 38px;
-            height: 38px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
+            border:0;
+            background:var(--danger);
+            color:#fff;
+            width:38px;
+            height:38px;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:bold;
         }
 
         .add-goal-btn {
-            width: 100%;
-            border: 2px dashed #aaa;
-            background: white;
-            padding: 11px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 8px;
+            width:100%;
+            border:2px dashed #b8c7bf;
+            background:#fff;
+            padding:11px;
+            border-radius:9px;
+            cursor:pointer;
+            font-weight:800;
+            margin-top:8px;
+            color:var(--green-dark);
         }
 
         .add-goal-btn:hover {
-            background: #f0f0f0;
+            background:#eef6f1;
         }
 
         .result-report {
-            margin-top: 25px;
+            margin-top:25px;
         }
 
         .result-save-btn {
-            background: #1976d2;
-            color: white;
-            padding: 13px 25px;
-            font-size: 16px;
+            background:var(--blue);
+            color:#fff;
+            padding:13px 25px;
+            font-size:16px;
         }
 
         .result-save-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+            opacity:.6;
+            cursor:not-allowed;
         }
 
         .result-help {
-            background: #eef5ff;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin-top: 15px;
-            color: #31506f;
-            font-size: 14px;
+            background:#eef5ff;
+            border:1px solid #d7e7fb;
+            border-radius:10px;
+            padding:13px 15px;
+            margin-top:15px;
+            color:#31506f;
+            font-size:14px;
+            line-height:1.5;
         }
 
         .goal-count-warning {
-            margin-top: 10px;
-            padding: 9px;
-            border-radius: 6px;
-            background: #fff3cd;
-            color: #856404;
-            font-size: 14px;
-            display: none;
+            margin-top:10px;
+            padding:9px;
+            border-radius:8px;
+            background:#fff3cd;
+            color:#856404;
+            font-size:14px;
+            display:none;
         }
 
-        /* ========================================
-           MOBILE
-        ======================================== */
+        #pendingTeams {
+            display:grid;
+            gap:18px;
+        }
 
-        @media (max-width: 800px) {
+        .registration-card img {
+            display:block;
+            max-width:110px;
+            max-height:110px;
+            object-fit:cover;
+            border-radius:16px;
+            border:3px solid #fff;
+            box-shadow:
+                0 5px 18px rgba(0,0,0,.12);
+            margin-bottom:12px;
+        }
+
+        @media(max-width:800px) {
+
+            .admin-container {
+                padding:12px 10px 45px;
+            }
+
+            .admin-header {
+                padding:21px 18px;
+                border-radius:16px;
+            }
+
+            .admin-header:after {
+                display:none;
+            }
+
+            .admin-header h1 {
+                font-size:24px;
+            }
+
+            .admin-header p {
+                font-size:14px;
+            }
+
+            .admin-card {
+                padding:18px;
+                border-radius:15px;
+            }
 
             .result-score-grid {
-                grid-template-columns: 1fr 80px 30px 80px 1fr;
-                gap: 7px;
+                grid-template-columns:
+                    1fr 72px 28px 72px 1fr;
+                gap:7px;
             }
 
             .result-team-name {
-                font-size: 15px;
+                font-size:14px;
             }
 
             .result-score-input {
-                font-size: 25px !important;
+                font-size:25px !important;
             }
 
             .score-dash {
-                font-size: 22px;
+                font-size:22px;
             }
 
             .goals-container {
-                grid-template-columns: 1fr;
+                grid-template-columns:1fr;
             }
 
+            .section-heading {
+                margin-top:30px;
+            }
         }
 
-        @media (max-width: 700px) {
+        @media(max-width:520px) {
+
+            .admin-header {
+                align-items:flex-start;
+                flex-direction:column;
+            }
+
+            .logout-btn {
+                width:100%;
+                margin-top:10px;
+            }
+
+            .form-grid {
+                grid-template-columns:1fr;
+            }
+
+            .result-score-grid {
+                grid-template-columns:
+                    1fr 62px 20px 62px 1fr;
+            }
+
+            .result-team-name {
+                font-size:12px;
+            }
 
             .players-table,
             .fixtures-table {
-                font-size: 13px;
+                font-size:13px;
             }
 
             .players-table th,
             .players-table td,
             .fixtures-table th,
             .fixtures-table td {
-                padding: 7px;
-            }
-
-            .admin-container {
-                padding: 12px;
-            }
-
-            .fixtures-wrapper {
-                overflow-x: auto;
+                padding:8px;
             }
 
             .goal-entry {
-                grid-template-columns: 1fr 75px 38px;
+                grid-template-columns:
+                    1fr 68px 38px;
             }
 
-        }
+            .admin-btn {
+                width:100%;
+                margin-right:0;
+            }
 
+            .goals-column .admin-btn {
+                width:auto;
+            }
+        }
     </style>
 
 </head>
@@ -440,7 +646,10 @@
         <div class="form-grid">
 
             <div class="form-group">
-                <label for="competitionName">Competition Name</label>
+                <label for="competitionName">
+                    Competition Name
+                </label>
+
                 <input
                     type="text"
                     id="competitionName"
@@ -450,17 +659,38 @@
             </div>
 
             <div class="form-group">
-                <label for="competitionType">Competition Type</label>
-                <select id="competitionType" required>
-                    <option value="">Select type</option>
-                    <option value="League">League</option>
-                    <option value="Tournament">Tournament</option>
-                    <option value="Cup">Cup</option>
+                <label for="competitionType">
+                    Competition Type
+                </label>
+
+                <select
+                    id="competitionType"
+                    required>
+
+                    <option value="">
+                        Select type
+                    </option>
+
+                    <option value="League">
+                        League
+                    </option>
+
+                    <option value="Tournament">
+                        Tournament
+                    </option>
+
+                    <option value="Cup">
+                        Cup
+                    </option>
+
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="competitionSeason">Season</label>
+                <label for="competitionSeason">
+                    Season
+                </label>
+
                 <input
                     type="text"
                     id="competitionSeason"
@@ -470,7 +700,10 @@
             </div>
 
             <div class="form-group">
-                <label for="competitionStartDate">Start Date</label>
+                <label for="competitionStartDate">
+                    Start Date
+                </label>
+
                 <input
                     type="date"
                     id="competitionStartDate"
@@ -478,7 +711,10 @@
             </div>
 
             <div class="form-group">
-                <label for="competitionEndDate">End Date</label>
+                <label for="competitionEndDate">
+                    End Date
+                </label>
+
                 <input
                     type="date"
                     id="competitionEndDate"
@@ -486,42 +722,68 @@
             </div>
 
             <div class="form-group">
-                <label for="competitionStatus">Status</label>
-                <select id="competitionStatus" required>
-                    <option value="Upcoming">Upcoming</option>
-                    <option value="Active">Active</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
+                <label for="competitionStatus">
+                    Status
+                </label>
+
+                <select
+                    id="competitionStatus"
+                    required>
+
+                    <option value="Upcoming">
+                        Upcoming
+                    </option>
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Completed">
+                        Completed
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
                 </select>
             </div>
 
         </div>
 
         <div class="form-group">
-            <label for="competitionDescription">Description</label>
+
+            <label for="competitionDescription">
+                Description
+            </label>
+
             <textarea
                 id="competitionDescription"
                 rows="4"
                 placeholder="Enter competition description..."
             ></textarea>
+
         </div>
 
         <button
-    type="button"
-    id="createCompetitionButton"
-    class="admin-btn create-fixture-btn"
->
-    ➕ CREATE COMPETITION
-</button>
+            type="button"
+            id="createCompetitionButton"
+            class="admin-btn create-fixture-btn">
+
+            ➕ CREATE COMPETITION
+
+        </button>
 
         <p
             id="competitionFormMessage"
-            class="status-message"
-        ></p>
+            class="status-message">
+        </p>
 
     </form>
 
 </section>
+
+
 <!-- ========================================
      EXISTING COMPETITIONS
 ========================================= -->
@@ -545,9 +807,8 @@
     </div>
 
 </div>
-<!-- ========================================
-     EXISTING FIXTURE MANAGER
-========================================= -->
+
+
 <!-- ========================================
      FIXTURE MANAGER
 ========================================= -->
@@ -555,6 +816,7 @@
 <h2 class="section-heading">
     📅 Fixture Manager
 </h2>
+
 
 <div class="admin-card">
 
@@ -764,6 +1026,7 @@
     🏁 Result Manager
 </h2>
 
+
 <div class="admin-card result-manager">
 
     <h2>➕ Enter Match Result</h2>
@@ -810,8 +1073,11 @@
             <div
                 id="resultHomeTeamName"
                 class="result-team-name">
+
                 Home Team
+
             </div>
+
 
             <div>
 
@@ -825,9 +1091,11 @@
 
             </div>
 
+
             <div class="score-dash">
                 -
             </div>
+
 
             <div>
 
@@ -841,10 +1109,13 @@
 
             </div>
 
+
             <div
                 id="resultAwayTeamName"
                 class="result-team-name">
+
                 Away Team
+
             </div>
 
         </div>
@@ -866,7 +1137,9 @@
                 <div
                     id="homeGoalTeamLabel"
                     class="goal-column-subtitle">
+
                     Home team goal scorers
+
                 </div>
 
                 <div
@@ -901,7 +1174,9 @@
                 <div
                     id="awayGoalTeamLabel"
                     class="goal-column-subtitle">
+
                     Away team goal scorers
+
                 </div>
 
                 <div
@@ -930,8 +1205,10 @@
         <div class="result-help">
 
             💡 <strong>Example:</strong>
+
             If John Player scores three goals, enter John Player
             three times with minutes 12, 44 and 67.
+
             The saved match will display:
 
             <strong>
@@ -989,6 +1266,7 @@
     📋 Team Registrations
 </h2>
 
+
 <div class="admin-card">
 
     <h2>📋 Pending Team Registrations</h2>
@@ -1014,8 +1292,11 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase.js?v=3"></script>
+
 <script src="admin.js?v=4"></script>
+
 
 </body>
 </html>
