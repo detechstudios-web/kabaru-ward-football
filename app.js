@@ -1,4 +1,3 @@
-
 // ========================================
 // KABARU WARD FOOTBALL
 // MAIN WEBSITE APP
@@ -1132,7 +1131,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             leagueTableBody.innerHTML = `
                 <tr>
                     <td
-                        colspan="10"
+                        colspan="11"
                         style="text-align:center;"
                     >
                         No active competition.
@@ -1155,6 +1154,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     competition_id,
                     home_team_id,
                     away_team_id,
+                    match_date,
+                    kick_off,
                     status,
 
                     home_team:teams!fixtures_home_team_id_fkey (
@@ -1195,7 +1196,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             leagueTableBody.innerHTML = `
                 <tr>
                     <td
-                        colspan="10"
+                        colspan="11"
                         style="text-align:center;"
                     >
                         Unable to load table.
@@ -1219,6 +1220,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const away =
                     fixture.away_team;
 
+
+                // ========================================
+                // CREATE HOME TEAM
+                // ========================================
 
                 if (
                     home &&
@@ -1255,10 +1260,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                             0,
 
                         points:
-                            0
+                            0,
+
+                        // Last five completed matches
+                        form:
+                            []
                     };
                 }
 
+
+                // ========================================
+                // CREATE AWAY TEAM
+                // ========================================
 
                 if (
                     away &&
@@ -1295,7 +1308,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                             0,
 
                         points:
-                            0
+                            0,
+
+                        // Last five completed matches
+                        form:
+                            []
                     };
                 }
 
@@ -1328,7 +1345,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     );
 
 
+                // ========================================
+                // BASIC TABLE STATISTICS
+                // ========================================
+
                 teams[home.id].played++;
+
                 teams[away.id].played++;
 
 
@@ -1346,10 +1368,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                     homeScore;
 
 
+                // ========================================
+                // WIN / DRAW / LOSS
+                // ========================================
+
                 if (
                     homeScore >
                     awayScore
                 ) {
+
+                    // HOME WIN
 
                     teams[home.id].won++;
 
@@ -1358,10 +1386,43 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     teams[away.id].lost++;
 
+
+                    // HOME FORM = WIN
+
+                    teams[home.id].form.push({
+
+                        result:
+                            "W",
+
+                        date:
+                            fixture.match_date,
+
+                        time:
+                            fixture.kick_off
+                    });
+
+
+                    // AWAY FORM = LOSS
+
+                    teams[away.id].form.push({
+
+                        result:
+                            "L",
+
+                        date:
+                            fixture.match_date,
+
+                        time:
+                            fixture.kick_off
+                    });
+
+
                 } else if (
                     homeScore <
                     awayScore
                 ) {
+
+                    // AWAY WIN
 
                     teams[away.id].won++;
 
@@ -1370,34 +1431,157 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     teams[home.id].lost++;
 
+
+                    // HOME FORM = LOSS
+
+                    teams[home.id].form.push({
+
+                        result:
+                            "L",
+
+                        date:
+                            fixture.match_date,
+
+                        time:
+                            fixture.kick_off
+                    });
+
+
+                    // AWAY FORM = WIN
+
+                    teams[away.id].form.push({
+
+                        result:
+                            "W",
+
+                        date:
+                            fixture.match_date,
+
+                        time:
+                            fixture.kick_off
+                    });
+
+
                 } else {
 
+                    // DRAW
+
                     teams[home.id].drawn++;
+
                     teams[away.id].drawn++;
 
+
                     teams[home.id].points++;
+
                     teams[away.id].points++;
+
+
+                    // HOME FORM = DRAW
+
+                    teams[home.id].form.push({
+
+                        result:
+                            "D",
+
+                        date:
+                            fixture.match_date,
+
+                        time:
+                            fixture.kick_off
+                    });
+
+
+                    // AWAY FORM = DRAW
+
+                    teams[away.id].form.push({
+
+                        result:
+                            "D",
+
+                        date:
+                            fixture.match_date,
+
+                        time:
+                            fixture.kick_off
+                    });
                 }
             }
         );
 
+
+        // ========================================
+        // CALCULATE GD + LAST 5 FORM
+        // ========================================
 
         Object.values(
             teams
         ).forEach(
             function (team) {
 
+                // ========================================
+                // GOAL DIFFERENCE
+                // ========================================
+
                 team.gd =
                     team.gf -
                     team.ga;
+
+
+                // ========================================
+                // LAST 5 MATCH FORM
+                // Latest match first
+                // ========================================
+
+                team.form =
+                    (team.form || [])
+                        .sort(
+                            function (a, b) {
+
+                                const dateCompare =
+                                    String(
+                                        b.date || ""
+                                    ).localeCompare(
+                                        String(
+                                            a.date || ""
+                                        )
+                                    );
+
+
+                                if (
+                                    dateCompare !== 0
+                                ) {
+
+                                    return dateCompare;
+                                }
+
+
+                                return String(
+                                    b.time || ""
+                                ).localeCompare(
+                                    String(
+                                        a.time || ""
+                                    )
+                                );
+                            }
+                        )
+                        .slice(
+                            0,
+                            5
+                        );
             }
         );
 
+
+        // ========================================
+        // SORT LEAGUE TABLE
+        // ========================================
 
         const sortedTeams =
             Object.values(teams)
                 .sort(
                     function (a, b) {
+
+                        // 1. POINTS
 
                         if (
                             b.points !==
@@ -1410,6 +1594,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                             );
                         }
 
+
+                        // 2. GOAL DIFFERENCE
+
                         if (
                             b.gd !==
                             a.gd
@@ -1420,6 +1607,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 a.gd
                             );
                         }
+
+
+                        // 3. GOALS SCORED
 
                         if (
                             b.gf !==
@@ -1432,12 +1622,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                             );
                         }
 
+
+                        // 4. TEAM NAME
+
                         return a.name.localeCompare(
                             b.name
                         );
                     }
                 );
 
+
+        // ========================================
+        // NO TEAMS / NO MATCHES
+        // ========================================
 
         if (
             sortedTeams.length === 0
@@ -1446,7 +1643,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             leagueTableBody.innerHTML = `
                 <tr>
                     <td
-                        colspan="10"
+                        colspan="11"
                         style="text-align:center;"
                     >
                         No completed matches yet.
@@ -1458,8 +1655,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
+        // ========================================
+        // CLEAR TABLE
+        // ========================================
+
         leagueTableBody.innerHTML = "";
 
+
+        // ========================================
+        // RENDER TABLE
+        // ========================================
 
         sortedTeams.forEach(
             function (
@@ -1473,13 +1678,123 @@ document.addEventListener("DOMContentLoaded", async function () {
                     );
 
 
+                // ========================================
+                // FORM HTML
+                // ========================================
+
+                let formHtml = "—";
+
+
+                if (
+                    team.form &&
+                    team.form.length > 0
+                ) {
+
+                    formHtml =
+                        team.form
+                            .map(
+                                function (item) {
+
+                                    let background =
+                                        "#e9f7ee";
+
+                                    let color =
+                                        "#075b35";
+
+
+                                    // DRAW
+
+                                    if (
+                                        item.result ===
+                                        "D"
+                                    ) {
+
+                                        background =
+                                            "#fff6d8";
+
+                                        color =
+                                            "#8a6800";
+                                    }
+
+
+                                    // LOSS
+
+                                    if (
+                                        item.result ===
+                                        "L"
+                                    ) {
+
+                                        background =
+                                            "#fdeaea";
+
+                                        color =
+                                            "#a40000";
+                                    }
+
+
+                                    let title =
+                                        "Win";
+
+
+                                    if (
+                                        item.result ===
+                                        "D"
+                                    ) {
+
+                                        title =
+                                            "Draw";
+                                    }
+
+
+                                    if (
+                                        item.result ===
+                                        "L"
+                                    ) {
+
+                                        title =
+                                            "Loss";
+                                    }
+
+
+                                    return `
+                                        <span
+                                            title="${title}"
+                                            style="
+                                                display:inline-flex;
+                                                align-items:center;
+                                                justify-content:center;
+                                                width:28px;
+                                                height:28px;
+                                                border-radius:50%;
+                                                background:${background};
+                                                color:${color};
+                                                font-size:11px;
+                                                font-weight:900;
+                                                border:1px solid rgba(0,0,0,.08);
+                                                flex-shrink:0;
+                                            "
+                                        >
+                                            ${item.result}
+                                        </span>
+                                    `;
+                                }
+                            )
+                            .join("");
+                }
+
+
                 row.innerHTML = `
+
+                    <!-- POSITION -->
 
                     <td>
                         <strong>
                             ${index + 1}
                         </strong>
                     </td>
+
+
+                    <!-- TEAM -->
 
                     <td>
                         <strong>
@@ -1489,29 +1804,50 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </strong>
                     </td>
 
+
+                    <!-- PLAYED -->
+
                     <td>
                         ${team.played}
                     </td>
+
+
+                    <!-- WON -->
 
                     <td>
                         ${team.won}
                     </td>
 
+
+                    <!-- DRAWN -->
+
                     <td>
                         ${team.drawn}
                     </td>
+
+
+                    <!-- LOST -->
 
                     <td>
                         ${team.lost}
                     </td>
 
+
+                    <!-- GOALS FOR -->
+
                     <td>
                         ${team.gf}
                     </td>
 
+
+                    <!-- GOALS AGAINST -->
+
                     <td>
                         ${team.ga}
                     </td>
+
+
+                    <!-- GOAL DIFFERENCE -->
 
                     <td>
                         <strong>
@@ -1524,11 +1860,37 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </strong>
                     </td>
 
+
+                    <!-- POINTS -->
+
                     <td>
                         <strong>
                             ${team.points}
                         </strong>
                     </td>
+
+
+                    <!-- FORM -->
+
+                    <td>
+
+                        <div
+                            style="
+                                display:flex;
+                                justify-content:center;
+                                align-items:center;
+                                gap:4px;
+                                flex-wrap:nowrap;
+                                min-width:150px;
+                            "
+                        >
+
+                            ${formHtml}
+
+                        </div>
+
+                    </td>
+
                 `;
 
 
@@ -1683,6 +2045,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             Object.values(players);
 
 
+        // ========================================
+        // RENDER LEADER LIST
+        // ========================================
+
         function renderLeaderList(
             container,
             list,
@@ -1776,6 +2142,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             >
                                 ${player[valueKey]}
                             </strong>
+
                         `;
 
 
@@ -1802,50 +2169,173 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
+        // ========================================
+        // SORT SCORERS
+        // ========================================
+
         const scorers =
             [...playerList]
                 .sort(
-                    (a, b) =>
-                        b.goals -
-                        a.goals
+                    function (a, b) {
+
+                        if (
+                            b.goals !==
+                            a.goals
+                        ) {
+
+                            return (
+                                b.goals -
+                                a.goals
+                            );
+                        }
+
+
+                        if (
+                            b.assists !==
+                            a.assists
+                        ) {
+
+                            return (
+                                b.assists -
+                                a.assists
+                            );
+                        }
+
+
+                        return a.name.localeCompare(
+                            b.name
+                        );
+                    }
                 );
 
+
+        // ========================================
+        // SORT ASSISTS
+        // ========================================
 
         const assists =
             [...playerList]
                 .sort(
-                    (a, b) =>
-                        b.assists -
-                        a.assists
+                    function (a, b) {
+
+                        if (
+                            b.assists !==
+                            a.assists
+                        ) {
+
+                            return (
+                                b.assists -
+                                a.assists
+                            );
+                        }
+
+
+                        if (
+                            b.goals !==
+                            a.goals
+                        ) {
+
+                            return (
+                                b.goals -
+                                a.goals
+                            );
+                        }
+
+
+                        return a.name.localeCompare(
+                            b.name
+                        );
+                    }
                 );
 
+
+        // ========================================
+        // SORT APPEARANCES
+        // ========================================
 
         const appearances =
             [...playerList]
                 .sort(
-                    (a, b) =>
-                        b.appearances -
-                        a.appearances
+                    function (a, b) {
+
+                        if (
+                            b.appearances !==
+                            a.appearances
+                        ) {
+
+                            return (
+                                b.appearances -
+                                a.appearances
+                            );
+                        }
+
+
+                        return a.name.localeCompare(
+                            b.name
+                        );
+                    }
                 );
 
+
+        // ========================================
+        // SORT YELLOW CARDS
+        // ========================================
 
         const yellow =
             [...playerList]
                 .sort(
-                    (a, b) =>
-                        b.yellow -
-                        a.yellow
+                    function (a, b) {
+
+                        if (
+                            b.yellow !==
+                            a.yellow
+                        ) {
+
+                            return (
+                                b.yellow -
+                                a.yellow
+                            );
+                        }
+
+
+                        return a.name.localeCompare(
+                            b.name
+                        );
+                    }
                 );
 
+
+        // ========================================
+        // SORT RED CARDS
+        // ========================================
 
         const red =
             [...playerList]
                 .sort(
-                    (a, b) =>
-                        b.red -
-                        a.red
+                    function (a, b) {
+
+                        if (
+                            b.red !==
+                            a.red
+                        ) {
+
+                            return (
+                                b.red -
+                                a.red
+                            );
+                        }
+
+
+                        return a.name.localeCompare(
+                            b.name
+                        );
+                    }
                 );
 
+
+        // ========================================
+        // DISPLAY LEADERS
+        // ========================================
 
         renderLeaderList(
             scorerContainer,
@@ -2346,6 +2836,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         // IMPORTANT:
                         // The RPC expects "full_name",
                         // NOT "player_name".
+
                         playerData.push({
 
                             full_name:
@@ -2557,7 +3048,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 // ========================================
-                // MESSAGE
+                // SUBMITTING MESSAGE
                 // ========================================
 
                 if (registrationMessage) {
@@ -2582,8 +3073,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 submitButtons.forEach(
                     function (button) {
 
-                        button.disabled = true;
-
+                        button.disabled =
+                            true;
                     }
                 );
 
@@ -2997,11 +3488,17 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
 
 
-                    // Reset form
+                    // ========================================
+                    // RESET FORM
+                    // ========================================
+
                     teamRegistrationForm.reset();
 
 
-                    // Reset players
+                    // ========================================
+                    // RESET PLAYERS
+                    // ========================================
+
                     playersContainer.innerHTML =
                         "";
 
@@ -3044,7 +3541,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             button.disabled =
                                 false;
-
                         }
                     );
                 }
@@ -3089,4 +3585,3 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 });
-
