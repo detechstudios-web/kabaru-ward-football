@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
+
         :root {
             --green-dark:#04351f;
             --green:#075b35;
@@ -32,12 +33,13 @@
         body {
             margin:0;
             font-family:Arial,Helvetica,sans-serif;
-            background:linear-gradient(
-                180deg,
-                #eef5f1 0,
-                #f8faf9 45%,
-                #eef4f0 100%
-            );
+            background:
+                linear-gradient(
+                    180deg,
+                    #eef5f1 0,
+                    #f8faf9 45%,
+                    #eef4f0 100%
+                );
             color:var(--text);
         }
 
@@ -46,6 +48,10 @@
             margin:0 auto;
             padding:24px 18px 60px;
         }
+
+        /* ========================================
+           HEADER
+        ======================================== */
 
         .admin-header {
             position:relative;
@@ -56,11 +62,12 @@
             margin:0 0 28px;
             padding:26px 28px;
             border-radius:20px;
-            background:linear-gradient(
-                135deg,
-                var(--green-dark),
-                var(--green)
-            );
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green-dark),
+                    var(--green)
+                );
             color:#fff;
             box-shadow:
                 0 14px 35px rgba(4,53,31,.18);
@@ -91,6 +98,10 @@
             position:relative;
             z-index:1;
         }
+
+        /* ========================================
+           BUTTONS
+        ======================================== */
 
         .admin-btn {
             border:0;
@@ -139,6 +150,10 @@
             padding:8px 14px;
         }
 
+        /* ========================================
+           GENERAL CARDS
+        ======================================== */
+
         .admin-card {
             background:rgba(255,255,255,.96);
             border:1px solid var(--border);
@@ -154,7 +169,7 @@
             font-size:22px;
         }
 
-        .admin-card>p,
+        .admin-card > p,
         .section-heading p {
             color:var(--muted);
             margin:0 0 18px;
@@ -191,6 +206,10 @@
             border-left:5px solid var(--blue);
         }
 
+        /* ========================================
+           TEAM DETAILS
+        ======================================== */
+
         .team-details {
             display:grid;
             grid-template-columns:
@@ -212,6 +231,10 @@
         .detail strong {
             color:var(--green-dark);
         }
+
+        /* ========================================
+           FORMS
+        ======================================== */
 
         .form-grid {
             display:grid;
@@ -265,6 +288,10 @@
             grid-column:1/-1;
         }
 
+        /* ========================================
+           TABLES
+        ======================================== */
+
         .players-table,
         .fixtures-table {
             width:100%;
@@ -307,6 +334,10 @@
             border-radius:12px;
         }
 
+        /* ========================================
+           STATUS / EMPTY STATES
+        ======================================== */
+
         .status-message,
         .fixture-form-message,
         .result-form-message {
@@ -325,6 +356,10 @@
             border-radius:12px;
         }
 
+        /* ========================================
+           FIXTURE INFORMATION
+        ======================================== */
+
         .fixture-info {
             background:#f3f7f5;
             padding:16px;
@@ -332,6 +367,10 @@
             border-radius:12px;
             margin-bottom:15px;
         }
+
+        /* ========================================
+           RESULT SCORE
+        ======================================== */
 
         .result-score-grid {
             display:grid;
@@ -361,6 +400,10 @@
             font-size:30px;
             font-weight:bold;
         }
+
+        /* ========================================
+           GOAL MANAGER
+        ======================================== */
 
         .goals-container {
             display:grid;
@@ -495,6 +538,147 @@
             margin-bottom:12px;
         }
 
+        /* ========================================
+           DASHBOARD OVERVIEW
+        ======================================== */
+
+        .dashboard-overview {
+            display:grid;
+            grid-template-columns:
+                repeat(5,1fr);
+            gap:14px;
+            margin:0 0 22px;
+        }
+
+        .stat-card {
+            background:#fff;
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:18px;
+            box-shadow:var(--shadow);
+            position:relative;
+            overflow:hidden;
+        }
+
+        .stat-card:after {
+            content:'';
+            position:absolute;
+            right:-18px;
+            bottom:-24px;
+            width:72px;
+            height:72px;
+            border-radius:50%;
+            background:rgba(245,197,66,.10);
+        }
+
+        .stat-icon {
+            font-size:25px;
+            margin-bottom:9px;
+        }
+
+        .stat-value {
+            font-size:30px;
+            font-weight:900;
+            color:var(--green-dark);
+            line-height:1;
+        }
+
+        .stat-label {
+            margin-top:7px;
+            color:var(--muted);
+            font-size:13px;
+            font-weight:700;
+        }
+
+        /* ========================================
+           QUICK ACTIONS
+        ======================================== */
+
+        .quick-actions {
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin:0 0 24px;
+            padding:15px;
+            background:#fff;
+            border:1px solid var(--border);
+            border-radius:16px;
+            box-shadow:var(--shadow);
+        }
+
+        .quick-actions a {
+            display:inline-flex;
+            align-items:center;
+            gap:7px;
+            text-decoration:none;
+            background:#f3f7f5;
+            color:var(--green-dark);
+            border:1px solid #d9e5de;
+            border-radius:10px;
+            padding:10px 14px;
+            font-weight:800;
+            font-size:14px;
+            transition:.2s;
+        }
+
+        .quick-actions a:hover {
+            background:#e7f2ec;
+            transform:translateY(-1px);
+        }
+
+        /* ========================================
+           ADMIN NAVIGATION
+        ======================================== */
+
+        .admin-nav {
+            position:sticky;
+            top:8px;
+            z-index:20;
+            display:flex;
+            gap:6px;
+            overflow-x:auto;
+            padding:8px;
+            margin-bottom:22px;
+            background:rgba(255,255,255,.94);
+            backdrop-filter:blur(10px);
+            border:1px solid var(--border);
+            border-radius:14px;
+            box-shadow:
+                0 6px 18px rgba(4,53,31,.06);
+        }
+
+        .admin-nav a {
+            flex:0 0 auto;
+            text-decoration:none;
+            color:#355047;
+            font-size:13px;
+            font-weight:800;
+            padding:9px 12px;
+            border-radius:9px;
+        }
+
+        .admin-nav a:hover {
+            background:#edf5f0;
+            color:var(--green-dark);
+        }
+
+        .section-anchor {
+            scroll-margin-top:75px;
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+
+        @media(max-width:1000px) {
+
+            .dashboard-overview {
+                grid-template-columns:
+                    repeat(3,1fr);
+            }
+
+        }
+
         @media(max-width:800px) {
 
             .admin-container {
@@ -548,6 +732,43 @@
             .section-heading {
                 margin-top:30px;
             }
+
+        }
+
+        @media(max-width:600px) {
+
+            .dashboard-overview {
+                grid-template-columns:
+                    repeat(2,1fr);
+                gap:10px;
+            }
+
+            .stat-card {
+                padding:14px;
+            }
+
+            .stat-value {
+                font-size:25px;
+            }
+
+            .quick-actions {
+                display:grid;
+                grid-template-columns:1fr 1fr;
+            }
+
+            .quick-actions a {
+                justify-content:center;
+                text-align:center;
+            }
+
+            .admin-nav {
+                top:4px;
+            }
+
+            .admin-nav a {
+                padding:8px 10px;
+            }
+
         }
 
         @media(max-width:520px) {
@@ -600,7 +821,22 @@
             .goals-column .admin-btn {
                 width:auto;
             }
+
         }
+
+        @media(max-width:390px) {
+
+            .dashboard-overview {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns:1fr;
+            }
+
+        }
+
     </style>
 
 </head>
@@ -609,43 +845,243 @@
 
 <div class="admin-container">
 
+<!-- ========================================
+     ADMIN HEADER
+========================================= -->
+
 <div class="admin-header">
 
     <div>
-        <h1>⚽ Kabaru Ward Football</h1>
-        <p>Administrator Dashboard</p>
+
+        <h1>
+            ⚽ Kabaru Ward Football
+        </h1>
+
+        <p>
+            Administrator Dashboard
+        </p>
+
     </div>
 
     <button
         id="logoutBtn"
         class="admin-btn logout-btn">
+
         Logout
+
     </button>
 
 </div>
 
+
+<!-- ========================================
+     DASHBOARD NAVIGATION
+========================================= -->
+
+<nav
+    class="admin-nav"
+    aria-label="Admin dashboard navigation">
+
+    <a href="#dashboard">
+        🏠 Dashboard
+    </a>
+
+    <a href="#competitions">
+        🏆 Competitions
+    </a>
+
+    <a href="#fixtures">
+        📅 Fixtures
+    </a>
+
+    <a href="#results">
+        🏁 Results
+    </a>
+
+    <a href="#registrations">
+        👥 Teams
+    </a>
+
+</nav>
+
+
+<!-- ========================================
+     DASHBOARD OVERVIEW
+========================================= -->
+
+<section
+    id="dashboard"
+    class="dashboard-overview section-anchor">
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            🏆
+        </div>
+
+        <div
+            class="stat-value"
+            id="dashboardCompetitions">
+
+            —
+
+        </div>
+
+        <div class="stat-label">
+            Competitions
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ✅
+        </div>
+
+        <div
+            class="stat-value"
+            id="dashboardApprovedTeams">
+
+            —
+
+        </div>
+
+        <div class="stat-label">
+            Approved Teams
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ⏳
+        </div>
+
+        <div
+            class="stat-value"
+            id="dashboardPendingTeams">
+
+            —
+
+        </div>
+
+        <div class="stat-label">
+            Pending Teams
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            📅
+        </div>
+
+        <div
+            class="stat-value"
+            id="dashboardFixtures">
+
+            —
+
+        </div>
+
+        <div class="stat-label">
+            Fixtures
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ⚽
+        </div>
+
+        <div
+            class="stat-value"
+            id="dashboardResults">
+
+            —
+
+        </div>
+
+        <div class="stat-label">
+            Results
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     QUICK ACTIONS
+========================================= -->
+
+<div class="quick-actions">
+
+    <a href="#competitions">
+        ➕ Create Competition
+    </a>
+
+    <a href="#fixtures">
+        📅 Create Fixture
+    </a>
+
+    <a href="#results">
+        🏁 Enter Result
+    </a>
+
+    <a href="#registrations">
+        👥 Review Teams
+    </a>
+
+</div>
+
+
+<!-- ========================================
+     GLOBAL STATUS MESSAGE
+========================================= -->
 
 <div
     id="statusMessage"
     class="status-message">
 </div>
 
+
 <!-- ========================================
      COMPETITION MANAGER
 ========================================= -->
 
-<section class="admin-card">
+<section
+    id="competitions"
+    class="admin-card section-anchor">
 
     <div class="section-heading">
-        <h2>🏆 Competition Manager</h2>
-        <p>Create and manage Kabaru Ward football competitions.</p>
+
+        <h2>
+            🏆 Competition Manager
+        </h2>
+
+        <p>
+            Create and manage Kabaru Ward football competitions.
+        </p>
+
     </div>
+
 
     <form id="competitionForm">
 
         <div class="form-grid">
 
             <div class="form-group">
+
                 <label for="competitionName">
                     Competition Name
                 </label>
@@ -656,9 +1092,12 @@
                     placeholder="e.g. Kabaru Ward Football League"
                     required
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label for="competitionType">
                     Competition Type
                 </label>
@@ -684,9 +1123,12 @@
                     </option>
 
                 </select>
+
             </div>
 
+
             <div class="form-group">
+
                 <label for="competitionSeason">
                     Season
                 </label>
@@ -697,9 +1139,12 @@
                     placeholder="e.g. 2026"
                     required
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label for="competitionStartDate">
                     Start Date
                 </label>
@@ -708,9 +1153,12 @@
                     type="date"
                     id="competitionStartDate"
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label for="competitionEndDate">
                     End Date
                 </label>
@@ -719,9 +1167,12 @@
                     type="date"
                     id="competitionEndDate"
                 >
+
             </div>
 
+
             <div class="form-group">
+
                 <label for="competitionStatus">
                     Status
                 </label>
@@ -747,9 +1198,11 @@
                     </option>
 
                 </select>
+
             </div>
 
         </div>
+
 
         <div class="form-group">
 
@@ -765,6 +1218,7 @@
 
         </div>
 
+
         <button
             type="button"
             id="createCompetitionButton"
@@ -773,6 +1227,7 @@
             ➕ CREATE COMPETITION
 
         </button>
+
 
         <p
             id="competitionFormMessage"
@@ -790,7 +1245,9 @@
 
 <div class="admin-card">
 
-    <h2>📋 Existing Competitions</h2>
+    <h2>
+        📋 Existing Competitions
+    </h2>
 
     <p>
         Competitions already created in the system.
@@ -813,19 +1270,26 @@
      FIXTURE MANAGER
 ========================================= -->
 
-<h2 class="section-heading">
+<h2
+    id="fixtures"
+    class="section-heading section-anchor">
+
     📅 Fixture Manager
+
 </h2>
 
 
 <div class="admin-card">
 
-    <h2>➕ Create New Fixture</h2>
+    <h2>
+        ➕ Create New Fixture
+    </h2>
 
     <p>
         Create a fixture using an approved competition,
         approved teams and available venue.
     </p>
+
 
     <form id="fixtureForm">
 
@@ -999,7 +1463,9 @@
 
 <div class="admin-card">
 
-    <h2>📋 Created Fixtures</h2>
+    <h2>
+        📋 Created Fixtures
+    </h2>
 
     <p>
         Fixtures already created in the system.
@@ -1022,14 +1488,20 @@
      RESULT MANAGER
 ========================================= -->
 
-<h2 class="section-heading">
+<h2
+    id="results"
+    class="section-heading section-anchor">
+
     🏁 Result Manager
+
 </h2>
 
 
 <div class="admin-card result-manager">
 
-    <h2>➕ Enter Match Result</h2>
+    <h2>
+        ➕ Enter Match Result
+    </h2>
 
     <p>
         Select a completed fixture and enter the final score
@@ -1121,7 +1593,9 @@
         </div>
 
 
-        <!-- GOAL SCORERS -->
+        <!-- ========================================
+             GOAL SCORERS
+        ========================================= -->
 
         <div class="goals-container">
 
@@ -1142,14 +1616,17 @@
 
                 </div>
 
+
                 <div
                     id="homeGoalsContainer">
                 </div>
+
 
                 <div
                     id="homeGoalWarning"
                     class="goal-count-warning">
                 </div>
+
 
                 <button
                     type="button"
@@ -1179,14 +1656,17 @@
 
                 </div>
 
+
                 <div
                     id="awayGoalsContainer">
                 </div>
+
 
                 <div
                     id="awayGoalWarning"
                     class="goal-count-warning">
                 </div>
+
 
                 <button
                     type="button"
@@ -1202,12 +1682,17 @@
         </div>
 
 
+        <!-- ========================================
+             RESULT HELP
+        ========================================= -->
+
         <div class="result-help">
 
             💡 <strong>Example:</strong>
 
-            If John Player scores three goals, enter John Player
-            three times with minutes 12, 44 and 67.
+            If John Player scores three goals,
+            enter John Player three times with
+            minutes 12, 44 and 67.
 
             The saved match will display:
 
@@ -1218,7 +1703,9 @@
         </div>
 
 
-        <!-- MATCH REPORT -->
+        <!-- ========================================
+             MATCH REPORT
+        ========================================= -->
 
         <div class="result-report">
 
@@ -1262,14 +1749,20 @@
      TEAM REGISTRATIONS
 ========================================= -->
 
-<h2 class="section-heading">
+<h2
+    id="registrations"
+    class="section-heading section-anchor">
+
     📋 Team Registrations
+
 </h2>
 
 
 <div class="admin-card">
 
-    <h2>📋 Pending Team Registrations</h2>
+    <h2>
+        📋 Pending Team Registrations
+    </h2>
 
     <p>
         Review teams submitted through the public
@@ -1291,11 +1784,187 @@
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ========================================
+     DASHBOARD COUNTER SCRIPT
+========================================= -->
 
-<script src="supabase.js?v=3"></script>
+<script>
 
-<script src="admin.js?v=4"></script>
+(function(){
+
+    function set(id, value) {
+
+        var el = document.getElementById(id);
+
+        if (el) {
+            el.textContent = value;
+        }
+
+    }
+
+
+    async function updateDashboard() {
+
+        if (typeof supabaseClient === "undefined") {
+            return;
+        }
+
+
+        try {
+
+            var competitions =
+                await supabaseClient
+                    .from("competitions")
+                    .select(
+                        "id",
+                        {
+                            count:"exact",
+                            head:true
+                        }
+                    );
+
+
+            var approvedTeams =
+                await supabaseClient
+                    .from("teams")
+                    .select(
+                        "id",
+                        {
+                            count:"exact",
+                            head:true
+                        }
+                    )
+                    .eq(
+                        "registration_status",
+                        "Approved"
+                    );
+
+
+            var pendingTeams =
+                await supabaseClient
+                    .from("teams")
+                    .select(
+                        "id",
+                        {
+                            count:"exact",
+                            head:true
+                        }
+                    )
+                    .eq(
+                        "registration_status",
+                        "Pending"
+                    );
+
+
+            var fixtures =
+                await supabaseClient
+                    .from("fixtures")
+                    .select(
+                        "id",
+                        {
+                            count:"exact",
+                            head:true
+                        }
+                    );
+
+
+            var results =
+                await supabaseClient
+                    .from("results")
+                    .select(
+                        "id",
+                        {
+                            count:"exact",
+                            head:true
+                        }
+                    );
+
+
+            set(
+                "dashboardCompetitions",
+                competitions.error
+                    ? "—"
+                    : (competitions.count ?? 0)
+            );
+
+
+            set(
+                "dashboardApprovedTeams",
+                approvedTeams.error
+                    ? "—"
+                    : (approvedTeams.count ?? 0)
+            );
+
+
+            set(
+                "dashboardPendingTeams",
+                pendingTeams.error
+                    ? "—"
+                    : (pendingTeams.count ?? 0)
+            );
+
+
+            set(
+                "dashboardFixtures",
+                fixtures.error
+                    ? "—"
+                    : (fixtures.count ?? 0)
+            );
+
+
+            set(
+                "dashboardResults",
+                results.error
+                    ? "—"
+                    : (results.count ?? 0)
+            );
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "Dashboard overview counters could not load:",
+                error
+            );
+
+        }
+
+    }
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function(){
+
+            setTimeout(
+                updateDashboard,
+                700
+            );
+
+        }
+    );
+
+})();
+
+</script>
+
+
+<!-- ========================================
+     SCRIPTS
+========================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+<script
+    src="supabase.js?v=3">
+</script>
+
+<script
+    src="admin.js?v=4">
+</script>
 
 
 </body>
