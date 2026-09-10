@@ -2116,136 +2116,163 @@ async function loadResults() {
                             : "";
 
 
-                    return `
+                    
 
-                        <div class="result-card">
+                                 return `
 
-
-                            <div class="result-competition">
-
-                                ${escapeHtml(
-                                    competition.name
-                                )}
-
-                                ${
-                                    competition.season
-                                        ? ` • ${escapeHtml(
-                                            competition.season
-                                        )}`
-                                        : ""
-                                }
-
-                            </div>
+    <div
+        class="result-card"
+        style="
+            cursor:pointer;
+            transition:transform 0.2s ease,
+                       box-shadow 0.2s ease;
+        "
+        onclick="
+            window.location.href =
+            'match-details.html?id=${encodeURIComponent(result.id)}'
+        "
+        title="View full match details"
+    >
 
 
-                            <div class="result-matchday">
+        <div class="result-competition">
 
-                                ${escapeHtml(
-                                    fixture.matchday ||
-                                    ""
-                                )}
+            ${escapeHtml(
+                competition.name
+            )}
 
-                            </div>
+            ${
+                competition.season
+                    ? ` • ${escapeHtml(
+                        competition.season
+                    )}`
+                    : ""
+            }
 
-
-                            <div class="result-teams">
-
-                                <span>
-
-                                    ${escapeHtml(
-                                        home?.name ||
-                                        "Home Team"
-                                    )}
-
-                                </span>
+        </div>
 
 
-                                <strong class="result-score">
+        <div class="result-matchday">
 
-                                    ${escapeHtml(
-                                        result.home_score
-                                    )}
+            ${escapeHtml(
+                fixture.matchday ||
+                ""
+            )}
 
-                                    -
-
-                                    ${escapeHtml(
-                                        result.away_score
-                                    )}
-
-                                </strong>
+        </div>
 
 
-                                <span>
+        <div class="result-teams">
 
-                                    ${escapeHtml(
-                                        away?.name ||
-                                        "Away Team"
-                                    )}
+            <span>
 
-                                </span>
+                ${escapeHtml(
+                    home?.name ||
+                    "Home Team"
+                )}
 
-                            </div>
-
-
-                            ${goalText}
+            </span>
 
 
-                            ${
-                                result.match_report
-                                    ? `
+            <strong class="result-score">
 
-                                        <div class="match-report">
+                ${escapeHtml(
+                    result.home_score
+                )}
 
-                                            ${escapeHtml(
-                                                result.match_report
-                                            )}
+                -
 
-                                        </div>
+                ${escapeHtml(
+                    result.away_score
+                )}
 
-                                    `
-                                    : ""
-                            }
+            </strong>
 
 
-                            <div class="result-details">
+            <span>
 
-                                📅
+                ${escapeHtml(
+                    away?.name ||
+                    "Away Team"
+                )}
 
-                                ${escapeHtml(
-                                    formatDate(
-                                        fixture.match_date
-                                    )
-                                )}
+            </span>
 
-
-                                &nbsp;&nbsp;
+        </div>
 
 
-                                ⏰
-
-                                ${escapeHtml(
-                                    formatTime(
-                                        fixture.kick_off
-                                    )
-                                )}
+        ${goalText}
 
 
-                                &nbsp;&nbsp;
+        ${
+            result.match_report
+                ? `
+
+                    <div class="match-report">
+
+                        ${escapeHtml(
+                            result.match_report
+                        )}
+
+                    </div>
+
+                `
+                : ""
+        }
 
 
-                                📍
+        <div class="result-details">
 
-                                ${escapeHtml(
-                                    fixture.venue ||
-                                    "-"
-                                )}
+            📅
 
-                            </div>
+            ${escapeHtml(
+                formatDate(
+                    fixture.match_date
+                )
+            )}
 
 
-                        </div>
+            &nbsp;&nbsp;
 
-                    `;
+
+            ⏰
+
+            ${escapeHtml(
+                formatTime(
+                    fixture.kick_off
+                )
+            )}
+
+
+            &nbsp;&nbsp;
+
+
+            📍
+
+            ${escapeHtml(
+                fixture.venue ||
+                "-"
+            )}
+
+        </div>
+
+
+        <div
+            style="
+                margin-top:15px;
+                text-align:center;
+                font-weight:900;
+                color:#075b35;
+                font-size:13px;
+            "
+        >
+            📋 Tap to view full match details →
+        </div>
+
+
+    </div>
+
+`;
                 }
             ).join("");
 
