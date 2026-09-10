@@ -1,33 +1,27 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>Kabaru Ward Football</title>
 
+<meta
+    name="description"
+    content="Kabaru Ward Football - Fixtures, results, league table, teams and player statistics."
+>
+
 <style>
 
-/* =====================================================
-   KABARU WARD FOOTBALL
-   GREEN & GOLD PROFESSIONAL DESIGN
-===================================================== */
-
-:root {
-    --green-dark: #04351f;
-    --green: #075b35;
-    --green-light: #0b7545;
-    --gold: #f5c542;
-    --gold-light: #ffe082;
-    --white: #ffffff;
-    --background: #f4f7f5;
-    --text: #17221c;
-    --muted: #68756e;
-    --border: #e1e8e3;
-    --danger: #c62828;
-    --shadow: 0 8px 25px rgba(4,53,31,.08);
-}
+/* ========================================
+   RESET
+======================================== */
 
 * {
     margin: 0;
@@ -35,1158 +29,1728 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+
+/* ========================================
+   ROOT
+======================================== */
+
+:root {
+
+    --green-dark: #04351f;
+    --green: #075b35;
+    --green-light: #0b7545;
+
+    --gold: #f5c542;
+    --gold-light: #ffe082;
+
+    --white: #ffffff;
+    --cream: #f7f8f5;
+    --light: #eef3ef;
+
+    --text: #173025;
+    --muted: #68776f;
+
+    --border: #dce6df;
+
+    --shadow:
+        0 10px 30px rgba(4, 53, 31, 0.08);
+
+    --radius: 18px;
 }
+
+
+/* ========================================
+   BODY
+======================================== */
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--background);
-    color: var(--text);
-    line-height: 1.6;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        var(--cream);
+
+    color:
+        var(--text);
+
+    line-height:
+        1.6;
 }
 
+
+/* ========================================
+   GENERAL
+======================================== */
+
+img {
+
+    max-width: 100%;
+}
+
+
 a {
+
     text-decoration: none;
 }
 
-/* =====================================================
-   HEADER
-===================================================== */
-
-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: rgba(4,53,31,.97);
-    color: white;
-    box-shadow: 0 4px 20px rgba(0,0,0,.18);
-}
-
-.navbar {
-    max-width: 1200px;
-    margin: auto;
-    padding: 13px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.logo {
-    font-size: 19px;
-    font-weight: 900;
-    letter-spacing: .3px;
-}
-
-.logo span {
-    color: var(--gold);
-}
-
-nav {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-nav a {
-    color: white;
-    font-size: 13px;
-    font-weight: 700;
-    transition: .2s ease;
-}
-
-nav a:hover {
-    color: var(--gold);
-}
-
-/* =====================================================
-   HERO
-===================================================== */
-
-.hero {
-    position: relative;
-    overflow: hidden;
-    background:
-        radial-gradient(circle at 15% 20%, rgba(245,197,66,.14), transparent 28%),
-        radial-gradient(circle at 85% 80%, rgba(245,197,66,.10), transparent 30%),
-        linear-gradient(135deg, #032d1b, #075b35 55%, #04351f);
-    color: white;
-    padding: 85px 20px 90px;
-    text-align: center;
-}
-
-.hero::before {
-    content: "⚽";
-    position: absolute;
-    font-size: 180px;
-    opacity: .035;
-    right: -20px;
-    top: 20px;
-    transform: rotate(-15deg);
-}
-
-.hero::after {
-    content: "";
-    position: absolute;
-    width: 220px;
-    height: 220px;
-    border: 35px solid rgba(245,197,66,.05);
-    border-radius: 50%;
-    left: -100px;
-    bottom: -100px;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    max-width: 850px;
-    margin: auto;
-}
-
-.hero-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(245,197,66,.13);
-    border: 1px solid rgba(245,197,66,.35);
-    color: var(--gold-light);
-    padding: 7px 15px;
-    border-radius: 30px;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    margin-bottom: 18px;
-}
-
-.hero h1 {
-    font-size: clamp(38px, 9vw, 68px);
-    line-height: 1.05;
-    font-weight: 900;
-    margin-bottom: 18px;
-}
-
-.hero h1 span {
-    color: var(--gold);
-}
-
-.hero p {
-    max-width: 700px;
-    margin: auto;
-    font-size: 17px;
-    color: rgba(255,255,255,.88);
-}
-
-.hero-buttons {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 13px 22px;
-    border-radius: 9px;
-    font-weight: 800;
-    font-size: 14px;
-    transition: transform .2s ease, box-shadow .2s ease;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-.btn-gold {
-    background: var(--gold);
-    color: #17221c;
-    box-shadow: 0 5px 15px rgba(245,197,66,.22);
-}
-
-.btn-outline {
-    border: 1px solid rgba(255,255,255,.7);
-    color: white;
-    background: rgba(255,255,255,.04);
-}
-
-/* =====================================================
-   GENERAL
-===================================================== */
 
 .container {
+
+    width: 92%;
+
     max-width: 1180px;
-    margin: auto;
-    padding: 60px 18px;
+
+    margin:
+        0 auto;
 }
+
+
+section {
+
+    padding:
+        70px 0;
+}
+
 
 .section-title {
+
     text-align: center;
-    margin-bottom: 32px;
+
+    margin-bottom: 35px;
 }
 
-.section-title h2 {
-    color: var(--green-dark);
-    font-size: clamp(25px, 5vw, 32px);
-    line-height: 1.2;
-    margin-bottom: 8px;
-}
-
-.section-title p {
-    color: var(--muted);
-    font-size: 14px;
-}
 
 .section-kicker {
-    display: block;
-    color: var(--green-light);
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
-}
 
-/* =====================================================
-   COMPETITION
-===================================================== */
-
-.competition {
-    position: relative;
-    overflow: hidden;
-    background:
-        linear-gradient(135deg, #04351f, #075b35);
-    color: white;
-    border-radius: 20px;
-    padding: 34px 22px;
-    text-align: center;
-    margin-top: -35px;
-    box-shadow: 0 12px 30px rgba(4,53,31,.18);
-}
-
-.competition::after {
-    content: "🏆";
-    position: absolute;
-    right: 25px;
-    bottom: -12px;
-    font-size: 90px;
-    opacity: .07;
-}
-
-.competition h2 {
-    position: relative;
-    z-index: 2;
-    color: var(--gold);
-    font-size: clamp(25px, 5vw, 34px);
-    margin: 13px 0 4px;
-}
-
-.competition p {
-    position: relative;
-    z-index: 2;
-    color: rgba(255,255,255,.82);
-    margin-bottom: 18px;
-}
-
-.badge {
-    position: relative;
-    z-index: 2;
-    display: inline-flex;
-    background: var(--gold);
-    color: var(--green-dark);
-    padding: 7px 14px;
-    border-radius: 30px;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: .5px;
-}
-
-#competitionStatus {
-    position: relative;
-    z-index: 2;
     display: inline-block;
-    padding: 7px 14px;
-    background: rgba(255,255,255,.10);
-    border: 1px solid rgba(255,255,255,.16);
-    border-radius: 30px;
-    font-size: 13px;
+
+    color:
+        var(--green);
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        1.5px;
+
+    margin-bottom:
+        7px;
 }
 
-/* =====================================================
-   FOOTBALL HUB
-===================================================== */
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
+.section-title h2 {
+
+    color:
+        var(--green-dark);
+
+    font-size:
+        32px;
+
+    line-height:
+        1.2;
+
+    margin-bottom:
+        8px;
 }
 
-.card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 22px;
-    box-shadow: var(--shadow);
-    transition: transform .2s ease, box-shadow .2s ease;
+
+.section-title p {
+
+    color:
+        var(--muted);
+
+    max-width:
+        650px;
+
+    margin:
+        0 auto;
 }
 
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(4,53,31,.12);
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.btn {
+
+    display:
+        inline-block;
+
+    border:
+        none;
+
+    border-radius:
+        10px;
+
+    padding:
+        12px 18px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.2s ease;
 }
 
-.card h3 {
-    margin-bottom: 9px;
-    color: var(--green-dark);
+
+.btn:hover {
+
+    transform:
+        translateY(-2px);
 }
 
-.card p {
-    color: var(--muted);
-    font-size: 14px;
+
+.btn-green {
+
+    background:
+        var(--green);
+
+    color:
+        white;
 }
 
-/* =====================================================
-   LEAGUE TABLE
-===================================================== */
 
-#table {
-    background: white;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+.btn-gold {
+
+    background:
+        var(--gold);
+
+    color:
+        var(--green-dark);
 }
+
+
+.btn-outline {
+
+    background:
+        transparent;
+
+    color:
+        var(--green);
+
+    border:
+        2px solid var(--green);
+}
+
+
+/* ========================================
+   NAVIGATION
+======================================== */
+
+header {
+
+    background:
+        var(--green-dark);
+
+    color:
+        white;
+
+    position:
+        sticky;
+
+    top:
+        0;
+
+    z-index:
+        1000;
+
+    box-shadow:
+        0 4px 18px rgba(0,0,0,0.12);
+}
+
+
+.navbar {
+
+    min-height:
+        72px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+}
+
+
+.brand {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    color:
+        white;
+
+    font-weight:
+        900;
+
+    font-size:
+        19px;
+}
+
+
+.brand-ball {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--gold);
+
+    color:
+        var(--green-dark);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        21px;
+}
+
+
+.nav-links {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        20px;
+
+    list-style:
+        none;
+}
+
+
+.nav-links a {
+
+    color:
+        white;
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    opacity:
+        .9;
+}
+
+
+.nav-links a:hover {
+
+    color:
+        var(--gold);
+}
+
+
+/* ========================================
+   HERO
+======================================== */
+
+.hero {
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green)
+        );
+
+    color:
+        white;
+
+    padding:
+        90px 0;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+}
+
+
+.hero::after {
+
+    content:
+        "⚽";
+
+    position:
+        absolute;
+
+    right:
+        5%;
+
+    bottom:
+        -25px;
+
+    font-size:
+        180px;
+
+    opacity:
+        .06;
+}
+
+
+.hero-content {
+
+    max-width:
+        760px;
+
+    position:
+        relative;
+
+    z-index:
+        2;
+}
+
+
+.hero-kicker {
+
+    color:
+        var(--gold-light);
+
+    font-weight:
+        900;
+
+    font-size:
+        13px;
+
+    letter-spacing:
+        2px;
+
+    margin-bottom:
+        10px;
+}
+
+
+.hero h1 {
+
+    font-size:
+        clamp(38px, 7vw, 70px);
+
+    line-height:
+        1;
+
+    margin-bottom:
+        18px;
+}
+
+
+.hero h1 span {
+
+    color:
+        var(--gold);
+}
+
+
+.hero p {
+
+    font-size:
+        18px;
+
+    color:
+        rgba(255,255,255,.85);
+
+    max-width:
+        700px;
+
+    margin-bottom:
+        28px;
+}
+
+
+.hero-buttons {
+
+    display:
+        flex;
+
+    gap:
+        12px;
+
+    flex-wrap:
+        wrap;
+}
+
+
+/* ========================================
+   COMPETITION CARD
+======================================== */
+
+.competition-wrap {
+
+    margin-top:
+        -35px;
+
+    position:
+        relative;
+
+    z-index:
+        5;
+}
+
+
+.competition-card {
+
+    background:
+        white;
+
+    border-radius:
+        var(--radius);
+
+    box-shadow:
+        var(--shadow);
+
+    padding:
+        25px;
+
+    border-left:
+        6px solid var(--gold);
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr auto;
+
+    gap:
+        20px;
+
+    align-items:
+        center;
+}
+
+
+.competition-label {
+
+    font-size:
+        11px;
+
+    font-weight:
+        900;
+
+    color:
+        var(--green);
+
+    letter-spacing:
+        1.3px;
+}
+
+
+.competition-card h2 {
+
+    color:
+        var(--green-dark);
+
+    margin:
+        4px 0;
+
+    font-size:
+        25px;
+}
+
+
+.competition-card p {
+
+    color:
+        var(--muted);
+}
+
+
+.status-badge {
+
+    display:
+        inline-block;
+
+    background:
+        #e5f6ec;
+
+    color:
+        var(--green);
+
+    padding:
+        9px 15px;
+
+    border-radius:
+        30px;
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
+}
+
+
+/* ========================================
+   HUB CARDS
+======================================== */
+
+.hub-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap:
+        18px;
+
+    margin-top:
+        35px;
+}
+
+
+.hub-card {
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    padding:
+        24px;
+
+    box-shadow:
+        var(--shadow);
+
+    transition:
+        .2s ease;
+}
+
+
+.hub-card:hover {
+
+    transform:
+        translateY(-4px);
+}
+
+
+.hub-icon {
+
+    font-size:
+        32px;
+
+    margin-bottom:
+        10px;
+}
+
+
+.hub-card h3 {
+
+    color:
+        var(--green-dark);
+
+    margin-bottom:
+        5px;
+}
+
+
+.hub-card p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+}
+
+
+/* ========================================
+   TABLE
+======================================== */
 
 .table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: 15px;
-    box-shadow: var(--shadow);
+
+    overflow-x:
+        auto;
+
+    background:
+        white;
+
+    border-radius:
+        var(--radius);
+
+    box-shadow:
+        var(--shadow);
+
+    border:
+        1px solid var(--border);
 }
+
 
 .league-table {
-    width: 100%;
-    min-width: 700px;
-    border-collapse: collapse;
-    background: white;
+
+    width:
+        100%;
+
+    border-collapse:
+        collapse;
+
+    min-width:
+        700px;
 }
+
 
 .league-table th {
-    background: var(--green-dark);
-    color: white;
-    padding: 14px 9px;
-    font-size: 12px;
-    text-align: center;
-    white-space: nowrap;
+
+    background:
+        var(--green-dark);
+
+    color:
+        white;
+
+    padding:
+        14px 10px;
+
+    font-size:
+        13px;
+
+    text-align:
+        center;
 }
 
-.league-table th:first-child {
-    border-radius: 15px 0 0 0;
-}
-
-.league-table th:last-child {
-    border-radius: 0 15px 0 0;
-}
 
 .league-table td {
-    padding: 14px 9px;
-    border-bottom: 1px solid var(--border);
-    text-align: center;
-    font-size: 13px;
+
+    padding:
+        14px 10px;
+
+    text-align:
+        center;
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-size:
+        14px;
 }
 
-.league-table tbody tr {
-    transition: background .2s ease;
+
+.league-table td:nth-child(2),
+.league-table th:nth-child(2) {
+
+    text-align:
+        left;
 }
+
 
 .league-table tbody tr:hover {
-    background: #f2f8f4;
+
+    background:
+        #f5faf6;
 }
 
-.league-table tbody tr:last-child td {
-    border-bottom: none;
+
+/* ========================================
+   CARDS
+======================================== */
+
+.cards {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:
+        20px;
 }
 
-.league-table td:nth-child(2) {
-    text-align: left;
-    font-weight: 800;
+
+.card {
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    padding:
+        23px;
+
+    box-shadow:
+        var(--shadow);
 }
 
-.league-table td:last-child {
-    color: var(--green-dark);
-    font-size: 15px;
+
+.card h3 {
+
+    color:
+        var(--green-dark);
+
+    margin-bottom:
+        10px;
 }
 
-.league-table td:first-child {
-    font-weight: 900;
-    color: var(--green);
+
+.card p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+
+    margin:
+        6px 0;
 }
 
-/* =====================================================
+
+/* ========================================
    FIXTURES
-===================================================== */
+======================================== */
 
-.fixtures-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
-    gap: 20px;
+#fixtures {
+
+    background:
+        #f0f5f1;
 }
+
 
 .fixture-card {
-    position: relative;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 17px;
-    padding: 22px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    padding:
+        20px;
+
+    box-shadow:
+        var(--shadow);
+
+    margin-bottom:
+        18px;
 }
 
-.fixture-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gold);
+
+.fixture-top,
+.result-top {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    color:
+        var(--green);
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
+
+    text-transform:
+        uppercase;
 }
 
-.fixture-competition {
-    color: var(--green);
-    font-size: 12px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: .5px;
+
+.fixture-date {
+
+    text-align:
+        center;
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+
+    margin:
+        10px 0 15px;
 }
 
-.fixture-matchday {
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 3px;
-}
 
 .fixture-teams {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 10px;
-    margin: 24px 0;
-    text-align: center;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr auto 1fr;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
+    text-align:
+        center;
 }
 
-.fixture-teams span {
-    font-weight: 800;
-    font-size: 14px;
+
+.fixture-team strong {
+
+    display:
+        block;
+
+    color:
+        var(--green-dark);
 }
 
-.fixture-teams strong {
-    background: var(--green-dark);
-    color: var(--gold);
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-}
 
-.fixture-details {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    padding-top: 15px;
-    border-top: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 12px;
-}
+.fixture-vs {
 
-/* =====================================================
-   RESULTS
-===================================================== */
+    font-weight:
+        900;
 
-.results-section {
+    color:
+        var(--gold);
+
     background:
-        linear-gradient(180deg, #edf4ef, #f7f9f8);
+        var(--green-dark);
+
+    width:
+        45px;
+
+    height:
+        45px;
+
+    border-radius:
+        50%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
 }
 
-.results-list {
-    max-width: 950px;
-    margin: auto;
-}
+
+/* ========================================
+   RESULTS
+======================================== */
 
 .result-card {
-    position: relative;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    padding:
+        20px;
+
+    box-shadow:
+        var(--shadow);
+
+    margin-bottom:
+        20px;
 }
 
-.result-card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--green);
+
+.result-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 14px 32px rgba(4,53,31,.13);
 }
 
-.result-competition {
-    color: var(--green);
-    font-size: 12px;
-    font-weight: 900;
-    text-transform: uppercase;
+
+.result-top {
+
+    margin-bottom:
+        5px;
 }
 
-.result-matchday {
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 3px;
-}
 
-.result-teams {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 20px;
-    text-align: center;
-    margin: 25px 0;
-}
-
-.result-teams span {
-    font-weight: 800;
-    font-size: 16px;
-}
-
-.result-score {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--green-dark);
-    color: white;
-    min-width: 95px;
-    padding: 11px 15px;
-    border-radius: 12px;
-    font-size: 25px;
-    letter-spacing: 2px;
-}
-
-.scorers-columns {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-top: 18px;
-}
-
-.scorer-side {
-    background: #f5f8f6;
-    border-radius: 12px;
-    padding: 15px;
-}
-
-.scorer-side h5 {
-    color: var(--green-dark);
-    margin-bottom: 10px;
-    font-size: 13px;
-}
-
-.scorer-row {
-    padding: 7px 0;
-    border-bottom: 1px solid #e0e8e3;
-    font-size: 13px;
-}
-
-.scorer-row:last-child {
-    border-bottom: none;
-}
-
-.no-scorers {
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.match-report {
-    margin-top: 18px;
-    padding: 15px;
-    background: #f5f8f6;
-    border-radius: 11px;
-    color: #4f5d54;
-    font-size: 13px;
-}
-
-.result-details {
-    margin-top: 18px;
-    padding-top: 15px;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-/* =====================================================
+/* ========================================
    TEAMS
-===================================================== */
+======================================== */
 
 #teams {
-    background: white;
+
+    background:
+        white;
 }
+
 
 #registeredTeams .card {
-    position: relative;
-    overflow: hidden;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
 }
+
 
 #registeredTeams .card::before {
-    content: "⚽";
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 50px;
-    opacity: .045;
+
+    content:
+        "⚽";
+
+    position:
+        absolute;
+
+    right:
+        15px;
+
+    top:
+        10px;
+
+    font-size:
+        50px;
+
+    opacity:
+        .045;
 }
+
 
 #registeredTeams .btn {
-    width: 100%;
+
+    width:
+        100%;
 }
+
 
 #registeredTeams p {
-    margin-top: 5px;
+
+    margin-top:
+        5px;
 }
 
-/* =====================================================
+
+/* ========================================
    PLAYER LEADERS
-===================================================== */
-
-.player-leaders-section {
-    background: #f4f7f5;
-    padding: 65px 18px;
-}
-
-.section-heading {
-    max-width: 1180px;
-    margin: auto auto 32px;
-    text-align: center;
-}
-
-.section-heading span {
-    display: inline-block;
-    color: var(--green);
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
-    margin-bottom: 7px;
-}
-
-.section-heading h2 {
-    color: var(--green-dark);
-    font-size: 32px;
-    margin-bottom: 6px;
-}
-
-.section-heading p {
-    color: var(--muted);
-    font-size: 14px;
-}
+======================================== */
 
 .leaders-grid {
-    max-width: 1180px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap:
+        20px;
 }
+
 
 .leader-card {
-    background: white;
-    border: 1px solid var(--border);
-    padding: 21px;
-    border-radius: 17px;
-    box-shadow: var(--shadow);
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    padding:
+        20px;
+
+    box-shadow:
+        var(--shadow);
 }
+
 
 .leader-card h3 {
-    color: var(--green-dark);
-    margin-bottom: 12px;
-    font-size: 17px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #eef3ef;
+
+    color:
+        var(--green-dark);
+
+    border-bottom:
+        3px solid var(--gold);
+
+    padding-bottom:
+        10px;
+
+    margin-bottom:
+        5px;
 }
 
-.leader-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid #edf1ee;
-}
 
-.leader-row:last-child {
-    border-bottom: none;
-}
-
-.leader-position {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #edf5ef;
-    color: var(--green-dark);
-    border-radius: 50%;
-    font-weight: 900;
-    font-size: 12px;
-}
-
-.leader-player {
-    flex: 1;
-    min-width: 0;
-}
-
-.leader-player strong {
-    display: block;
-    color: var(--text);
-    font-size: 13px;
-}
-
-.leader-player small {
-    display: block;
-    margin-top: 2px;
-    color: var(--muted);
-    font-size: 11px;
-}
-
-.leader-stat {
-    min-width: 42px;
-    text-align: center;
-}
-
-.leader-stat strong {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 34px;
-    height: 34px;
-    background: var(--green-dark);
-    color: var(--gold);
-    border-radius: 9px;
-    font-size: 15px;
-}
-
-/* =====================================================
-   SPONSORS
-===================================================== */
-
-#sponsors {
-    background: white;
-}
-
-.sponsor-area {
-    background:
-        linear-gradient(135deg, #04351f, #075b35);
-    color: white;
-    border-radius: 20px;
-    padding: 40px 22px;
-    text-align: center;
-    box-shadow: 0 12px 30px rgba(4,53,31,.15);
-}
-
-.sponsor-area .section-title h2 {
-    color: white;
-}
-
-.sponsor-area .section-title p {
-    color: rgba(255,255,255,.72);
-}
-
-.sponsors {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-top: 25px;
-}
-
-.sponsor {
-    border: 1px dashed rgba(255,255,255,.35);
-    border-radius: 13px;
-    padding: 25px 10px;
-    color: rgba(255,255,255,.7);
-}
-
-.sponsor strong {
-    display: block;
-    color: var(--gold);
-    font-size: 17px;
-    margin-bottom: 5px;
-}
-
-/* =====================================================
+/* ========================================
    REGISTRATION
-===================================================== */
+======================================== */
 
 #register {
-    background: #f4f7f5;
-}
 
-.register {
     background:
-        radial-gradient(circle at 90% 20%, rgba(245,197,66,.12), transparent 30%),
-        linear-gradient(135deg, #04351f, #075b35);
-    color: white;
-    border-radius: 20px;
-    padding: 42px 22px;
-    text-align: center;
-    box-shadow: var(--shadow);
+        linear-gradient(
+            180deg,
+            #eef5f0,
+            #f7f8f5
+        );
 }
 
-.register h2 {
-    color: var(--gold);
-    margin-bottom: 9px;
-    font-size: 28px;
+
+.registration-card {
+
+    background:
+        white;
+
+    border-radius:
+        var(--radius);
+
+    padding:
+        30px;
+
+    max-width:
+        900px;
+
+    margin:
+        0 auto;
+
+    box-shadow:
+        var(--shadow);
+
+    border:
+        1px solid var(--border);
 }
 
-.register p {
-    color: rgba(255,255,255,.8);
-    font-size: 14px;
+
+.form-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap:
+        16px;
 }
 
-/* =====================================================
-   REGISTRATION FORM
-===================================================== */
 
-.registration-form-container {
-    max-width: 900px;
-    margin: 25px auto 0;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 30px 24px;
-    box-shadow: var(--shadow);
+.form-group {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
 }
 
-.form-section {
-    margin-bottom: 35px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid var(--border);
+
+.form-group.full {
+
+    grid-column:
+        1 / -1;
 }
 
-.form-section:last-of-type {
-    border-bottom: none;
+
+.form-group label {
+
+    font-weight:
+        800;
+
+    font-size:
+        13px;
+
+    margin-bottom:
+        6px;
+
+    color:
+        var(--green-dark);
 }
 
-.form-section h2 {
-    color: var(--green-dark);
-    margin-bottom: 18px;
-    font-size: 20px;
+
+input,
+select,
+textarea {
+
+    width:
+        100%;
+
+    border:
+        1px solid #cddbd2;
+
+    border-radius:
+        10px;
+
+    padding:
+        12px;
+
+    font:
+        inherit;
+
+    background:
+        white;
+
+    color:
+        var(--text);
+
+    outline:
+        none;
 }
 
-.form-section label {
-    display: block;
-    font-weight: 800;
-    margin-top: 16px;
-    margin-bottom: 6px;
-    color: #27352d;
-    font-size: 13px;
+
+input:focus,
+select:focus,
+textarea:focus {
+
+    border-color:
+        var(--green);
+
+    box-shadow:
+        0 0 0 3px rgba(7,91,53,.08);
 }
 
-.form-section input,
-.form-section select {
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #cbd6cf;
-    border-radius: 9px;
-    font-size: 14px;
-    background: white;
-    transition: .2s ease;
+
+input[type="file"] {
+
+    padding:
+        9px;
+
+    cursor:
+        pointer;
+
+    background:
+        #fafcfb;
 }
 
-.form-section input:focus,
-.form-section select:focus {
-    outline: none;
-    border-color: var(--green);
-    box-shadow: 0 0 0 3px rgba(7,91,53,.10);
+
+textarea {
+
+    min-height:
+        100px;
+
+    resize:
+        vertical;
 }
+
 
 .players-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
+
+    margin:
+        30px 0 12px;
+
+    padding-bottom:
+        10px;
+
+    border-bottom:
+        2px solid var(--border);
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    align-items:
+        center;
 }
 
-.players-heading p {
-    color: var(--muted);
-    font-size: 13px;
+
+#playerCount {
+
+    color:
+        var(--green);
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
 }
 
-.player-count {
-    background: var(--green-dark);
-    color: var(--gold);
-    padding: 7px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 900;
-    white-space: nowrap;
-}
 
 .player-row {
-    display: grid;
-    grid-template-columns: 38px 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding: 13px;
-    background: #f4f7f5;
-    border: 1px solid var(--border);
-    border-radius: 11px;
+
+    background:
+        #f6faf7;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        14px;
+
+    padding:
+        18px;
+
+    margin-bottom:
+        14px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        12px;
 }
 
-.player-row input,
-.player-row select {
-    min-width: 0;
-}
 
 .player-number {
-    background: var(--green-dark);
-    color: var(--gold);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 10px;
-    text-align: center;
+
+    grid-column:
+        1 / -1;
+
+    color:
+        var(--green);
+
+    font-size:
+        14px;
 }
+
 
 .remove-player-btn {
-    grid-column: 2;
-    border: none;
-    background: #fff0f0;
-    color: var(--danger);
-    padding: 9px;
-    border-radius: 7px;
-    cursor: pointer;
-    font-weight: 700;
+
+    background:
+        #fff0f0;
+
+    color:
+        #a40000;
+
+    border:
+        1px solid #efcccc;
+
+    border-radius:
+        9px;
+
+    padding:
+        9px 12px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    justify-self:
+        start;
 }
 
-.add-player-btn {
-    width: 100%;
-    margin-top: 10px;
-    padding: 13px;
-    border: 2px dashed var(--green);
-    background: white;
-    color: var(--green-dark);
-    border-radius: 9px;
-    font-weight: 800;
-    cursor: pointer;
+
+.remove-player-btn:hover {
+
+    background:
+        #ffe1e1;
 }
 
-.add-player-btn:hover {
-    background: #f1f8f3;
+
+#addPlayerBtn {
+
+    margin:
+        5px 0 25px;
 }
 
-.submit-registration {
-    width: 100%;
-    border: none;
-    padding: 15px;
-    background: var(--green-dark);
-    color: white;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 900;
-    cursor: pointer;
-    transition: .2s ease;
+
+#registrationMessage {
+
+    margin-top:
+        18px;
+
+    padding:
+        14px;
+
+    border-radius:
+        10px;
+
+    color:
+        var(--green-dark);
+
+    background:
+        #eef8f1;
+
+    font-size:
+        14px;
 }
 
-.submit-registration:hover {
-    background: var(--green);
+
+/* ========================================
+   SPONSORS
+======================================== */
+
+.sponsors {
+
+    background:
+        var(--green-dark);
+
+    color:
+        white;
 }
 
-.registration-message {
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 10px;
-    display: none;
-    font-size: 13px;
+
+.sponsors .section-title h2 {
+
+    color:
+        white;
 }
 
-.registration-message.success,
-.registration-message.error,
-.registration-message.loading {
-    display: block;
+
+.sponsors .section-title p {
+
+    color:
+        rgba(255,255,255,.72);
 }
 
-.registration-message.success {
-    background: #e7f6ed;
-    border: 1px solid #9ed0ae;
-    color: #175d31;
+
+.sponsor-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap:
+        15px;
 }
 
-.registration-message.error {
-    background: #fdeaea;
-    border: 1px solid #e0a2a2;
-    color: #8b1e1e;
+
+.sponsor-box {
+
+    min-height:
+        100px;
+
+    background:
+        rgba(255,255,255,.08);
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    border-radius:
+        15px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    text-align:
+        center;
+
+    padding:
+        15px;
+
+    color:
+        rgba(255,255,255,.85);
+
+    font-weight:
+        800;
 }
 
-.registration-message.loading {
-    background: #f1f4f2;
-    border: 1px solid var(--border);
-}
 
-/* =====================================================
+/* ========================================
    FOOTER
-===================================================== */
+======================================== */
 
 footer {
-    background: #021e12;
-    color: rgba(255,255,255,.75);
-    text-align: center;
-    padding: 35px 18px;
+
+    background:
+        #021d11;
+
+    color:
+        rgba(255,255,255,.7);
+
+    padding:
+        30px 0;
+
+    text-align:
+        center;
+
+    font-size:
+        13px;
 }
 
-footer p:first-child {
-    color: white;
-    font-weight: 800;
-    margin-bottom: 4px;
+
+footer strong {
+
+    color:
+        white;
 }
 
-footer span {
-    color: var(--gold);
-}
 
-/* =====================================================
+/* ========================================
    MOBILE
-===================================================== */
+======================================== */
 
-@media (max-width: 900px) {
+@media (
+    max-width: 900px
+) {
+
+    .hub-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
 
     .cards {
-        grid-template-columns: repeat(2, 1fr);
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .sponsor-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 }
 
-@media (max-width: 700px) {
 
-    header {
-        position: relative;
+@media (
+    max-width: 700px
+) {
+
+    section {
+
+        padding:
+            50px 0;
     }
+
 
     .navbar {
-        justify-content: center;
+
+        flex-direction:
+            column;
+
+        justify-content:
+            center;
+
+        padding:
+            12px 0;
     }
 
-    nav {
-        display: none;
+
+    .nav-links {
+
+        width:
+            100%;
+
+        justify-content:
+            center;
+
+        flex-wrap:
+            wrap;
+
+        gap:
+            12px;
     }
+
+
+    .nav-links a {
+
+        font-size:
+            12px;
+    }
+
 
     .hero {
-        padding: 65px 18px 75px;
+
+        padding:
+            65px 0;
     }
 
-    .hero h1 {
-        font-size: 40px;
-    }
 
     .hero p {
-        font-size: 15px;
+
+        font-size:
+            16px;
     }
 
-    .container {
-        padding: 45px 15px;
+
+    .competition-card {
+
+        grid-template-columns:
+            1fr;
+
+        text-align:
+            center;
     }
 
-    .competition {
-        margin-top: -25px;
-        padding: 28px 18px;
+
+    .hub-grid {
+
+        grid-template-columns:
+            1fr;
     }
 
-    .competition h2 {
-        font-size: 24px;
-    }
 
     .cards {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+            1fr;
     }
 
-    .fixtures-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .league-table {
-        min-width: 700px;
-    }
-
-    .result-teams {
-        grid-template-columns: 1fr;
-        gap: 9px;
-    }
-
-    .result-score {
-        margin: 3px auto;
-    }
-
-    .scorers-columns {
-        grid-template-columns: 1fr;
-    }
-
-    .sponsors {
-        grid-template-columns: 1fr;
-    }
-
-    .players-heading {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .registration-form-container {
-        padding: 23px 15px;
-    }
 
     .leaders-grid {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+            1fr;
     }
 
-    .player-leaders-section {
-        padding: 45px 15px;
+
+    .form-grid {
+
+        grid-template-columns:
+            1fr;
     }
 
-    .section-heading h2 {
-        font-size: 27px;
+
+    .form-group.full {
+
+        grid-column:
+            auto;
+    }
+
+
+    .player-row {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .player-number {
+
+        grid-column:
+            auto;
+    }
+
+
+    .sponsor-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    .fixture-teams {
+
+        gap:
+            7px;
+    }
+
+
+    .fixture-team strong {
+
+        font-size:
+            13px;
     }
 
 }
 
-@media (max-width: 430px) {
 
-    .logo {
-        font-size: 17px;
+@media (
+    max-width: 430px
+) {
+
+    .container {
+
+        width:
+            94%;
     }
+
 
     .hero h1 {
-        font-size: 34px;
+
+        font-size:
+            39px;
     }
+
+
+    .section-title h2 {
+
+        font-size:
+            27px;
+    }
+
 
     .hero-buttons {
-        flex-direction: column;
+
+        flex-direction:
+            column;
     }
 
-    .btn {
-        width: 100%;
+
+    .hero-buttons .btn {
+
+        width:
+            100%;
+
+        text-align:
+            center;
     }
 
-    .fixture-teams {
-        grid-template-columns: 1fr;
-    }
 
-    .fixture-teams strong {
-        margin: auto;
+    .sponsor-grid {
+
+        grid-template-columns:
+            1fr;
     }
 
 }
@@ -1195,1030 +1759,444 @@ footer span {
 
 </head>
 
+
 <body>
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+
+<!-- ========================================
+     NAVIGATION
+======================================== -->
 
 <header>
 
-```
-<div class="navbar">
+    <div class="container navbar">
 
-    <div class="logo">
-        KABARU <span>⚽</span> FOOTBALL
+        <a
+            href="#home"
+            class="brand"
+        >
+
+            <span class="brand-ball">
+                ⚽
+            </span>
+
+            <span>
+                KABARU FOOTBALL
+            </span>
+
+        </a>
+
+
+        <ul class="nav-links">
+
+            <li>
+                <a href="#home">
+                    Home
+                </a>
+            </li>
+
+            <li>
+                <a href="#table">
+                    Table
+                </a>
+            </li>
+
+            <li>
+                <a href="#fixtures">
+                    Fixtures
+                </a>
+            </li>
+
+            <li>
+                <a href="#results">
+                    Results
+                </a>
+            </li>
+
+            <li>
+                <a href="#teams">
+                    Teams
+                </a>
+            </li>
+
+            <li>
+                <a href="#register">
+                    Register
+                </a>
+            </li>
+
+        </ul>
+
     </div>
-
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#table">Table</a>
-        <a href="#fixtures">Fixtures</a>
-        <a href="#results">Results</a>
-        <a href="#teams">Teams</a>
-        <a href="#sponsors">Sponsors</a>
-    </nav>
-
-</div>
-```
 
 </header>
 
-<!-- =====================================================
+
+<!-- ========================================
      HERO
-===================================================== -->
+======================================== -->
 
-<section class="hero" id="home">
+<section
+    id="home"
+    class="hero"
+>
 
-```
-<div class="hero-content">
+    <div class="container">
 
-    <div class="hero-label">
-        ⚽ KABARU WARD FOOTBALL
+        <div class="hero-content">
+
+            <div class="hero-kicker">
+                KABARU WARD • FOOTBALL COMMUNITY
+            </div>
+
+
+            <h1>
+                Football
+                <span>
+                    Lives Here.
+                </span>
+            </h1>
+
+
+            <p>
+                Follow Kabaru Ward football —
+                fixtures, results, league standings,
+                registered teams and player statistics
+                all in one place.
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <a
+                    href="#fixtures"
+                    class="btn btn-gold"
+                >
+                    ⚽ View Fixtures
+                </a>
+
+
+                <a
+                    href="#table"
+                    class="btn btn-outline"
+                    style="
+                        color:white;
+                        border-color:white;
+                    "
+                >
+                    🏆 League Table
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
-
-    <h1>
-        Kabaru Ward <span>Football</span>
-    </h1>
-
-    <p>
-        The home of football leagues, tournaments, teams,
-        players, fixtures, results and football development
-        across Kabaru Ward.
-    </p>
-
-    <div class="hero-buttons">
-
-        <a class="btn btn-gold" href="#table">
-            📊 View League Table
-        </a>
-
-        <a class="btn btn-outline" href="#register">
-            📝 Register Your Team
-        </a>
-
-    </div>
-
-</div>
-```
 
 </section>
 
-<main>
 
-<!-- =====================================================
+<!-- ========================================
      CURRENT COMPETITION
-===================================================== -->
+======================================== -->
 
-<div class="container">
+<div class="competition-wrap">
 
-```
-<div class="competition">
+    <div class="container">
 
-    <span class="badge">
-        🏆 CURRENT COMPETITION
-    </span>
+        <div class="competition-card">
 
-    <h2>
-        Kabaru Ward Football League
-    </h2>
+            <div>
 
-    <p>
-        Season 2026 • Kabaru Ward
-    </p>
+                <div class="competition-label">
+                    CURRENT COMPETITION
+                </div>
 
-    <strong id="competitionStatus">
-        Competition status: Loading...
-    </strong>
 
-</div>
-```
+                <h2 id="competitionName">
+                    Loading Competition...
+                </h2>
 
-<!-- =====================================================
-     FOOTBALL HUB
-===================================================== -->
 
-```
-<div class="section-title" style="margin-top:55px;">
+                <p id="competitionSeason">
+                    Loading season...
+                </p>
 
-    <span class="section-kicker">
-        KABARU FOOTBALL
-    </span>
+            </div>
 
-    <h2>
-        Football Hub
-    </h2>
 
-    <p>
-        Everything you need to follow football in Kabaru Ward.
-    </p>
+            <div>
 
-</div>
+                <span
+                    id="competitionStatus"
+                    class="status-badge"
+                >
+                    Loading...
+                </span>
 
-
-<div class="cards">
-
-    <div class="card">
-
-        <h3>🏆 Competitions</h3>
-
-        <p>
-            Follow ward leagues, tournaments and knockout
-            competitions.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <h3>📅 Fixtures</h3>
-
-        <p>
-            See upcoming matches, dates, venues and kick-off
-            times.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <h3>⚽ Results</h3>
-
-        <p>
-            Check previous match results and competition
-            progress.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <h3>👥 Teams</h3>
-
-        <p>
-            Explore registered teams, coaches, captains and
-            players.
-        </p>
-
-    </div>
-
-</div>
-```
-
-</div>
-
-<!-- =====================================================
-     LEAGUE TABLE
-===================================================== -->
-
-<section id="table">
-
-```
-<div class="container">
-
-    <div class="section-title">
-
-        <span class="section-kicker">
-            SEASON 2026
-        </span>
-
-        <h2>
-            📊 League Table
-        </h2>
-
-        <p>
-            Kabaru Ward Football League 2026
-        </p>
-
-    </div>
-
-
-    <div class="table-wrapper">
-
-        <table class="league-table">
-
-            <thead>
-
-                <tr>
-                    <th>Pos</th>
-                    <th>Team</th>
-                    <th>P</th>
-                    <th>W</th>
-                    <th>D</th>
-                    <th>L</th>
-                    <th>GF</th>
-                    <th>GA</th>
-                    <th>GD</th>
-                    <th>Pts</th>
-                </tr>
-
-            </thead>
-
-
-            <tbody id="leagueTableBody">
-
-                <tr>
-
-                    <td colspan="10" style="text-align:center;">
-                        ⚽ Loading league table...
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- =====================================================
-     UPCOMING FIXTURES
-===================================================== -->
-
-<section id="fixtures">
-
-```
-<div class="container">
-
-    <div class="section-title">
-
-        <span class="section-kicker">
-            MATCH CENTRE
-        </span>
-
-        <h2>
-            📅 Upcoming Fixtures
-        </h2>
-
-        <p>
-            Latest scheduled matches
-        </p>
-
-    </div>
-
-
-    <div
-        id="upcomingFixtures"
-        class="fixtures-grid"
-    >
-
-        <div class="card" style="text-align:center;">
-
-            <h3>
-                ⚽ Loading Fixtures...
-            </h3>
-
-            <p>
-                Please wait while we load the latest
-                scheduled matches.
-            </p>
+            </div>
 
         </div>
 
     </div>
 
 </div>
-```
-
-</section>
-
-<!-- =====================================================
-     RESULTS
-===================================================== -->
-
-<section id="results" class="results-section">
-
-```
-<div class="container">
-
-    <div class="section-title">
-
-        <span class="section-kicker">
-            MATCH CENTRE
-        </span>
-
-        <h2>
-            🏁 Match Results
-        </h2>
-
-        <p>
-            Previous results from Kabaru Ward Football competitions.
-        </p>
-
-    </div>
 
 
-    <div
-        id="resultsList"
-        class="results-list"
-    >
+<!-- ========================================
+     QUICK HUB
+======================================== -->
 
-        <div class="card" style="text-align:center;">
+<section>
 
-            <h3>
-                ⚽ Loading Results...
-            </h3>
-
-            <p>
-                Please wait while we load completed matches.
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- =====================================================
-     REGISTERED TEAMS
-===================================================== -->
-
-<section id="teams">
-
-```
-<div class="container">
-
-    <div class="section-title">
-
-        <span class="section-kicker">
-            OUR FOOTBALL COMMUNITY
-        </span>
-
-        <h2>
-            👥 Registered Teams
-        </h2>
-
-        <p>
-            Meet the approved football teams of Kabaru Ward.
-        </p>
-
-    </div>
-
-
-    <div
-        id="registeredTeams"
-        class="cards"
-    >
-
-        <div class="card" style="text-align:center;">
-
-            <h3>
-                ⚽ Loading Teams...
-            </h3>
-
-            <p>
-                Please wait while we load the registered teams.
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- =====================================================
-     SPONSORS
-===================================================== -->
-
-<section id="sponsors">
-
-```
-<div class="container">
-
-    <div class="sponsor-area">
+    <div class="container">
 
         <div class="section-title">
 
-            <span
-                class="section-kicker"
-                style="color:#f5c542;"
-            >
-                PARTNERSHIP
+            <span class="section-kicker">
+                FOLLOW THE GAME
             </span>
 
             <h2>
-                🤝 Our Sponsors & Partners
+                Everything You Need
             </h2>
 
             <p>
-                Supporting football development and youth talent
-                in Kabaru Ward.
+                Stay updated with the Kabaru Ward
+                football community.
             </p>
 
         </div>
 
 
-        <div class="sponsors">
-
-            <div class="sponsor">
-
-                <strong>
-                    YOUR LOGO
-                </strong>
-
-                Gold Sponsor
-
-            </div>
-
-
-            <div class="sponsor">
-
-                <strong>
-                    YOUR LOGO
-                </strong>
-
-                Official Partner
-
-            </div>
-
-
-            <div class="sponsor">
-
-                <strong>
-                    YOUR LOGO
-                </strong>
-
-                Community Partner
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- =====================================================
-     TEAM REGISTRATION
-===================================================== -->
-
-<section id="register">
-
-```
-<div class="container">
-
-    <div class="register">
-
-        <h2>
-            📝 Register Your Team
-        </h2>
-
-        <p>
-            Register your established football team in Kabaru Ward.
-        </p>
-
-        <p>
-            Your registration will be reviewed by the
-            Kabaru Ward Football administrator.
-        </p>
-
-    </div>
-
-
-    <div class="registration-form-container">
-
-        <form id="teamRegistrationForm">
-
-            <!-- TEAM INFORMATION -->
-
-            <div class="form-section">
-
-                <h2>
-                    ⚽ Team Information
-                </h2>
-
-
-                <label for="teamName">
-                    Team Name *
-                </label>
-
-                <input
-                    type="text"
-                    id="teamName"
-                    name="teamName"
-                    placeholder="e.g. Kabaru United FC"
-                    required
-                >
-
-
-                <label for="shortName">
-                    Short Name
-                </label>
-
-                <input
-                    type="text"
-                    id="shortName"
-                    name="shortName"
-                    placeholder="e.g. KUF"
-                    maxlength="10"
-                >
-
-
-                <label for="teamLocation">
-                    Location / Village *
-                </label>
-
-                <input
-                    type="text"
-                    id="teamLocation"
-                    name="teamLocation"
-                    placeholder="e.g. Kabaru"
-                    required
-                >
-
-
-                <label for="teamPhone">
-                    Team Phone *
-                </label>
-
-                <input
-                    type="tel"
-                    id="teamPhone"
-                    name="teamPhone"
-                    placeholder="e.g. 07XXXXXXXX"
-                    required
-                >
-
-
-                <label for="teamEmail">
-                    Team Email
-                </label>
-
-                <input
-                    type="email"
-                    id="teamEmail"
-                    name="teamEmail"
-                    placeholder="team@example.com"
-                >
-
-            </div>
-
-
-            <!-- TEAM OFFICIALS -->
-
-            <div class="form-section">
-
-                <h2>
-                    👥 Team Officials
-                </h2>
-
-
-                <label for="coachName">
-                    Coach *
-                </label>
-
-                <input
-                    type="text"
-                    id="coachName"
-                    name="coachName"
-                    placeholder="Coach full name"
-                    required
-                >
-
-
-                <label for="captainName">
-                    Captain *
-                </label>
-
-                <input
-                    type="text"
-                    id="captainName"
-                    name="captainName"
-                    placeholder="Captain full name"
-                    required
-                >
-
-
-                <label for="viceCaptainName">
-                    Vice Captain *
-                </label>
-
-                <input
-                    type="text"
-                    id="viceCaptainName"
-                    name="viceCaptainName"
-                    placeholder="Vice captain full name"
-                    required
-                >
-
-
-                <label for="disciplineMasterName">
-                    Discipline Master *
-                </label>
-
-                <input
-                    type="text"
-                    id="disciplineMasterName"
-                    name="disciplineMasterName"
-                    placeholder="Discipline master full name"
-                    required
-                >
-
-            </div>
-
-
-            <!-- PLAYERS -->
-
-            <div class="form-section">
-
-                <div class="players-heading">
-
-                    <div>
-
-                        <h2>
-                            ⚽ Players
-                        </h2>
-
-                        <p>
-                            Add your team's players.
-                        </p>
-
-                    </div>
-
-
-                    <span
-                        id="playerCount"
-                        class="player-count"
-                    >
-                        0/20 players
-                    </span>
-
-                </div>
-
-
-                <div id="playersContainer"></div>
-
-
-                <button
-                    type="button"
-                    id="addPlayerBtn"
-                    class="add-player-btn"
-                >
-                    + Add Player
-                </button>
-
-            </div>
-
-
-            <!-- REGISTRATION MESSAGE -->
-
-            <div
-                id="registrationMessage"
-                class="registration-message"
-            ></div>
-
-
-            <!-- SUBMIT -->
-
-            <button
-                type="submit"
-                class="submit-registration"
+        <div class="hub-grid">
+
+            <a
+                href="#table"
+                class="hub-card"
             >
-                📝 Submit Team Registration
-            </button>
 
-        </form>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-</main>
-
-<!-- =====================================================
-     PLAYER LEADERS
-===================================================== -->
-
-<section
-    id="player-leaders"
-    class="player-leaders-section"
->
-
-```
-<div class="section-heading">
-
-    <span>
-        ⚽ PLAYER STATISTICS
-    </span>
-
-    <h2>
-        Player Leaders
-    </h2>
-
-    <p>
-        Top performers in the Kabaru Ward Football League
-    </p>
-
-</div>
-
-
-<div class="leaders-grid">
-
-    <div class="leader-card">
-
-        <h3>
-            ⚽ Top Scorers
-        </h3>
-
-        <div id="topScorersList">
-            <p>Loading top scorers...</p>
-        </div>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <h3>
-            🎯 Assist Leaders
-        </h3>
-
-        <div id="topAssistsList">
-            <p>Loading assist leaders...</p>
-        </div>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <h3>
-            👕 Most Appearances
-        </h3>
-
-        <div id="mostAppearancesList">
-            <p>Loading appearances...</p>
-        </div>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <h3>
-            🟨 Yellow Cards
-        </h3>
-
-        <div id="yellowCardsList">
-            <p>Loading yellow cards...</p>
-        </div>
-
-    </div>
-
-
-    <div class="leader-card">
-
-        <h3>
-            🟥 Red Cards
-        </h3>
-
-        <div id="redCardsList">
-            <p>Loading red cards...</p>
-        </div>
-
-    </div>
-
-</div>
-```
-
-</section>
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer>
-
-```
-<p>
-    © 2026 <span>Kabaru Ward Football</span>
-</p>
-
-<p>
-    Football • Community • Talent • Development
-</p>
-```
-
-</footer>
-
-<!-- =====================================================
-     SUPABASE
-===================================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js"></script>
-
-<script src="app.js?v=3"></script>
-
-<!-- =====================================================
-     LOAD APPROVED TEAMS
-===================================================== -->
-
-<script>
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    const teamsContainer =
-        document.getElementById("registeredTeams");
-
-    if (!teamsContainer) {
-        return;
-    }
-
-    try {
-
-        const {
-            data: teams,
-            error
-        } = await supabaseClient
-            .from("teams")
-            .select(`
-                id,
-                name,
-                short_name,
-                location,
-                coach_name,
-                captain_name,
-                players (
-                    id,
-                    registration_status
-                )
-            `)
-            .eq("registration_status", "Approved")
-            .order("name", {
-                ascending: true
-            });
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        if (!teams || teams.length === 0) {
-
-            teamsContainer.innerHTML = `
-
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-
-                    <h3>
-                        ⚽ No Registered Teams Yet
-                    </h3>
-
-                    <p>
-                        Approved teams will appear here once
-                        they are registered and approved by
-                        the administrator.
-                    </p>
-
+                <div class="hub-icon">
+                    🏆
                 </div>
-
-            `;
-
-            return;
-        }
-
-
-        teamsContainer.innerHTML = "";
-
-
-        teams.forEach(team => {
-
-            const approvedPlayers =
-                (team.players || []).filter(
-                    player =>
-                        player.registration_status === "Approved"
-                );
-
-
-            const card =
-                document.createElement("div");
-
-
-            card.className = "card";
-
-
-            card.innerHTML = `
 
                 <h3>
-                    ⚽ ${escapeTeamHtml(team.name)}
+                    League Table
                 </h3>
 
-
-                ${
-                    team.short_name
-                    ? `
-                        <p>
-                            <strong>
-                                Short Name:
-                            </strong>
-
-                            ${escapeTeamHtml(
-                                team.short_name
-                            )}
-                        </p>
-                    `
-                    : ""
-                }
-
-
                 <p>
-                    <strong>
-                        📍 Location:
-                    </strong>
-
-                    ${escapeTeamHtml(
-                        team.location ||
-                        "Not provided"
-                    )}
+                    See positions, points,
+                    goal difference and results.
                 </p>
 
-
-                <p>
-                    <strong>
-                        👔 Coach:
-                    </strong>
-
-                    ${escapeTeamHtml(
-                        team.coach_name ||
-                        "Not provided"
-                    )}
-                </p>
+            </a>
 
 
-                <p>
-                    <strong>
-                        🧑‍✈️ Captain:
-                    </strong>
+            <a
+                href="#fixtures"
+                class="hub-card"
+            >
 
-                    ${escapeTeamHtml(
-                        team.captain_name ||
-                        "Not provided"
-                    )}
-                </p>
-
-
-                <p>
-                    <strong>
-                        👥 Players:
-                    </strong>
-
-                    ${approvedPlayers.length}
-                </p>
-
-
-                <div style="margin-top:18px;">
-
-                    <a
-                        href="team.html?id=${encodeURIComponent(team.id)}"
-                        class="btn btn-gold"
-                    >
-                        View Team
-                    </a>
-
+                <div class="hub-icon">
+                    📅
                 </div>
 
-            `;
+                <h3>
+                    Fixtures
+                </h3>
+
+                <p>
+                    Check upcoming matches,
+                    dates, venues and kick-off times.
+                </p>
+
+            </a>
 
 
-            teamsContainer.appendChild(card);
+            <a
+                href="#results"
+                class="hub-card"
+            >
 
-        });
+                <div class="hub-icon">
+                    📋
+                </div>
+
+                <h3>
+                    Results
+                </h3>
+
+                <p>
+                    Follow completed matches
+                    and goal scorers.
+                </p>
+
+            </a>
 
 
-    } catch (error) {
+            <a
+                href="#teams"
+                class="hub-card"
+            >
 
-        console.error(
-            "LOAD APPROVED TEAMS ERROR:",
-            error
-        );
+                <div class="hub-icon">
+                    👥
+                </div>
+
+                <h3>
+                    Teams
+                </h3>
+
+                <p>
+                    Explore registered teams
+                    and their squads.
+                </p>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
 
 
-        teamsContainer.innerHTML = `
+<!-- ========================================
+     LEAGUE TABLE
+======================================== -->
+
+<section
+    id="table"
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span class="section-kicker">
+                COMPETITION STANDINGS
+            </span>
+
+            <h2>
+                🏆 League Table
+            </h2>
+
+            <p>
+                Automatically updated from completed
+                match results.
+            </p>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="league-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Pos
+                        </th>
+
+                        <th>
+                            Team
+                        </th>
+
+                        <th>
+                            P
+                        </th>
+
+                        <th>
+                            W
+                        </th>
+
+                        <th>
+                            D
+                        </th>
+
+                        <th>
+                            L
+                        </th>
+
+                        <th>
+                            GF
+                        </th>
+
+                        <th>
+                            GA
+                        </th>
+
+                        <th>
+                            GD
+                        </th>
+
+                        <th>
+                            Pts
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="leagueTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="10"
+                            style="
+                                text-align:center;
+                                padding:25px;
+                            "
+                        >
+                            Loading league table...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     FIXTURES
+======================================== -->
+
+<section
+    id="fixtures"
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span class="section-kicker">
+                WHAT'S NEXT
+            </span>
+
+            <h2>
+                📅 Upcoming Fixtures
+            </h2>
+
+            <p>
+                Never miss the next Kabaru Ward match.
+            </p>
+
+        </div>
+
+
+        <div id="upcomingFixtures">
 
             <div
                 class="card"
@@ -2226,34 +2204,990 @@ document.addEventListener("DOMContentLoaded", async () => {
             >
 
                 <h3>
-                    ⚠️ Unable to Load Teams
+                    ⚽ Loading Fixtures...
                 </h3>
 
                 <p>
-                    Please try again later.
+                    Please wait while we load
+                    upcoming matches.
                 </p>
 
             </div>
 
-        `;
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     RESULTS
+======================================== -->
+
+<section
+    id="results"
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span class="section-kicker">
+                MATCH CENTRE
+            </span>
+
+            <h2>
+                📋 Recent Results
+            </h2>
+
+            <p>
+                View completed matches and
+                match details.
+            </p>
+
+        </div>
+
+
+        <div id="resultsList">
+
+            <div
+                class="card"
+                style="text-align:center;"
+            >
+
+                <h3>
+                    📋 Loading Results...
+                </h3>
+
+                <p>
+                    Please wait while we load
+                    completed matches.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     REGISTERED TEAMS
+======================================== -->
+
+<section
+    id="teams"
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span class="section-kicker">
+                OUR FOOTBALL COMMUNITY
+            </span>
+
+            <h2>
+                👥 Registered Teams
+            </h2>
+
+            <p>
+                Meet the approved football teams
+                of Kabaru Ward.
+            </p>
+
+        </div>
+
+
+        <div
+            id="registeredTeams"
+            class="cards"
+        >
+
+            <div
+                class="card"
+                style="text-align:center;"
+            >
+
+                <h3>
+                    ⚽ Loading Teams...
+                </h3>
+
+                <p>
+                    Please wait while we load
+                    the registered teams.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     PLAYER LEADERS
+======================================== -->
+
+<section>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span class="section-kicker">
+                PLAYER PERFORMANCE
+            </span>
+
+            <h2>
+                ⭐ Player Leaders
+            </h2>
+
+            <p>
+                Track the players making an impact
+                during the competition.
+            </p>
+
+        </div>
+
+
+        <div class="leaders-grid">
+
+
+            <!-- TOP SCORERS -->
+
+            <div class="leader-card">
+
+                <h3>
+                    ⚽ Top Scorers
+                </h3>
+
+                <div id="topScorersList">
+
+                    <p>
+                        Loading...
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ASSISTS -->
+
+            <div class="leader-card">
+
+                <h3>
+                    🎯 Assist Leaders
+                </h3>
+
+                <div id="topAssistsList">
+
+                    <p>
+                        Loading...
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- APPEARANCES -->
+
+            <div class="leader-card">
+
+                <h3>
+                    👕 Most Appearances
+                </h3>
+
+                <div id="mostAppearancesList">
+
+                    <p>
+                        Loading...
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- YELLOW -->
+
+            <div class="leader-card">
+
+                <h3>
+                    🟨 Yellow Cards
+                </h3>
+
+                <div id="yellowCardsList">
+
+                    <p>
+                        Loading...
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- RED -->
+
+            <div class="leader-card">
+
+                <h3>
+                    🟥 Red Cards
+                </h3>
+
+                <div id="redCardsList">
+
+                    <p>
+                        Loading...
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     TEAM REGISTRATION
+======================================== -->
+
+<section
+    id="register"
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span class="section-kicker">
+                JOIN KABARU FOOTBALL
+            </span>
+
+            <h2>
+                📝 Register Your Team
+            </h2>
+
+            <p>
+                Teams can register with their officials
+                and squad of up to 20 players.
+            </p>
+
+        </div>
+
+
+        <div class="registration-card">
+
+            <form
+                id="teamRegistrationForm"
+            >
+
+
+                <!-- TEAM DETAILS -->
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="teamName">
+                            Team Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="teamName"
+                            name="teamName"
+                            placeholder="Enter team name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="shortName">
+                            Short Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shortName"
+                            name="shortName"
+                            placeholder="e.g. KTFC"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="teamLocation">
+                            Team Location *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="teamLocation"
+                            name="teamLocation"
+                            placeholder="e.g. Kabaru"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="teamPhone">
+                            Phone Number *
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="teamPhone"
+                            name="teamPhone"
+                            placeholder="Enter phone number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="teamEmail">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="teamEmail"
+                            name="teamEmail"
+                            placeholder="Enter email address"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="coachName">
+                            Coach Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="coachName"
+                            name="coachName"
+                            placeholder="Coach full name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="captainName">
+                            Captain Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="captainName"
+                            name="captainName"
+                            placeholder="Captain full name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="viceCaptainName">
+                            Vice Captain Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="viceCaptainName"
+                            name="viceCaptainName"
+                            placeholder="Vice captain full name"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="disciplineMasterName">
+                            Discipline Master Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="disciplineMasterName"
+                            name="disciplineMasterName"
+                            placeholder="Discipline master full name"
+                        >
+
+                    </div>
+
+
+                    <!-- TEAM LOGO -->
+
+                    <div class="form-group">
+
+                        <label for="teamLogo">
+                            🛡️ Team Logo
+                            <span
+                                style="
+                                    color:#777;
+                                    font-weight:400;
+                                "
+                            >
+                                (Optional)
+                            </span>
+                        </label>
+
+                        <input
+                            type="file"
+                            id="teamLogo"
+                            name="teamLogo"
+                            accept="image/*"
+                        >
+
+                        <small
+                            style="
+                                margin-top:5px;
+                                color:#777;
+                            "
+                        >
+                            Upload a clear team logo.
+                            Maximum 5MB.
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- PLAYERS -->
+
+                <div class="players-heading">
+
+                    <div>
+
+                        <h3
+                            style="
+                                color:#04351f;
+                            "
+                        >
+                            👥 Team Players
+                        </h3>
+
+                        <p
+                            style="
+                                color:#68776f;
+                                font-size:13px;
+                            "
+                        >
+                            Add between 1 and 20 players.
+                            Player photos are optional.
+                        </p>
+
+                    </div>
+
+
+                    <span id="playerCount">
+                        0/20 players
+                    </span>
+
+                </div>
+
+
+                <div id="playersContainer">
+                    <!-- Player rows added by app.js -->
+                </div>
+
+
+                <button
+                    type="button"
+                    id="addPlayerBtn"
+                    class="btn btn-outline"
+                >
+                    + Add Another Player
+                </button>
+
+
+                <!-- SUBMIT -->
+
+                <div
+                    style="
+                        margin-top:10px;
+                    "
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-green"
+                        style="
+                            width:100%;
+                            font-size:16px;
+                        "
+                    >
+                        🚀 Submit Team Registration
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="registrationMessage"
+                ></div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     SPONSORS
+======================================== -->
+
+<section
+    class="sponsors"
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span
+                class="section-kicker"
+                style="
+                    color:#f5c542;
+                "
+            >
+                SUPPORTING THE GAME
+            </span>
+
+            <h2>
+                🤝 Our Sponsors
+            </h2>
+
+            <p>
+                Partner with Kabaru Ward Football
+                and support local talent.
+            </p>
+
+        </div>
+
+
+        <div class="sponsor-grid">
+
+            <div class="sponsor-box">
+                Sponsor Space
+            </div>
+
+            <div class="sponsor-box">
+                Sponsor Space
+            </div>
+
+            <div class="sponsor-box">
+                Sponsor Space
+            </div>
+
+            <div class="sponsor-box">
+                Sponsor Space
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     FOOTER
+======================================== -->
+
+<footer>
+
+    <div class="container">
+
+        <p>
+            © 2026
+            <strong>
+                Kabaru Ward Football
+            </strong>
+            .
+            Built for the football community
+            of Kabaru Ward.
+        </p>
+
+        <p
+            style="
+                margin-top:5px;
+            "
+        >
+            ⚽ Play. Compete. Represent Kabaru.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<!-- ========================================
+     SUPABASE
+======================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<script src="supabase.js"></script>
+
+
+<script src="app.js"></script>
+
+
+<!-- ========================================
+     REGISTERED TEAMS LOADER
+======================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        const teamsContainer =
+            document.getElementById(
+                "registeredTeams"
+            );
+
+
+        if (!teamsContainer) {
+            return;
+        }
+
+
+        try {
+
+            const {
+                data: teams,
+                error
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .select(`
+                        id,
+                        name,
+                        short_name,
+                        location,
+                        coach_name,
+                        captain_name,
+
+                        players (
+                            id,
+                            registration_status
+                        )
+                    `)
+                    .eq(
+                        "registration_status",
+                        "Approved"
+                    )
+                    .order(
+                        "name",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            if (
+                !teams ||
+                teams.length === 0
+            ) {
+
+                teamsContainer.innerHTML = `
+                    <div
+                        class="card"
+                        style="text-align:center;"
+                    >
+
+                        <h3>
+                            ⚽ No Registered Teams Yet
+                        </h3>
+
+                        <p>
+                            Approved teams will appear
+                            here once they are registered
+                            and approved by the administrator.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            teamsContainer.innerHTML = "";
+
+
+            teams.forEach(
+                function (team) {
+
+                    const approvedPlayers =
+                        (
+                            team.players ||
+                            []
+                        ).filter(
+                            function (player) {
+
+                                return (
+                                    player.registration_status ===
+                                    "Approved"
+                                );
+                            }
+                        );
+
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    card.className =
+                        "card";
+
+
+                    card.innerHTML = `
+
+                        <div
+                            style="
+                                text-align:center;
+                                margin-bottom:15px;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    width:85px;
+                                    height:85px;
+                                    border-radius:50%;
+                                    background:#f0f5f1;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    margin:0 auto 12px;
+                                    overflow:hidden;
+                                    border:3px solid #f5c542;
+                                "
+                            >
+
+                                <span
+                                    style="
+                                        font-size:40px;
+                                    "
+                                >
+                                    ⚽
+                                </span>
+
+                            </div>
+
+
+                            <h3>
+                                ⚽
+                                ${escapeTeamHtml(
+                                    team.name
+                                )}
+                            </h3>
+
+                        </div>
+
+
+                        ${
+                            team.short_name
+                            ? `
+                                <p>
+                                    <strong>
+                                        Short Name:
+                                    </strong>
+                                    ${escapeTeamHtml(
+                                        team.short_name
+                                    )}
+                                </p>
+                            `
+                            : ""
+                        }
+
+
+                        <p>
+                            <strong>
+                                📍 Location:
+                            </strong>
+
+                            ${escapeTeamHtml(
+                                team.location ||
+                                "Not provided"
+                            )}
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                👔 Coach:
+                            </strong>
+
+                            ${escapeTeamHtml(
+                                team.coach_name ||
+                                "Not provided"
+                            )}
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                🧑‍✈️ Captain:
+                            </strong>
+
+                            ${escapeTeamHtml(
+                                team.captain_name ||
+                                "Not provided"
+                            )}
+                        </p>
+
+
+                        <p>
+                            <strong>
+                                👥 Players:
+                            </strong>
+
+                            ${approvedPlayers.length}
+                        </p>
+
+
+                        <div
+                            style="
+                                margin-top:18px;
+                            "
+                        >
+
+                            <a
+                                href="team.html?id=${encodeURIComponent(
+                                    team.id
+                                )}"
+                                class="btn btn-gold"
+                            >
+                                View Team
+                            </a>
+
+                        </div>
+                    `;
+
+
+                    teamsContainer.appendChild(
+                        card
+                    );
+                }
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "LOAD APPROVED TEAMS ERROR:",
+                error
+            );
+
+
+            teamsContainer.innerHTML = `
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+
+                    <h3>
+                        ⚠️ Unable to Load Teams
+                    </h3>
+
+                    <p>
+                        Please try again later.
+                    </p>
+
+                </div>
+            `;
+        }
+
+
+        function escapeTeamHtml(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
 
     }
-
-
-    function escapeTeamHtml(value) {
-
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-
-    }
-
-});
+);
 
 </script>
 
+
 </body>
+
 </html>
