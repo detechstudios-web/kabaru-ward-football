@@ -1,3 +1,4 @@
+
 // ========================================
 // KABARU WARD FOOTBALL
 // MAIN WEBSITE APP
@@ -146,14 +147,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             return null;
         }
 
-        // Check file type
         if (!file.type.startsWith("image/")) {
             throw new Error(
                 "Please select an image file."
             );
         }
 
-        // Maximum 5 MB
         const MAX_FILE_SIZE =
             5 * 1024 * 1024;
 
@@ -261,6 +260,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 .maybeSingle();
 
         if (error) {
+
             console.error(
                 "COMPETITION ERROR:",
                 error
@@ -732,7 +732,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            // Get goals
             const {
                 data: goals,
                 error: goalsError
@@ -764,6 +763,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             if (goalsError) {
+
                 console.error(
                     "GOALS ERROR:",
                     goalsError
@@ -771,7 +771,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            // Group goals by player
             const groupedGoals = {};
 
 
@@ -795,10 +794,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                     ) {
 
                         groupedGoals[key] = {
+
                             name:
                                 player.full_name,
+
                             team_id:
                                 player.team_id,
+
                             minutes: []
                         };
                     }
@@ -817,6 +819,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     if (minuteText) {
+
                         groupedGoals[key]
                             .minutes
                             .push(minuteText);
@@ -888,7 +891,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             resultCard.className =
                 "result-card";
-
 
             resultCard.style.cursor =
                 "pointer";
@@ -1224,16 +1226,36 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     teams[home.id] = {
-                        id: home.id,
-                        name: home.name,
-                        played: 0,
-                        won: 0,
-                        drawn: 0,
-                        lost: 0,
-                        gf: 0,
-                        ga: 0,
-                        gd: 0,
-                        points: 0
+
+                        id:
+                            home.id,
+
+                        name:
+                            home.name,
+
+                        played:
+                            0,
+
+                        won:
+                            0,
+
+                        drawn:
+                            0,
+
+                        lost:
+                            0,
+
+                        gf:
+                            0,
+
+                        ga:
+                            0,
+
+                        gd:
+                            0,
+
+                        points:
+                            0
                     };
                 }
 
@@ -1244,16 +1266,36 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     teams[away.id] = {
-                        id: away.id,
-                        name: away.name,
-                        played: 0,
-                        won: 0,
-                        drawn: 0,
-                        lost: 0,
-                        gf: 0,
-                        ga: 0,
-                        gd: 0,
-                        points: 0
+
+                        id:
+                            away.id,
+
+                        name:
+                            away.name,
+
+                        played:
+                            0,
+
+                        won:
+                            0,
+
+                        drawn:
+                            0,
+
+                        lost:
+                            0,
+
+                        gf:
+                            0,
+
+                        ga:
+                            0,
+
+                        gd:
+                            0,
+
+                        points:
+                            0
                     };
                 }
 
@@ -1310,7 +1352,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     teams[home.id].won++;
-                    teams[home.id].points += 3;
+
+                    teams[home.id].points +=
+                        3;
+
                     teams[away.id].lost++;
 
                 } else if (
@@ -1319,7 +1364,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     teams[away.id].won++;
-                    teams[away.id].points += 3;
+
+                    teams[away.id].points +=
+                        3;
+
                     teams[home.id].lost++;
 
                 } else {
@@ -1355,6 +1403,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             b.points !==
                             a.points
                         ) {
+
                             return (
                                 b.points -
                                 a.points
@@ -1365,6 +1414,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             b.gd !==
                             a.gd
                         ) {
+
                             return (
                                 b.gd -
                                 a.gd
@@ -1375,6 +1425,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             b.gf !==
                             a.gf
                         ) {
+
                             return (
                                 b.gf -
                                 a.gf
@@ -1411,10 +1462,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         sortedTeams.forEach(
-            function (team, index) {
+            function (
+                team,
+                index
+            ) {
 
                 const row =
-                    document.createElement("tr");
+                    document.createElement(
+                        "tr"
+                    );
 
 
                 row.innerHTML = `
@@ -1559,7 +1615,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     players[player.id] = {
 
-                        id: player.id,
+                        id:
+                            player.id,
 
                         name:
                             player.full_name,
@@ -1571,11 +1628,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                             player.teams?.name ||
                             "Unknown Team",
 
-                        appearances: 0,
-                        goals: 0,
-                        assists: 0,
-                        yellow: 0,
-                        red: 0
+                        appearances:
+                            0,
+
+                        goals:
+                            0,
+
+                        assists:
+                            0,
+
+                        yellow:
+                            0,
+
+                        red:
+                            0
                     };
                 }
 
@@ -1679,6 +1745,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         item.innerHTML = `
 
                             <div>
+
                                 <strong>
                                     ${index + 1}.
                                     ${escapeHtml(
@@ -1697,7 +1764,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         player.team
                                     )}
                                 </div>
+
                             </div>
+
 
                             <strong
                                 style="
@@ -1861,7 +1930,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // ========================================
-        // ADD TEAM LOGO INPUT IF NOT IN HTML
+        // TEAM LOGO INPUT
         // ========================================
 
         let teamLogoInput =
@@ -2034,9 +2103,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             row.innerHTML = `
 
                 <div class="player-number">
+
                     <strong>
                         Player ${players}
                     </strong>
+
                 </div>
 
 
@@ -2062,6 +2133,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     name="position"
                     required
                 >
+
                     <option value="">
                         Select position
                     </option>
@@ -2081,6 +2153,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     <option value="Forward">
                         Forward
                     </option>
+
                 </select>
 
 
@@ -2100,6 +2173,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         "
                     >
                         📷 Player Photo
+
                         <span
                             style="
                                 font-weight:400;
@@ -2108,13 +2182,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                         >
                             (optional)
                         </span>
+
                     </label>
+
 
                     <input
                         type="file"
                         name="player_photo"
                         accept="image/*"
                     >
+
 
                     <small
                         style="
@@ -2221,29 +2298,26 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const playerData = [];
 
 
-                let imageFiles = [];
+                const imageFiles = [];
 
 
                 playerRows.forEach(
                     function (row) {
 
-                        const name =
+                        const nameInput =
                             row.querySelector(
                                 '[name="player_name"]'
-                            ).value.trim();
+                            );
 
-
-                        const jersey =
+                        const jerseyInput =
                             row.querySelector(
                                 '[name="jersey_number"]'
-                            ).value;
+                            );
 
-
-                        const position =
+                        const positionInput =
                             row.querySelector(
                                 '[name="position"]'
-                            ).value;
-
+                            );
 
                         const photoInput =
                             row.querySelector(
@@ -2251,14 +2325,30 @@ document.addEventListener("DOMContentLoaded", async function () {
                             );
 
 
+                        const name =
+                            nameInput?.value
+                                ?.trim() || "";
+
+
+                        const jersey =
+                            jerseyInput?.value || "";
+
+
+                        const position =
+                            positionInput?.value || "";
+
+
                         const photoFile =
                             photoInput?.files?.[0] ||
                             null;
 
 
+                        // IMPORTANT:
+                        // The RPC expects "full_name",
+                        // NOT "player_name".
                         playerData.push({
 
-                            player_name:
+                            full_name:
                                 name,
 
                             jersey_number:
@@ -2270,6 +2360,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                         imageFiles.push({
+
                             name:
                                 name,
 
@@ -2281,6 +2372,52 @@ document.addEventListener("DOMContentLoaded", async function () {
                         });
                     }
                 );
+
+
+                // ========================================
+                // VALIDATE PLAYER DATA
+                // ========================================
+
+                for (
+                    const player of playerData
+                ) {
+
+                    if (
+                        !player.full_name
+                    ) {
+
+                        alert(
+                            "Please enter the full name for every player."
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        !player.jersey_number ||
+                        player.jersey_number < 1
+                    ) {
+
+                        alert(
+                            "Please enter a valid jersey number for every player."
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        !player.position
+                    ) {
+
+                        alert(
+                            "Please select a position for every player."
+                        );
+
+                        return;
+                    }
+                }
 
 
                 // ========================================
@@ -2436,7 +2573,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
-                // Disable submit buttons
                 const submitButtons =
                     teamRegistrationForm.querySelectorAll(
                         'button[type="submit"]'
@@ -2445,7 +2581,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 submitButtons.forEach(
                     function (button) {
+
                         button.disabled = true;
+
                     }
                 );
 
@@ -2509,7 +2647,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     let newTeam = null;
 
 
-                    // Try to use RPC returned ID
                     if (
                         rpcData &&
                         typeof rpcData === "number"
@@ -2536,7 +2673,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
 
 
-                    // If RPC returned an object
                     if (
                         !newTeam &&
                         rpcData &&
@@ -2755,17 +2891,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     ) {
 
                                         return (
+
                                             Number(
                                                 player.jersey_number
                                             ) ===
                                             Number(
                                                 image.jersey
-                                            ) &&
+                                            )
+
+                                            &&
+
                                             String(
                                                 player.full_name
                                             )
                                                 .trim()
                                                 .toLowerCase() ===
+
                                             String(
                                                 image.name
                                             )
@@ -2839,6 +2980,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             </strong>
                             <br>
                             Your team is now awaiting approval.
+
                             ${
                                 teamLogoFile ||
                                 imageFiles.some(
@@ -2867,7 +3009,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     createPlayerRow();
-
 
                     updatePlayerCount();
 
@@ -2898,10 +3039,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 } finally {
 
-                    // Re-enable buttons
                     submitButtons.forEach(
                         function (button) {
-                            button.disabled = false;
+
+                            button.disabled =
+                                false;
+
                         }
                     );
                 }
@@ -2946,3 +3089,4 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 });
+
