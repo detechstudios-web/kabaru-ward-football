@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Fixtures - Kabaru Ward Football</title>
+
+<style>
+
+/* ========================================
+   KABARU WARD FOOTBALL
+   FIXTURES CENTRE
+======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --green-dark: #04351f;
+    --green: #075b35;
+    --green-light: #0b7545;
+    --gold: #f5c542;
+    --gold-light: #ffe082;
+    --white: #ffffff;
+    --light: #f5f7f6;
+    --text: #173126;
+    --muted: #68776f;
+    --border: #dfe7e2;
+    --shadow: 0 10px 30px rgba(4, 53, 31, 0.10);
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--light);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green)
+        );
+    color: var(--white);
+    padding: 18px 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-inner {
+    max-width: 1150px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-ball {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+.brand h1 {
+    font-size: 22px;
+    line-height: 1.1;
+}
+
+.brand p {
+    font-size: 12px;
+    opacity: 0.82;
+    margin-top: 3px;
+}
+
+.home-link {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.home-link:hover {
+    background: var(--gold);
+    color: var(--green-dark);
+}
+
+/* ========================================
+   HERO
+======================================== */
+
+.hero {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green-light)
+        );
+    color: white;
+    padding: 55px 20px 70px;
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 850px;
+    margin: auto;
+}
+
+.hero-kicker {
+    display: inline-block;
+    background: rgba(245,197,66,0.16);
+    color: var(--gold-light);
+    border: 1px solid rgba(245,197,66,0.35);
+    padding: 7px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.hero h2 {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.hero h2 span {
+    color: var(--gold);
+}
+
+.hero p {
+    max-width: 650px;
+    margin: auto;
+    color: rgba(255,255,255,0.85);
+}
+
+/* ========================================
+   MAIN CONTAINER
+======================================== */
+
+.container {
+    max-width: 1150px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+.main-content {
+    margin-top: -28px;
+    position: relative;
+    z-index: 2;
+}
+
+/* ========================================
+   FILTER CARD
+======================================== */
+
+.filters-card {
+    background: white;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 30px;
+}
+
+.filters-title {
+    margin-bottom: 18px;
+}
+
+.filters-title h3 {
+    color: var(--green-dark);
+    font-size: 20px;
+}
+
+.filters-title p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(3, 1fr);
+    gap: 15px;
+}
+
+.filter-group label {
+    display: block;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 7px;
+    color: var(--green-dark);
+}
+
+.filter-group select {
+    width: 100%;
+    padding: 12px 13px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+}
+
+.filter-group select:focus {
+    border-color: var(--green);
+    box-shadow:
+        0 0 0 3px rgba(7,91,53,0.10);
+}
+
+/* ========================================
+   SECTION HEADER
+======================================== */
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.section-heading h3 {
+    color: var(--green-dark);
+    font-size: 25px;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* ========================================
+   FIXTURE GROUP
+======================================== */
+
+.fixture-group {
+    margin-bottom: 35px;
+}
+
+.matchday-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 13px;
+}
+
+.matchday-badge {
+    background: var(--green-dark);
+    color: var(--gold);
+    padding: 7px 13px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.matchday-line {
+    height: 1px;
+    background: var(--border);
+    flex: 1;
+}
+
+/* ========================================
+   FIXTURE CARD
+======================================== */
+
+.fixtures-list {
+    display: grid;
+    gap: 15px;
+}
+
+.fixture-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    overflow: hidden;
+    box-shadow: 0 5px 18px rgba(4,53,31,0.06);
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.fixture-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.fixture-top {
+    padding: 12px 16px;
+    background: #f8faf9;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.competition-name {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--green);
+}
+
+.fixture-status {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 5px 9px;
+    border-radius: 20px;
+}
+
+.status-scheduled {
+    background: #e8f2ed;
+    color: var(--green-dark);
+}
+
+.status-published {
+    background: #e8f2ed;
+    color: var(--green-dark);
+}
+
+.status-completed {
+    background: #fff4c9;
+    color: #725600;
+}
+
+.status-postponed {
+    background: #fff0df;
+    color: #9a4f00;
+}
+
+.status-cancelled {
+    background: #fde8e8;
+    color: #a32121;
+}
+
+.fixture-main {
+    padding: 22px 18px;
+}
+
+.fixture-date {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.fixture-date strong {
+    display: block;
+    color: var(--green-dark);
+    font-size: 17px;
+}
+
+.fixture-date span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.teams-row {
+    display: grid;
+    grid-template-columns:
+        1fr
+        120px
+        1fr;
+    align-items: center;
+    gap: 15px;
+}
+
+.team {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.team.home {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+.team.away {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.team-logo {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--green);
+    background: #f0f4f2;
+    flex-shrink: 0;
+}
+
+.team-placeholder {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 3px solid var(--green);
+    background: #f0f4f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+    flex-shrink: 0;
+}
+
+.team-name {
+    font-weight: 800;
+    color: var(--green-dark);
+    font-size: 16px;
+}
+
+.team-short {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.match-time {
+    text-align: center;
+}
+
+.match-time strong {
+    display: block;
+    color: var(--green-dark);
+    font-size: 25px;
+}
+
+.match-time span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.score-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.score {
+    background: var(--green-dark);
+    color: white;
+    min-width: 42px;
+    padding: 5px 8px;
+    border-radius: 8px;
+    font-size: 23px;
+    font-weight: 900;
+}
+
+.score-separator {
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.fixture-bottom {
+    padding: 13px 16px;
+    border-top: 1px solid var(--border);
+    background: #fbfcfb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.fixture-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.fixture-info span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.details-btn {
+    background: var(--green);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.details-btn:hover {
+    background: var(--green-dark);
+}
+
+/* ========================================
+   EMPTY / LOADING
+======================================== */
+
+.empty-state {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 45px 20px;
+    text-align: center;
+    box-shadow: 0 5px 18px rgba(4,53,31,0.05);
+}
+
+.empty-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.empty-state h3 {
+    color: var(--green-dark);
+    margin-bottom: 6px;
+}
+
+.empty-state p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+
+footer {
+    margin-top: 60px;
+    background: var(--green-dark);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+footer strong {
+    color: var(--gold);
+}
+
+footer p {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-top: 5px;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 800px) {
+
+    .hero h2 {
+        font-size: 34px;
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .teams-row {
+        grid-template-columns:
+            1fr
+            95px
+            1fr;
+        gap: 8px;
+    }
+
+    .team {
+        gap: 7px;
+    }
+
+    .team-logo,
+    .team-placeholder {
+        width: 52px;
+        height: 52px;
+    }
+
+    .team-name {
+        font-size: 14px;
+    }
+
+    .match-time strong {
+        font-size: 20px;
+    }
+
+}
+
+@media (max-width: 560px) {
+
+    header {
+        padding: 14px;
+    }
+
+    .header-inner {
+        align-items: flex-start;
+    }
+
+    .brand h1 {
+        font-size: 18px;
+    }
+
+    .brand-ball {
+        width: 40px;
+        height: 40px;
+        font-size: 21px;
+    }
+
+    .home-link {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .hero {
+        padding: 42px 18px 58px;
+    }
+
+    .hero h2 {
+        font-size: 29px;
+    }
+
+    .container {
+        padding: 0 12px;
+    }
+
+    .main-content {
+        margin-top: -22px;
+    }
+
+    .filters-card {
+        padding: 17px;
+    }
+
+    .section-heading {
+        display: block;
+    }
+
+    .section-heading p {
+        margin-top: 3px;
+    }
+
+    .fixture-top {
+        padding: 10px 12px;
+    }
+
+    .fixture-main {
+        padding: 17px 10px;
+    }
+
+    .teams-row {
+        grid-template-columns:
+            minmax(0, 1fr)
+            72px
+            minmax(0, 1fr);
+    }
+
+    .team {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .team.home {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .team.away {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .team-logo,
+    .team-placeholder {
+        width: 50px;
+        height: 50px;
+    }
+
+    .team-name {
+        font-size: 13px;
+        line-height: 1.25;
+    }
+
+    .team-short {
+        font-size: 10px;
+    }
+
+    .match-time strong {
+        font-size: 18px;
+    }
+
+    .fixture-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .details-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ========================================
+     HEADER
+======================================== -->
+
+<header>
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="brand"
+        >
+
+            <div class="brand-ball">
+                ⚽
+            </div>
+
+            <div>
+
+                <h1>
+                    Kabaru Ward Football
+                </h1>
+
+                <p>
+                    Official Football Hub
+                </p>
+
+            </div>
+
+        </a>
+
+        <a
+            href="index.html"
+            class="home-link"
+        >
+            ← Home
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- ========================================
+     HERO
+======================================== -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-kicker">
+            KABARU WARD FOOTBALL
+        </span>
+
+        <h2>
+            Fixtures <span>Centre</span>
+        </h2>
+
+        <p>
+            Follow upcoming matches, matchdays,
+            venues, kick-off times and completed
+            fixtures across Kabaru Ward.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     MAIN
+======================================== -->
+
+<main>
+
+<div class="container main-content">
+
+
+<!-- ========================================
+     FILTERS
+======================================== -->
+
+<section class="filters-card">
+
+    <div class="filters-title">
+
+        <h3>
+            🔎 Find a Fixture
+        </h3>
+
+        <p>
+            Filter fixtures by competition,
+            status or matchday.
+        </p>
+
+    </div>
+
+
+    <div class="filters-grid">
+
+        <div class="filter-group">
+
+            <label for="competitionFilter">
+                Competition
+            </label>
+
+            <select id="competitionFilter">
+
+                <option value="all">
+                    All Competitions
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="statusFilter">
+                Status
+            </label>
+
+            <select id="statusFilter">
+
+                <option value="all">
+                    All Fixtures
+                </option>
+
+                <option value="upcoming">
+                    Upcoming
+                </option>
+
+                <option value="Completed">
+                    Completed
+                </option>
+
+                <option value="Scheduled">
+                    Scheduled
+                </option>
+
+                <option value="Published">
+                    Published
+                </option>
+
+                <option value="Postponed">
+                    Postponed
+                </option>
+
+                <option value="Cancelled">
+                    Cancelled
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-group">
+
+            <label for="matchdayFilter">
+                Matchday
+            </label>
+
+            <select id="matchdayFilter">
+
+                <option value="all">
+                    All Matchdays
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     FIXTURES
+======================================== -->
+
+<section>
+
+    <div class="section-heading">
+
+        <div>
+
+            <h3>
+                📅 Fixtures
+            </h3>
+
+            <p id="fixtureCount">
+                Loading fixtures...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="fixturesContainer">
+
+        <div class="loading">
+            ⚽ Loading fixtures...
+        </div>
+
+    </div>
+
+</section>
+
+
+</div>
+
+</main>
+
+
+<!-- ========================================
+     FOOTER
+======================================== -->
+
+<footer>
+
+    <strong>
+        Kabaru Ward Football
+    </strong>
+
+    <p>
+        Official football fixtures, results,
+        teams and player information.
+    </p>
+
+</footer>
+
+
+<!-- ========================================
+     SUPABASE
+======================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js?v=3"></script>
+
+
+<!-- ========================================
+     FIXTURES APP
+======================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+
+        /* ========================================
+           ELEMENTS
+        ======================================== */
+
+        const fixturesContainer =
+            document.getElementById(
+                "fixturesContainer"
+            );
+
+        const fixtureCount =
+            document.getElementById(
+                "fixtureCount"
+            );
+
+        const competitionFilter =
+            document.getElementById(
+                "competitionFilter"
+            );
+
+        const statusFilter =
+            document.getElementById(
+                "statusFilter"
+            );
+
+        const matchdayFilter =
+            document.getElementById(
+                "matchdayFilter"
+            );
+
+
+        /* ========================================
+           DATA
+        ======================================== */
+
+        let allFixtures = [];
+
+        let allTeams = [];
+
+        let allCompetitions = [];
+
+        let allResults = [];
+
+
+        /* ========================================
+           ESCAPE HTML
+        ======================================== */
+
+        function escapeHtml(value) {
+
+            if (value === null ||
+                value === undefined) {
+
+                return "";
+
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+
+        /* ========================================
+           FORMAT DATE
+        ======================================== */
+
+        function formatDate(dateString) {
+
+            if (!dateString) {
+                return "-";
+            }
+
+            const date =
+                new Date(
+                    dateString + "T00:00:00"
+                );
+
+            return date.toLocaleDateString(
+                "en-KE",
+                {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+        /* ========================================
+           FORMAT SHORT DATE
+        ======================================== */
+
+        function formatShortDate(dateString) {
+
+            if (!dateString) {
+                return "-";
+            }
+
+            const date =
+                new Date(
+                    dateString + "T00:00:00"
+                );
+
+            return date.toLocaleDateString(
+                "en-KE",
+                {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+        /* ========================================
+           FORMAT TIME
+        ======================================== */
+
+        function formatTime(timeString) {
+
+            if (!timeString) {
+                return "-";
+            }
+
+            const parts =
+                timeString.split(":");
+
+            if (parts.length < 2) {
+                return timeString;
+            }
+
+            let hour =
+                Number(parts[0]);
+
+            const minute =
+                parts[1];
+
+            const suffix =
+                hour >= 12 ? "PM" : "AM";
+
+            hour =
+                hour % 12 || 12;
+
+            return (
+                hour +
+                ":" +
+                minute +
+                " " +
+                suffix
+            );
+
+        }
+
+
+        /* ========================================
+           GET TEAM
+        ======================================== */
+
+        function getTeam(id) {
+
+            return allTeams.find(
+                function (team) {
+
+                    return Number(team.id) ===
+                        Number(id);
+
+                }
+            );
+
+        }
+
+
+        /* ========================================
+           GET COMPETITION
+        ======================================== */
+
+        function getCompetition(id) {
+
+            return allCompetitions.find(
+                function (competition) {
+
+                    return Number(
+                        competition.id
+                    ) === Number(id);
+
+                }
+            );
+
+        }
+
+
+        /* ========================================
+           GET RESULT
+        ======================================== */
+
+        function getResult(fixtureId) {
+
+            return allResults.find(
+                function (result) {
+
+                    return Number(
+                        result.fixture_id
+                    ) === Number(fixtureId);
+
+                }
+            );
+
+        }
+
+
+        /* ========================================
+           LOAD DATA
+        ======================================== */
+
+        async function loadData() {
+
+            fixturesContainer.innerHTML =
+                `
+                <div class="loading">
+                    ⚽ Loading fixtures...
+                </div>
+                `;
+
+            try {
+
+                /* ========================================
+                   LOAD FIXTURES
+                ======================================== */
+
+                const {
+                    data: fixtures,
+                    error: fixturesError
+                } =
+                    await supabaseClient
+                        .from("fixtures")
+                        .select(`
+                            id,
+                            competition_id,
+                            home_team_id,
+                            away_team_id,
+                            match_date,
+                            kick_off,
+                            venue,
+                            matchday,
+                            status
+                        `)
+                        .order(
+                            "match_date",
+                            {
+                                ascending: true
+                            }
+                        )
+                        .order(
+                            "kick_off",
+                            {
+                                ascending: true
+                            }
+                        );
+
+
+                if (fixturesError) {
+                    throw fixturesError;
+                }
+
+
+                allFixtures =
+                    fixtures || [];
+
+
+                /* ========================================
+                   LOAD TEAMS
+                ======================================== */
+
+                const teamIds = [
+                    ...new Set(
+                        allFixtures.flatMap(
+                            function (fixture) {
+
+                                return [
+                                    fixture.home_team_id,
+                                    fixture.away_team_id
+                                ];
+
+                            }
+                        )
+                    )
+                ];
+
+
+                if (teamIds.length > 0) {
+
+                    const {
+                        data: teams,
+                        error: teamsError
+                    } =
+                        await supabaseClient
+                            .from("teams")
+                            .select(`
+                                id,
+                                name,
+                                short_name,
+                                logo_url,
+                                registration_status
+                            `)
+                            .in(
+                                "id",
+                                teamIds
+                            );
+
+
+                    if (teamsError) {
+                        throw teamsError;
+                    }
+
+                    allTeams =
+                        teams || [];
+
+                }
+
+
+                /* ========================================
+                   LOAD COMPETITIONS
+                ======================================== */
+
+                const competitionIds = [
+                    ...new Set(
+                        allFixtures.map(
+                            function (fixture) {
+
+                                return fixture.competition_id;
+
+                            }
+                        )
+                    )
+                ];
+
+
+                if (
+                    competitionIds.length > 0
+                ) {
+
+                    const {
+                        data: competitions,
+                        error: competitionsError
+                    } =
+                        await supabaseClient
+                            .from("competitions")
+                            .select(`
+                                id,
+                                name,
+                                season,
+                                competition_type,
+                                status
+                            `)
+                            .in(
+                                "id",
+                                competitionIds
+                            );
+
+
+                    if (competitionsError) {
+                        throw competitionsError;
+                    }
+
+                    allCompetitions =
+                        competitions || [];
+
+                }
+
+
+                /* ========================================
+                   LOAD RESULTS
+                ======================================== */
+
+                const fixtureIds =
+                    allFixtures.map(
+                        function (fixture) {
+
+                            return fixture.id;
+
+                        }
+                    );
+
+
+                if (fixtureIds.length > 0) {
+
+                    const {
+                        data: results,
+                        error: resultsError
+                    } =
+                        await supabaseClient
+                            .from("results")
+                            .select(`
+                                id,
+                                fixture_id,
+                                home_score,
+                                away_score
+                            `)
+                            .in(
+                                "fixture_id",
+                                fixtureIds
+                            );
+
+
+                    if (resultsError) {
+                        throw resultsError;
+                    }
+
+                    allResults =
+                        results || [];
+
+                }
+
+
+                populateFilters();
+
+                renderFixtures();
+
+
+            } catch (error) {
+
+                console.error(
+                    "FIXTURE CENTRE ERROR:",
+                    error
+                );
+
+                fixtureCount.textContent =
+                    "Unable to load fixtures.";
+
+                fixturesContainer.innerHTML =
+                    `
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ⚠️
+                        </div>
+
+                        <h3>
+                            Unable to Load Fixtures
+                        </h3>
+
+                        <p>
+                            Please refresh the page
+                            and try again.
+                        </p>
+
+                    </div>
+                    `;
+
+            }
+
+        }
+
+
+        /* ========================================
+           POPULATE FILTERS
+        ======================================== */
+
+        function populateFilters() {
+
+            /* ========================================
+               COMPETITIONS
+            ======================================== */
+
+            competitionFilter.innerHTML =
+                `
+                <option value="all">
+                    All Competitions
+                </option>
+                `;
+
+
+            allCompetitions
+                .sort(
+                    function (a, b) {
+
+                        return String(a.name)
+                            .localeCompare(
+                                String(b.name)
+                            );
+
+                    }
+                )
+                .forEach(
+                    function (competition) {
+
+                        const option =
+                            document.createElement(
+                                "option"
+                            );
+
+                        option.value =
+                            competition.id;
+
+                        option.textContent =
+                            competition.name +
+                            (
+                                competition.season
+                                    ? " • " +
+                                      competition.season
+                                    : ""
+                            );
+
+                        competitionFilter
+                            .appendChild(
+                                option
+                            );
+
+                    }
+                );
+
+
+            /* ========================================
+               MATCHDAYS
+            ======================================== */
+
+            const matchdays = [
+                ...new Set(
+                    allFixtures
+                        .map(
+                            function (fixture) {
+
+                                return fixture.matchday;
+
+                            }
+                        )
+                        .filter(
+                            function (value) {
+
+                                return value !== null &&
+                                    value !== undefined &&
+                                    String(value).trim() !== "";
+
+                            }
+                        )
+                )
+            ];
+
+
+            matchdays.sort(
+                function (a, b) {
+
+                    const numA =
+                        Number(
+                            String(a)
+                                .replace(
+                                    /[^0-9]/g,
+                                    ""
+                                )
+                        );
+
+                    const numB =
+                        Number(
+                            String(b)
+                                .replace(
+                                    /[^0-9]/g,
+                                    ""
+                                )
+                        );
+
+                    if (
+                        !Number.isNaN(numA) &&
+                        !Number.isNaN(numB)
+                    ) {
+
+                        return numA - numB;
+
+                    }
+
+                    return String(a)
+                        .localeCompare(
+                            String(b)
+                        );
+
+                }
+            );
+
+
+            matchdayFilter.innerHTML =
+                `
+                <option value="all">
+                    All Matchdays
+                </option>
+                `;
+
+
+            matchdays.forEach(
+                function (matchday) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        String(matchday);
+
+                    option.textContent =
+                        String(matchday)
+                            .toLowerCase()
+                            .startsWith("matchday")
+                            ? String(matchday)
+                            : "Matchday " +
+                              String(matchday);
+
+                    matchdayFilter
+                        .appendChild(
+                            option
+                        );
+
+                }
+            );
+
+        }
+
+
+        /* ========================================
+           STATUS CLASS
+        ======================================== */
+
+        function getStatusClass(status) {
+
+            const clean =
+                String(status || "")
+                    .toLowerCase();
+
+            if (clean === "completed") {
+                return "status-completed";
+            }
+
+            if (clean === "postponed") {
+                return "status-postponed";
+            }
+
+            if (clean === "cancelled") {
+                return "status-cancelled";
+            }
+
+            if (clean === "published") {
+                return "status-published";
+            }
+
+            return "status-scheduled";
+
+        }
+
+
+        /* ========================================
+           STATUS LABEL
+        ======================================== */
+
+        function getStatusLabel(status) {
+
+            if (!status) {
+                return "Scheduled";
+            }
+
+            return status;
+
+        }
+
+
+        /* ========================================
+           TEAM HTML
+        ======================================== */
+
+        function renderTeam(
+            team,
+            alignment
+        ) {
+
+            if (!team) {
+
+                return `
+                    <div class="team ${alignment}">
+
+                        <div class="team-placeholder">
+                            ⚽
+                        </div>
+
+                        <div>
+
+                            <div class="team-name">
+                                Unknown Team
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+
+            }
+
+
+            const teamName =
+                escapeHtml(
+                    team.name ||
+                    "Unknown Team"
+                );
+
+
+            const shortName =
+                team.short_name
+                    ? escapeHtml(
+                        team.short_name
+                    )
+                    : "";
+
+
+            let logoHtml = "";
+
+
+            if (team.logo_url) {
+
+                logoHtml =
+                    `
+                    <img
+                        src="${escapeHtml(team.logo_url)}"
+                        alt="${teamName} logo"
+                        class="team-logo"
+                        loading="lazy"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                    >
+
+                    <div
+                        class="team-placeholder"
+                        style="display:none;"
+                    >
+                        ⚽
+                    </div>
+                    `;
+
+            } else {
+
+                logoHtml =
+                    `
+                    <div class="team-placeholder">
+                        ⚽
+                    </div>
+                    `;
+
+            }
+
+
+            return `
+                <a
+                    href="team.html?id=${team.id}"
+                    class="team ${alignment}"
+                >
+
+                    ${alignment === "home"
+                        ? `
+                            <div>
+                                <div class="team-name">
+                                    ${teamName}
+                                </div>
+
+                                ${
+                                    shortName
+                                        ? `
+                                            <span class="team-short">
+                                                ${shortName}
+                                            </span>
+                                          `
+                                        : ""
+                                }
+                            </div>
+
+                            ${logoHtml}
+                          `
+                        : `
+                            ${logoHtml}
+
+                            <div>
+                                <div class="team-name">
+                                    ${teamName}
+                                </div>
+
+                                ${
+                                    shortName
+                                        ? `
+                                            <span class="team-short">
+                                                ${shortName}
+                                            </span>
+                                          `
+                                        : ""
+                                }
+                            </div>
+                          `
+                    }
+
+                </a>
+            `;
+
+        }
+
+
+        /* ========================================
+           RENDER FIXTURES
+        ======================================== */
+
+        function renderFixtures() {
+
+            const competitionValue =
+                competitionFilter.value;
+
+            const statusValue =
+                statusFilter.value;
+
+            const matchdayValue =
+                matchdayFilter.value;
+
+
+            let filtered =
+                allFixtures.filter(
+                    function (fixture) {
+
+
+                        /* Competition */
+
+                        if (
+                            competitionValue !== "all" &&
+                            String(
+                                fixture.competition_id
+                            ) !==
+                            String(
+                                competitionValue
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        /* Status */
+
+                        if (
+                            statusValue === "upcoming"
+                        ) {
+
+                            if (
+                                String(
+                                    fixture.status
+                                ).toLowerCase()
+                                === "completed" ||
+                                String(
+                                    fixture.status
+                                ).toLowerCase()
+                                === "cancelled"
+                            ) {
+
+                                return false;
+
+                            }
+
+                        } else if (
+                            statusValue !== "all"
+                        ) {
+
+                            if (
+                                String(
+                                    fixture.status
+                                ) !==
+                                String(
+                                    statusValue
+                                )
+                            ) {
+
+                                return false;
+
+                            }
+
+                        }
+
+
+                        /* Matchday */
+
+                        if (
+                            matchdayValue !== "all" &&
+                            String(
+                                fixture.matchday
+                            ) !==
+                            String(
+                                matchdayValue
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        return true;
+
+                    }
+                );
+
+
+            fixtureCount.textContent =
+                filtered.length +
+                (
+                    filtered.length === 1
+                        ? " fixture"
+                        : " fixtures"
+                );
+
+
+            if (
+                filtered.length === 0
+            ) {
+
+                fixturesContainer.innerHTML =
+                    `
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            📅
+                        </div>
+
+                        <h3>
+                            No Fixtures Found
+                        </h3>
+
+                        <p>
+                            There are no fixtures
+                            matching your selected
+                            filters.
+                        </p>
+
+                    </div>
+                    `;
+
+                return;
+
+            }
+
+
+            /* ========================================
+               GROUP BY MATCHDAY
+            ======================================== */
+
+            const groups = {};
+
+
+            filtered.forEach(
+                function (fixture) {
+
+                    const key =
+                        fixture.matchday ||
+                        "Other Fixtures";
+
+
+                    if (!groups[key]) {
+                        groups[key] = [];
+                    }
+
+
+                    groups[key].push(
+                        fixture
+                    );
+
+                }
+            );
+
+
+            const groupKeys =
+                Object.keys(groups);
+
+
+            groupKeys.sort(
+                function (a, b) {
+
+                    const numA =
+                        Number(
+                            String(a)
+                                .replace(
+                                    /[^0-9]/g,
+                                    ""
+                                )
+                        );
+
+                    const numB =
+                        Number(
+                            String(b)
+                                .replace(
+                                    /[^0-9]/g,
+                                    ""
+                                )
+                        );
+
+
+                    if (
+                        !Number.isNaN(numA) &&
+                        !Number.isNaN(numB)
+                    ) {
+
+                        return numA - numB;
+
+                    }
+
+
+                    return String(a)
+                        .localeCompare(
+                            String(b)
+                        );
+
+                }
+            );
+
+
+            let html = "";
+
+
+            groupKeys.forEach(
+                function (groupKey) {
+
+                    const fixtures =
+                        groups[groupKey];
+
+
+                    fixtures.sort(
+                        function (a, b) {
+
+                            const dateCompare =
+                                String(
+                                    a.match_date || ""
+                                ).localeCompare(
+                                    String(
+                                        b.match_date || ""
+                                    )
+                                );
+
+                            if (
+                                dateCompare !== 0
+                            ) {
+
+                                return dateCompare;
+
+                            }
+
+                            return String(
+                                a.kick_off || ""
+                            ).localeCompare(
+                                String(
+                                    b.kick_off || ""
+                                )
+                            );
+
+                        }
+                    );
+
+
+                    html +=
+                        `
+                        <div class="fixture-group">
+
+                            <div class="matchday-title">
+
+                                <span class="matchday-badge">
+                                    ${
+                                        groupKey
+                                            .toLowerCase()
+                                            .startsWith(
+                                                "matchday"
+                                            )
+                                            ? escapeHtml(
+                                                groupKey
+                                            )
+                                            : "MATCHDAY " +
+                                              escapeHtml(
+                                                groupKey
+                                              )
+                                    }
+                                </span>
+
+                                <div class="matchday-line"></div>
+
+                            </div>
+
+                            <div class="fixtures-list">
+                        `;
+
+
+                    fixtures.forEach(
+                        function (fixture) {
+
+                            html +=
+                                renderFixture(
+                                    fixture
+                                );
+
+                        }
+                    );
+
+
+                    html +=
+                        `
+                            </div>
+
+                        </div>
+                        `;
+
+                }
+            );
+
+
+            fixturesContainer.innerHTML =
+                html;
+
+        }
+
+
+        /* ========================================
+           RENDER SINGLE FIXTURE
+        ======================================== */
+
+        function renderFixture(
+            fixture
+        ) {
+
+            const home =
+                getTeam(
+                    fixture.home_team_id
+                );
+
+
+            const away =
+                getTeam(
+                    fixture.away_team_id
+                );
+
+
+            const competition =
+                getCompetition(
+                    fixture.competition_id
+                );
+
+
+            const result =
+                getResult(
+                    fixture.id
+                );
+
+
+            const status =
+                fixture.status ||
+                "Scheduled";
+
+
+            const isCompleted =
+                String(status)
+                    .toLowerCase()
+                    === "completed";
+
+
+            const competitionName =
+                competition
+                    ? competition.name
+                    : "Kabaru Ward Football";
+
+
+            let centreHtml = "";
+
+
+            if (
+                isCompleted &&
+                result
+            ) {
+
+                centreHtml =
+                    `
+                    <div class="match-time">
+
+                        <div class="score-box">
+
+                            <span class="score">
+                                ${escapeHtml(
+                                    result.home_score
+                                )}
+                            </span>
+
+                            <span class="score-separator">
+                                -
+                            </span>
+
+                            <span class="score">
+                                ${escapeHtml(
+                                    result.away_score
+                                )}
+                            </span>
+
+                        </div>
+
+                        <span>
+                            FULL TIME
+                        </span>
+
+                    </div>
+                    `;
+
+            } else {
+
+                centreHtml =
+                    `
+                    <div class="match-time">
+
+                        <strong>
+                            ${escapeHtml(
+                                formatTime(
+                                    fixture.kick_off
+                                )
+                            )}
+                        </strong>
+
+                        <span>
+                            KICK-OFF
+                        </span>
+
+                    </div>
+                    `;
+
+            }
+
+
+            let detailsButton = "";
+
+
+            if (
+                isCompleted &&
+                result
+            ) {
+
+                detailsButton =
+                    `
+                    <a
+                        href="match-details.html?id=${fixture.id}"
+                        class="details-btn"
+                    >
+                        View Match Details →
+                    </a>
+                    `;
+
+            }
+
+
+            return `
+                <article class="fixture-card">
+
+                    <div class="fixture-top">
+
+                        <span class="competition-name">
+                            🏆
+                            ${escapeHtml(
+                                competitionName
+                            )}
+                        </span>
+
+                        <span
+                            class="fixture-status ${getStatusClass(status)}"
+                        >
+                            ${escapeHtml(
+                                getStatusLabel(status)
+                            )}
+                        </span>
+
+                    </div>
+
+
+                    <div class="fixture-main">
+
+                        <div class="fixture-date">
+
+                            <strong>
+                                ${escapeHtml(
+                                    formatShortDate(
+                                        fixture.match_date
+                                    )
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHtml(
+                                    formatDate(
+                                        fixture.match_date
+                                    )
+                                )}
+                            </span>
+
+                        </div>
+
+
+                        <div class="teams-row">
+
+                            ${renderTeam(
+                                home,
+                                "home"
+                            )}
+
+
+                            ${centreHtml}
+
+
+                            ${renderTeam(
+                                away,
+                                "away"
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="fixture-bottom">
+
+                        <div class="fixture-info">
+
+                            <span>
+                                🏟️
+                                ${escapeHtml(
+                                    fixture.venue ||
+                                    "Venue TBC"
+                                )}
+                            </span>
+
+                            ${
+                                fixture.matchday
+                                    ? `
+                                        <span>
+                                            📌
+                                            ${escapeHtml(
+                                                fixture.matchday
+                                            )}
+                                        </span>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                        ${detailsButton}
+
+                    </div>
+
+                </article>
+            `;
+
+        }
+
+
+        /* ========================================
+           FILTER EVENTS
+        ======================================== */
+
+        competitionFilter.addEventListener(
+            "change",
+            renderFixtures
+        );
+
+
+        statusFilter.addEventListener(
+            "change",
+            renderFixtures
+        );
+
+
+        matchdayFilter.addEventListener(
+            "change",
+            renderFixtures
+        );
+
+
+        /* ========================================
+           START
+        ======================================== */
+
+        await loadData();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
