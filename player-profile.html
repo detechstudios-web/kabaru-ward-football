@@ -111,7 +111,7 @@ header {
 ================================ */
 
 .container {
-    max-width: 1050px;
+    max-width: 1100px;
     margin: auto;
 
     padding: 30px 18px 45px;
@@ -493,6 +493,170 @@ header {
 }
 
 /* ================================
+   MATCH HISTORY
+================================ */
+
+.history-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.history-table {
+
+    width: 100%;
+
+    min-width: 760px;
+
+    border-collapse: collapse;
+
+    font-size: 13px;
+}
+
+.history-table th {
+
+    background: var(--green-dark);
+
+    color: white;
+
+    padding: 13px 10px;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+.history-table th:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+.history-table th:last-child {
+    border-radius: 0 10px 0 0;
+}
+
+.history-table td {
+
+    padding: 14px 10px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    vertical-align: middle;
+}
+
+.history-table tbody tr:hover {
+    background: #f6faf7;
+}
+
+.matchday {
+
+    display: inline-block;
+
+    background: #e8f4ed;
+
+    color: var(--green);
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+.match-date {
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    white-space: nowrap;
+}
+
+.opponent {
+
+    font-weight: 900;
+
+    color: var(--green-dark);
+}
+
+.venue-side {
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+.result-score {
+
+    display: inline-block;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green)
+        );
+
+    color: white;
+
+    padding: 5px 10px;
+
+    border-radius: 8px;
+
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+.stat-number {
+    text-align: center;
+    font-weight: 900;
+}
+
+.card-yellow {
+    color: #a87900;
+}
+
+.card-red {
+    color: #b3261e;
+}
+
+.no-history {
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8faf9,
+            #f1f5f2
+        );
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 14px;
+
+    padding: 30px 20px;
+
+    text-align: center;
+
+    color: var(--muted);
+}
+
+.no-history strong {
+
+    display: block;
+
+    color: var(--green-dark);
+
+    font-size: 18px;
+
+    margin-bottom: 5px;
+}
+
+/* ================================
    BUTTONS
 ================================ */
 
@@ -706,55 +870,54 @@ footer p:last-child {
 
 <header>
 
-```
 <div class="navbar">
 
-    <div class="logo">
-        KABARU <span>⚽</span> FOOTBALL
-    </div>
+```
+<div class="logo">
+    KABARU <span>⚽</span> FOOTBALL
+</div>
 
-    <a
-        href="index.html#teams"
-        class="back-link"
-    >
-        ← Teams
-    </a>
+<a
+    href="index.html#teams"
+    class="back-link"
+>
+    ← Teams
+</a>
+```
 
 </div>
-```
 
 </header>
 
 <main>
 
-```
 <div class="container">
 
-    <div id="playerContent">
+```
+<div id="playerContent">
 
-        <div class="loading">
+    <div class="loading">
 
-            <h2>
-                ⚽ Loading Player Profile...
-            </h2>
+        <h2>
+            ⚽ Loading Player Profile...
+        </h2>
 
-            <p>
-                Please wait while we load
-                the player information.
-            </p>
-
-        </div>
+        <p>
+            Please wait while we load
+            the player information.
+        </p>
 
     </div>
 
 </div>
 ```
 
+</div>
+
 </main>
 
 <footer>
 
-```
 <p>
     © 2026
     <span>Kabaru Ward Football</span>
@@ -763,7 +926,6 @@ footer p:last-child {
 <p>
     Football • Community • Talent • Development
 </p>
-```
 
 </footer>
 
@@ -782,12 +944,10 @@ document.addEventListener(
                 "playerContent"
             );
 
-
         const params =
             new URLSearchParams(
                 window.location.search
             );
-
 
         const playerId =
             params.get("id");
@@ -875,6 +1035,7 @@ document.addEventListener(
                 .from("player_match_stats")
 
                 .select(`
+                    result_id,
                     appearances,
                     goals,
                     assists,
@@ -895,13 +1056,13 @@ document.addEventListener(
             }
 
 
-            /* ==========================
-               CALCULATE TOTALS
-            ========================== */
-
             const playerStats =
                 stats || [];
 
+
+            /* ==========================
+               CALCULATE TOTALS
+            ========================== */
 
             let appearances = 0;
             let goals = 0;
@@ -941,13 +1102,165 @@ document.addEventListener(
 
 
             /* ==========================
+               LOAD MATCH RESULTS
+            ========================== */
+
+            let matchHistory = [];
+
+
+            const resultIds =
+                playerStats
+                    .map(stat => stat.result_id)
+                    .filter(Boolean);
+
+
+            if (resultIds.length > 0) {
+
+                const {
+                    data: results,
+                    error: resultsError
+                } = await supabaseClient
+
+                    .from("results")
+
+                    .select(`
+                        id,
+                        fixture_id,
+                        home_score,
+                        away_score,
+                        fixtures (
+                            id,
+                            competition_id,
+                            home_team_id,
+                            away_team_id,
+                            match_date,
+                            kick_off,
+                            venue,
+                            matchday,
+                            status,
+
+                            competitions (
+                                id,
+                                name,
+                                season
+                            ),
+
+                            home_team:teams!fixtures_home_team_id_fkey (
+                                id,
+                                name,
+                                short_name
+                            ),
+
+                            away_team:teams!fixtures_away_team_id_fkey (
+                                id,
+                                name,
+                                short_name
+                            )
+                        )
+                    `)
+
+                    .in(
+                        "id",
+                        resultIds
+                    );
+
+
+                if (resultsError) {
+
+                    console.error(
+                        "MATCH HISTORY ERROR:",
+                        resultsError
+                    );
+
+                } else {
+
+                    const statsMap =
+                        new Map();
+
+                    playerStats.forEach(stat => {
+
+                        statsMap.set(
+                            String(stat.result_id),
+                            stat
+                        );
+
+                    });
+
+
+                    matchHistory =
+                        (results || [])
+                            .map(result => {
+
+                                const stat =
+                                    statsMap.get(
+                                        String(result.id)
+                                    );
+
+                                const fixture =
+                                    result.fixtures;
+
+                                if (!fixture) {
+                                    return null;
+                                }
+
+
+                                const isHome =
+                                    Number(
+                                        fixture.home_team_id
+                                    ) === Number(
+                                        player.team_id
+                                    );
+
+
+                                const opponent =
+                                    isHome
+                                        ? fixture.away_team
+                                        : fixture.home_team;
+
+
+                                return {
+
+                                    result,
+
+                                    fixture,
+
+                                    stat,
+
+                                    opponent,
+
+                                    isHome
+
+                                };
+
+                            })
+
+                            .filter(Boolean)
+
+                            .sort(
+                                (a, b) =>
+                                    new Date(
+                                        b.fixture.match_date
+                                    ) -
+                                    new Date(
+                                        a.fixture.match_date
+                                    )
+                            );
+
+                }
+
+            }
+
+
+            /* ==========================
                GOALS PER APPEARANCE
             ========================== */
 
             const goalsPerAppearance =
                 appearances > 0
-                    ? (goals / appearances)
-                        .toFixed(2)
+                    ? (
+                        goals /
+                        appearances
+                    ).toFixed(2)
                     : "0.00";
 
 
@@ -980,6 +1293,283 @@ document.addEventListener(
 
             document.title =
                 `${player.full_name} - Kabaru Ward Football`;
+
+
+            /* ==========================
+               BUILD MATCH HISTORY
+            ========================== */
+
+            let historyHtml = "";
+
+
+            if (matchHistory.length === 0) {
+
+                historyHtml = `
+
+                    <div class="no-history">
+
+                        <strong>
+                            📋 No Match History Yet
+                        </strong>
+
+                        <span>
+                            This player's recorded
+                            match performances will
+                            appear here.
+                        </span>
+
+                    </div>
+
+                `;
+
+            } else {
+
+                historyHtml = `
+
+                    <div class="history-wrapper">
+
+                        <table class="history-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Matchday
+                                    </th>
+
+                                    <th>
+                                        Date
+                                    </th>
+
+                                    <th>
+                                        Opponent
+                                    </th>
+
+                                    <th>
+                                        Venue
+                                    </th>
+
+                                    <th>
+                                        Result
+                                    </th>
+
+                                    <th>
+                                        Goals
+                                    </th>
+
+                                    <th>
+                                        Assists
+                                    </th>
+
+                                    <th>
+                                        🟨
+                                    </th>
+
+                                    <th>
+                                        🟥
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                ${matchHistory
+                                    .map(item => {
+
+                                        const result =
+                                            item.result;
+
+                                        const fixture =
+                                            item.fixture;
+
+                                        const stat =
+                                            item.stat;
+
+                                        const opponent =
+                                            item.opponent;
+
+
+                                        const homeScore =
+                                            Number(
+                                                result.home_score
+                                            );
+
+                                        const awayScore =
+                                            Number(
+                                                result.away_score
+                                            );
+
+
+                                        const playerScore =
+                                            item.isHome
+                                                ? homeScore
+                                                : awayScore;
+
+
+                                        const opponentScore =
+                                            item.isHome
+                                                ? awayScore
+                                                : homeScore;
+
+
+                                        const resultLabel =
+                                            playerScore >
+                                            opponentScore
+
+                                                ? "W"
+
+                                                : playerScore <
+                                                  opponentScore
+
+                                                    ? "L"
+
+                                                    : "D";
+
+
+                                        const resultClass =
+                                            resultLabel;
+
+
+                                        const date =
+                                            formatDate(
+                                                fixture.match_date
+                                            );
+
+
+                                        return `
+
+                                            <tr>
+
+                                                <td>
+
+                                                    <span class="matchday">
+
+                                                        ${escapeHtml(
+                                                            fixture.matchday ||
+                                                            "Match"
+                                                        )}
+
+                                                    </span>
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    <span class="match-date">
+
+                                                        ${date}
+
+                                                    </span>
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    <div class="opponent">
+
+                                                        ${escapeHtml(
+                                                            opponent?.name ||
+                                                            "Unknown Team"
+                                                        )}
+
+                                                    </div>
+
+                                                    <div class="venue-side">
+
+                                                        ${
+                                                            item.isHome
+                                                                ? "Home"
+                                                                : "Away"
+                                                        }
+
+                                                    </div>
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    ${escapeHtml(
+                                                        fixture.venue ||
+                                                        "-"
+                                                    )}
+
+                                                </td>
+
+
+                                                <td>
+
+                                                    <span class="result-score">
+
+                                                        ${homeScore}
+                                                        -
+                                                        ${awayScore}
+
+                                                        &nbsp;
+
+                                                        (${resultClass})
+
+                                                    </span>
+
+                                                </td>
+
+
+                                                <td class="stat-number">
+
+                                                    ${Number(
+                                                        stat?.goals || 0
+                                                    )}
+
+                                                </td>
+
+
+                                                <td class="stat-number">
+
+                                                    ${Number(
+                                                        stat?.assists || 0
+                                                    )}
+
+                                                </td>
+
+
+                                                <td class="stat-number card-yellow">
+
+                                                    ${Number(
+                                                        stat?.yellow_cards || 0
+                                                    )}
+
+                                                </td>
+
+
+                                                <td class="stat-number card-red">
+
+                                                    ${Number(
+                                                        stat?.red_cards || 0
+                                                    )}
+
+                                                </td>
+
+                                            </tr>
+
+                                        `;
+
+                                    })
+                                    .join("")}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                `;
+
+            }
 
 
             /* ==========================
@@ -1271,6 +1861,36 @@ document.addEventListener(
                 </section>
 
 
+                <!-- MATCH HISTORY -->
+
+                <section class="section">
+
+                    <div class="section-heading">
+
+                        <div class="section-icon">
+                            📋
+                        </div>
+
+                        <div>
+
+                            <div class="section-kicker">
+                                Match Performances
+                            </div>
+
+                            <h2>
+                                Match History
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    ${historyHtml}
+
+                </section>
+
+
                 <!-- NAVIGATION -->
 
                 <div class="buttons">
@@ -1308,6 +1928,44 @@ document.addEventListener(
             showError(
                 error.message ||
                 "Unable to load player profile."
+            );
+
+        }
+
+
+        /* ==========================
+           FORMAT DATE
+        ========================== */
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "-";
+            }
+
+
+            const date =
+                new Date(value);
+
+
+            if (Number.isNaN(
+                date.getTime()
+            )) {
+
+                return escapeHtml(
+                    value
+                );
+
+            }
+
+
+            return date.toLocaleDateString(
+                "en-GB",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
             );
 
         }
