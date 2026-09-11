@@ -133,6 +133,52 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
+    // HELPER: GET COMPETITION TYPE
+    // ========================================
+
+    function getCompetitionType(
+        competition
+    ) {
+
+        return String(
+            competition?.competition_type || ""
+        ).trim();
+    }
+
+
+    // ========================================
+    // HELPER: GET COMPETITION LABEL
+    // ========================================
+
+    function getCompetitionLabel(
+        competition
+    ) {
+
+        const type =
+            getCompetitionType(
+                competition
+            );
+
+        if (type === "Friendly") {
+            return "🤝 Friendly";
+        }
+
+        if (type === "Cup") {
+            return "🏆 Cup";
+        }
+
+        if (type === "League") {
+            return "⚽ League";
+        }
+
+        return (
+            competition?.name ||
+            "Competition"
+        );
+    }
+
+
+    // ========================================
     // HELPER: UPLOAD IMAGE
     // ========================================
 
@@ -228,7 +274,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================
-    // LOAD ACTIVE COMPETITION
+    // LOAD MAIN LEAGUE COMPETITION
+    // ========================================
+    //
+    // IMPORTANT:
+    // We deliberately prefer an ACTIVE LEAGUE.
+    //
+    // This prevents the newly-created Friendly
+    // competition from replacing the League
+    // as the main competition on the homepage.
     // ========================================
 
     async function loadCompetition() {
@@ -242,13 +296,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         const {
-            data,
-            error
+            data: leagueCompetition,
+            error: leagueError
         } =
             await supabaseClient
                 .from("competitions")
                 .select("*")
-                .eq("status", "Active")
+                .eq(
+                    "competition_type",
+                    "League"
+                )
+                .eq(
+                    "status",
+                    "Active"
+                )
                 .order(
                     "created_at",
                     {
@@ -258,11 +319,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 .limit(1)
                 .maybeSingle();
 
-        if (error) {
+
+        if (leagueError) {
 
             console.error(
-                "COMPETITION ERROR:",
-                error
+                "LEAGUE COMPETITION ERROR:",
+                leagueError
             );
 
             if (competitionNameEl) {
@@ -273,11 +335,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             return null;
         }
 
-        if (!data) {
+
+        if (!leagueCompetition) {
 
             if (competitionNameEl) {
                 competitionNameEl.textContent =
-                    "No Active Competition";
+                    "No Active League";
             }
 
             if (competitionSeasonEl) {
@@ -296,27 +359,96 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (competitionNameEl) {
             competitionNameEl.textContent =
-                data.name || "Competition";
+                leagueCompetition.name ||
+                "Competition";
         }
 
         if (competitionSeasonEl) {
             competitionSeasonEl.textContent =
-                data.season
-                    ? `Season ${data.season}`
+                leagueCompetition.season
+                    ? `Season ${leagueCompetition.season}`
                     : "";
         }
 
         if (competitionStatusEl) {
             competitionStatusEl.textContent =
-                data.status || "Active";
+                leagueCompetition.status ||
+                "Active";
         }
 
-        return data;
+        return leagueCompetition;
+    }
+
+
+    // ========================================
+    // LOAD ALL CURRENT-SEASON COMPETITIONS
+    // ========================================
+
+    async function loadAllCompetitions(
+        season
+    ) {
+
+        let query =
+            supabaseClient
+                .from("competitions")
+                .select(`
+                    id,
+                    name,
+                    competition_type,
+                    season,
+                    status
+                `);
+
+        if (
+            season !== null &&
+            season !== undefined &&
+            season !== ""
+        ) {
+
+            query =
+                query.eq(
+                    "season",
+                    season
+                );
+        }
+
+        const {
+            data,
+            error
+        } =
+            await query.order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "ALL COMPETITIONS ERROR:",
+                error
+            );
+
+            return [];
+        }
+
+
+        return data || [];
     }
 
 
     // ========================================
     // LOAD UPCOMING FIXTURES
+    // ========================================
+    //
+    // Shows upcoming fixtures from ALL
+    // current-season competitions:
+    //
+    // League
+    // Cup
+    // Friendly
     // ========================================
 
     async function loadFixtures(
@@ -327,11 +459,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
         if (!competition) {
 
             fixturesContainer.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>⚽ No Upcoming Fixtures</h3>
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        ⚽ No Upcoming Fixtures
+                    </h3>
+
                     <p>
                         Fixtures will appear here once
                         they are published.
@@ -341,6 +480,56 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             return;
         }
+
+
+        const competitions =
+            await loadAllCompetitions(
+                competition.season
+            );
+
+
+        const competitionIds =
+            competitions.map(
+                function (item) {
+                    return item.id;
+                }
+            );
+
+
+        if (
+            competitionIds.length === 0
+        ) {
+
+            fixturesContainer.innerHTML = `
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        ⚽ No Upcoming Fixtures
+                    </h3>
+
+                    <p>
+                        There are currently no upcoming
+                        fixtures.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const competitionMap = {};
+
+
+        competitions.forEach(
+            function (item) {
+
+                competitionMap[item.id] =
+                    item;
+            }
+        );
 
 
         const {
@@ -359,12 +548,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                     venue,
                     matchday,
                     status,
+
                     home_team:teams!fixtures_home_team_id_fkey (
                         id,
                         name,
                         short_name,
                         logo_url
                     ),
+
                     away_team:teams!fixtures_away_team_id_fkey (
                         id,
                         name,
@@ -372,9 +563,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         logo_url
                     )
                 `)
-                .eq(
+                .in(
                     "competition_id",
-                    competition.id
+                    competitionIds
                 )
                 .not(
                     "status",
@@ -403,8 +594,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
             fixturesContainer.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>⚠️ Unable to Load Fixtures</h3>
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        ⚠️ Unable to Load Fixtures
+                    </h3>
+
                     <p>
                         Please try again later.
                     </p>
@@ -421,11 +618,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             fixturesContainer.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>⚽ No Upcoming Fixtures</h3>
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        ⚽ No Upcoming Fixtures
+                    </h3>
+
                     <p>
                         There are currently no upcoming
-                        fixtures for this competition.
+                        fixtures for Kabaru Ward.
                     </p>
                 </div>
             `;
@@ -446,6 +649,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const away =
                     fixture.away_team;
 
+                const fixtureCompetition =
+                    competitionMap[
+                        fixture.competition_id
+                    ] || null;
+
 
                 const card =
                     document.createElement("div");
@@ -457,6 +665,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 card.innerHTML = `
 
                     <div class="fixture-top">
+
                         <span>
                             ${escapeHtml(
                                 fixture.matchday ||
@@ -470,10 +679,29 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 "Scheduled"
                             )}
                         </span>
+
+                    </div>
+
+
+                    <div
+                        style="
+                            text-align:center;
+                            margin-top:8px;
+                            font-size:13px;
+                            font-weight:800;
+                            color:#075b35;
+                        "
+                    >
+                        ${escapeHtml(
+                            getCompetitionLabel(
+                                fixtureCompetition
+                            )
+                        )}
                     </div>
 
 
                     <div class="fixture-date">
+
                         📅 ${formatDate(
                             fixture.match_date
                         )}
@@ -483,6 +711,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         🕐 ${formatTime(
                             fixture.kick_off
                         )}
+
                     </div>
 
 
@@ -594,7 +823,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 `;
 
 
-                fixturesContainer.appendChild(card);
+                fixturesContainer.appendChild(
+                    card
+                );
             }
         );
     }
@@ -602,6 +833,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // ========================================
     // LOAD RESULTS
+    // ========================================
+    //
+    // Results are displayed from:
+    //
+    // League
+    // Cup
+    // Friendly
+    //
+    // Newest match first.
     // ========================================
 
     async function loadResults(
@@ -612,11 +852,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
         if (!competition) {
 
             resultsContainer.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>📋 No Results Yet</h3>
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        📋 No Results Yet
+                    </h3>
+
                     <p>
                         Completed match results will appear here.
                     </p>
@@ -625,6 +872,51 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             return;
         }
+
+
+        const competitions =
+            await loadAllCompetitions(
+                competition.season
+            );
+
+
+        const competitionIds =
+            competitions.map(
+                function (item) {
+                    return item.id;
+                }
+            );
+
+
+        if (
+            competitionIds.length === 0
+        ) {
+
+            resultsContainer.innerHTML = `
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        📋 No Results Yet
+                    </h3>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const competitionMap = {};
+
+
+        competitions.forEach(
+            function (item) {
+
+                competitionMap[item.id] =
+                    item;
+            }
+        );
 
 
         const {
@@ -666,9 +958,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         )
                     )
                 `)
-                .eq(
+                .in(
                     "fixture.competition_id",
-                    competition.id
+                    competitionIds
                 )
                 .order(
                     "created_at",
@@ -686,8 +978,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
             resultsContainer.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>⚠️ Unable to Load Results</h3>
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        ⚠️ Unable to Load Results
+                    </h3>
+
                     <p>
                         Please try again later.
                     </p>
@@ -704,8 +1002,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             resultsContainer.innerHTML = `
-                <div class="card" style="text-align:center;">
-                    <h3>📋 No Results Yet</h3>
+                <div
+                    class="card"
+                    style="text-align:center;"
+                >
+                    <h3>
+                        📋 No Results Yet
+                    </h3>
+
                     <p>
                         Completed match results will appear here.
                     </p>
@@ -719,16 +1023,71 @@ document.addEventListener("DOMContentLoaded", async function () {
         resultsContainer.innerHTML = "";
 
 
+        // ========================================
+        // SORT RESULTS BY ACTUAL MATCH DATE
+        // ========================================
+
+        const validResults =
+            results
+                .filter(
+                    function (result) {
+
+                        return (
+                            result.fixture
+                        );
+                    }
+                )
+                .sort(
+                    function (a, b) {
+
+                        const aDate =
+                            String(
+                                a.fixture?.match_date ||
+                                ""
+                            );
+
+                        const bDate =
+                            String(
+                                b.fixture?.match_date ||
+                                ""
+                            );
+
+
+                        if (
+                            bDate !== aDate
+                        ) {
+
+                            return bDate.localeCompare(
+                                aDate
+                            );
+                        }
+
+
+                        return String(
+                            b.fixture?.kick_off ||
+                            ""
+                        ).localeCompare(
+                            String(
+                                a.fixture?.kick_off ||
+                                ""
+                            )
+                        );
+                    }
+                );
+
+
         for (
-            const result of results
+            const result of validResults
         ) {
 
             const fixture =
                 result.fixture;
 
-            if (!fixture) {
-                continue;
-            }
+
+            const fixtureCompetition =
+                competitionMap[
+                    fixture.competition_id
+                ] || null;
 
 
             const {
@@ -742,6 +1101,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         player_id,
                         minute,
                         is_penalty,
+
                         players (
                             id,
                             full_name,
@@ -847,6 +1207,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             "
                         >
                             ⚽
+
                             <strong>
                                 ${escapeHtml(
                                     player.name
@@ -864,6 +1225,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 `
                                 : ""
                             }
+
                         </div>
                     `;
                 }
@@ -888,11 +1250,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             const resultCard =
                 document.createElement("div");
 
+
             resultCard.className =
                 "result-card";
 
+
             resultCard.style.cursor =
                 "pointer";
+
 
             resultCard.style.transition =
                 "transform 0.2s ease, box-shadow 0.2s ease";
@@ -912,6 +1277,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             resultCard.innerHTML = `
 
                 <div class="result-top">
+
                     <span>
                         ${escapeHtml(
                             fixture.matchday ||
@@ -924,6 +1290,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                             fixture.match_date
                         )}
                     </span>
+
+                </div>
+
+
+                <div
+                    style="
+                        text-align:center;
+                        margin-top:8px;
+                        font-size:13px;
+                        font-weight:800;
+                        color:#075b35;
+                    "
+                >
+                    ${escapeHtml(
+                        getCompetitionLabel(
+                            fixtureCompetition
+                        )
+                    )}
                 </div>
 
 
@@ -973,6 +1357,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 </div>
                             `
                         }
+
 
                         <strong>
                             ${escapeHtml(
@@ -1037,6 +1422,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             `
                         }
 
+
                         <strong>
                             ${escapeHtml(
                                 getTeamName(
@@ -1082,6 +1468,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             "
                         >
                             📝
+
                             ${escapeHtml(
                                 result.match_report
                             )}
@@ -1103,6 +1490,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 >
                     📋 Tap to view full match details →
                 </div>
+
             `;
 
 
@@ -1115,6 +1503,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // ========================================
     // LOAD LEAGUE TABLE
+    // ========================================
+    //
+    // VERY IMPORTANT:
+    //
+    // ONLY League competition fixtures enter
+    // the league table.
+    //
+    // Cup and Friendly matches are excluded.
+    //
+    // BUT Form is calculated separately from
+    // ALL competitions.
     // ========================================
 
     async function loadLeagueTable(
@@ -1134,7 +1533,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         colspan="11"
                         style="text-align:center;"
                     >
-                        No active competition.
+                        No active league competition.
                     </td>
                 </tr>
             `;
@@ -1142,6 +1541,57 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
+        // ========================================
+        // GET ALL CURRENT-SEASON COMPETITIONS
+        // ========================================
+
+        const competitions =
+            await loadAllCompetitions(
+                competition.season
+            );
+
+
+        const leagueCompetitionIds =
+            competitions
+                .filter(
+                    function (item) {
+
+                        return (
+                            getCompetitionType(item) ===
+                            "League"
+                        );
+                    }
+                )
+                .map(
+                    function (item) {
+                        return item.id;
+                    }
+                );
+
+
+        if (
+            leagueCompetitionIds.length === 0
+        ) {
+
+            leagueTableBody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="11"
+                        style="text-align:center;"
+                    >
+                        No league competition found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        // ========================================
+        // LOAD LEAGUE FIXTURES ONLY
+        // ========================================
 
         const {
             data: fixtures,
@@ -1176,9 +1626,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         away_score
                     )
                 `)
-                .eq(
+                .in(
                     "competition_id",
-                    competition.id
+                    leagueCompetitionIds
                 )
                 .eq(
                     "status",
@@ -1207,6 +1657,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
+        // ========================================
+        // BUILD LEAGUE TABLE TEAMS
+        // ========================================
 
         const teams = {};
 
@@ -1262,7 +1716,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                         points:
                             0,
 
-                        // Last five completed matches
                         form:
                             []
                     };
@@ -1310,7 +1763,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                         points:
                             0,
 
-                        // Last five completed matches
                         form:
                             []
                     };
@@ -1330,6 +1782,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     !home ||
                     !away
                 ) {
+
                     return;
                 }
 
@@ -1377,8 +1830,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     awayScore
                 ) {
 
-                    // HOME WIN
-
                     teams[home.id].won++;
 
                     teams[home.id].points +=
@@ -1387,42 +1838,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     teams[away.id].lost++;
 
 
-                    // HOME FORM = WIN
-
-                    teams[home.id].form.push({
-
-                        result:
-                            "W",
-
-                        date:
-                            fixture.match_date,
-
-                        time:
-                            fixture.kick_off
-                    });
-
-
-                    // AWAY FORM = LOSS
-
-                    teams[away.id].form.push({
-
-                        result:
-                            "L",
-
-                        date:
-                            fixture.match_date,
-
-                        time:
-                            fixture.kick_off
-                    });
-
-
                 } else if (
                     homeScore <
                     awayScore
                 ) {
-
-                    // AWAY WIN
 
                     teams[away.id].won++;
 
@@ -1432,85 +1851,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                     teams[home.id].lost++;
 
 
-                    // HOME FORM = LOSS
-
-                    teams[home.id].form.push({
-
-                        result:
-                            "L",
-
-                        date:
-                            fixture.match_date,
-
-                        time:
-                            fixture.kick_off
-                    });
-
-
-                    // AWAY FORM = WIN
-
-                    teams[away.id].form.push({
-
-                        result:
-                            "W",
-
-                        date:
-                            fixture.match_date,
-
-                        time:
-                            fixture.kick_off
-                    });
-
-
                 } else {
-
-                    // DRAW
 
                     teams[home.id].drawn++;
 
                     teams[away.id].drawn++;
 
-
                     teams[home.id].points++;
 
                     teams[away.id].points++;
-
-
-                    // HOME FORM = DRAW
-
-                    teams[home.id].form.push({
-
-                        result:
-                            "D",
-
-                        date:
-                            fixture.match_date,
-
-                        time:
-                            fixture.kick_off
-                    });
-
-
-                    // AWAY FORM = DRAW
-
-                    teams[away.id].form.push({
-
-                        result:
-                            "D",
-
-                        date:
-                            fixture.match_date,
-
-                        time:
-                            fixture.kick_off
-                    });
                 }
             }
         );
 
 
         // ========================================
-        // CALCULATE GD + LAST 5 FORM
+        // CALCULATE GOAL DIFFERENCE
         // ========================================
 
         Object.values(
@@ -1518,19 +1874,273 @@ document.addEventListener("DOMContentLoaded", async function () {
         ).forEach(
             function (team) {
 
-                // ========================================
-                // GOAL DIFFERENCE
-                // ========================================
-
                 team.gd =
                     team.gf -
                     team.ga;
+            }
+        );
 
 
-                // ========================================
-                // LAST 5 MATCH FORM
-                // Latest match first
-                // ========================================
+        // ========================================
+        // LOAD FORM FROM ALL COMPETITIONS
+        // ========================================
+        //
+        // League + Cup + Friendly
+        //
+        // Only completed matches.
+        //
+        // Most recent first.
+        // Maximum 5.
+        // ========================================
+
+        const {
+            data: allCompletedFixtures,
+            error: formError
+        } =
+            await supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    status,
+
+                    home_team:teams!fixtures_home_team_id_fkey (
+                        id,
+                        name
+                    ),
+
+                    away_team:teams!fixtures_away_team_id_fkey (
+                        id,
+                        name
+                    ),
+
+                    competition:competitions (
+                        id,
+                        name,
+                        competition_type,
+                        season
+                    ),
+
+                    results (
+                        id,
+                        home_score,
+                        away_score
+                    )
+                `)
+                .eq(
+                    "status",
+                    "Completed"
+                );
+
+
+        if (formError) {
+
+            console.error(
+                "FORM FIXTURES ERROR:",
+                formError
+            );
+
+        } else {
+
+            (allCompletedFixtures || [])
+                .forEach(
+                    function (fixture) {
+
+                        // ========================================
+                        // CURRENT SEASON ONLY
+                        // ========================================
+
+                        if (
+                            fixture.competition?.season !==
+                            competition.season
+                        ) {
+
+                            return;
+                        }
+
+
+                        const home =
+                            fixture.home_team;
+
+                        const away =
+                            fixture.away_team;
+
+
+                        if (
+                            !home ||
+                            !away
+                        ) {
+
+                            return;
+                        }
+
+
+                        const result =
+                            Array.isArray(
+                                fixture.results
+                            )
+                                ? fixture.results[0]
+                                : fixture.results;
+
+
+                        if (!result) {
+                            return;
+                        }
+
+
+                        const homeScore =
+                            Number(
+                                result.home_score || 0
+                            );
+
+                        const awayScore =
+                            Number(
+                                result.away_score || 0
+                            );
+
+
+                        // ========================================
+                        // ONLY ADD FORM FOR TEAMS THAT
+                        // ARE PRESENT IN THE LEAGUE TABLE
+                        // ========================================
+
+                        if (
+                            teams[home.id]
+                        ) {
+
+                            if (
+                                homeScore >
+                                awayScore
+                            ) {
+
+                                teams[home.id]
+                                    .form
+                                    .push({
+
+                                        result:
+                                            "W",
+
+                                        date:
+                                            fixture.match_date,
+
+                                        time:
+                                            fixture.kick_off
+                                    });
+
+                            } else if (
+                                homeScore <
+                                awayScore
+                            ) {
+
+                                teams[home.id]
+                                    .form
+                                    .push({
+
+                                        result:
+                                            "L",
+
+                                        date:
+                                            fixture.match_date,
+
+                                        time:
+                                            fixture.kick_off
+                                    });
+
+                            } else {
+
+                                teams[home.id]
+                                    .form
+                                    .push({
+
+                                        result:
+                                            "D",
+
+                                        date:
+                                            fixture.match_date,
+
+                                        time:
+                                            fixture.kick_off
+                                    });
+                            }
+                        }
+
+
+                        if (
+                            teams[away.id]
+                        ) {
+
+                            if (
+                                awayScore >
+                                homeScore
+                            ) {
+
+                                teams[away.id]
+                                    .form
+                                    .push({
+
+                                        result:
+                                            "W",
+
+                                        date:
+                                            fixture.match_date,
+
+                                        time:
+                                            fixture.kick_off
+                                    });
+
+                            } else if (
+                                awayScore <
+                                homeScore
+                            ) {
+
+                                teams[away.id]
+                                    .form
+                                    .push({
+
+                                        result:
+                                            "L",
+
+                                        date:
+                                            fixture.match_date,
+
+                                        time:
+                                            fixture.kick_off
+                                    });
+
+                            } else {
+
+                                teams[away.id]
+                                    .form
+                                    .push({
+
+                                        result:
+                                            "D",
+
+                                        date:
+                                            fixture.match_date,
+
+                                        time:
+                                            fixture.kick_off
+                                    });
+                            }
+                        }
+                    }
+                );
+        }
+
+
+        // ========================================
+        // SORT + LIMIT FORM TO LAST FIVE
+        // ========================================
+
+        Object.values(
+            teams
+        ).forEach(
+            function (team) {
 
                 team.form =
                     (team.form || [])
@@ -1633,7 +2243,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // ========================================
-        // NO TEAMS / NO MATCHES
+        // NO TEAMS
         // ========================================
 
         if (
@@ -1646,7 +2256,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         colspan="11"
                         style="text-align:center;"
                     >
-                        No completed matches yet.
+                        No completed league matches yet.
                     </td>
                 </tr>
             `;
@@ -1702,8 +2312,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         "#075b35";
 
 
-                                    // DRAW
-
                                     if (
                                         item.result ===
                                         "D"
@@ -1716,8 +2324,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                             "#8a6800";
                                     }
 
-
-                                    // LOSS
 
                                     if (
                                         item.result ===
@@ -1905,6 +2511,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ========================================
     // LOAD PLAYER STATISTICS
     // ========================================
+    //
+    // Player statistics continue to work across
+    // League, Cup and Friendly matches because
+    // player_match_stats is not restricted to
+    // one competition.
+    // ========================================
 
     async function loadPlayerLeaders() {
 
@@ -1938,6 +2550,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         full_name,
                         jersey_number,
                         team_id,
+
                         teams (
                             id,
                             name
@@ -2014,11 +2627,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                         stat.appearances || 0
                     );
 
+
                 players[player.id]
                     .goals +=
                     Number(
                         stat.goals || 0
                     );
+
 
                 players[player.id]
                     .assists +=
@@ -2026,11 +2641,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                         stat.assists || 0
                     );
 
+
                 players[player.id]
                     .yellow +=
                     Number(
                         stat.yellow_cards || 0
                     );
+
 
                 players[player.id]
                     .red +=
@@ -2434,6 +3051,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const logoWrapper =
                 document.createElement("div");
 
+
             logoWrapper.style.cssText = `
                 margin-bottom:18px;
             `;
@@ -2449,6 +3067,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     "
                 >
                     🛡️ Team Logo
+
                     <span
                         style="
                             font-weight:400;
@@ -2459,12 +3078,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                     </span>
                 </label>
 
+
                 <input
                     type="file"
                     id="teamLogo"
                     name="teamLogo"
                     accept="image/*"
                 >
+
 
                 <small
                     style="
@@ -2799,15 +3420,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 '[name="player_name"]'
                             );
 
+
                         const jerseyInput =
                             row.querySelector(
                                 '[name="jersey_number"]'
                             );
 
+
                         const positionInput =
                             row.querySelector(
                                 '[name="position"]'
                             );
+
 
                         const photoInput =
                             row.querySelector(
@@ -2834,7 +3458,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                         // IMPORTANT:
-                        // The RPC expects "full_name",
+                        // The RPC expects "full_name".
                         // NOT "player_name".
 
                         playerData.push({
@@ -3058,7 +3682,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         <strong>
                             Submitting registration...
                         </strong>
+
                         <br>
+
                         Please wait.
                         `;
                 }
@@ -3273,7 +3899,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 <strong>
                                     Uploading team logo...
                                 </strong>
+
                                 <br>
+
                                 Please wait.
                                 `;
                         }
@@ -3334,7 +3962,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 <strong>
                                     Uploading player photos...
                                 </strong>
+
                                 <br>
+
                                 Please wait.
                                 `;
                         }
@@ -3469,7 +4099,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                             <strong>
                                 ✅ Registration submitted successfully!
                             </strong>
+
                             <br>
+
                             Your team is now awaiting approval.
 
                             ${
@@ -3525,7 +4157,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                             <strong>
                                 ❌ Registration failed.
                             </strong>
+
                             <br>
+
                             ${escapeHtml(
                                 error.message ||
                                 "Unknown error"
@@ -3554,6 +4188,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ========================================
 
     try {
+
+        // ========================================
+        // MAIN COMPETITION = ACTIVE LEAGUE
+        // ========================================
 
         const competition =
             await loadCompetition();
