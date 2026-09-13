@@ -2308,27 +2308,41 @@ Object.values(
 
 
                                     let title =
-                                        "Win";
+    "Win";
 
 
-                                    if (
-                                        item.result ===
-                                        "D"
-                                    ) {
+if (
+    item.result ===
+    "D"
+) {
 
-                                        title =
-                                            "Draw";
-                                    }
+    title =
+        "Draw";
+}
 
 
-                                    if (
-                                        item.result ===
-                                        "L"
-                                    ) {
+if (
+    item.result ===
+    "L"
+) {
 
-                                        title =
-                                            "Loss";
-                                    }
+    title =
+        "Loss";
+}
+
+
+if (
+    item.competition
+) {
+
+    title +=
+        " — " +
+        item.competition +
+        " — " +
+        formatDate(
+            item.date
+        );
+}
 
 
                                     return `
