@@ -1881,306 +1881,275 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-        // ========================================
-        // LOAD FORM FROM ALL COMPETITIONS
-        // ========================================
-        //
-        // League + Cup + Friendly
-        //
-        // Only completed matches.
-        //
-        // Most recent first.
-        // Maximum 5.
-        // ========================================
-
-        const {
-            data: allCompletedFixtures,
-            error: formError
-        } =
-            await supabaseClient
-                .from("fixtures")
-                .select(`
-                    id,
-                    competition_id,
-                    home_team_id,
-                    away_team_id,
-                    match_date,
-                    kick_off,
-                    status,
-
-                    home_team:teams!fixtures_home_team_id_fkey (
-                        id,
-                        name
-                    ),
-
-                    away_team:teams!fixtures_away_team_id_fkey (
-                        id,
-                        name
-                    ),
-
-                    competition:competitions (
-                        id,
-                        name,
-                        competition_type,
-                        season
-                    ),
-
-                    results (
-                        id,
-                        home_score,
-                        away_score
-                    )
-                `)
-                .eq(
-                    "status",
-                    "Completed"
-                );
-
-
-        if (formError) {
-
-            console.error(
-                "FORM FIXTURES ERROR:",
-                formError
-            );
-
-        } else {
-
-            (allCompletedFixtures || [])
-                .forEach(
-                    function (fixture) {
-
-                        // ========================================
-                        // CURRENT SEASON ONLY
-                        // ========================================
-
-                        if (
-                            fixture.competition?.season !==
-                            competition.season
-                        ) {
-
-                            return;
-                        }
-
-
-                        const home =
-                            fixture.home_team;
-
-                        const away =
-                            fixture.away_team;
-
-
-                        if (
-                            !home ||
-                            !away
-                        ) {
-
-                            return;
-                        }
-
-
-                        const result =
-                            Array.isArray(
-                                fixture.results
-                            )
-                                ? fixture.results[0]
-                                : fixture.results;
-
-
-                        if (!result) {
-                            return;
-                        }
-
-
-                        const homeScore =
-                            Number(
-                                result.home_score || 0
-                            );
-
-                        const awayScore =
-                            Number(
-                                result.away_score || 0
-                            );
-
-
-                        // ========================================
-                        // ONLY ADD FORM FOR TEAMS THAT
-                        // ARE PRESENT IN THE LEAGUE TABLE
-                        // ========================================
-
-                        if (
-                            teams[home.id]
-                        ) {
-
-                            if (
-                                homeScore >
-                                awayScore
-                            ) {
-
-                                teams[home.id]
-                                    .form
-                                    .push({
-
-                                        result:
-                                            "W",
-
-                                        date:
-                                            fixture.match_date,
-
-                                        time:
-                                            fixture.kick_off
-                                    });
-
-                            } else if (
-                                homeScore <
-                                awayScore
-                            ) {
-
-                                teams[home.id]
-                                    .form
-                                    .push({
-
-                                        result:
-                                            "L",
-
-                                        date:
-                                            fixture.match_date,
-
-                                        time:
-                                            fixture.kick_off
-                                    });
-
-                            } else {
-
-                                teams[home.id]
-                                    .form
-                                    .push({
-
-                                        result:
-                                            "D",
-
-                                        date:
-                                            fixture.match_date,
-
-                                        time:
-                                            fixture.kick_off
-                                    });
-                            }
-                        }
-
-
-                        if (
-                            teams[away.id]
-                        ) {
-
-                            if (
-                                awayScore >
-                                homeScore
-                            ) {
-
-                                teams[away.id]
-                                    .form
-                                    .push({
-
-                                        result:
-                                            "W",
-
-                                        date:
-                                            fixture.match_date,
-
-                                        time:
-                                            fixture.kick_off
-                                    });
-
-                            } else if (
-                                awayScore <
-                                homeScore
-                            ) {
-
-                                teams[away.id]
-                                    .form
-                                    .push({
-
-                                        result:
-                                            "L",
-
-                                        date:
-                                            fixture.match_date,
-
-                                        time:
-                                            fixture.kick_off
-                                    });
-
-                            } else {
-
-                                teams[away.id]
-                                    .form
-                                    .push({
-
-                                        result:
-                                            "D",
-
-                                        date:
-                                            fixture.match_date,
-
-                                        time:
-                                            fixture.kick_off
-                                    });
-                            }
-                        }
-                    }
-                );
-        }
-
-
-        // ========================================
-        // SORT + LIMIT FORM TO LAST FIVE
-        // ========================================
-
-        Object.values(
-            teams
-        ).forEach(
-            function (team) {
-
-                team.form =
-                    (team.form || [])
-                        .sort(
-                            function (a, b) {
-
-                                const dateCompare =
-                                    String(
-                                        b.date || ""
-                                    ).localeCompare(
-                                        String(
-                                            a.date || ""
-                                        )
-                                    );
-
-
-                                if (
-                                    dateCompare !== 0
-                                ) {
-
-                                    return dateCompare;
-                                }
-
-
-                                return String(
-                                    b.time || ""
-                                ).localeCompare(
-                                    String(
-                                        a.time || ""
-                                    )
-                                );
-                            }
-                        )
-                        .slice(
-                            0,
-                            5
-                        );
-            }
+         // ========================================
+// LOAD FORM FROM ALL COMPETITIONS
+// ========================================
+//
+// League + Cup + Friendly
+//
+// ONLY completed matches from the
+// CURRENT SEASON are considered.
+//
+// The league table itself remains
+// League-only.
+//
+// Form is calculated independently
+// from the league statistics.
+// ========================================
+
+const {
+    data: allCompletedFixtures,
+    error: formError
+} =
+    await supabaseClient
+        .from("fixtures")
+        .select(`
+            id,
+            competition_id,
+            home_team_id,
+            away_team_id,
+            match_date,
+            kick_off,
+            status,
+
+            home_team:teams!fixtures_home_team_id_fkey (
+                id,
+                name
+            ),
+
+            away_team:teams!fixtures_away_team_id_fkey (
+                id,
+                name
+            ),
+
+            competition:competitions (
+                id,
+                name,
+                competition_type,
+                season
+            ),
+
+            results (
+                id,
+                home_score,
+                away_score
+            )
+        `)
+        .eq(
+            "status",
+            "Completed"
         );
 
+if (formError) {
+
+    console.error(
+        "FORM FIXTURES ERROR:",
+        formError
+    );
+
+} else {
+
+    const currentSeason =
+        String(
+            competition.season ?? ""
+        ).trim();
+
+    (allCompletedFixtures || [])
+        .forEach(
+            function (fixture) {
+
+                const fixtureCompetition =
+                    fixture.competition;
+
+                if (!fixtureCompetition) {
+                    return;
+                }
+
+                const fixtureSeason =
+                    String(
+                        fixtureCompetition.season ?? ""
+                    ).trim();
+
+                if (
+                    fixtureSeason !==
+                    currentSeason
+                ) {
+                    return;
+                }
+
+                const competitionType =
+                    String(
+                        fixtureCompetition.competition_type ||
+                        ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                if (
+                    ![
+                        "league",
+                        "cup",
+                        "friendly"
+                    ].includes(
+                        competitionType
+                    )
+                ) {
+                    return;
+                }
+
+                const home =
+                    fixture.home_team;
+
+                const away =
+                    fixture.away_team;
+
+                if (
+                    !home ||
+                    !away
+                ) {
+                    return;
+                }
+
+                const result =
+                    Array.isArray(
+                        fixture.results
+                    )
+                        ? fixture.results[0]
+                        : fixture.results;
+
+                if (!result) {
+                    return;
+                }
+
+                const homeScore =
+                    Number(
+                        result.home_score ?? 0
+                    );
+
+                const awayScore =
+                    Number(
+                        result.away_score ?? 0
+                    );
+
+                function addFormResult(
+                    teamId,
+                    resultLetter
+                ) {
+
+                    if (
+                        !teams[teamId]
+                    ) {
+                        return;
+                    }
+
+                    teams[teamId]
+                        .form
+                        .push({
+                            result:
+                                resultLetter,
+                            date:
+                                fixture.match_date,
+                            time:
+                                fixture.kick_off,
+                            competition:
+                                fixtureCompetition.name ||
+                                "Competition",
+                            competitionType:
+                                fixtureCompetition
+                                    .competition_type ||
+                                ""
+                        });
+                }
+
+                if (
+                    homeScore >
+                    awayScore
+                ) {
+
+                    addFormResult(
+                        home.id,
+                        "W"
+                    );
+
+                    addFormResult(
+                        away.id,
+                        "L"
+                    );
+
+                } else if (
+                    homeScore <
+                    awayScore
+                ) {
+
+                    addFormResult(
+                        home.id,
+                        "L"
+                    );
+
+                    addFormResult(
+                        away.id,
+                        "W"
+                    );
+
+                } else {
+
+                    addFormResult(
+                        home.id,
+                        "D"
+                    );
+
+                    addFormResult(
+                        away.id,
+                        "D"
+                    );
+                }
+            }
+        );
+}
+// ========================================
+// SORT + LIMIT FORM TO LAST FIVE
+// ========================================
+
+Object.values(
+    teams
+).forEach(
+    function (team) {
+
+        team.form =
+            team.form
+                .sort(
+                    function (a, b) {
+
+                        const dateCompare =
+                            String(
+                                b.date || ""
+                            ).localeCompare(
+                                String(
+                                    a.date || ""
+                                )
+                            );
+
+                        if (
+                            dateCompare !== 0
+                        ) {
+                            return dateCompare;
+                        }
+
+                        return String(
+                            b.time || ""
+                        ).localeCompare(
+                            String(
+                                a.time || ""
+                            )
+                        );
+                    }
+                )
+                .slice(
+                    0,
+                    5
+                );
+    }
+);
 
         // ========================================
         // SORT LEAGUE TABLE
