@@ -2786,16 +2786,528 @@ document.addEventListener(
         */
 
         addPlayerBtn.addEventListener(
-            "click",
-            function () {
+    "click",
+    function () {
 
-                showMessage(
-                    "Add Player form will be connected in the next step.",
-                    "success"
-                );
+        if (!currentCompetition) {
 
-            }
-        );
+            showMessage(
+                "Please select a competition first.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!currentSettings) {
+
+            showMessage(
+                "Squad registration settings are not available.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        /*
+        ========================================
+        ADD PLAYER FORM
+        ========================================
+        */
+
+        const existingForm =
+            document.getElementById(
+                "addPlayerFormCard"
+            );
+
+        if (existingForm) {
+
+            existingForm.scrollIntoView({
+                behavior: "smooth"
+            });
+
+            return;
+
+        }
+
+
+        const formCard =
+            document.createElement("section");
+
+        formCard.id =
+            "addPlayerFormCard";
+
+        formCard.className =
+            "card";
+
+
+        formCard.innerHTML = `
+
+            <div class="card-title">
+                ➕ Request to Add Player
+            </div>
+
+            <div class="card-subtitle">
+                Enter the player's details below.
+                Your request will be reviewed by the
+                administrator before the player becomes
+                officially registered.
+            </div>
+
+
+            <form id="addPlayerForm">
+
+
+                <div class="form-group">
+
+                    <label for="newPlayerName">
+                        Player Full Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="newPlayerName"
+                        class="form-control"
+                        placeholder="Enter player's full name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="newPlayerJersey">
+                        Jersey Number *
+                    </label>
+
+                    <input
+                        type="number"
+                        id="newPlayerJersey"
+                        class="form-control"
+                        placeholder="e.g. 10"
+                        min="1"
+                        max="99"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="newPlayerPosition">
+                        Position *
+                    </label>
+
+                    <select
+                        id="newPlayerPosition"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            -- Select Position --
+                        </option>
+
+                        <option value="Goalkeeper">
+                            Goalkeeper
+                        </option>
+
+                        <option value="Defender">
+                            Defender
+                        </option>
+
+                        <option value="Midfielder">
+                            Midfielder
+                        </option>
+
+                        <option value="Forward">
+                            Forward
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="newPlayerPhoto">
+                        Player Photo URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="newPlayerPhoto"
+                        class="form-control"
+                        placeholder="Optional photo URL"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="newPlayerReason">
+                        Reason for Adding Player
+                    </label>
+
+                    <textarea
+                        id="newPlayerReason"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Explain why this player needs to be added..."
+                    ></textarea>
+
+                </div>
+
+
+                <div
+                    style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                        margin-top:18px;
+                    "
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitAddPlayerBtn"
+                    >
+                        Submit Add Player Request
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="cancelAddPlayerBtn"
+                        style="
+                            background:#eeeeee;
+                            color:#333;
+                        "
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        `;
+
+
+        /*
+        INSERT FORM AFTER TEAM MANAGEMENT CARD
+        */
+
+        const cards =
+            document.querySelectorAll(
+                "main > .card"
+            );
+
+        if (cards.length >= 3) {
+
+            cards[2].after(formCard);
+
+        }
+        else {
+
+            document.querySelector("main")
+                .appendChild(formCard);
+
+        }
+
+
+        formCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+        /*
+        ========================================
+        CANCEL
+        ========================================
+        */
+
+        document
+            .getElementById(
+                "cancelAddPlayerBtn"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    formCard.remove();
+
+                }
+            );
+
+
+        /*
+        ========================================
+        SUBMIT
+        ========================================
+        */
+
+        document
+            .getElementById(
+                "addPlayerForm"
+            )
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const submitButton =
+                        document.getElementById(
+                            "submitAddPlayerBtn"
+                        );
+
+
+                    const fullName =
+                        document
+                            .getElementById(
+                                "newPlayerName"
+                            )
+                            .value
+                            .trim();
+
+
+                    const jerseyNumber =
+                        Number(
+                            document
+                                .getElementById(
+                                    "newPlayerJersey"
+                                )
+                                .value
+                        );
+
+
+                    const position =
+                        document
+                            .getElementById(
+                                "newPlayerPosition"
+                            )
+                            .value;
+
+
+                    const photoUrl =
+                        document
+                            .getElementById(
+                                "newPlayerPhoto"
+                            )
+                            .value
+                            .trim();
+
+
+                    const reason =
+                        document
+                            .getElementById(
+                                "newPlayerReason"
+                            )
+                            .value
+                            .trim();
+
+
+                    /*
+                    VALIDATION
+                    */
+
+                    if (!fullName) {
+
+                        showMessage(
+                            "Please enter the player's full name.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !Number.isInteger(
+                            jerseyNumber
+                        ) ||
+                        jerseyNumber < 1 ||
+                        jerseyNumber > 99
+                    ) {
+
+                        showMessage(
+                            "Please enter a valid jersey number between 1 and 99.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (!position) {
+
+                        showMessage(
+                            "Please select the player's position.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                    DISABLE BUTTON
+                    */
+
+                    submitButton.disabled =
+                        true;
+
+                    submitButton.textContent =
+                        "Submitting Request...";
+
+
+                    /*
+                    ========================================
+                    SECURE SUPABASE RPC
+                    ========================================
+                    */
+
+                    const {
+                        data,
+                        error
+                    } = await supabaseClient.rpc(
+                        "submit_squad_change_request",
+                        {
+                            p_team_id:
+                                Number(teamId),
+
+                            p_competition_id:
+                                Number(
+                                    currentCompetition.id
+                                ),
+
+                            p_player_id:
+                                null,
+
+                            p_request_type:
+                                "Add Player",
+
+                            p_full_name:
+                                fullName,
+
+                            p_jersey_number:
+                                jerseyNumber,
+
+                            p_position:
+                                position,
+
+                            p_photo_url:
+                                photoUrl || null,
+
+                            p_reason:
+                                reason || null
+                        }
+                    );
+
+
+                    /*
+                    RPC ERROR
+                    */
+
+                    if (error) {
+
+                        console.error(
+                            "Add player RPC error:",
+                            error
+                        );
+
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.textContent =
+                            "Submit Add Player Request";
+
+
+                        showMessage(
+                            "Unable to submit the request: " +
+                            error.message,
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                    RPC RESPONSE
+                    */
+
+                    if (
+                        !data ||
+                        data.success !== true
+                    ) {
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.textContent =
+                            "Submit Add Player Request";
+
+
+                        showMessage(
+                            data &&
+                            data.message
+                                ? data.message
+                                : "The request could not be submitted.",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                    SUCCESS
+                    */
+
+                    showMessage(
+                        data.message ||
+                        "Add Player request submitted successfully.",
+                        "success"
+                    );
+
+
+                    /*
+                    REMOVE FORM
+                    */
+
+                    formCard.remove();
+
+
+                    /*
+                    REFRESH REQUEST HISTORY
+                    */
+
+                    await loadRequests();
+
+                }
+            );
+
+    }
+);
 
 
         removePlayerBtn.addEventListener(
