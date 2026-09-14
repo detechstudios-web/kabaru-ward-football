@@ -1501,6 +1501,75 @@ document.addEventListener(
         let approvedPlayers = [];
 
 
+        // ========================================
+        // IMAGE UPLOAD HELPER
+        // ========================================
+
+        async function uploadManagementImage(file, bucket, folder) {
+
+            if (!file) {
+                return null;
+            }
+
+            if (!file.type || !file.type.startsWith("image/")) {
+                throw new Error("Please select a valid image file.");
+            }
+
+            const maxSize = 5 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+                throw new Error("Image is too large. Maximum allowed size is 5MB.");
+            }
+
+            const originalExtension =
+                file.name && file.name.includes(".")
+                    ? file.name.split(".").pop().toLowerCase()
+                    : "jpg";
+
+            const extension =
+                /^[a-z0-9]+$/.test(originalExtension)
+                    ? originalExtension
+                    : "jpg";
+
+            const uniqueName =
+                folder + "/" +
+                Date.now() + "_" +
+                Math.random().toString(36).substring(2, 10) +
+                "." + extension;
+
+            const { error } =
+                await supabaseClient
+                    .storage
+                    .from(bucket)
+                    .upload(
+                        uniqueName,
+                        file,
+                        {
+                            cacheControl: "3600",
+                            upsert: false
+                        }
+                    );
+
+            if (error) {
+                throw error;
+            }
+
+            const { data: publicData } =
+                supabaseClient
+                    .storage
+                    .from(bucket)
+                    .getPublicUrl(uniqueName);
+
+            if (!publicData || !publicData.publicUrl) {
+                throw new Error(
+                    "Image uploaded, but its public URL could not be generated."
+                );
+            }
+
+            return publicData.publicUrl;
+        }
+
+
         /*
         ========================================
         MESSAGE
@@ -2942,15 +3011,47 @@ document.addEventListener(
                 <div class="form-group">
 
                     <label for="newPlayerPhoto">
-                        Player Photo URL
+                        Player Photo
                     </label>
 
                     <input
-                        type="url"
+                        type="file"
                         id="newPlayerPhoto"
                         class="form-control"
-                        placeholder="Optional photo URL"
+                        accept="image/*"
                     >
+
+                    <small
+                        style="
+                            display:block;
+                            margin-top:6px;
+                            color:#666;
+                        "
+                    >
+                        Select the player's photo from your phone.
+                        Maximum size: 5MB.
+                    </small>
+
+                    <div
+                        id="newPlayerPhotoPreview"
+                        style="
+                            margin-top:12px;
+                            display:none;
+                        "
+                    >
+                        <img
+                            id="newPlayerPhotoPreviewImage"
+                            src=""
+                            alt="Player photo preview"
+                            style="
+                                width:110px;
+                                height:110px;
+                                object-fit:cover;
+                                border-radius:12px;
+                                border:3px solid #f5c542;
+                            "
+                        >
+                    </div>
 
                 </div>
 
@@ -3037,6 +3138,51 @@ document.addEventListener(
         });
 
 
+        // ========================================
+        // ADD PLAYER PHOTO PREVIEW
+        // ========================================
+
+        document
+            .getElementById("newPlayerPhoto")
+            .addEventListener("change", function () {
+
+                const file = this.files && this.files[0];
+                const preview = document.getElementById("newPlayerPhotoPreview");
+                const previewImage = document.getElementById("newPlayerPhotoPreviewImage");
+
+                if (!file) {
+                    preview.style.display = "none";
+                    previewImage.src = "";
+                    return;
+                }
+
+                if (!file.type.startsWith("image/")) {
+                    showMessage("Please select a valid image file.", "error");
+                    this.value = "";
+                    preview.style.display = "none";
+                    previewImage.src = "";
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showMessage("Image is too large. Maximum allowed size is 5MB.", "error");
+                    this.value = "";
+                    preview.style.display = "none";
+                    previewImage.src = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    previewImage.src = event.target.result;
+                    preview.style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+
         /*
         ========================================
         CANCEL
@@ -3107,13 +3253,14 @@ document.addEventListener(
                             .value;
 
 
-                    const photoUrl =
+                    const photoFile =
                         document
                             .getElementById(
                                 "newPlayerPhoto"
                             )
-                            .value
-                            .trim();
+                            .files[0] || null;
+
+                    let photoUrl = null;
 
 
                     const reason =
@@ -3168,6 +3315,48 @@ document.addEventListener(
 
                         return;
 
+                    }
+
+
+                    /*
+                    ========================================
+                    UPLOAD PLAYER PHOTO
+                    ========================================
+                    */
+
+                    try {
+
+                        if (photoFile) {
+
+                            submitButton.disabled = true;
+                            submitButton.textContent = "Uploading Photo...";
+
+                            photoUrl =
+                                await uploadManagementImage(
+                                    photoFile,
+                                    "player-photos",
+                                    "team-" + Number(teamId)
+                                );
+                        }
+
+                    }
+                    catch (uploadError) {
+
+                        console.error(
+                            "Add player photo upload error:",
+                            uploadError
+                        );
+
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Submit Add Player Request";
+
+                        showMessage(
+                            "Unable to upload player photo: " +
+                            (uploadError.message || "Unknown error"),
+                            "error"
+                        );
+
+                        return;
                     }
 
 
@@ -3984,14 +4173,14 @@ editPlayerBtn.addEventListener(
                 <div class="form-group">
 
                     <label for="editPlayerPhoto">
-                        Player Photo URL
+                        Player Photo
                     </label>
 
                     <input
-                        type="url"
+                        type="file"
                         id="editPlayerPhoto"
                         class="form-control"
-                        placeholder="https://..."
+                        accept="image/*"
                     >
 
                     <small
@@ -4001,9 +4190,32 @@ editPlayerBtn.addEventListener(
                             color:#666;
                         "
                     >
-                        Leave unchanged if you do not want
+                        Select a new photo only if you want
                         to change the player's photo.
+                        Leave empty to keep the current photo.
+                        Maximum size: 5MB.
                     </small>
+
+                    <div
+                        id="editPlayerPhotoPreview"
+                        style="
+                            margin-top:12px;
+                            display:none;
+                        "
+                    >
+                        <img
+                            id="editPlayerPhotoPreviewImage"
+                            src=""
+                            alt="Player photo preview"
+                            style="
+                                width:110px;
+                                height:110px;
+                                object-fit:cover;
+                                border-radius:12px;
+                                border:3px solid #f5c542;
+                            "
+                        >
+                    </div>
 
                 </div>
 
@@ -4090,6 +4302,45 @@ editPlayerBtn.addEventListener(
 
 
         // ========================================
+        // EDIT PLAYER PHOTO PREVIEW
+        // ========================================
+
+        document
+            .getElementById("editPlayerPhoto")
+            .addEventListener("change", function () {
+
+                const file = this.files && this.files[0];
+                const preview = document.getElementById("editPlayerPhotoPreview");
+                const previewImage = document.getElementById("editPlayerPhotoPreviewImage");
+
+                if (!file) {
+                    return;
+                }
+
+                if (!file.type.startsWith("image/")) {
+                    showMessage("Please select a valid image file.", "error");
+                    this.value = "";
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showMessage("Image is too large. Maximum allowed size is 5MB.", "error");
+                    this.value = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    previewImage.src = event.target.result;
+                    preview.style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+
+        // ========================================
         // PLAYER SELECTION
         // ========================================
 
@@ -4129,6 +4380,18 @@ editPlayerBtn.addEventListener(
                                 "editPlayerPhoto"
                             )
                             .value = "";
+
+                        document
+                            .getElementById(
+                                "editPlayerPhotoPreview"
+                            )
+                            .style.display = "none";
+
+                        document
+                            .getElementById(
+                                "editPlayerPhotoPreviewImage"
+                            )
+                            .src = "";
 
                         return;
                     }
@@ -4176,12 +4439,24 @@ editPlayerBtn.addEventListener(
                         player.position || "";
 
 
-                    document
-                        .getElementById(
-                            "editPlayerPhoto"
-                        )
-                        .value =
-                        player.photo_url || "";
+                    const currentPhoto =
+                        document.getElementById(
+                            "editPlayerPhotoPreview"
+                        );
+
+                    const currentPhotoImage =
+                        document.getElementById(
+                            "editPlayerPhotoPreviewImage"
+                        );
+
+                    if (player.photo_url) {
+                        currentPhotoImage.src = player.photo_url;
+                        currentPhoto.style.display = "block";
+                    }
+                    else {
+                        currentPhotoImage.src = "";
+                        currentPhoto.style.display = "none";
+                    }
 
                 }
             );
@@ -4260,13 +4535,14 @@ editPlayerBtn.addEventListener(
                             .trim();
 
 
-                    const photoUrl =
+                    const photoFile =
                         document
                             .getElementById(
                                 "editPlayerPhoto"
                             )
-                            .value
-                            .trim();
+                            .files[0] || null;
+
+                    let photoUrl = null;
 
 
                     const reason =
@@ -4367,6 +4643,84 @@ editPlayerBtn.addEventListener(
                             "Another player already has jersey number " +
                             jerseyNumber +
                             ". Please choose a different number.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    // ========================================
+                    // UPLOAD PLAYER PHOTO IF CHANGED
+                    // ========================================
+
+                    try {
+
+                        if (photoFile) {
+                            submitButton.disabled = true;
+                            submitButton.textContent = "Uploading Photo...";
+
+                            photoUrl =
+                                await uploadManagementImage(
+                                    photoFile,
+                                    "player-photos",
+                                    "team-" + Number(teamId)
+                                );
+                        }
+
+                    }
+                    catch (uploadError) {
+
+                        console.error(
+                            "Edit player photo upload error:",
+                            uploadError
+                        );
+
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Submit Edit Request";
+
+                        showMessage(
+                            "Unable to upload player photo: " +
+                            (uploadError.message || "Unknown error"),
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    // ========================================
+                    // UPLOAD TEAM LOGO IF CHANGED
+                    // ========================================
+
+                    try {
+
+                        if (logoFile) {
+                            submitButton.disabled = true;
+                            submitButton.textContent = "Uploading Logo...";
+
+                            logoUrl =
+                                await uploadManagementImage(
+                                    logoFile,
+                                    "team-logos",
+                                    "team-" + Number(teamId)
+                                );
+                        }
+
+                    }
+                    catch (uploadError) {
+
+                        console.error(
+                            "Team logo upload error:",
+                            uploadError
+                        );
+
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Submit Team Edit Request";
+
+                        showMessage(
+                            "Unable to upload team logo: " +
+                            (uploadError.message || "Unknown error"),
                             "error"
                         );
 
@@ -4762,14 +5116,14 @@ editTeamBtn.addEventListener(
                 <div class="form-group">
 
                     <label for="editTeamLogo">
-                        Team Logo URL
+                        Team Logo
                     </label>
 
                     <input
-                        type="url"
+                        type="file"
                         id="editTeamLogo"
                         class="form-control"
-                        placeholder="https://..."
+                        accept="image/*"
                     >
 
                     <small
@@ -4779,9 +5133,32 @@ editTeamBtn.addEventListener(
                             color:#666;
                         "
                     >
-                        Leave unchanged if you do not want
-                        to change the team logo.
+                        Select a new team logo from your phone.
+                        Leave empty to keep the current logo.
+                        Maximum size: 5MB.
                     </small>
+
+                    <div
+                        id="editTeamLogoPreview"
+                        style="
+                            margin-top:12px;
+                            display:none;
+                        "
+                    >
+                        <img
+                            id="editTeamLogoPreviewImage"
+                            src=""
+                            alt="Team logo preview"
+                            style="
+                                width:120px;
+                                height:120px;
+                                object-fit:contain;
+                                border-radius:50%;
+                                border:3px solid #f5c542;
+                                background:#ffffff;
+                            "
+                        >
+                    </div>
 
                 </div>
 
@@ -4865,6 +5242,45 @@ editTeamBtn.addEventListener(
             behavior: "smooth",
             block: "start"
         });
+
+
+        // ========================================
+        // EDIT TEAM LOGO PREVIEW
+        // ========================================
+
+        document
+            .getElementById("editTeamLogo")
+            .addEventListener("change", function () {
+
+                const file = this.files && this.files[0];
+                const preview = document.getElementById("editTeamLogoPreview");
+                const previewImage = document.getElementById("editTeamLogoPreviewImage");
+
+                if (!file) {
+                    return;
+                }
+
+                if (!file.type.startsWith("image/")) {
+                    showMessage("Please select a valid image file.", "error");
+                    this.value = "";
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showMessage("Image is too large. Maximum allowed size is 5MB.", "error");
+                    this.value = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    previewImage.src = event.target.result;
+                    preview.style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+            });
 
 
         // ========================================
@@ -4984,12 +5400,24 @@ editTeamBtn.addEventListener(
                 data.discipline_master_name || "";
 
 
-            document
-                .getElementById(
-                    "editTeamLogo"
-                )
-                .value =
-                data.logo_url || "";
+            const logoPreview =
+                document.getElementById(
+                    "editTeamLogoPreview"
+                );
+
+            const logoPreviewImage =
+                document.getElementById(
+                    "editTeamLogoPreviewImage"
+                );
+
+            if (data.logo_url) {
+                logoPreviewImage.src = data.logo_url;
+                logoPreview.style.display = "block";
+            }
+            else {
+                logoPreviewImage.src = "";
+                logoPreview.style.display = "none";
+            }
 
         }
 
@@ -5099,13 +5527,14 @@ editTeamBtn.addEventListener(
                             .trim();
 
 
-                    const logoUrl =
+                    const logoFile =
                         document
                             .getElementById(
                                 "editTeamLogo"
                             )
-                            .value
-                            .trim();
+                            .files[0] || null;
+
+                    let logoUrl = null;
 
 
                     const reason =
