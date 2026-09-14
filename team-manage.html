@@ -4524,17 +4524,784 @@ editPlayerBtn.addEventListener(
 );
 
 
-        editTeamBtn.addEventListener(
-            "click",
-            function () {
+        // ========================================
+// EDIT TEAM
+// ========================================
 
-                showMessage(
-                    "Edit Team form will be connected in the next step.",
-                    "success"
+editTeamBtn.addEventListener(
+    "click",
+    function () {
+
+        // ========================================
+        // BASIC CHECKS
+        // ========================================
+
+        if (!currentCompetition) {
+
+            showMessage(
+                "Please select a competition first.",
+                "error"
+            );
+
+            return;
+        }
+
+        if (!currentSettings) {
+
+            showMessage(
+                "Squad registration settings are not available.",
+                "error"
+            );
+
+            return;
+        }
+
+        // ========================================
+        // CHECK REGISTRATION WINDOW
+        // ========================================
+
+        const now = new Date();
+
+        const start =
+            currentSettings.start_datetime
+                ? new Date(
+                    currentSettings.start_datetime
+                )
+                : null;
+
+        const end =
+            currentSettings.end_datetime
+                ? new Date(
+                    currentSettings.end_datetime
+                )
+                : null;
+
+        const locked =
+            currentSettings.registration_locked === true;
+
+        const masterAllowed =
+            currentSettings.updates_allowed === true;
+
+        const withinWindow =
+            (!start || now >= start) &&
+            (!end || now <= end);
+
+        if (
+            locked ||
+            !masterAllowed ||
+            !withinWindow ||
+            currentSettings.allow_edit_team !== true
+        ) {
+
+            showMessage(
+                "Team editing is currently closed for this competition.",
+                "error"
+            );
+
+            return;
+        }
+
+        // ========================================
+        // PREVENT DUPLICATE FORM
+        // ========================================
+
+        const existingForm =
+            document.getElementById(
+                "editTeamFormCard"
+            );
+
+        if (existingForm) {
+
+            existingForm.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+            return;
+        }
+
+        // ========================================
+        // CREATE FORM
+        // ========================================
+
+        const formCard =
+            document.createElement("section");
+
+        formCard.id =
+            "editTeamFormCard";
+
+        formCard.className =
+            "card";
+
+        formCard.innerHTML = `
+
+            <div class="card-title">
+                ✏️ Request to Edit Team
+            </div>
+
+            <div class="card-subtitle">
+                Update your team's registered information.
+                All changes will be submitted to the
+                administrator for approval.
+            </div>
+
+            <form id="editTeamForm">
+
+                <div class="form-group">
+
+                    <label for="editTeamName">
+                        Team Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editTeamName"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamShortName">
+                        Short Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editTeamShortName"
+                        class="form-control"
+                        placeholder="e.g. KFC"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamLocation">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editTeamLocation"
+                        class="form-control"
+                        placeholder="Team location"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamCoach">
+                        Coach Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editTeamCoach"
+                        class="form-control"
+                        placeholder="Coach name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamCaptain">
+                        Captain Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editTeamCaptain"
+                        class="form-control"
+                        placeholder="Captain name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamViceCaptain">
+                        Vice Captain Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editTeamViceCaptain"
+                        class="form-control"
+                        placeholder="Vice captain name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamDisciplineMaster">
+                        Discipline Master Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editTeamDisciplineMaster"
+                        class="form-control"
+                        placeholder="Discipline master name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamLogo">
+                        Team Logo URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="editTeamLogo"
+                        class="form-control"
+                        placeholder="https://..."
+                    >
+
+                    <small
+                        style="
+                            display:block;
+                            margin-top:6px;
+                            color:#666;
+                        "
+                    >
+                        Leave unchanged if you do not want
+                        to change the team logo.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editTeamReason">
+                        Reason for Change
+                    </label>
+
+                    <textarea
+                        id="editTeamReason"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Explain why the team information needs to be changed..."
+                    ></textarea>
+
+                </div>
+
+
+                <div
+                    style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                        margin-top:18px;
+                    "
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitEditTeamBtn"
+                    >
+                        Submit Team Edit Request
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="cancelEditTeamBtn"
+                        style="
+                            background:#eeeeee;
+                            color:#333;
+                        "
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </form>
+
+        `;
+
+
+        // ========================================
+        // INSERT FORM
+        // ========================================
+
+        const cards =
+            document.querySelectorAll(
+                "main > .card"
+            );
+
+        if (cards.length >= 3) {
+
+            cards[2].after(formCard);
+
+        }
+        else {
+
+            document
+                .querySelector("main")
+                .appendChild(formCard);
+
+        }
+
+
+        formCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+        // ========================================
+        // LOAD CURRENT TEAM INFORMATION
+        // ========================================
+
+        async function loadCurrentTeamInformation() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .select(`
+                        id,
+                        name,
+                        short_name,
+                        logo_url,
+                        location,
+                        coach_name,
+                        captain_name,
+                        vice_captain_name,
+                        discipline_master_name
+                    `)
+                    .eq(
+                        "id",
+                        Number(teamId)
+                    )
+                    .eq(
+                        "registration_status",
+                        "Approved"
+                    )
+                    .single();
+
+
+            if (error) {
+
+                console.error(
+                    "Load team information error:",
+                    error
                 );
 
+                showMessage(
+                    "Unable to load current team information.",
+                    "error"
+                );
+
+                return;
             }
-        );
+
+
+            if (!data) {
+
+                showMessage(
+                    "Team information could not be found.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            document
+                .getElementById(
+                    "editTeamName"
+                )
+                .value =
+                data.name || "";
+
+
+            document
+                .getElementById(
+                    "editTeamShortName"
+                )
+                .value =
+                data.short_name || "";
+
+
+            document
+                .getElementById(
+                    "editTeamLocation"
+                )
+                .value =
+                data.location || "";
+
+
+            document
+                .getElementById(
+                    "editTeamCoach"
+                )
+                .value =
+                data.coach_name || "";
+
+
+            document
+                .getElementById(
+                    "editTeamCaptain"
+                )
+                .value =
+                data.captain_name || "";
+
+
+            document
+                .getElementById(
+                    "editTeamViceCaptain"
+                )
+                .value =
+                data.vice_captain_name || "";
+
+
+            document
+                .getElementById(
+                    "editTeamDisciplineMaster"
+                )
+                .value =
+                data.discipline_master_name || "";
+
+
+            document
+                .getElementById(
+                    "editTeamLogo"
+                )
+                .value =
+                data.logo_url || "";
+
+        }
+
+
+        loadCurrentTeamInformation();
+
+
+        // ========================================
+        // CANCEL
+        // ========================================
+
+        document
+            .getElementById(
+                "cancelEditTeamBtn"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    formCard.remove();
+
+                }
+            );
+
+
+        // ========================================
+        // SUBMIT
+        // ========================================
+
+        document
+            .getElementById(
+                "editTeamForm"
+            )
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const submitButton =
+                        document.getElementById(
+                            "submitEditTeamBtn"
+                        );
+
+
+                    const teamName =
+                        document
+                            .getElementById(
+                                "editTeamName"
+                            )
+                            .value
+                            .trim();
+
+
+                    const shortName =
+                        document
+                            .getElementById(
+                                "editTeamShortName"
+                            )
+                            .value
+                            .trim();
+
+
+                    const location =
+                        document
+                            .getElementById(
+                                "editTeamLocation"
+                            )
+                            .value
+                            .trim();
+
+
+                    const coachName =
+                        document
+                            .getElementById(
+                                "editTeamCoach"
+                            )
+                            .value
+                            .trim();
+
+
+                    const captainName =
+                        document
+                            .getElementById(
+                                "editTeamCaptain"
+                            )
+                            .value
+                            .trim();
+
+
+                    const viceCaptainName =
+                        document
+                            .getElementById(
+                                "editTeamViceCaptain"
+                            )
+                            .value
+                            .trim();
+
+
+                    const disciplineMasterName =
+                        document
+                            .getElementById(
+                                "editTeamDisciplineMaster"
+                            )
+                            .value
+                            .trim();
+
+
+                    const logoUrl =
+                        document
+                            .getElementById(
+                                "editTeamLogo"
+                            )
+                            .value
+                            .trim();
+
+
+                    const reason =
+                        document
+                            .getElementById(
+                                "editTeamReason"
+                            )
+                            .value
+                            .trim();
+
+
+                    // ========================================
+                    // VALIDATION
+                    // ========================================
+
+                    if (!teamName) {
+
+                        showMessage(
+                            "Please enter the team name.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    // ========================================
+                    // SUBMITTING
+                    // ========================================
+
+                    submitButton.disabled =
+                        true;
+
+                    submitButton.textContent =
+                        "Submitting Request...";
+
+
+                    try {
+
+                        // ========================================
+                        // SECURE RPC
+                        // ========================================
+
+                        const {
+                            data,
+                            error
+                        } =
+                            await supabaseClient.rpc(
+                                "submit_squad_change_request",
+                                {
+
+                                    p_team_id:
+                                        Number(teamId),
+
+                                    p_competition_id:
+                                        Number(
+                                            currentCompetition.id
+                                        ),
+
+                                    p_player_id:
+                                        null,
+
+                                    p_request_type:
+                                        "Edit Team",
+
+                                    p_full_name:
+                                        teamName,
+
+                                    p_jersey_number:
+                                        null,
+
+                                    p_position:
+                                        shortName,
+
+                                    p_photo_url:
+                                        logoUrl || null,
+
+                                    p_reason:
+                                        JSON.stringify({
+                                            short_name:
+                                                shortName || null,
+
+                                            location:
+                                                location || null,
+
+                                            coach_name:
+                                                coachName || null,
+
+                                            captain_name:
+                                                captainName || null,
+
+                                            vice_captain_name:
+                                                viceCaptainName || null,
+
+                                            discipline_master_name:
+                                                disciplineMasterName || null,
+
+                                            logo_url:
+                                                logoUrl || null,
+
+                                            reason:
+                                                reason || null
+                                        })
+
+                                }
+                            );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        // ========================================
+                        // CHECK RPC RESPONSE
+                        // ========================================
+
+                        if (
+                            !data ||
+                            data.success !== true
+                        ) {
+
+                            showMessage(
+                                data &&
+                                data.message
+                                    ? data.message
+                                    : "The team edit request could not be submitted.",
+                                "error"
+                            );
+
+
+                            submitButton.disabled =
+                                false;
+
+                            submitButton.textContent =
+                                "Submit Team Edit Request";
+
+                            return;
+
+                        }
+
+
+                        // ========================================
+                        // SUCCESS
+                        // ========================================
+
+                        showMessage(
+                            data.message ||
+                            "Team edit request submitted successfully. It is awaiting admin approval.",
+                            "success"
+                        );
+
+
+                        formCard.remove();
+
+
+                        // ========================================
+                        // REFRESH REQUEST HISTORY
+                        // ========================================
+
+                        await loadRequests();
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Edit team error:",
+                            error
+                        );
+
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.textContent =
+                            "Submit Team Edit Request";
+
+
+                        showMessage(
+                            "Unable to submit the request: " +
+                            (
+                                error.message ||
+                                "Unknown error"
+                            ),
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+    }
+);
 
 
         /*
