@@ -1,0 +1,2904 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Manage Team - Kabaru Ward Football</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --green-dark: #04351f;
+    --green: #075b35;
+    --green-light: #0b7545;
+    --gold: #f5c542;
+    --gold-light: #ffe082;
+    --white: #ffffff;
+    --light: #f4f7f5;
+    --gray: #667085;
+    --border: #dfe5e1;
+    --danger: #c62828;
+    --success: #16834b;
+    --warning: #b7791f;
+}
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    background: var(--light);
+    color: #17201b;
+    line-height: 1.6;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green)
+        );
+
+    color: var(--white);
+    padding: 18px 20px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.15);
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 50%;
+
+    background: var(--gold);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+
+    color: var(--green-dark);
+}
+
+.brand-text h1 {
+    font-size: 20px;
+    line-height: 1.2;
+}
+
+.brand-text p {
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: var(--green-dark);
+    background: var(--gold);
+
+    padding: 9px 14px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+    font-size: 13px;
+}
+
+/* ========================================
+   MAIN
+======================================== */
+
+main {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px 15px 50px;
+}
+
+/* ========================================
+   HERO
+======================================== */
+
+.page-hero {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green-light)
+        );
+
+    color: white;
+
+    border-radius: 18px;
+
+    padding: 30px 22px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 8px 25px rgba(4,53,31,0.15);
+}
+
+.page-hero .kicker {
+    color: var(--gold-light);
+
+    font-size: 12px;
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 7px;
+}
+
+.page-hero h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.page-hero p {
+    max-width: 750px;
+    opacity: 0.9;
+}
+
+/* ========================================
+   CARDS
+======================================== */
+
+.card {
+    background: white;
+
+    border-radius: 15px;
+
+    padding: 20px;
+
+    margin-bottom: 18px;
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 4px 16px rgba(0,0,0,0.05);
+}
+
+.card-title {
+    color: var(--green-dark);
+
+    font-size: 19px;
+    font-weight: bold;
+
+    margin-bottom: 5px;
+}
+
+.card-subtitle {
+    color: var(--gray);
+
+    font-size: 13px;
+
+    margin-bottom: 18px;
+}
+
+/* ========================================
+   TEAM HEADER
+======================================== */
+
+.team-header {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    flex-wrap: wrap;
+}
+
+.team-logo {
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 4px solid var(--gold);
+
+    background: #f1f1f1;
+}
+
+.team-logo-placeholder {
+    width: 90px;
+    height: 90px;
+
+    border-radius: 50%;
+
+    border: 4px solid var(--gold);
+
+    background: var(--green);
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 38px;
+}
+
+.team-info h2 {
+    color: var(--green-dark);
+
+    font-size: 24px;
+
+    margin-bottom: 3px;
+}
+
+.team-info p {
+    color: var(--gray);
+
+    font-size: 14px;
+}
+
+/* ========================================
+   COMPETITION SELECTOR
+======================================== */
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+
+    font-weight: bold;
+
+    color: var(--green-dark);
+
+    margin-bottom: 7px;
+
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    border: 1px solid #cfd8d3;
+
+    border-radius: 9px;
+
+    background: white;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: var(--green);
+
+    box-shadow:
+        0 0 0 3px rgba(7,91,53,0.1);
+}
+
+/* ========================================
+   STATUS
+======================================== */
+
+.status-box {
+    padding: 16px;
+
+    border-radius: 11px;
+
+    margin-top: 15px;
+
+    border: 1px solid var(--border);
+
+    background: #f8faf9;
+}
+
+.status-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 30px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.status-open {
+    background: #dff6e8;
+    color: #08753f;
+}
+
+.status-closed {
+    background: #fde5e5;
+    color: #a61b1b;
+}
+
+.status-upcoming {
+    background: #fff3cd;
+    color: #8a6500;
+}
+
+.status-locked {
+    background: #eeeeee;
+    color: #444444;
+}
+
+.status-box p {
+    color: var(--gray);
+
+    font-size: 13px;
+
+    margin-top: 8px;
+}
+
+/* ========================================
+   PERMISSION GRID
+======================================== */
+
+.permission-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(190px, 1fr)
+        );
+
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+.permission {
+    border: 1px solid var(--border);
+
+    background: #fafcfb;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    font-size: 13px;
+}
+
+.permission strong {
+    display: block;
+
+    color: var(--green-dark);
+
+    margin-bottom: 3px;
+}
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.actions-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+
+    gap: 12px;
+}
+
+.action-card {
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    background: #fff;
+}
+
+.action-icon {
+    font-size: 30px;
+
+    margin-bottom: 8px;
+}
+
+.action-card h3 {
+    color: var(--green-dark);
+
+    font-size: 17px;
+
+    margin-bottom: 5px;
+}
+
+.action-card p {
+    color: var(--gray);
+
+    font-size: 13px;
+
+    margin-bottom: 13px;
+}
+
+.btn {
+    display: inline-block;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 10px 15px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: var(--green);
+
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--green-dark);
+}
+
+.btn-disabled {
+    background: #e5e7e9;
+
+    color: #8a8f91;
+
+    cursor: not-allowed;
+}
+
+/* ========================================
+   SQUAD TABLE
+======================================== */
+
+.table-wrap {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.squad-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 600px;
+}
+
+.squad-table th {
+    background: var(--green-dark);
+
+    color: white;
+
+    padding: 11px;
+
+    text-align: left;
+
+    font-size: 12px;
+}
+
+.squad-table td {
+    padding: 11px;
+
+    border-bottom: 1px solid var(--border);
+
+    font-size: 13px;
+}
+
+.squad-table tr:last-child td {
+    border-bottom: none;
+}
+
+.player-cell {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.player-photo {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid var(--gold);
+
+    background: #eee;
+}
+
+.jersey {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 7px;
+
+    background: var(--green);
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.player-name {
+    font-weight: bold;
+
+    color: var(--green-dark);
+}
+
+/* ========================================
+   REQUESTS
+======================================== */
+
+.request-status {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: bold;
+}
+
+.request-pending {
+    background: #fff3cd;
+
+    color: #856404;
+}
+
+.request-approved {
+    background: #dff6e8;
+
+    color: #08753f;
+}
+
+.request-rejected {
+    background: #fde5e5;
+
+    color: #a61b1b;
+}
+
+/* ========================================
+   LOADING
+======================================== */
+
+.loading {
+    text-align: center;
+
+    padding: 30px;
+
+    color: var(--gray);
+}
+
+.spinner {
+    width: 35px;
+    height: 35px;
+
+    border: 4px solid #dfe8e2;
+
+    border-top-color: var(--green);
+
+    border-radius: 50%;
+
+    margin: 0 auto 12px;
+
+    animation:
+        spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+/* ========================================
+   MESSAGE
+======================================== */
+
+.message {
+    padding: 13px 15px;
+
+    border-radius: 9px;
+
+    margin-bottom: 15px;
+
+    display: none;
+
+    font-size: 13px;
+}
+
+.message.success {
+    display: block;
+
+    background: #dff6e8;
+
+    color: #08753f;
+
+    border: 1px solid #b7e6c9;
+}
+
+.message.error {
+    display: block;
+
+    background: #fde5e5;
+
+    color: #a61b1b;
+
+    border: 1px solid #f3bcbc;
+}
+
+/* ========================================
+   EMPTY
+======================================== */
+
+.empty {
+    text-align: center;
+
+    padding: 25px;
+
+    color: var(--gray);
+
+    border: 1px dashed #cbd5cf;
+
+    border-radius: 10px;
+
+    background: #fafcfb;
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+
+footer {
+    background: var(--green-dark);
+
+    color: white;
+
+    text-align: center;
+
+    padding: 25px 15px;
+
+    font-size: 12px;
+
+    margin-top: 20px;
+}
+
+footer strong {
+    color: var(--gold);
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+
+    .header-inner {
+        align-items: flex-start;
+    }
+
+    .brand-text h1 {
+        font-size: 17px;
+    }
+
+    .back-btn {
+        font-size: 11px;
+
+        padding: 8px 10px;
+    }
+
+    .page-hero {
+        padding: 24px 17px;
+    }
+
+    .page-hero h2 {
+        font-size: 23px;
+    }
+
+    .team-header {
+        align-items: flex-start;
+    }
+
+    .team-logo,
+    .team-logo-placeholder {
+        width: 75px;
+        height: 75px;
+    }
+
+    .team-info h2 {
+        font-size: 20px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<!-- ========================================
+     HEADER
+======================================== -->
+
+<header>
+
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                ⚽
+            </div>
+
+            <div class="brand-text">
+
+                <h1>
+                    KABARU WARD FOOTBALL
+                </h1>
+
+                <p>
+                    Team Management
+                </p>
+
+            </div>
+
+        </div>
+
+        <a
+            href="index.html"
+            class="back-btn"
+        >
+            ← Back to Website
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- ========================================
+     MAIN
+======================================== -->
+
+<main>
+
+
+    <!-- PAGE HERO -->
+
+    <section class="page-hero">
+
+        <div class="kicker">
+            TEAM MANAGEMENT
+        </div>
+
+        <h2>
+            Manage Your Team
+        </h2>
+
+        <p>
+            Submit requests to update your squad or
+            team information. All changes are reviewed
+            and approved by the Kabaru Ward Football
+            administrator.
+        </p>
+
+    </section>
+
+
+    <!-- MESSAGE -->
+
+    <div
+        id="pageMessage"
+        class="message"
+    ></div>
+
+
+    <!-- ========================================
+         TEAM INFORMATION
+    ======================================== -->
+
+    <section class="card">
+
+        <div
+            id="teamLoading"
+            class="loading"
+        >
+
+            <div class="spinner"></div>
+
+            Loading team information...
+
+        </div>
+
+
+        <div
+            id="teamContent"
+            style="display:none;"
+        >
+
+            <div class="team-header">
+
+                <div id="teamLogoContainer">
+                </div>
+
+                <div class="team-info">
+
+                    <h2 id="teamName">
+                        Team Name
+                    </h2>
+
+                    <p id="teamShortName">
+                        Short Name
+                    </p>
+
+                    <p id="teamLocation">
+                        Location
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         COMPETITION
+    ======================================== -->
+
+    <section class="card">
+
+        <div class="card-title">
+            🏆 Competition
+        </div>
+
+        <div class="card-subtitle">
+            Select the competition whose squad you
+            want to manage.
+        </div>
+
+        <div class="form-group">
+
+            <label for="competitionSelect">
+                Select Competition
+            </label>
+
+            <select
+                id="competitionSelect"
+                class="form-control"
+            >
+
+                <option value="">
+                    Loading competitions...
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div
+            id="registrationStatus"
+            class="status-box"
+        >
+
+            <div class="status-header">
+
+                <strong>
+                    Squad Change Status
+                </strong>
+
+                <span
+                    id="statusBadge"
+                    class="status-badge status-closed"
+                >
+                    Checking...
+                </span>
+
+            </div>
+
+            <p id="statusMessage">
+                Please select a competition.
+            </p>
+
+
+            <div
+                id="permissionGrid"
+                class="permission-grid"
+                style="display:none;"
+            >
+
+                <div class="permission">
+
+                    <strong>
+                        ➕ Add Players
+                    </strong>
+
+                    <span id="allowAdd">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="permission">
+
+                    <strong>
+                        ➖ Remove Players
+                    </strong>
+
+                    <span id="allowRemove">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="permission">
+
+                    <strong>
+                        ✏️ Edit Players
+                    </strong>
+
+                    <span id="allowEditPlayer">
+                        —
+                    </span>
+
+                </div>
+
+
+                <div class="permission">
+
+                    <strong>
+                        🏟️ Edit Team
+                    </strong>
+
+                    <span id="allowEditTeam">
+                        —
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         ACTIONS
+    ======================================== -->
+
+    <section class="card">
+
+        <div class="card-title">
+            🛠️ Team Management
+        </div>
+
+        <div class="card-subtitle">
+            Available actions depend on the rules set
+            by the administrator.
+        </div>
+
+
+        <div class="actions-grid">
+
+
+            <div class="action-card">
+
+                <div class="action-icon">
+                    ➕
+                </div>
+
+                <h3>
+                    Add Player
+                </h3>
+
+                <p>
+                    Submit a request to add a new player
+                    to your team.
+                </p>
+
+                <button
+                    id="addPlayerBtn"
+                    class="btn btn-disabled"
+                    disabled
+                >
+                    Add Player
+                </button>
+
+            </div>
+
+
+            <div class="action-card">
+
+                <div class="action-icon">
+                    ➖
+                </div>
+
+                <h3>
+                    Remove Player
+                </h3>
+
+                <p>
+                    Submit a request to remove a player
+                    from your squad.
+                </p>
+
+                <button
+                    id="removePlayerBtn"
+                    class="btn btn-disabled"
+                    disabled
+                >
+                    Remove Player
+                </button>
+
+            </div>
+
+
+            <div class="action-card">
+
+                <div class="action-icon">
+                    ✏️
+                </div>
+
+                <h3>
+                    Edit Player
+                </h3>
+
+                <p>
+                    Request changes to a player's
+                    registered information.
+                </p>
+
+                <button
+                    id="editPlayerBtn"
+                    class="btn btn-disabled"
+                    disabled
+                >
+                    Edit Player
+                </button>
+
+            </div>
+
+
+            <div class="action-card">
+
+                <div class="action-icon">
+                    🏟️
+                </div>
+
+                <h3>
+                    Edit Team
+                </h3>
+
+                <p>
+                    Request changes to your team's
+                    registered information.
+                </p>
+
+                <button
+                    id="editTeamBtn"
+                    class="btn btn-disabled"
+                    disabled
+                >
+                    Edit Team
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         CURRENT SQUAD
+    ======================================== -->
+
+    <section class="card">
+
+        <div class="card-title">
+            👥 Current Squad
+        </div>
+
+        <div class="card-subtitle">
+            Approved players currently registered to
+            this team.
+        </div>
+
+
+        <div
+            id="squadLoading"
+            class="loading"
+        >
+
+            <div class="spinner"></div>
+
+            Loading squad...
+
+        </div>
+
+
+        <div
+            id="squadContent"
+            style="display:none;"
+        >
+
+            <div class="table-wrap">
+
+                <table class="squad-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Player
+                            </th>
+
+                            <th>
+                                Jersey
+                            </th>
+
+                            <th>
+                                Position
+                            </th>
+
+                            <th>
+                                Registration
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="squadBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         REQUEST HISTORY
+    ======================================== -->
+
+    <section class="card">
+
+        <div class="card-title">
+            📋 Request History
+        </div>
+
+        <div class="card-subtitle">
+            Track squad and team change requests
+            submitted for this team.
+        </div>
+
+
+        <div
+            id="requestsLoading"
+            class="loading"
+        >
+
+            <div class="spinner"></div>
+
+            Loading requests...
+
+        </div>
+
+
+        <div
+            id="requestsContent"
+            style="display:none;"
+        >
+
+            <div
+                id="requestsList"
+            ></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ========================================
+     FOOTER
+======================================== -->
+
+<footer>
+
+    <strong>
+        Kabaru Ward Football
+    </strong>
+
+    <br>
+
+    Team management system
+
+</footer>
+
+
+<!-- ========================================
+     SUPABASE
+======================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+
+<!-- ========================================
+     PAGE SCRIPT
+======================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        /*
+        ========================================
+        MAIN ELEMENTS
+        ========================================
+        */
+
+        const teamLoading =
+            document.getElementById(
+                "teamLoading"
+            );
+
+        const teamContent =
+            document.getElementById(
+                "teamContent"
+            );
+
+        const teamLogoContainer =
+            document.getElementById(
+                "teamLogoContainer"
+            );
+
+        const teamName =
+            document.getElementById(
+                "teamName"
+            );
+
+        const teamShortName =
+            document.getElementById(
+                "teamShortName"
+            );
+
+        const teamLocation =
+            document.getElementById(
+                "teamLocation"
+            );
+
+        const competitionSelect =
+            document.getElementById(
+                "competitionSelect"
+            );
+
+        const statusBadge =
+            document.getElementById(
+                "statusBadge"
+            );
+
+        const statusMessage =
+            document.getElementById(
+                "statusMessage"
+            );
+
+        const permissionGrid =
+            document.getElementById(
+                "permissionGrid"
+            );
+
+        const allowAdd =
+            document.getElementById(
+                "allowAdd"
+            );
+
+        const allowRemove =
+            document.getElementById(
+                "allowRemove"
+            );
+
+        const allowEditPlayer =
+            document.getElementById(
+                "allowEditPlayer"
+            );
+
+        const allowEditTeam =
+            document.getElementById(
+                "allowEditTeam"
+            );
+
+        const squadLoading =
+            document.getElementById(
+                "squadLoading"
+            );
+
+        const squadContent =
+            document.getElementById(
+                "squadContent"
+            );
+
+        const squadBody =
+            document.getElementById(
+                "squadBody"
+            );
+
+        const requestsLoading =
+            document.getElementById(
+                "requestsLoading"
+            );
+
+        const requestsContent =
+            document.getElementById(
+                "requestsContent"
+            );
+
+        const requestsList =
+            document.getElementById(
+                "requestsList"
+            );
+
+        const pageMessage =
+            document.getElementById(
+                "pageMessage"
+            );
+
+
+        /*
+        ========================================
+        URL
+        ========================================
+        */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const teamId =
+            params.get("id");
+
+
+        /*
+        ========================================
+        BUTTONS
+        ========================================
+        */
+
+        const addPlayerBtn =
+            document.getElementById(
+                "addPlayerBtn"
+            );
+
+        const removePlayerBtn =
+            document.getElementById(
+                "removePlayerBtn"
+            );
+
+        const editPlayerBtn =
+            document.getElementById(
+                "editPlayerBtn"
+            );
+
+        const editTeamBtn =
+            document.getElementById(
+                "editTeamBtn"
+            );
+
+
+        /*
+        ========================================
+        DATA
+        ========================================
+        */
+
+        let currentTeam = null;
+
+        let currentCompetition = null;
+
+        let currentSettings = null;
+
+
+        /*
+        ========================================
+        MESSAGE
+        ========================================
+        */
+
+        function showMessage(
+            message,
+            type = "success"
+        ) {
+
+            pageMessage.textContent =
+                message;
+
+            pageMessage.className =
+                "message " + type;
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        /*
+        ========================================
+        ESCAPE HTML
+        ========================================
+        */
+
+        function escapeHtml(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return "";
+            }
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        /*
+        ========================================
+        FORMAT DATE
+        ========================================
+        */
+
+        function formatDateTime(value) {
+
+            if (!value) {
+                return "Not specified";
+            }
+
+            const date =
+                new Date(value);
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return value;
+            }
+
+            return date.toLocaleString(
+                "en-KE",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+        }
+
+
+        /*
+        ========================================
+        LOAD TEAM
+        ========================================
+        */
+
+        async function loadTeam() {
+
+            if (!teamId) {
+
+                teamLoading.innerHTML =
+                    `
+                    <strong>
+                        No team selected.
+                    </strong>
+                    <br>
+                    Please open this page using
+                    a valid team ID.
+                    `;
+
+                return false;
+            }
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+
+                .from("teams")
+
+                .select(`
+                    id,
+                    name,
+                    short_name,
+                    logo_url,
+                    location,
+                    coach_name,
+                    captain_name,
+                    vice_captain_name,
+                    discipline_master_name,
+                    registration_status
+                `)
+
+                .eq(
+                    "id",
+                    teamId
+                )
+
+                .eq(
+                    "registration_status",
+                    "Approved"
+                )
+
+                .single();
+
+
+            if (error) {
+
+                console.error(
+                    "Team loading error:",
+                    error
+                );
+
+                teamLoading.innerHTML =
+                    `
+                    <strong>
+                        Unable to load team.
+                    </strong>
+                    <br>
+                    ${escapeHtml(
+                        error.message
+                    )}
+                    `;
+
+                return false;
+            }
+
+
+            currentTeam = data;
+
+
+            teamName.textContent =
+                data.name ||
+                "Team";
+
+            teamShortName.textContent =
+                data.short_name ||
+                "";
+
+            teamLocation.textContent =
+                data.location
+                    ? "📍 " + data.location
+                    : "📍 Location not specified";
+
+
+            if (data.logo_url) {
+
+                teamLogoContainer.innerHTML =
+                    `
+                    <img
+                        src="${escapeHtml(
+                            data.logo_url
+                        )}"
+                        class="team-logo"
+                        alt="${escapeHtml(
+                            data.name
+                        )} logo"
+                    >
+                    `;
+
+            } else {
+
+                teamLogoContainer.innerHTML =
+                    `
+                    <div
+                        class="team-logo-placeholder"
+                    >
+                        ⚽
+                    </div>
+                    `;
+
+            }
+
+
+            teamLoading.style.display =
+                "none";
+
+            teamContent.style.display =
+                "block";
+
+
+            return true;
+
+        }
+
+
+        /*
+        ========================================
+        LOAD COMPETITIONS
+        ========================================
+        */
+
+        async function loadCompetitions() {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+
+                .from("competitions")
+
+                .select(`
+                    id,
+                    name,
+                    competition_type,
+                    season,
+                    start_date,
+                    end_date,
+                    status
+                `)
+
+                .order(
+                    "start_date",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Competition loading error:",
+                    error
+                );
+
+                competitionSelect.innerHTML =
+                    `
+                    <option value="">
+                        Unable to load competitions
+                    </option>
+                    `;
+
+                return;
+
+            }
+
+
+            competitionSelect.innerHTML =
+                `
+                <option value="">
+                    -- Select Competition --
+                </option>
+                `;
+
+
+            (data || []).forEach(
+                function (competition) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        competition.id;
+
+                    option.textContent =
+                        `${competition.name} — ${competition.season}`;
+
+                    competitionSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+
+
+        /*
+        ========================================
+        CHECK REGISTRATION SETTINGS
+        ========================================
+        */
+
+        async function loadCompetitionSettings(
+            competitionId
+        ) {
+
+            currentCompetition = null;
+
+            currentSettings = null;
+
+
+            if (!competitionId) {
+
+                statusBadge.textContent =
+                    "Select Competition";
+
+                statusBadge.className =
+                    "status-badge status-closed";
+
+                statusMessage.textContent =
+                    "Please select a competition to see its squad-management rules.";
+
+                permissionGrid.style.display =
+                    "none";
+
+                disableAllButtons();
+
+                return;
+
+            }
+
+
+            /*
+            LOAD COMPETITION
+            */
+
+            const competitionResponse =
+                await supabaseClient
+
+                    .from("competitions")
+
+                    .select(`
+                        id,
+                        name,
+                        competition_type,
+                        season,
+                        start_date,
+                        end_date,
+                        status
+                    `)
+
+                    .eq(
+                        "id",
+                        competitionId
+                    )
+
+                    .single();
+
+
+            if (
+                competitionResponse.error
+            ) {
+
+                showMessage(
+                    "Unable to load competition.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            currentCompetition =
+                competitionResponse.data;
+
+
+            /*
+            LOAD SETTINGS
+            */
+
+            const settingsResponse =
+                await supabaseClient
+
+                    .from(
+                        "competition_registration_settings"
+                    )
+
+                    .select("*")
+
+                    .eq(
+                        "competition_id",
+                        competitionId
+                    )
+
+                    .maybeSingle();
+
+
+            if (
+                settingsResponse.error
+            ) {
+
+                console.error(
+                    "Settings error:",
+                    settingsResponse.error
+                );
+
+                showMessage(
+                    "Unable to load squad registration settings.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            currentSettings =
+                settingsResponse.data;
+
+
+            if (!currentSettings) {
+
+                statusBadge.textContent =
+                    "Not Configured";
+
+                statusBadge.className =
+                    "status-badge status-closed";
+
+                statusMessage.textContent =
+                    "The administrator has not configured squad changes for this competition.";
+
+                permissionGrid.style.display =
+                    "none";
+
+                disableAllButtons();
+
+                return;
+
+            }
+
+
+            updateRegistrationStatus();
+
+        }
+
+
+        /*
+        ========================================
+        UPDATE REGISTRATION STATUS
+        ========================================
+        */
+
+        function updateRegistrationStatus() {
+
+            if (!currentSettings) {
+                return;
+            }
+
+
+            const now =
+                new Date();
+
+
+            const start =
+                currentSettings.start_datetime
+                    ? new Date(
+                        currentSettings.start_datetime
+                    )
+                    : null;
+
+
+            const end =
+                currentSettings.end_datetime
+                    ? new Date(
+                        currentSettings.end_datetime
+                    )
+                    : null;
+
+
+            const locked =
+                currentSettings.registration_locked === true;
+
+
+            const masterAllowed =
+                currentSettings.updates_allowed === true;
+
+
+            let isOpen = true;
+
+            let state =
+                "open";
+
+
+            if (locked) {
+
+                isOpen = false;
+                state = "locked";
+
+            }
+            else if (!masterAllowed) {
+
+                isOpen = false;
+                state = "closed";
+
+            }
+            else if (
+                start &&
+                now < start
+            ) {
+
+                isOpen = false;
+                state = "upcoming";
+
+            }
+            else if (
+                end &&
+                now > end
+            ) {
+
+                isOpen = false;
+                state = "closed";
+
+            }
+
+
+            if (state === "open") {
+
+                statusBadge.textContent =
+                    "OPEN";
+
+                statusBadge.className =
+                    "status-badge status-open";
+
+                statusMessage.textContent =
+                    buildOpenMessage();
+
+            }
+            else if (
+                state === "upcoming"
+            ) {
+
+                statusBadge.textContent =
+                    "NOT OPEN YET";
+
+                statusBadge.className =
+                    "status-badge status-upcoming";
+
+                statusMessage.textContent =
+                    start
+                        ? "Squad changes will open on " +
+                          formatDateTime(start)
+                        : "Squad changes are not open yet.";
+
+            }
+            else if (
+                state === "locked"
+            ) {
+
+                statusBadge.textContent =
+                    "LOCKED";
+
+                statusBadge.className =
+                    "status-badge status-locked";
+
+                statusMessage.textContent =
+                    "The administrator has completely locked squad registration.";
+
+            }
+            else {
+
+                statusBadge.textContent =
+                    "CLOSED";
+
+                statusBadge.className =
+                    "status-badge status-closed";
+
+                statusMessage.textContent =
+                    end
+                        ? "The squad change window closed on " +
+                          formatDateTime(end)
+                        : "Squad changes are currently closed.";
+
+            }
+
+
+            permissionGrid.style.display =
+                "grid";
+
+
+            allowAdd.textContent =
+                currentSettings.allow_add_players
+                    ? "Allowed"
+                    : "Not allowed";
+
+
+            allowRemove.textContent =
+                currentSettings.allow_remove_players
+                    ? "Allowed"
+                    : "Not allowed";
+
+
+            allowEditPlayer.textContent =
+                currentSettings.allow_edit_players
+                    ? "Allowed"
+                    : "Not allowed";
+
+
+            allowEditTeam.textContent =
+                currentSettings.allow_edit_team
+                    ? "Allowed"
+                    : "Not allowed";
+
+
+            updateButtons(
+                isOpen
+            );
+
+        }
+
+
+        /*
+        ========================================
+        OPEN MESSAGE
+        ========================================
+        */
+
+        function buildOpenMessage() {
+
+            let message =
+                "Squad changes are currently open.";
+
+            if (
+                currentSettings.end_datetime
+            ) {
+
+                message +=
+                    " Requests close on " +
+                    formatDateTime(
+                        currentSettings.end_datetime
+                    ) +
+                    ".";
+
+            }
+
+            if (
+                currentSettings.max_squad_size
+            ) {
+
+                message +=
+                    ` Maximum squad size: ${currentSettings.max_squad_size}.`;
+
+            }
+
+            return message;
+
+        }
+
+
+        /*
+        ========================================
+        BUTTON STATE
+        ========================================
+        */
+
+        function disableButton(
+            button
+        ) {
+
+            button.disabled = true;
+
+            button.className =
+                "btn btn-disabled";
+
+        }
+
+
+        function enableButton(
+            button
+        ) {
+
+            button.disabled = false;
+
+            button.className =
+                "btn btn-primary";
+
+        }
+
+
+        function disableAllButtons() {
+
+            disableButton(
+                addPlayerBtn
+            );
+
+            disableButton(
+                removePlayerBtn
+            );
+
+            disableButton(
+                editPlayerBtn
+            );
+
+            disableButton(
+                editTeamBtn
+            );
+
+        }
+
+
+        function updateButtons(
+            isOpen
+        ) {
+
+            if (!isOpen) {
+
+                disableAllButtons();
+
+                return;
+
+            }
+
+
+            currentSettings.allow_add_players
+                ? enableButton(addPlayerBtn)
+                : disableButton(addPlayerBtn);
+
+
+            currentSettings.allow_remove_players
+                ? enableButton(removePlayerBtn)
+                : disableButton(removePlayerBtn);
+
+
+            currentSettings.allow_edit_players
+                ? enableButton(editPlayerBtn)
+                : disableButton(editPlayerBtn);
+
+
+            currentSettings.allow_edit_team
+                ? enableButton(editTeamBtn)
+                : disableButton(editTeamBtn);
+
+        }
+
+
+        /*
+        ========================================
+        LOAD SQUAD
+        ========================================
+        */
+
+        async function loadSquad() {
+
+            squadLoading.style.display =
+                "block";
+
+            squadContent.style.display =
+                "none";
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+
+                .from("players")
+
+                .select(`
+                    id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    photo_url,
+                    registration_status
+                `)
+
+                .eq(
+                    "team_id",
+                    teamId
+                )
+
+                .eq(
+                    "registration_status",
+                    "Approved"
+                )
+
+                .order(
+                    "jersey_number",
+                    {
+                        ascending: true,
+                        nullsFirst: false
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Squad loading error:",
+                    error
+                );
+
+                squadLoading.innerHTML =
+                    `
+                    Unable to load squad.
+                    `;
+
+                return;
+
+            }
+
+
+            squadLoading.style.display =
+                "none";
+
+            squadContent.style.display =
+                "block";
+
+
+            squadBody.innerHTML =
+                "";
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                squadBody.innerHTML =
+                    `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty">
+                                No approved players
+                                are currently registered.
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+
+                return;
+
+            }
+
+
+            data.forEach(
+                function (player) {
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    let photoHtml =
+                        "";
+
+                    if (player.photo_url) {
+
+                        photoHtml =
+                            `
+                            <img
+                                src="${escapeHtml(
+                                    player.photo_url
+                                )}"
+                                class="player-photo"
+                                alt="${escapeHtml(
+                                    player.full_name
+                                )}"
+                            >
+                            `;
+
+                    }
+                    else {
+
+                        photoHtml =
+                            `
+                            <div class="jersey">
+                                ⚽
+                            </div>
+                            `;
+
+                    }
+
+
+                    row.innerHTML =
+                        `
+                        <td>
+
+                            <div class="player-cell">
+
+                                ${photoHtml}
+
+                                <span
+                                    class="player-name"
+                                >
+                                    ${escapeHtml(
+                                        player.full_name
+                                    )}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${escapeHtml(
+                                    player.jersey_number ??
+                                    "—"
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                player.position ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td>
+                            <span
+                                class="request-status request-approved"
+                            >
+                                Approved
+                            </span>
+                        </td>
+                        `;
+
+
+                    squadBody.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+        }
+
+
+        /*
+        ========================================
+        LOAD REQUEST HISTORY
+        ========================================
+        */
+
+        async function loadRequests() {
+
+            requestsLoading.style.display =
+                "block";
+
+            requestsContent.style.display =
+                "none";
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+
+                .from(
+                    "squad_change_requests"
+                )
+
+                .select(`
+                    id,
+                    competition_id,
+                    player_id,
+                    request_type,
+                    requested_full_name,
+                    requested_jersey_number,
+                    requested_position,
+                    reason,
+                    status,
+                    admin_notes,
+                    created_at,
+                    reviewed_at,
+                    competition:competitions (
+                        id,
+                        name,
+                        season
+                    )
+                `)
+
+                .eq(
+                    "team_id",
+                    teamId
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Request history error:",
+                    error
+                );
+
+                requestsLoading.innerHTML =
+                    `
+                    Unable to load request history.
+                    `;
+
+                return;
+
+            }
+
+
+            requestsLoading.style.display =
+                "none";
+
+            requestsContent.style.display =
+                "block";
+
+            requestsList.innerHTML =
+                "";
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                requestsList.innerHTML =
+                    `
+                    <div class="empty">
+
+                        No squad change requests
+                        have been submitted yet.
+
+                    </div>
+                    `;
+
+                return;
+
+            }
+
+
+            data.forEach(
+                function (request) {
+
+                    let statusClass =
+                        "request-pending";
+
+                    if (
+                        request.status ===
+                        "Approved"
+                    ) {
+
+                        statusClass =
+                            "request-approved";
+
+                    }
+                    else if (
+                        request.status ===
+                        "Rejected"
+                    ) {
+
+                        statusClass =
+                            "request-rejected";
+
+                    }
+
+
+                    const competitionName =
+                        request.competition
+                            ? request.competition.name
+                            : "Competition";
+
+
+                    const playerName =
+                        request.requested_full_name ||
+                        (
+                            request.player_id
+                                ? "Existing Player"
+                                : "Team Information"
+                        );
+
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+                    item.style.border =
+                        "1px solid var(--border)";
+
+                    item.style.borderRadius =
+                        "10px";
+
+                    item.style.padding =
+                        "14px";
+
+                    item.style.marginBottom =
+                        "10px";
+
+
+                    item.innerHTML =
+                        `
+                        <div
+                            style="
+                                display:flex;
+                                justify-content:space-between;
+                                gap:10px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <strong
+                                style="
+                                    color:var(--green-dark);
+                                "
+                            >
+                                ${escapeHtml(
+                                    request.request_type
+                                )}
+                            </strong>
+
+                            <span
+                                class="request-status ${statusClass}"
+                            >
+                                ${escapeHtml(
+                                    request.status
+                                )}
+                            </span>
+
+                        </div>
+
+                        <div
+                            style="
+                                margin-top:7px;
+                                font-size:13px;
+                                color:var(--gray);
+                            "
+                        >
+
+                            <strong>
+                                Competition:
+                            </strong>
+
+                            ${escapeHtml(
+                                competitionName
+                            )}
+
+                            <br>
+
+                            <strong>
+                                Player:
+                            </strong>
+
+                            ${escapeHtml(
+                                playerName
+                            )}
+
+                            ${
+                                request.requested_jersey_number !==
+                                null
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Jersey:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.requested_jersey_number
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                request.requested_position
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Position:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.requested_position
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            <br>
+
+                            <strong>
+                                Submitted:
+                            </strong>
+
+                            ${formatDateTime(
+                                request.created_at
+                            )}
+
+                            ${
+                                request.reviewed_at
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Reviewed:
+                                    </strong>
+                                    ${formatDateTime(
+                                        request.reviewed_at
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                request.reason
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Reason:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.reason
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                request.admin_notes
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Admin Note:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.admin_notes
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+                        `;
+
+
+                    requestsList.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        }
+
+
+        /*
+        ========================================
+        BUTTON PLACEHOLDERS
+        ========================================
+        */
+
+        addPlayerBtn.addEventListener(
+            "click",
+            function () {
+
+                showMessage(
+                    "Add Player form will be connected in the next step.",
+                    "success"
+                );
+
+            }
+        );
+
+
+        removePlayerBtn.addEventListener(
+            "click",
+            function () {
+
+                showMessage(
+                    "Remove Player form will be connected in the next step.",
+                    "success"
+                );
+
+            }
+        );
+
+
+        editPlayerBtn.addEventListener(
+            "click",
+            function () {
+
+                showMessage(
+                    "Edit Player form will be connected in the next step.",
+                    "success"
+                );
+
+            }
+        );
+
+
+        editTeamBtn.addEventListener(
+            "click",
+            function () {
+
+                showMessage(
+                    "Edit Team form will be connected in the next step.",
+                    "success"
+                );
+
+            }
+        );
+
+
+        /*
+        ========================================
+        COMPETITION CHANGE
+        ========================================
+        */
+
+        competitionSelect.addEventListener(
+            "change",
+            async function () {
+
+                await loadCompetitionSettings(
+                    this.value
+                );
+
+            }
+        );
+
+
+        /*
+        ========================================
+        INITIAL LOAD
+        ========================================
+        */
+
+        try {
+
+            const teamLoaded =
+                await loadTeam();
+
+
+            if (!teamLoaded) {
+                return;
+            }
+
+
+            await loadCompetitions();
+
+            await loadSquad();
+
+            await loadRequests();
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "Team management error:",
+                error
+            );
+
+            showMessage(
+                "An unexpected error occurred while loading the team management page.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
