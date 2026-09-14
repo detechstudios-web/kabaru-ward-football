@@ -3713,17 +3713,815 @@ removePlayerBtn.addEventListener(
 );
 
 
-        editPlayerBtn.addEventListener(
-            "click",
-            function () {
+        // ========================================
+// EDIT PLAYER
+// ========================================
 
-                showMessage(
-                    "Edit Player form will be connected in the next step.",
-                    "success"
-                );
+editPlayerBtn.addEventListener(
+    "click",
+    function () {
 
-            }
-        );
+        // ========================================
+        // BASIC CHECKS
+        // ========================================
+
+        if (!currentCompetition) {
+
+            showMessage(
+                "Please select a competition first.",
+                "error"
+            );
+
+            return;
+        }
+
+        if (!currentSettings) {
+
+            showMessage(
+                "Squad registration settings are not available.",
+                "error"
+            );
+
+            return;
+        }
+
+        // ========================================
+        // CHECK REGISTRATION WINDOW
+        // ========================================
+
+        const now = new Date();
+
+        const start =
+            currentSettings.start_datetime
+                ? new Date(
+                    currentSettings.start_datetime
+                )
+                : null;
+
+        const end =
+            currentSettings.end_datetime
+                ? new Date(
+                    currentSettings.end_datetime
+                )
+                : null;
+
+        const locked =
+            currentSettings.registration_locked === true;
+
+        const masterAllowed =
+            currentSettings.updates_allowed === true;
+
+        const withinWindow =
+            (!start || now >= start) &&
+            (!end || now <= end);
+
+        if (
+            locked ||
+            !masterAllowed ||
+            !withinWindow ||
+            currentSettings.allow_edit_players !== true
+        ) {
+
+            showMessage(
+                "Player editing is currently closed for this competition.",
+                "error"
+            );
+
+            return;
+        }
+
+        // ========================================
+        // CHECK SQUAD
+        // ========================================
+
+        if (
+            !approvedPlayers ||
+            approvedPlayers.length === 0
+        ) {
+
+            showMessage(
+                "There are no approved players available to edit.",
+                "error"
+            );
+
+            return;
+        }
+
+        // ========================================
+        // PREVENT DUPLICATE FORM
+        // ========================================
+
+        const existingForm =
+            document.getElementById(
+                "editPlayerFormCard"
+            );
+
+        if (existingForm) {
+
+            existingForm.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+            return;
+        }
+
+        // ========================================
+        // CREATE FORM
+        // ========================================
+
+        const formCard =
+            document.createElement("section");
+
+        formCard.id =
+            "editPlayerFormCard";
+
+        formCard.className =
+            "card";
+
+        formCard.innerHTML = `
+
+            <div class="card-title">
+                ✏️ Request to Edit Player
+            </div>
+
+            <div class="card-subtitle">
+                Select a player and update their details.
+                Your changes will be submitted to the
+                administrator for approval.
+            </div>
+
+            <form id="editPlayerForm">
+
+                <div class="form-group">
+
+                    <label for="editPlayerSelect">
+                        Player to Edit *
+                    </label>
+
+                    <select
+                        id="editPlayerSelect"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            -- Select Player --
+                        </option>
+
+                        ${
+                            approvedPlayers
+                                .map(function (player) {
+
+                                    return `
+                                        <option
+                                            value="${player.id}"
+                                        >
+                                            #${escapeHtml(
+                                                String(
+                                                    player.jersey_number ??
+                                                    "—"
+                                                )
+                                            )}
+                                            -
+                                            ${escapeHtml(
+                                                player.full_name
+                                            )}
+                                            ${
+                                                player.position
+                                                    ? " (" +
+                                                      escapeHtml(
+                                                          player.position
+                                                      ) +
+                                                      ")"
+                                                    : ""
+                                            }
+                                        </option>
+                                    `;
+
+                                })
+                                .join("")
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editPlayerName">
+                        Full Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editPlayerName"
+                        class="form-control"
+                        placeholder="Player full name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editPlayerJersey">
+                        Jersey Number *
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editPlayerJersey"
+                        class="form-control"
+                        min="1"
+                        max="99"
+                        placeholder="Jersey number"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editPlayerPosition">
+                        Position *
+                    </label>
+
+                    <select
+                        id="editPlayerPosition"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            -- Select Position --
+                        </option>
+
+                        <option value="Goalkeeper">
+                            Goalkeeper
+                        </option>
+
+                        <option value="Defender">
+                            Defender
+                        </option>
+
+                        <option value="Midfielder">
+                            Midfielder
+                        </option>
+
+                        <option value="Forward">
+                            Forward
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editPlayerPhoto">
+                        Player Photo URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="editPlayerPhoto"
+                        class="form-control"
+                        placeholder="https://..."
+                    >
+
+                    <small
+                        style="
+                            display:block;
+                            margin-top:6px;
+                            color:#666;
+                        "
+                    >
+                        Leave unchanged if you do not want
+                        to change the player's photo.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editPlayerReason">
+                        Reason for Change
+                    </label>
+
+                    <textarea
+                        id="editPlayerReason"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Explain why the player details need to be changed..."
+                    ></textarea>
+
+                </div>
+
+
+                <div
+                    style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                        margin-top:18px;
+                    "
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitEditPlayerBtn"
+                    >
+                        Submit Edit Request
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="cancelEditPlayerBtn"
+                        style="
+                            background:#eeeeee;
+                            color:#333;
+                        "
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </form>
+
+        `;
+
+
+        // ========================================
+        // INSERT FORM
+        // ========================================
+
+        const cards =
+            document.querySelectorAll(
+                "main > .card"
+            );
+
+        if (cards.length >= 3) {
+
+            cards[2].after(formCard);
+
+        }
+        else {
+
+            document
+                .querySelector("main")
+                .appendChild(formCard);
+
+        }
+
+
+        formCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+        // ========================================
+        // PLAYER SELECTION
+        // ========================================
+
+        document
+            .getElementById(
+                "editPlayerSelect"
+            )
+            .addEventListener(
+                "change",
+                function () {
+
+                    const playerId =
+                        Number(this.value);
+
+                    if (!playerId) {
+
+                        document
+                            .getElementById(
+                                "editPlayerName"
+                            )
+                            .value = "";
+
+                        document
+                            .getElementById(
+                                "editPlayerJersey"
+                            )
+                            .value = "";
+
+                        document
+                            .getElementById(
+                                "editPlayerPosition"
+                            )
+                            .value = "";
+
+                        document
+                            .getElementById(
+                                "editPlayerPhoto"
+                            )
+                            .value = "";
+
+                        return;
+                    }
+
+
+                    const player =
+                        approvedPlayers.find(
+                            function (item) {
+
+                                return Number(
+                                    item.id
+                                ) === playerId;
+
+                            }
+                        );
+
+
+                    if (!player) {
+
+                        return;
+                    }
+
+
+                    document
+                        .getElementById(
+                            "editPlayerName"
+                        )
+                        .value =
+                        player.full_name || "";
+
+
+                    document
+                        .getElementById(
+                            "editPlayerJersey"
+                        )
+                        .value =
+                        player.jersey_number || "";
+
+
+                    document
+                        .getElementById(
+                            "editPlayerPosition"
+                        )
+                        .value =
+                        player.position || "";
+
+
+                    document
+                        .getElementById(
+                            "editPlayerPhoto"
+                        )
+                        .value =
+                        player.photo_url || "";
+
+                }
+            );
+
+
+        // ========================================
+        // CANCEL
+        // ========================================
+
+        document
+            .getElementById(
+                "cancelEditPlayerBtn"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    formCard.remove();
+
+                }
+            );
+
+
+        // ========================================
+        // SUBMIT
+        // ========================================
+
+        document
+            .getElementById(
+                "editPlayerForm"
+            )
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const submitButton =
+                        document.getElementById(
+                            "submitEditPlayerBtn"
+                        );
+
+
+                    const playerId =
+                        document
+                            .getElementById(
+                                "editPlayerSelect"
+                            )
+                            .value;
+
+
+                    const fullName =
+                        document
+                            .getElementById(
+                                "editPlayerName"
+                            )
+                            .value
+                            .trim();
+
+
+                    const jerseyNumber =
+                        document
+                            .getElementById(
+                                "editPlayerJersey"
+                            )
+                            .value;
+
+
+                    const position =
+                        document
+                            .getElementById(
+                                "editPlayerPosition"
+                            )
+                            .value
+                            .trim();
+
+
+                    const photoUrl =
+                        document
+                            .getElementById(
+                                "editPlayerPhoto"
+                            )
+                            .value
+                            .trim();
+
+
+                    const reason =
+                        document
+                            .getElementById(
+                                "editPlayerReason"
+                            )
+                            .value
+                            .trim();
+
+
+                    // ========================================
+                    // VALIDATION
+                    // ========================================
+
+                    if (!playerId) {
+
+                        showMessage(
+                            "Please select a player.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (!fullName) {
+
+                        showMessage(
+                            "Please enter the player's full name.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (!jerseyNumber) {
+
+                        showMessage(
+                            "Please enter the player's jersey number.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        Number(jerseyNumber) < 1 ||
+                        Number(jerseyNumber) > 99
+                    ) {
+
+                        showMessage(
+                            "Jersey number must be between 1 and 99.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    if (!position) {
+
+                        showMessage(
+                            "Please select the player's position.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    // ========================================
+                    // CHECK DUPLICATE JERSEY NUMBER
+                    // ========================================
+
+                    const duplicateJersey =
+                        approvedPlayers.find(
+                            function (player) {
+
+                                return (
+                                    Number(player.id) !==
+                                        Number(playerId) &&
+                                    Number(
+                                        player.jersey_number
+                                    ) ===
+                                        Number(jerseyNumber)
+                                );
+
+                            }
+                        );
+
+
+                    if (duplicateJersey) {
+
+                        showMessage(
+                            "Another player already has jersey number " +
+                            jerseyNumber +
+                            ". Please choose a different number.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+
+                    // ========================================
+                    // SUBMITTING
+                    // ========================================
+
+                    submitButton.disabled =
+                        true;
+
+                    submitButton.textContent =
+                        "Submitting Request...";
+
+
+                    try {
+
+                        // ========================================
+                        // SECURE RPC
+                        // ========================================
+
+                        const {
+                            data,
+                            error
+                        } =
+                            await supabaseClient.rpc(
+                                "submit_squad_change_request",
+                                {
+
+                                    p_team_id:
+                                        Number(teamId),
+
+                                    p_competition_id:
+                                        Number(
+                                            currentCompetition.id
+                                        ),
+
+                                    p_player_id:
+                                        Number(playerId),
+
+                                    p_request_type:
+                                        "Edit Player",
+
+                                    p_full_name:
+                                        fullName,
+
+                                    p_jersey_number:
+                                        Number(
+                                            jerseyNumber
+                                        ),
+
+                                    p_position:
+                                        position,
+
+                                    p_photo_url:
+                                        photoUrl || null,
+
+                                    p_reason:
+                                        reason || null
+
+                                }
+                            );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        // ========================================
+                        // CHECK RPC RESPONSE
+                        // ========================================
+
+                        if (
+                            !data ||
+                            data.success !== true
+                        ) {
+
+                            showMessage(
+                                data &&
+                                data.message
+                                    ? data.message
+                                    : "The edit request could not be submitted.",
+                                "error"
+                            );
+
+
+                            submitButton.disabled =
+                                false;
+
+                            submitButton.textContent =
+                                "Submit Edit Request";
+
+                            return;
+
+                        }
+
+
+                        // ========================================
+                        // SUCCESS
+                        // ========================================
+
+                        showMessage(
+                            data.message ||
+                            "Player edit request submitted successfully. It is awaiting admin approval.",
+                            "success"
+                        );
+
+
+                        formCard.remove();
+
+
+                        // ========================================
+                        // REFRESH REQUEST HISTORY
+                        // ========================================
+
+                        await loadRequests();
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Edit player error:",
+                            error
+                        );
+
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.textContent =
+                            "Submit Edit Request";
+
+
+                        showMessage(
+                            "Unable to submit the request: " +
+                            (
+                                error.message ||
+                                "Unknown error"
+                            ),
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+    }
+);
 
 
         editTeamBtn.addEventListener(
