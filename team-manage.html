@@ -1498,6 +1498,8 @@ document.addEventListener(
 
         let currentSettings = null;
 
+        let approvedPlayers = [];
+
 
         /*
         ========================================
@@ -2330,9 +2332,13 @@ document.addEventListener(
                     Unable to load squad.
                     `;
 
+                approvedPlayers = [];
+
                 return;
 
             }
+
+            approvedPlayers = data || [];
 
 
             squadLoading.style.display =
@@ -3314,297 +3320,397 @@ document.addEventListener(
 // REMOVE PLAYER
 // ========================================
 
-removePlayerBtn.addEventListener("click", async function () {
+removePlayerBtn.addEventListener(
+    "click",
+    function () {
 
-    if (!currentCompetition || !currentSettings) {
-        showMessage(
-            "Please select a competition first.",
-            "error"
-        );
-        return;
-    }
+        if (!currentCompetition) {
 
-    if (!canSubmitRequest("Remove Player")) {
-        showMessage(
-            "Player removal is currently closed for this competition.",
-            "error"
-        );
-        return;
-    }
+            showMessage(
+                "Please select a competition first.",
+                "error"
+            );
 
-    // Remove any previous form
-    const oldForm =
-        document.getElementById("removePlayerForm");
+            return;
+        }
 
-    if (oldForm) {
-        oldForm.remove();
-        return;
-    }
+        if (!currentSettings) {
 
-    // Create form
-    const form = document.createElement("div");
+            showMessage(
+                "Squad registration settings are not available.",
+                "error"
+            );
 
-    form.id = "removePlayerForm";
+            return;
+        }
 
-    form.className = "action-form";
+        const now = new Date();
 
-    form.innerHTML = `
-        <div class="form-card">
+        const start =
+            currentSettings.start_datetime
+                ? new Date(currentSettings.start_datetime)
+                : null;
 
-            <h3>➖ Request Player Removal</h3>
+        const end =
+            currentSettings.end_datetime
+                ? new Date(currentSettings.end_datetime)
+                : null;
 
-            <p class="form-description">
-                Select the player you want to remove from
-                your team's squad.
-                The player will NOT be removed immediately.
-                Your request will first be reviewed by the administrator.
-            </p>
+        const locked =
+            currentSettings.registration_locked === true;
 
-            <div class="form-group">
+        const masterAllowed =
+            currentSettings.updates_allowed === true;
 
-                <label for="removePlayerSelect">
-                    Player to Remove
-                </label>
+        const withinWindow =
+            (!start || now >= start) &&
+            (!end || now <= end);
 
-                <select
-                    id="removePlayerSelect"
-                    required
+        if (
+            locked ||
+            !masterAllowed ||
+            !withinWindow ||
+            currentSettings.allow_remove_players !== true
+        ) {
+
+            showMessage(
+                "Player removal is currently closed for this competition.",
+                "error"
+            );
+
+            return;
+        }
+
+        const existingForm =
+            document.getElementById(
+                "removePlayerFormCard"
+            );
+
+        if (existingForm) {
+
+            existingForm.scrollIntoView({
+                behavior: "smooth"
+            });
+
+            return;
+        }
+
+        const formCard =
+            document.createElement("section");
+
+        formCard.id =
+            "removePlayerFormCard";
+
+        formCard.className =
+            "card";
+
+        formCard.innerHTML = `
+
+            <div class="card-title">
+                ➖ Request to Remove Player
+            </div>
+
+            <div class="card-subtitle">
+                Select the player you want to remove.
+                The player will remain on your squad until
+                the administrator approves the request.
+            </div>
+
+            <form id="removePlayerForm">
+
+                <div class="form-group">
+
+                    <label for="removePlayerSelect">
+                        Player to Remove *
+                    </label>
+
+                    <select
+                        id="removePlayerSelect"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            -- Select Player --
+                        </option>
+
+                        ${
+                            approvedPlayers
+                                .map(function (player) {
+
+                                    return `
+                                        <option
+                                            value="${player.id}"
+                                        >
+                                            #${escapeHtml(
+                                                String(
+                                                    player.jersey_number ??
+                                                    "—"
+                                                )
+                                            )}
+                                            -
+                                            ${escapeHtml(
+                                                player.full_name
+                                            )}
+                                            ${
+                                                player.position
+                                                    ? " (" +
+                                                      escapeHtml(
+                                                          player.position
+                                                      ) +
+                                                      ")"
+                                                    : ""
+                                            }
+                                        </option>
+                                    `;
+
+                                })
+                                .join("")
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="removePlayerReason">
+                        Reason for Removal
+                    </label>
+
+                    <textarea
+                        id="removePlayerReason"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Explain why this player should be removed..."
+                    ></textarea>
+
+                </div>
+
+                <div
+                    style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                        margin-top:18px;
+                    "
                 >
 
-                    <option value="">
-                        Select a player
-                    </option>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitRemovePlayerBtn"
+                    >
+                        Submit Removal Request
+                    </button>
 
-                    ${
-                        approvedPlayers
-                            .map(function (player) {
+                    <button
+                        type="button"
+                        class="btn"
+                        id="cancelRemovePlayerBtn"
+                        style="
+                            background:#eeeeee;
+                            color:#333;
+                        "
+                    >
+                        Cancel
+                    </button>
 
-                                return `
-                                    <option value="${player.id}">
-                                        #${escapeHtml(
-                                            String(
-                                                player.jersey_number || ""
-                                            )
-                                        )}
-                                        -
-                                        ${escapeHtml(
-                                            player.full_name
-                                        )}
-                                        ${
-                                            player.position
-                                                ? " (" +
-                                                  escapeHtml(
-                                                      player.position
-                                                  ) +
-                                                  ")"
-                                                : ""
-                                        }
-                                    </option>
-                                `;
+                </div>
 
-                            })
-                            .join("")
+            </form>
+
+        `;
+
+        const cards =
+            document.querySelectorAll(
+                "main > .card"
+            );
+
+        if (cards.length >= 3) {
+
+            cards[2].after(formCard);
+
+        }
+        else {
+
+            document
+                .querySelector("main")
+                .appendChild(formCard);
+
+        }
+
+        formCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        document
+            .getElementById(
+                "cancelRemovePlayerBtn"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    formCard.remove();
+
+                }
+            );
+
+        document
+            .getElementById(
+                "removePlayerForm"
+            )
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+                    const submitButton =
+                        document.getElementById(
+                            "submitRemovePlayerBtn"
+                        );
+
+                    const playerId =
+                        document
+                            .getElementById(
+                                "removePlayerSelect"
+                            )
+                            .value;
+
+                    const reason =
+                        document
+                            .getElementById(
+                                "removePlayerReason"
+                            )
+                            .value
+                            .trim();
+
+                    if (!playerId) {
+
+                        showMessage(
+                            "Please select a player.",
+                            "error"
+                        );
+
+                        return;
                     }
 
-                </select>
+                    submitButton.disabled =
+                        true;
 
-            </div>
+                    submitButton.textContent =
+                        "Submitting Request...";
 
-            <div class="form-group">
+                    try {
 
-                <label for="removePlayerReason">
-                    Reason for Removal
-                </label>
+                        const {
+                            data,
+                            error
+                        } =
+                            await supabaseClient.rpc(
+                                "submit_squad_change_request",
+                                {
+                                    p_team_id:
+                                        Number(teamId),
 
-                <textarea
-                    id="removePlayerReason"
-                    rows="4"
-                    placeholder="Explain why you want to remove this player..."
-                ></textarea>
+                                    p_competition_id:
+                                        Number(
+                                            currentCompetition.id
+                                        ),
 
-            </div>
+                                    p_player_id:
+                                        Number(playerId),
 
-            <div class="form-actions">
+                                    p_request_type:
+                                        "Remove Player",
 
-                <button
-                    type="button"
-                    id="submitRemovePlayer"
-                    class="primary-btn"
-                >
-                    Submit Removal Request
-                </button>
+                                    p_full_name:
+                                        null,
 
-                <button
-                    type="button"
-                    id="cancelRemovePlayer"
-                    class="secondary-btn"
-                >
-                    Cancel
-                </button>
+                                    p_jersey_number:
+                                        null,
 
-            </div>
+                                    p_position:
+                                        null,
 
-            <div
-                id="removePlayerMessage"
-                class="form-message"
-            ></div>
+                                    p_photo_url:
+                                        null,
 
-        </div>
-    `;
+                                    p_reason:
+                                        reason || null
+                                }
+                            );
 
-    // Put form below the action buttons
-    const actionsContainer =
-        removePlayerBtn.parentElement;
+                        if (error) {
 
-    actionsContainer.parentElement.appendChild(form);
+                            throw error;
 
-    // ========================================
-    // CANCEL
-    // ========================================
-
-    document
-        .getElementById("cancelRemovePlayer")
-        .addEventListener("click", function () {
-
-            form.remove();
-
-        });
-
-    // ========================================
-    // SUBMIT
-    // ========================================
-
-    document
-        .getElementById("submitRemovePlayer")
-        .addEventListener("click", async function () {
-
-            const submitBtn =
-                document.getElementById(
-                    "submitRemovePlayer"
-                );
-
-            const messageEl =
-                document.getElementById(
-                    "removePlayerMessage"
-                );
-
-            const playerId =
-                document.getElementById(
-                    "removePlayerSelect"
-                ).value;
-
-            const reason =
-                document.getElementById(
-                    "removePlayerReason"
-                ).value.trim();
-
-            // Validation
-            if (!playerId) {
-
-                messageEl.textContent =
-                    "Please select a player.";
-
-                messageEl.className =
-                    "form-message error";
-
-                return;
-            }
-
-            submitBtn.disabled = true;
-
-            submitBtn.textContent =
-                "Submitting...";
-
-            messageEl.textContent = "";
-
-            try {
-
-                const { data, error } =
-                    await supabaseClient.rpc(
-                        "submit_squad_change_request",
-                        {
-                            p_team_id: Number(teamId),
-
-                            p_competition_id:
-                                Number(
-                                    currentCompetition.id
-                                ),
-
-                            p_player_id:
-                                Number(playerId),
-
-                            p_request_type:
-                                "Remove Player",
-
-                            p_full_name: null,
-
-                            p_jersey_number: null,
-
-                            p_position: null,
-
-                            p_photo_url: null,
-
-                            p_reason:
-                                reason || null
                         }
-                    );
 
-                if (error) {
-                    throw error;
+                        if (
+                            !data ||
+                            data.success !== true
+                        ) {
+
+                            showMessage(
+                                data &&
+                                data.message
+                                    ? data.message
+                                    : "The removal request could not be submitted.",
+                                "error"
+                            );
+
+                            submitButton.disabled =
+                                false;
+
+                            submitButton.textContent =
+                                "Submit Removal Request";
+
+                            return;
+
+                        }
+
+                        showMessage(
+                            data.message ||
+                            "Player removal request submitted successfully. It is awaiting admin approval.",
+                            "success"
+                        );
+
+                        formCard.remove();
+
+                        await loadRequests();
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Remove player error:",
+                            error
+                        );
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.textContent =
+                            "Submit Removal Request";
+
+                        showMessage(
+                            "Unable to submit the request: " +
+                            (error.message ||
+                                "Unknown error"),
+                            "error"
+                        );
+
+                    }
+
                 }
+            );
 
-                console.log(
-                    "Remove player request:",
-                    data
-                );
-
-                messageEl.textContent =
-                    "✅ Removal request submitted successfully. It is now awaiting admin approval.";
-
-                messageEl.className =
-                    "form-message success";
-
-                // Remove form after short delay
-                setTimeout(function () {
-
-                    form.remove();
-
-                    loadRequestHistory();
-
-                }, 1200);
-
-            } catch (error) {
-
-                console.error(
-                    "Remove player error:",
-                    error
-                );
-
-                messageEl.textContent =
-                    "❌ Unable to submit the request: " +
-                    (error.message ||
-                        "Unknown error");
-
-                messageEl.className =
-                    "form-message error";
-
-                submitBtn.disabled = false;
-
-                submitBtn.textContent =
-                    "Submit Removal Request";
-            }
-
-        });
-
-});
-
-                showMessage(
-                    "Remove Player form will be connected in the next step.",
-                    "success"
-                );
-
-            }
-        );
+    }
+);
 
 
         editPlayerBtn.addEventListener(
