@@ -645,7 +645,959 @@ document.addEventListener("DOMContentLoaded", async function () {
                 '</div>';
         }
     }
+    // ========================================
+    // COMPETITION SQUAD MANAGEMENT SETTINGS
+    // ========================================
 
+    async function loadCompetitionRegistrationSettings() {
+
+        const competitionsList =
+            document.getElementById(
+                "competitionsList"
+            );
+
+        if (!competitionsList) {
+            return;
+        }
+
+        // ----------------------------------------
+        // CREATE SETTINGS CONTAINER
+        // ----------------------------------------
+
+        let settingsContainer =
+            document.getElementById(
+                "competitionRegistrationSettings"
+            );
+
+        if (!settingsContainer) {
+
+            settingsContainer =
+                document.createElement("div");
+
+            settingsContainer.id =
+                "competitionRegistrationSettings";
+
+            settingsContainer.style.cssText = `
+                margin-top:25px;
+            `;
+
+            competitionsList.parentNode.insertBefore(
+                settingsContainer,
+                competitionsList.nextSibling
+            );
+        }
+
+        settingsContainer.innerHTML = `
+            <div class="admin-card">
+
+                <h2 style="
+                    margin-bottom:8px;
+                    color:#04351f;
+                ">
+                    ⚙️ Squad Registration Controls
+                </h2>
+
+                <p style="
+                    color:#666;
+                    margin-bottom:20px;
+                    line-height:1.6;
+                ">
+                    Control when teams are allowed to request
+                    squad and team changes for each competition.
+                    Changes remain pending until an administrator
+                    approves them.
+                </p>
+
+                <div id="competitionSettingsList">
+
+                    <div class="empty-message">
+                        Loading squad controls...
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        const settingsList =
+            document.getElementById(
+                "competitionSettingsList"
+            );
+
+        if (!settingsList) {
+            return;
+        }
+
+        try {
+
+            // ----------------------------------------
+            // LOAD COMPETITIONS
+            // ----------------------------------------
+
+            const {
+                data: competitions,
+                error: competitionError
+            } =
+                await supabaseClient
+                    .from("competitions")
+                    .select(`
+                        id,
+                        name,
+                        competition_type,
+                        season,
+                        status
+                    `)
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+            if (competitionError) {
+                throw competitionError;
+            }
+
+            if (
+                !competitions ||
+                competitions.length === 0
+            ) {
+
+                settingsList.innerHTML = `
+                    <div class="empty-message">
+                        No competitions available.
+                    </div>
+                `;
+
+                return;
+            }
+
+            // ----------------------------------------
+            // LOAD EXISTING SETTINGS
+            // ----------------------------------------
+
+            const {
+                data: settings,
+                error: settingsError
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_registration_settings"
+                    )
+                    .select("*");
+
+            if (settingsError) {
+                throw settingsError;
+            }
+
+            const settingsMap = {};
+
+            (settings || []).forEach(
+                function (setting) {
+
+                    settingsMap[
+                        String(
+                            setting.competition_id
+                        )
+                    ] = setting;
+
+                }
+            );
+
+            // ----------------------------------------
+            // RENDER
+            // ----------------------------------------
+
+            settingsList.innerHTML = "";
+
+            competitions.forEach(
+                function (competition) {
+
+                    const existing =
+                        settingsMap[
+                            String(
+                                competition.id
+                            )
+                        ] || {};
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+                    card.className =
+                        "admin-card";
+
+                    card.style.cssText = `
+                        margin-top:15px;
+                        border-left:5px solid #f5c542;
+                        background:#fff;
+                    `;
+
+                    // ----------------------------------------
+                    // SAFE VALUES
+                    // ----------------------------------------
+
+                    const updatesAllowed =
+                        existing.updates_allowed === true;
+
+                    const allowAddPlayers =
+                        existing.allow_add_players !== false;
+
+                    const allowRemovePlayers =
+                        existing.allow_remove_players !== false;
+
+                    const allowEditPlayers =
+                        existing.allow_edit_players !== false;
+
+                    const allowEditTeam =
+                        existing.allow_edit_team !== false;
+
+                    const registrationLocked =
+                        existing.registration_locked === true;
+
+                    const maxSquadSize =
+                        Number(
+                            existing.max_squad_size || 20
+                        );
+
+                    // ----------------------------------------
+                    // DATETIME FORMATTER
+                    // ----------------------------------------
+
+                    function datetimeLocalValue(
+                        value
+                    ) {
+
+                        if (!value) {
+                            return "";
+                        }
+
+                        const date =
+                            new Date(value);
+
+                        if (
+                            Number.isNaN(
+                                date.getTime()
+                            )
+                        ) {
+                            return "";
+                        }
+
+                        const pad =
+                            function (number) {
+                                return String(
+                                    number
+                                ).padStart(
+                                    2,
+                                    "0"
+                                );
+                            };
+
+                        return (
+                            date.getFullYear() +
+                            "-" +
+                            pad(
+                                date.getMonth() + 1
+                            ) +
+                            "-" +
+                            pad(
+                                date.getDate()
+                            ) +
+                            "T" +
+                            pad(
+                                date.getHours()
+                            ) +
+                            ":" +
+                            pad(
+                                date.getMinutes()
+                            )
+                        );
+                    }
+
+                    card.innerHTML = `
+
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:15px;
+                            flex-wrap:wrap;
+                            margin-bottom:15px;
+                        ">
+
+                            <div>
+
+                                <h3 style="
+                                    margin:0 0 5px 0;
+                                    color:#04351f;
+                                ">
+                                    🏆
+                                    ${escapeHtml(
+                                        competition.name
+                                    )}
+                                </h3>
+
+                                <div style="
+                                    color:#666;
+                                    font-size:14px;
+                                ">
+                                    ${escapeHtml(
+                                        competition.competition_type ||
+                                        "Competition"
+                                    )}
+                                    •
+                                    Season
+                                    ${escapeHtml(
+                                        competition.season ||
+                                        "-"
+                                    )}
+                                </div>
+
+                            </div>
+
+                            <div style="
+                                font-size:13px;
+                                font-weight:800;
+                                padding:7px 12px;
+                                border-radius:20px;
+                                background:${
+                                    updatesAllowed
+                                        ? "#e8f7ee"
+                                        : "#f3f3f3"
+                                };
+                                color:${
+                                    updatesAllowed
+                                        ? "#087f3e"
+                                        : "#777"
+                                };
+                            ">
+
+                                ${
+                                    updatesAllowed
+                                        ? "🟢 UPDATES OPEN"
+                                        : "🔴 UPDATES CLOSED"
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <!-- MASTER SWITCH -->
+
+                        <div style="
+                            padding:15px;
+                            background:#f7f9f8;
+                            border-radius:10px;
+                            margin-bottom:15px;
+                        ">
+
+                            <label style="
+                                display:flex;
+                                align-items:center;
+                                gap:10px;
+                                font-weight:900;
+                                cursor:pointer;
+                            ">
+
+                                <input
+                                    type="checkbox"
+                                    class="competition-updates-allowed"
+                                    style="
+                                        width:20px;
+                                        height:20px;
+                                    "
+                                    ${
+                                        updatesAllowed
+                                            ? "checked"
+                                            : ""
+                                    }
+                                >
+
+                                🟢 Allow squad/team change requests
+
+                            </label>
+
+                            <p style="
+                                margin:8px 0 0 30px;
+                                color:#777;
+                                font-size:13px;
+                            ">
+                                Turn this OFF to completely prevent
+                                teams from submitting squad changes
+                                for this competition.
+                            </p>
+
+                        </div>
+
+                        <!-- CHANGE TYPES -->
+
+                        <div style="
+                            display:grid;
+                            grid-template-columns:
+                                repeat(
+                                    auto-fit,
+                                    minmax(
+                                        210px,
+                                        1fr
+                                    )
+                                );
+                            gap:10px;
+                            margin-bottom:18px;
+                        ">
+
+                            <label style="
+                                padding:12px;
+                                border:1px solid #ddd;
+                                border-radius:8px;
+                                display:flex;
+                                gap:8px;
+                                align-items:center;
+                                cursor:pointer;
+                            ">
+
+                                <input
+                                    type="checkbox"
+                                    class="allow-add-players"
+                                    ${
+                                        allowAddPlayers
+                                            ? "checked"
+                                            : ""
+                                    }
+                                >
+
+                                ➕ Add players
+
+                            </label>
+
+                            <label style="
+                                padding:12px;
+                                border:1px solid #ddd;
+                                border-radius:8px;
+                                display:flex;
+                                gap:8px;
+                                align-items:center;
+                                cursor:pointer;
+                            ">
+
+                                <input
+                                    type="checkbox"
+                                    class="allow-remove-players"
+                                    ${
+                                        allowRemovePlayers
+                                            ? "checked"
+                                            : ""
+                                    }
+                                >
+
+                                ➖ Remove players
+
+                            </label>
+
+                            <label style="
+                                padding:12px;
+                                border:1px solid #ddd;
+                                border-radius:8px;
+                                display:flex;
+                                gap:8px;
+                                align-items:center;
+                                cursor:pointer;
+                            ">
+
+                                <input
+                                    type="checkbox"
+                                    class="allow-edit-players"
+                                    ${
+                                        allowEditPlayers
+                                            ? "checked"
+                                            : ""
+                                    }
+                                >
+
+                                ✏️ Edit players
+
+                            </label>
+
+                            <label style="
+                                padding:12px;
+                                border:1px solid #ddd;
+                                border-radius:8px;
+                                display:flex;
+                                gap:8px;
+                                align-items:center;
+                                cursor:pointer;
+                            ">
+
+                                <input
+                                    type="checkbox"
+                                    class="allow-edit-team"
+                                    ${
+                                        allowEditTeam
+                                            ? "checked"
+                                            : ""
+                                    }
+                                >
+
+                                🏷️ Edit team
+
+                            </label>
+
+                        </div>
+
+                        <!-- TIME WINDOW -->
+
+                        <div style="
+                            display:grid;
+                            grid-template-columns:
+                                repeat(
+                                    auto-fit,
+                                    minmax(
+                                        220px,
+                                        1fr
+                                    )
+                                );
+                            gap:15px;
+                            margin-bottom:18px;
+                        ">
+
+                            <div>
+
+                                <label style="
+                                    display:block;
+                                    font-weight:800;
+                                    margin-bottom:7px;
+                                ">
+                                    📅 Opening Date & Time
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    class="registration-start"
+                                    value="${
+                                        datetimeLocalValue(
+                                            existing.start_datetime
+                                        )
+                                    }"
+                                    style="
+                                        width:100%;
+                                        padding:11px;
+                                        border:1px solid #ccc;
+                                        border-radius:7px;
+                                    "
+                                >
+
+                            </div>
+
+                            <div>
+
+                                <label style="
+                                    display:block;
+                                    font-weight:800;
+                                    margin-bottom:7px;
+                                ">
+                                    📅 Closing Date & Time
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    class="registration-end"
+                                    value="${
+                                        datetimeLocalValue(
+                                            existing.end_datetime
+                                        )
+                                    }"
+                                    style="
+                                        width:100%;
+                                        padding:11px;
+                                        border:1px solid #ccc;
+                                        border-radius:7px;
+                                    "
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <!-- SQUAD SIZE + LOCK -->
+
+                        <div style="
+                            display:grid;
+                            grid-template-columns:
+                                repeat(
+                                    auto-fit,
+                                    minmax(
+                                        220px,
+                                        1fr
+                                    )
+                                );
+                            gap:15px;
+                            margin-bottom:18px;
+                        ">
+
+                            <div>
+
+                                <label style="
+                                    display:block;
+                                    font-weight:800;
+                                    margin-bottom:7px;
+                                ">
+                                    👥 Maximum Squad Size
+                                </label>
+
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="100"
+                                    class="max-squad-size"
+                                    value="${maxSquadSize}"
+                                    style="
+                                        width:100%;
+                                        padding:11px;
+                                        border:1px solid #ccc;
+                                        border-radius:7px;
+                                    "
+                                >
+
+                            </div>
+
+                            <div style="
+                                display:flex;
+                                align-items:end;
+                            ">
+
+                                <label style="
+                                    width:100%;
+                                    padding:12px;
+                                    border:1px solid #ddd;
+                                    border-radius:8px;
+                                    display:flex;
+                                    gap:8px;
+                                    align-items:center;
+                                    cursor:pointer;
+                                ">
+
+                                    <input
+                                        type="checkbox"
+                                        class="registration-locked"
+                                        ${
+                                            registrationLocked
+                                                ? "checked"
+                                                : ""
+                                        }
+                                    >
+
+                                    🔒 Lock registration completely
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <!-- SAVE -->
+
+                        <div style="
+                            display:flex;
+                            align-items:center;
+                            gap:12px;
+                            flex-wrap:wrap;
+                        ">
+
+                            <button
+                                type="button"
+                                class="save-registration-settings"
+                                style="
+                                    background:#075b35;
+                                    color:white;
+                                    border:none;
+                                    padding:12px 20px;
+                                    border-radius:7px;
+                                    font-weight:900;
+                                    cursor:pointer;
+                                "
+                            >
+                                💾 Save Competition Controls
+                            </button>
+
+                            <span
+                                class="registration-settings-message"
+                                style="
+                                    font-size:13px;
+                                    font-weight:700;
+                                "
+                            ></span>
+
+                        </div>
+
+                    `;
+
+                    // ----------------------------------------
+                    // SAVE BUTTON
+                    // ----------------------------------------
+
+                    const saveButton =
+                        card.querySelector(
+                            ".save-registration-settings"
+                        );
+
+                    saveButton.addEventListener(
+                        "click",
+                        async function () {
+
+                            const message =
+                                card.querySelector(
+                                    ".registration-settings-message"
+                                );
+
+                            const updatesAllowedInput =
+                                card.querySelector(
+                                    ".competition-updates-allowed"
+                                );
+
+                            const addPlayersInput =
+                                card.querySelector(
+                                    ".allow-add-players"
+                                );
+
+                            const removePlayersInput =
+                                card.querySelector(
+                                    ".allow-remove-players"
+                                );
+
+                            const editPlayersInput =
+                                card.querySelector(
+                                    ".allow-edit-players"
+                                );
+
+                            const editTeamInput =
+                                card.querySelector(
+                                    ".allow-edit-team"
+                                );
+
+                            const startInput =
+                                card.querySelector(
+                                    ".registration-start"
+                                );
+
+                            const endInput =
+                                card.querySelector(
+                                    ".registration-end"
+                                );
+
+                            const maxSquadInput =
+                                card.querySelector(
+                                    ".max-squad-size"
+                                );
+
+                            const lockedInput =
+                                card.querySelector(
+                                    ".registration-locked"
+                                );
+
+                            let maxSquad =
+                                Number(
+                                    maxSquadInput.value
+                                );
+
+                            if (
+                                !Number.isFinite(
+                                    maxSquad
+                                ) ||
+                                maxSquad < 1
+                            ) {
+
+                                message.textContent =
+                                    "❌ Maximum squad size must be at least 1.";
+
+                                message.style.color =
+                                    "#b00020";
+
+                                return;
+                            }
+
+                            if (
+                                maxSquad > 100
+                            ) {
+
+                                message.textContent =
+                                    "❌ Maximum squad size cannot exceed 100.";
+
+                                message.style.color =
+                                    "#b00020";
+
+                                return;
+                            }
+
+                            if (
+                                startInput.value &&
+                                endInput.value
+                            ) {
+
+                                const startDate =
+                                    new Date(
+                                        startInput.value
+                                    );
+
+                                const endDate =
+                                    new Date(
+                                        endInput.value
+                                    );
+
+                                if (
+                                    endDate <=
+                                    startDate
+                                ) {
+
+                                    message.textContent =
+                                        "❌ Closing date/time must be after opening date/time.";
+
+                                    message.style.color =
+                                        "#b00020";
+
+                                    return;
+                                }
+                            }
+
+                            saveButton.disabled =
+                                true;
+
+                            saveButton.style.opacity =
+                                "0.6";
+
+                            message.textContent =
+                                "Saving...";
+
+                            message.style.color =
+                                "#666";
+
+                            try {
+
+                                const payload = {
+
+                                    competition_id:
+                                        competition.id,
+
+                                    updates_allowed:
+                                        updatesAllowedInput
+                                            .checked,
+
+                                    allow_add_players:
+                                        addPlayersInput
+                                            .checked,
+
+                                    allow_remove_players:
+                                        removePlayersInput
+                                            .checked,
+
+                                    allow_edit_players:
+                                        editPlayersInput
+                                            .checked,
+
+                                    allow_edit_team:
+                                        editTeamInput
+                                            .checked,
+
+                                    start_datetime:
+                                        startInput.value
+                                            ? new Date(
+                                                startInput.value
+                                            ).toISOString()
+                                            : null,
+
+                                    end_datetime:
+                                        endInput.value
+                                            ? new Date(
+                                                endInput.value
+                                            ).toISOString()
+                                            : null,
+
+                                    max_squad_size:
+                                        maxSquad,
+
+                                    registration_locked:
+                                        lockedInput
+                                            .checked
+                                };
+
+                                const {
+                                    error
+                                } =
+                                    await supabaseClient
+                                        .from(
+                                            "competition_registration_settings"
+                                        )
+                                        .upsert(
+                                            payload,
+                                            {
+                                                onConflict:
+                                                    "competition_id"
+                                            }
+                                        );
+
+                                if (error) {
+                                    throw error;
+                                }
+
+                                message.textContent =
+                                    "✅ Competition controls saved successfully.";
+
+                                message.style.color =
+                                    "#087f3e";
+
+                            } catch (error) {
+
+                                console.error(
+                                    "SAVE REGISTRATION SETTINGS ERROR:",
+                                    error
+                                );
+
+                                message.textContent =
+                                    "❌ Unable to save: " +
+                                    (
+                                        error.message ||
+                                        "Unknown error"
+                                    );
+
+                                message.style.color =
+                                    "#b00020";
+
+                            } finally {
+
+                                saveButton.disabled =
+                                    false;
+
+                                saveButton.style.opacity =
+                                    "1";
+                            }
+
+                        }
+                    );
+
+                    settingsList.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "LOAD REGISTRATION SETTINGS ERROR:",
+                error
+            );
+
+            settingsList.innerHTML = `
+                <div class="empty-message">
+                    ❌ Unable to load squad controls:
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </div>
+            `;
+        }
+    }
     // ========================================
     // CREATE COMPETITION
     // ========================================
@@ -4996,16 +5948,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
 
-    await loadCompetitions();
-
+        await loadCompetitions();
+    await loadCompetitionRegistrationSettings();
     await loadApprovedTeams();
-
     await loadVenues();
-
     await loadFixtures();
-
     await loadResultFixtures();
-
     await loadPendingTeams();
 
 
