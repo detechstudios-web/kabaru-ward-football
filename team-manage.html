@@ -1310,6 +1310,10 @@ footer strong {
             The player is not moved until all required approvals are completed.
         </div>
 
+        <div class="movement-note" style="margin-top:10px;">
+            <strong>🏟️ Club Squad:</strong> Select <em>All Competitions — Club Squad</em> when you want to manage the player's club relationship rather than a single competition. Competition registration remains separate, so the same club player can be eligible for multiple competitions without creating duplicate player records.
+        </div>
+
     </section>
 
 
@@ -2134,6 +2138,10 @@ document.addEventListener(
                 <option value="">
                     -- Select Competition --
                 </option>
+
+                <option value="club">
+                    🏟️ All Competitions — Club Squad
+                </option>
                 `;
 
 
@@ -2174,6 +2182,46 @@ document.addEventListener(
             currentCompetition = null;
 
             currentSettings = null;
+
+            /*
+            CLUB SQUAD MODE
+            All Competitions is a club-level view.
+            Competition-specific registration controls are
+            intentionally not applied here. Player movement
+            requests use competition_id = NULL.
+            */
+
+            if (String(competitionId) === "club") {
+
+                statusBadge.textContent =
+                    "Club Squad";
+
+                statusBadge.className =
+                    "status-badge status-open";
+
+                statusMessage.textContent =
+                    "Club-wide squad view. A player belongs to this club once and can then be registered for eligible competitions separately.";
+
+                permissionGrid.style.display =
+                    "none";
+
+                currentCompetition = {
+                    id: null,
+                    name: "All Competitions — Club Squad",
+                    competition_type: "Club",
+                    season: "Club"
+                };
+
+                currentSettings = null;
+
+                disableAllButtons();
+
+                updateTransferButton(
+                    true
+                );
+
+                return;
+            }
 
 
             if (!competitionId) {
@@ -2631,6 +2679,11 @@ document.addEventListener(
                 return;
             }
 
+            if (String(competitionId) === "club") {
+                updateTransferButton(true);
+                return;
+            }
+
             const {
                 data,
                 error
@@ -2815,11 +2868,11 @@ document.addEventListener(
         function openTransferModal() {
 
             if (!currentCompetition) {
-                showMessage("Please select a competition first.", "error");
+                showMessage("Please select Club Squad or a competition first.", "error");
                 return;
             }
 
-            if (!canRequestTransfer()) {
+            if (String(competitionSelect.value) !== "club" && !canRequestTransfer()) {
                 showMessage(
                     "Player transfers are not currently allowed for the selected competition.",
                     "error"
@@ -6317,13 +6370,13 @@ editTeamBtn.addEventListener(
 
                 if (!currentCompetition) {
                     showTransferFormMessage(
-                        "Please select a competition first.",
+                        "Please select Club Squad or a competition first.",
                         "error"
                     );
                     return;
                 }
 
-                if (!canRequestTransfer()) {
+                if (String(competitionSelect.value) !== "club" && !canRequestTransfer()) {
                     showTransferFormMessage(
                         "Player transfers are not currently allowed for this competition.",
                         "error"
@@ -6382,7 +6435,10 @@ editTeamBtn.addEventListener(
                             p_player_id: playerId,
                             p_from_team_id: Number(teamId),
                             p_to_team_id: destinationTeamId,
-                            p_competition_id: Number(currentCompetition.id),
+                            p_competition_id:
+                                String(competitionSelect.value) === "club"
+                                    ? null
+                                    : Number(currentCompetition.id),
                             p_reason: reason
                         }
                     );
