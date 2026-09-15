@@ -6642,8 +6642,8 @@ function openSquadRequestDetails(requestId) {
     );
 
     const modal = document.getElementById(
-        "squadRequestDetailsModal"
-    );
+    "squadRequestModal"
+);
 
     if (!modal) {
         console.error(
@@ -6653,8 +6653,8 @@ function openSquadRequestDetails(requestId) {
     }
 
     const details = document.getElementById(
-        "squadRequestDetailsContent"
-    );
+    "squadRequestModalContent"
+);
 
     if (!details) {
         console.error(
