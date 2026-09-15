@@ -6641,7 +6641,7 @@ function openSquadRequestDetails(requestId) {
         request.request_type
     );
 
-    const modal = document.getElementById(
+
     let modal =
     document.getElementById(
         "squadRequestModal"
