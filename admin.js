@@ -5924,7 +5924,1140 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
     }
 
+// ========================================
+// SQUAD & TEAM CHANGE REQUESTS
+// ADMIN REVIEW SECTION
+// ========================================
 
+let squadChangeRequests = [];
+let selectedSquadRequest = null;
+let squadRequestFilter = "Pending";
+let squadRequestSearch = "";
+
+// ----------------------------------------
+// CREATE REQUESTS SECTION
+// ----------------------------------------
+
+function ensureSquadRequestsDashboard() {
+
+    if (document.getElementById("squadRequestsSection")) {
+        return;
+    }
+
+    const dashboardSection =
+        document.getElementById("dashboard");
+
+    if (!dashboardSection) {
+        return;
+    }
+
+    const section = document.createElement("section");
+
+    section.id = "squadRequestsSection";
+
+    section.className = "admin-section";
+
+    section.innerHTML = `
+        <div class="section-header">
+            <div>
+                <h2>👥 Squad & Team Change Requests</h2>
+                <p>
+                    Review requests submitted by approved teams.
+                    Changes are only applied after administrator approval.
+                </p>
+            </div>
+        </div>
+
+        <div id="squadRequestCounters"
+             class="dashboard-grid">
+        </div>
+
+        <div class="form-card"
+             style="margin-bottom:20px;">
+
+            <div class="form-group">
+
+                <label for="squadRequestFilter">
+                    Filter Requests
+                </label>
+
+                <select
+                    id="squadRequestFilter"
+                    class="form-control"
+                >
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Approved">
+                        Approved
+                    </option>
+
+                    <option value="Rejected">
+                        Rejected
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                    <option value="All">
+                        All Requests
+                    </option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="squadRequestSearch">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="squadRequestSearch"
+                    class="form-control"
+                    placeholder="Search team, player or request..."
+                >
+
+            </div>
+
+        </div>
+
+        <div id="squadRequestsList">
+
+            <div class="loading">
+                Loading squad requests...
+            </div>
+
+        </div>
+
+    `;
+
+    dashboardSection.appendChild(section);
+
+    const filter =
+        document.getElementById(
+            "squadRequestFilter"
+        );
+
+    if (filter) {
+
+        filter.addEventListener(
+            "change",
+            function () {
+
+                squadRequestFilter =
+                    this.value;
+
+                renderSquadChangeRequests();
+
+            }
+        );
+
+    }
+
+    const search =
+        document.getElementById(
+            "squadRequestSearch"
+        );
+
+    if (search) {
+
+        search.addEventListener(
+            "input",
+            function () {
+
+                squadRequestSearch =
+                    this.value
+                        .trim()
+                        .toLowerCase();
+
+                renderSquadChangeRequests();
+
+            }
+        );
+
+    }
+
+}
+
+
+// ----------------------------------------
+// REQUEST TYPE LABEL
+// ----------------------------------------
+
+function getSquadRequestTypeLabel(type) {
+
+    const value =
+        String(type || "")
+            .trim()
+            .toLowerCase();
+
+    if (
+        value === "add" ||
+        value === "add player"
+    ) {
+        return "➕ Add Player";
+    }
+
+    if (
+        value === "remove" ||
+        value === "remove player"
+    ) {
+        return "➖ Remove Player";
+    }
+
+    if (value === "edit player") {
+        return "✏️ Edit Player";
+    }
+
+    if (value === "edit team") {
+        return "🏷️ Edit Team";
+    }
+
+    return type || "Unknown";
+
+}
+
+
+// ----------------------------------------
+// LOAD REQUESTS
+// ----------------------------------------
+
+async function loadSquadChangeRequests() {
+
+    try {
+
+        ensureSquadRequestsDashboard();
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("squad_change_requests")
+            .select(`
+                *,
+                teams (
+                    id,
+                    name,
+                    short_name
+                ),
+                competitions (
+                    id,
+                    name,
+                    season
+                ),
+                players (
+                    id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    photo_url
+                )
+            `)
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        squadChangeRequests =
+            data || [];
+
+        renderSquadChangeRequestCounters();
+
+        renderSquadChangeRequests();
+
+    } catch (error) {
+
+        console.error(
+            "Load squad requests error:",
+            error
+        );
+
+        const list =
+            document.getElementById(
+                "squadRequestsList"
+            );
+
+        if (list) {
+
+            list.innerHTML = `
+                <div class="error-message">
+                    Failed to load squad requests:
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </div>
+            `;
+
+        }
+
+    }
+
+}
+
+
+// ----------------------------------------
+// REQUEST COUNTERS
+// ----------------------------------------
+
+function renderSquadChangeRequestCounters() {
+
+    const container =
+        document.getElementById(
+            "squadRequestCounters"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const pending =
+        squadChangeRequests.filter(
+            request =>
+                request.status === "Pending"
+        ).length;
+
+    const approved =
+        squadChangeRequests.filter(
+            request =>
+                request.status === "Approved"
+        ).length;
+
+    const rejected =
+        squadChangeRequests.filter(
+            request =>
+                request.status === "Rejected"
+        ).length;
+
+    const total =
+        squadChangeRequests.length;
+
+    container.innerHTML = `
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ⏳
+            </div>
+
+            <div class="stat-number">
+                ${pending}
+            </div>
+
+            <div class="stat-label">
+                Pending Requests
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ✅
+            </div>
+
+            <div class="stat-number">
+                ${approved}
+            </div>
+
+            <div class="stat-label">
+                Approved
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ❌
+            </div>
+
+            <div class="stat-number">
+                ${rejected}
+            </div>
+
+            <div class="stat-label">
+                Rejected
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+            <div class="stat-number">
+                ${total}
+            </div>
+
+            <div class="stat-label">
+                Total Requests
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+// ----------------------------------------
+// RENDER REQUESTS
+// ----------------------------------------
+
+function renderSquadChangeRequests() {
+
+    const container =
+        document.getElementById(
+            "squadRequestsList"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    let requests =
+        [...squadChangeRequests];
+
+    if (
+        squadRequestFilter !== "All"
+    ) {
+
+        requests =
+            requests.filter(
+                request =>
+                    request.status ===
+                    squadRequestFilter
+            );
+
+    }
+
+    if (squadRequestSearch) {
+
+        requests =
+            requests.filter(
+                request => {
+
+                    const teamName =
+                        request.teams?.name ||
+                        "";
+
+                    const shortName =
+                        request.teams?.short_name ||
+                        "";
+
+                    const competition =
+                        request.competitions?.name ||
+                        "";
+
+                    const player =
+                        request.players?.full_name ||
+                        request.requested_full_name ||
+                        "";
+
+                    const requestType =
+                        request.request_type ||
+                        "";
+
+                    const searchable =
+                        (
+                            teamName +
+                            " " +
+                            shortName +
+                            " " +
+                            competition +
+                            " " +
+                            player +
+                            " " +
+                            requestType
+                        )
+                        .toLowerCase();
+
+                    return searchable.includes(
+                        squadRequestSearch
+                    );
+
+                }
+            );
+
+    }
+
+    if (!requests.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+
+                <div
+                    style="
+                        font-size:42px;
+                        margin-bottom:10px;
+                    "
+                >
+                    📋
+                </div>
+
+                <h3>
+                    No ${squadRequestFilter.toLowerCase()}
+                    requests
+                </h3>
+
+                <p>
+                    There are currently no squad or
+                    team change requests matching
+                    your selection.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        requests
+            .map(
+                request =>
+                    createSquadRequestCard(
+                        request
+                    )
+            )
+            .join("");
+
+}
+
+
+// ----------------------------------------
+// REQUEST CARD
+// ----------------------------------------
+
+function createSquadRequestCard(
+    request
+) {
+
+    const teamName =
+        request.teams?.name ||
+        "Unknown Team";
+
+    const competitionName =
+        request.competitions?.name ||
+        "Unknown Competition";
+
+    const playerName =
+        request.players?.full_name ||
+        request.requested_full_name ||
+        "Team Information";
+
+    const type =
+        getSquadRequestTypeLabel(
+            request.request_type
+        );
+
+    const status =
+        request.status ||
+        "Pending";
+
+    const createdAt =
+        request.created_at
+            ? new Date(
+                request.created_at
+            ).toLocaleString()
+            : "Unknown date";
+
+    let statusClass =
+        "pending";
+
+    if (
+        status === "Approved"
+    ) {
+        statusClass = "approved";
+    }
+
+    if (
+        status === "Rejected"
+    ) {
+        statusClass = "rejected";
+    }
+
+    return `
+
+        <div
+            class="form-card"
+            style="
+                margin-bottom:15px;
+                border-left:5px solid
+                ${
+                    status === "Approved"
+                        ? "#198754"
+                        : status === "Rejected"
+                            ? "#dc3545"
+                            : "#f5c542"
+                };
+            "
+        >
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:flex-start;
+                    gap:15px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <div>
+
+                    <h3>
+                        ${escapeHtml(type)}
+                    </h3>
+
+                    <p>
+                        <strong>
+                            Team:
+                        </strong>
+                        ${escapeHtml(teamName)}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Competition:
+                        </strong>
+                        ${escapeHtml(
+                            competitionName
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Player:
+                        </strong>
+                        ${escapeHtml(playerName)}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Submitted:
+                        </strong>
+                        ${escapeHtml(createdAt)}
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <span
+                        style="
+                            display:inline-block;
+                            padding:7px 12px;
+                            border-radius:20px;
+                            font-weight:700;
+                            background:
+                                ${
+                                    status === "Approved"
+                                        ? "#d1e7dd"
+                                        : status === "Rejected"
+                                            ? "#f8d7da"
+                                            : "#fff3cd"
+                                };
+                            color:
+                                ${
+                                    status === "Approved"
+                                        ? "#0f5132"
+                                        : status === "Rejected"
+                                            ? "#842029"
+                                            : "#664d03"
+                                };
+                        "
+                    >
+                        ${escapeHtml(status)}
+                    </span>
+
+                </div>
+
+            </div>
+
+            <div
+                style="
+                    margin-top:15px;
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="openSquadRequestDetails(${Number(
+                        request.id
+                    )})"
+                >
+                    👁️ View Details
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+// ----------------------------------------
+// REQUEST DETAILS
+// ----------------------------------------
+
+function openSquadRequestDetails(
+    requestId
+) {
+
+    selectedSquadRequest =
+        squadChangeRequests.find(
+            request =>
+                Number(request.id) ===
+                Number(requestId)
+        );
+
+    if (!selectedSquadRequest) {
+        return;
+    }
+
+    let modal =
+        document.getElementById(
+            "squadRequestModal"
+        );
+
+    if (!modal) {
+
+        modal =
+            document.createElement(
+                "div"
+            );
+
+        modal.id =
+            "squadRequestModal";
+
+        modal.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.65);
+            z-index:9999;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        `;
+
+        document.body.appendChild(
+            modal
+        );
+
+    }
+
+    const request =
+        selectedSquadRequest;
+
+    const teamName =
+        request.teams?.name ||
+        "Unknown Team";
+
+    const competitionName =
+        request.competitions?.name ||
+        "Unknown Competition";
+
+    const playerName =
+        request.players?.full_name ||
+        request.requested_full_name ||
+        "Team Information";
+
+    const reason =
+        request.reason ||
+        "No reason provided.";
+
+    modal.innerHTML = `
+
+        <div
+            style="
+                background:white;
+                width:100%;
+                max-width:700px;
+                max-height:90vh;
+                overflow:auto;
+                border-radius:14px;
+                padding:25px;
+            "
+        >
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:10px;
+                    margin-bottom:20px;
+                "
+            >
+
+                <h2>
+                    👥 Request Details
+                </h2>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="closeSquadRequestDetails()"
+                >
+                    ✖
+                </button>
+
+            </div>
+
+            <p>
+                <strong>
+                    Request Type:
+                </strong>
+                ${escapeHtml(
+                    getSquadRequestTypeLabel(
+                        request.request_type
+                    )
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Team:
+                </strong>
+                ${escapeHtml(teamName)}
+            </p>
+
+            <p>
+                <strong>
+                    Competition:
+                </strong>
+                ${escapeHtml(
+                    competitionName
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Player:
+                </strong>
+                ${escapeHtml(playerName)}
+            </p>
+
+            <p>
+                <strong>
+                    Status:
+                </strong>
+                ${escapeHtml(
+                    request.status ||
+                    "Pending"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Reason:
+                </strong>
+                ${escapeHtml(reason)}
+            </p>
+
+            ${
+                request.requested_jersey_number
+                    ? `
+                        <p>
+                            <strong>
+                                Requested Jersey:
+                            </strong>
+                            ${Number(
+                                request.requested_jersey_number
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+            ${
+                request.requested_position
+                    ? `
+                        <p>
+                            <strong>
+                                Requested Position:
+                            </strong>
+                            ${escapeHtml(
+                                request.requested_position
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+            ${
+                request.requested_photo_url
+                    ? `
+                        <p>
+                            <strong>
+                                Requested Photo:
+                            </strong>
+                            <br>
+                            <img
+                                src="${escapeHtml(
+                                    request.requested_photo_url
+                                )}"
+                                alt="Requested player"
+                                style="
+                                    width:100px;
+                                    height:100px;
+                                    object-fit:cover;
+                                    border-radius:10px;
+                                    margin-top:8px;
+                                "
+                            >
+                        </p>
+                    `
+                    : ""
+            }
+
+            ${
+                request.status === "Pending"
+                    ? `
+                        <div
+                            style="
+                                margin-top:25px;
+                                display:flex;
+                                gap:10px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <button
+                                type="button"
+                                class="btn btn-success"
+                                onclick="approveSquadChangeRequest(${Number(
+                                    request.id
+                                )})"
+                            >
+                                ✅ Approve Request
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-danger"
+                                onclick="rejectSquadChangeRequest(${Number(
+                                    request.id
+                                )})"
+                            >
+                                ❌ Reject Request
+                            </button>
+
+                        </div>
+                    `
+                    : ""
+            }
+
+        </div>
+
+    `;
+
+    modal.style.display =
+        "flex";
+
+}
+
+
+// ----------------------------------------
+// CLOSE DETAILS
+// ----------------------------------------
+
+function closeSquadRequestDetails() {
+
+    const modal =
+        document.getElementById(
+            "squadRequestModal"
+        );
+
+    if (modal) {
+
+        modal.remove();
+
+    }
+
+}
+
+
+// ----------------------------------------
+// APPROVE REQUEST
+// ----------------------------------------
+
+async function approveSquadChangeRequest(
+    requestId
+) {
+
+    if (!confirm(
+        "Approve this request?"
+    )) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient.rpc(
+            "approve_squad_change_request",
+            {
+                p_request_id:
+                    Number(requestId),
+
+                p_admin_notes:
+                    "Approved by administrator."
+            }
+        );
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            data &&
+            data.success === false
+        ) {
+            throw new Error(
+                data.message ||
+                "Approval failed."
+            );
+        }
+
+        showMessage(
+            "Request approved successfully.",
+            "success"
+        );
+
+        closeSquadRequestDetails();
+
+        await loadSquadChangeRequests();
+
+    } catch (error) {
+
+        console.error(
+            "Approve request error:",
+            error
+        );
+
+        showMessage(
+            "Approval failed: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }
+
+}
+
+
+// ----------------------------------------
+// REJECT REQUEST
+// ----------------------------------------
+
+async function rejectSquadChangeRequest(
+    requestId
+) {
+
+    const notes =
+        prompt(
+            "Enter a reason for rejecting this request:"
+        );
+
+    if (
+        notes === null
+    ) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient.rpc(
+            "reject_squad_change_request",
+            {
+                p_request_id:
+                    Number(requestId),
+
+                p_admin_notes:
+                    notes.trim() ||
+                    "Rejected by administrator."
+            }
+        );
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            data &&
+            data.success === false
+        ) {
+            throw new Error(
+                data.message ||
+                "Rejection failed."
+            );
+        }
+
+        showMessage(
+            "Request rejected successfully.",
+            "success"
+        );
+
+        closeSquadRequestDetails();
+
+        await loadSquadChangeRequests();
+
+    } catch (error) {
+
+        console.error(
+            "Reject request error:",
+            error
+        );
+
+        showMessage(
+            "Rejection failed: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }
+
+}
+
+
+// ========================================
+// PREPARE SQUAD REQUEST DASHBOARD
+// ========================================
+
+ensureSquadRequestsDashboard();
     // ========================================
     // START DASHBOARD
     // ========================================
