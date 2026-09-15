@@ -793,6 +793,108 @@ footer strong {
 
 }
 
+
+/* ========================================
+   PLAYER MOVEMENT / TRANSFER
+======================================== */
+
+.movement-note {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f8faf9;
+    border: 1px solid #dfe9e3;
+    color: #52615a;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.movement-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 9999;
+}
+
+.movement-modal.show {
+    display: flex;
+}
+
+.movement-modal-card {
+    width: min(620px, 100%);
+    max-height: 92vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    padding: 22px;
+}
+
+.movement-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.movement-modal-head h3 {
+    margin: 0;
+    color: var(--green-dark);
+}
+
+.movement-close {
+    border: 0;
+    background: #eef3f0;
+    color: var(--green-dark);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.movement-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.movement-player-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f5faf7;
+    border: 1px solid #d7e9de;
+    margin-top: 10px;
+}
+
+.movement-player-preview strong {
+    color: var(--green-dark);
+}
+
+@media (max-width: 600px) {
+    .movement-modal-card {
+        padding: 17px;
+        border-radius: 13px;
+    }
+
+    .movement-actions {
+        flex-direction: column-reverse;
+    }
+
+    .movement-actions .btn {
+        width: 100%;
+    }
+}
+
 </style>
 
 </head>
@@ -1174,6 +1276,38 @@ footer strong {
 
             </div>
 
+
+            <div class="action-card">
+
+                <div class="action-icon">
+                    🔁
+                </div>
+
+                <h3>
+                    Request Transfer
+                </h3>
+
+                <p>
+                    Request to transfer one of your players
+                    to another approved Kabaru Ward team.
+                </p>
+
+                <button
+                    id="requestTransferBtn"
+                    class="btn btn-disabled"
+                    disabled
+                >
+                    Request Transfer
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="movement-note">
+            <strong>🔁 Transfer rule:</strong> A transfer is only a request at this stage.
+            The current team must review it first, followed by final administrator approval.
+            The player is not moved until all required approvals are completed.
         </div>
 
     </section>
@@ -1294,6 +1428,84 @@ footer strong {
     </section>
 
 </main>
+
+
+<!-- ========================================
+     TRANSFER REQUEST MODAL
+======================================== -->
+
+<div
+    id="transferModal"
+    class="movement-modal"
+    aria-hidden="true"
+>
+
+    <div class="movement-modal-card">
+
+        <div class="movement-modal-head">
+
+            <div>
+                <div class="kicker">PLAYER MOVEMENT</div>
+                <h3>🔁 Request Player Transfer</h3>
+            </div>
+
+            <button
+                type="button"
+                id="closeTransferModal"
+                class="movement-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="card-subtitle">
+            Select a player from your current squad and the approved team you want to transfer the player to.
+            Your request will first go to the player's current team for approval.
+        </div>
+
+        <form id="transferForm">
+
+            <div class="form-group">
+                <label for="transferPlayerSelect">Player *</label>
+                <select id="transferPlayerSelect" class="form-control" required>
+                    <option value="">Select player</option>
+                </select>
+            </div>
+
+            <div id="transferPlayerPreview" class="movement-player-preview" style="display:none;"></div>
+
+            <div class="form-group">
+                <label for="transferDestinationSelect">Destination Team *</label>
+                <select id="transferDestinationSelect" class="form-control" required>
+                    <option value="">Loading approved teams...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="transferReason">Reason / Notes</label>
+                <textarea
+                    id="transferReason"
+                    class="form-control"
+                    rows="4"
+                    maxlength="1000"
+                    placeholder="Optional: explain the reason for the transfer request."
+                ></textarea>
+            </div>
+
+            <div id="transferFormMessage" class="message" style="display:none;"></div>
+
+            <div class="movement-actions">
+                <button type="button" id="cancelTransferBtn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" id="submitTransferBtn" class="btn btn-primary">Submit Transfer Request</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 
 <!-- ========================================
@@ -1485,6 +1697,61 @@ document.addEventListener(
                 "editTeamBtn"
             );
 
+        const requestTransferBtn =
+            document.getElementById(
+                "requestTransferBtn"
+            );
+
+        const transferModal =
+            document.getElementById(
+                "transferModal"
+            );
+
+        const closeTransferModal =
+            document.getElementById(
+                "closeTransferModal"
+            );
+
+        const cancelTransferBtn =
+            document.getElementById(
+                "cancelTransferBtn"
+            );
+
+        const transferForm =
+            document.getElementById(
+                "transferForm"
+            );
+
+        const transferPlayerSelect =
+            document.getElementById(
+                "transferPlayerSelect"
+            );
+
+        const transferDestinationSelect =
+            document.getElementById(
+                "transferDestinationSelect"
+            );
+
+        const transferReason =
+            document.getElementById(
+                "transferReason"
+            );
+
+        const transferPlayerPreview =
+            document.getElementById(
+                "transferPlayerPreview"
+            );
+
+        const transferFormMessage =
+            document.getElementById(
+                "transferFormMessage"
+            );
+
+        const submitTransferBtn =
+            document.getElementById(
+                "submitTransferBtn"
+            );
+
 
         /*
         ========================================
@@ -1499,6 +1766,10 @@ document.addEventListener(
         let currentSettings = null;
 
         let approvedPlayers = [];
+
+        let movementSettings = null;
+
+        let approvedTeams = [];
 
 
         // ========================================
@@ -2301,6 +2572,8 @@ document.addEventListener(
                 editTeamBtn
             );
 
+            updateTransferButton(false);
+
         }
 
 
@@ -2336,6 +2609,265 @@ document.addEventListener(
                 ? enableButton(editTeamBtn)
                 : disableButton(editTeamBtn);
 
+            updateTransferButton(
+                canRequestTransfer()
+            );
+
+        }
+
+
+        /*
+        ========================================
+        PLAYER MOVEMENT SETTINGS
+        ========================================
+        */
+
+        async function loadMovementSettings(competitionId) {
+
+            movementSettings = null;
+
+            if (!competitionId) {
+                updateTransferButton(false);
+                return;
+            }
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("player_movement_settings")
+                .select(`
+                    id,
+                    competition_id,
+                    allow_free_agent_signings,
+                    allow_transfers,
+                    allow_releases,
+                    require_current_team_approval,
+                    require_admin_approval,
+                    allow_movement_during_competition,
+                    registration_locked
+                `)
+                .eq("competition_id", competitionId)
+                .maybeSingle();
+
+            if (error) {
+                console.error("Movement settings error:", error);
+                updateTransferButton(false);
+                return;
+            }
+
+            movementSettings = data || {
+                allow_transfers: false,
+                require_current_team_approval: true,
+                require_admin_approval: true,
+                allow_movement_during_competition: false,
+                registration_locked: false
+            };
+
+            updateTransferButton(
+                canRequestTransfer()
+            );
+        }
+
+
+        function canRequestTransfer() {
+
+            if (!currentCompetition || !movementSettings) {
+                return false;
+            }
+
+            if (!movementSettings.allow_transfers) {
+                return false;
+            }
+
+            if (movementSettings.registration_locked) {
+                return false;
+            }
+
+            const status =
+                String(currentCompetition.status || "")
+                    .toLowerCase();
+
+            if (
+                status === "active" &&
+                !movementSettings.allow_movement_during_competition
+            ) {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        function updateTransferButton(enabled) {
+
+            if (!requestTransferBtn) {
+                return;
+            }
+
+            if (enabled) {
+                requestTransferBtn.disabled = false;
+                requestTransferBtn.className = "btn btn-primary";
+            } else {
+                requestTransferBtn.disabled = true;
+                requestTransferBtn.className = "btn btn-disabled";
+            }
+        }
+
+
+        async function loadApprovedTeamsForTransfer() {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("teams")
+                .select(`
+                    id,
+                    name,
+                    short_name,
+                    logo_url,
+                    registration_status
+                `)
+                .eq("registration_status", "Approved")
+                .order("name", { ascending: true });
+
+            if (error) {
+                console.error("Transfer teams error:", error);
+                throw error;
+            }
+
+            approvedTeams = (data || [])
+                .filter(function (team) {
+                    return Number(team.id) !== Number(teamId);
+                });
+
+            transferDestinationSelect.innerHTML =
+                `<option value="">Select destination team</option>`;
+
+            if (approvedTeams.length === 0) {
+                transferDestinationSelect.innerHTML =
+                    `<option value="">No other approved teams available</option>`;
+                return;
+            }
+
+            approvedTeams.forEach(function (team) {
+                const option = document.createElement("option");
+                option.value = team.id;
+                option.textContent =
+                    team.name +
+                    (team.short_name ? " (" + team.short_name + ")" : "");
+                transferDestinationSelect.appendChild(option);
+            });
+        }
+
+
+        function populateTransferPlayers() {
+
+            transferPlayerSelect.innerHTML =
+                `<option value="">Select player</option>`;
+
+            approvedPlayers.forEach(function (player) {
+                const option = document.createElement("option");
+                option.value = player.id;
+                option.textContent =
+                    player.full_name +
+                    (player.jersey_number !== null && player.jersey_number !== undefined
+                        ? " — #" + player.jersey_number
+                        : "");
+                transferPlayerSelect.appendChild(option);
+            });
+
+            updateTransferPlayerPreview();
+        }
+
+
+        function updateTransferPlayerPreview() {
+
+            const selectedId =
+                Number(transferPlayerSelect.value || 0);
+
+            const player =
+                approvedPlayers.find(function (item) {
+                    return Number(item.id) === selectedId;
+                });
+
+            if (!player) {
+                transferPlayerPreview.style.display = "none";
+                transferPlayerPreview.innerHTML = "";
+                return;
+            }
+
+            const photo = player.photo_url
+                ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;">`
+                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;">⚽</div>`;
+
+            transferPlayerPreview.style.display = "flex";
+            transferPlayerPreview.innerHTML =
+                photo +
+                `<div>
+                    <strong>${escapeHtml(player.full_name)}</strong><br>
+                    <span>${escapeHtml(player.position || "Player")} · Jersey ${escapeHtml(player.jersey_number ?? "—")}</span>
+                </div>`;
+        }
+
+
+        function openTransferModal() {
+
+            if (!currentCompetition) {
+                showMessage("Please select a competition first.", "error");
+                return;
+            }
+
+            if (!canRequestTransfer()) {
+                showMessage(
+                    "Player transfers are not currently allowed for the selected competition.",
+                    "error"
+                );
+                return;
+            }
+
+            if (!approvedPlayers.length) {
+                showMessage(
+                    "This team has no approved players available for transfer.",
+                    "error"
+                );
+                return;
+            }
+
+            transferForm.reset();
+            transferFormMessage.style.display = "none";
+            transferFormMessage.textContent = "";
+            populateTransferPlayers();
+
+            loadApprovedTeamsForTransfer()
+                .catch(function (error) {
+                    transferDestinationSelect.innerHTML =
+                        `<option value="">Unable to load teams</option>`;
+                    showTransferFormMessage(
+                        "Unable to load approved destination teams: " +
+                        (error.message || "Unknown error"),
+                        "error"
+                    );
+                });
+
+            transferModal.classList.add("show");
+            transferModal.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+        }
+
+
+        function closeTransferModalWindow() {
+            transferModal.classList.remove("show");
+            transferModal.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+        }
+
+
+        function showTransferFormMessage(message, type) {
+            transferFormMessage.textContent = message;
+            transferFormMessage.className = "message " + (type || "error");
+            transferFormMessage.style.display = "block";
         }
 
 
@@ -5735,6 +6267,173 @@ editTeamBtn.addEventListener(
 
         /*
         ========================================
+        TRANSFER REQUEST
+        ========================================
+        */
+
+        requestTransferBtn.addEventListener(
+            "click",
+            openTransferModal
+        );
+
+        closeTransferModal.addEventListener(
+            "click",
+            closeTransferModalWindow
+        );
+
+        cancelTransferBtn.addEventListener(
+            "click",
+            closeTransferModalWindow
+        );
+
+        transferModal.addEventListener(
+            "click",
+            function (event) {
+                if (event.target === transferModal) {
+                    closeTransferModalWindow();
+                }
+            }
+        );
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+                if (event.key === "Escape" && transferModal.classList.contains("show")) {
+                    closeTransferModalWindow();
+                }
+            }
+        );
+
+        transferPlayerSelect.addEventListener(
+            "change",
+            updateTransferPlayerPreview
+        );
+
+        transferForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                if (!currentCompetition) {
+                    showTransferFormMessage(
+                        "Please select a competition first.",
+                        "error"
+                    );
+                    return;
+                }
+
+                if (!canRequestTransfer()) {
+                    showTransferFormMessage(
+                        "Player transfers are not currently allowed for this competition.",
+                        "error"
+                    );
+                    return;
+                }
+
+                const playerId =
+                    Number(transferPlayerSelect.value || 0);
+
+                const destinationTeamId =
+                    Number(transferDestinationSelect.value || 0);
+
+                const reason =
+                    transferReason.value.trim() || null;
+
+                if (!playerId || !destinationTeamId) {
+                    showTransferFormMessage(
+                        "Please select both a player and a destination team.",
+                        "error"
+                    );
+                    return;
+                }
+
+                if (destinationTeamId === Number(teamId)) {
+                    showTransferFormMessage(
+                        "The destination team must be different from the current team.",
+                        "error"
+                    );
+                    return;
+                }
+
+                const player = approvedPlayers.find(function (item) {
+                    return Number(item.id) === playerId;
+                });
+
+                if (!player) {
+                    showTransferFormMessage(
+                        "The selected player is no longer available in this squad.",
+                        "error"
+                    );
+                    return;
+                }
+
+                submitTransferBtn.disabled = true;
+                submitTransferBtn.textContent = "Submitting...";
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } = await supabaseClient.rpc(
+                        "request_player_transfer",
+                        {
+                            p_player_id: playerId,
+                            p_from_team_id: Number(teamId),
+                            p_to_team_id: destinationTeamId,
+                            p_competition_id: Number(currentCompetition.id),
+                            p_reason: reason
+                        }
+                    );
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    const response = data || {};
+
+                    if (response.success === false) {
+                        throw new Error(
+                            response.message ||
+                            "Transfer request could not be submitted."
+                        );
+                    }
+
+                    closeTransferModalWindow();
+
+                    showMessage(
+                        "Transfer request submitted successfully. The current team must approve it before final administrator approval.",
+                        "success"
+                    );
+
+                    await loadRequests();
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Transfer request error:",
+                        error
+                    );
+
+                    showTransferFormMessage(
+                        error.message ||
+                        "Unable to submit transfer request.",
+                        "error"
+                    );
+
+                }
+                finally {
+                    submitTransferBtn.disabled = false;
+                    submitTransferBtn.textContent = "Submit Transfer Request";
+                }
+            }
+        );
+
+
+        /*
+        ========================================
         COMPETITION CHANGE
         ========================================
         */
@@ -5744,6 +6443,10 @@ editTeamBtn.addEventListener(
             async function () {
 
                 await loadCompetitionSettings(
+                    this.value
+                );
+
+                await loadMovementSettings(
                     this.value
                 );
 
@@ -5769,6 +6472,16 @@ editTeamBtn.addEventListener(
 
 
             await loadCompetitions();
+
+            if (competitionSelect.value) {
+                await loadCompetitionSettings(
+                    competitionSelect.value
+                );
+
+                await loadMovementSettings(
+                    competitionSelect.value
+                );
+            }
 
             await loadSquad();
 
