@@ -6642,26 +6642,122 @@ function openSquadRequestDetails(requestId) {
     );
 
     const modal = document.getElementById(
-    "squadRequestModal"
-);
+    let modal =
+    document.getElementById(
+        "squadRequestModal"
+    );
 
-    if (!modal) {
-        console.error(
-            "squadRequestDetailsModal was not found."
+
+// ========================================
+// CREATE MODAL IF IT DOES NOT EXIST
+// ========================================
+
+if (!modal) {
+
+    modal =
+        document.createElement("div");
+
+    modal.id =
+        "squadRequestModal";
+
+    modal.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.70);
+        z-index:99999;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        overflow:auto;
+    `;
+
+    modal.innerHTML = `
+
+        <div
+            style="
+                width:100%;
+                max-width:760px;
+                max-height:90vh;
+                overflow:auto;
+                background:#ffffff;
+                border-radius:16px;
+                box-shadow:0 20px 60px rgba(0,0,0,0.30);
+                position:relative;
+                padding:25px;
+            "
+        >
+
+            <button
+                type="button"
+                id="closeSquadRequestModal"
+                style="
+                    position:absolute;
+                    right:15px;
+                    top:10px;
+                    width:40px;
+                    height:40px;
+                    border:none;
+                    background:#f1f1f1;
+                    border-radius:50%;
+                    font-size:25px;
+                    font-weight:900;
+                    cursor:pointer;
+                    color:#333;
+                "
+            >
+                ×
+            </button>
+
+            <div
+                id="squadRequestModalContent"
+            ></div>
+
+        </div>
+
+    `;
+
+    document.body.appendChild(modal);
+
+    const closeButton =
+        document.getElementById(
+            "closeSquadRequestModal"
         );
-        return;
+
+    if (closeButton) {
+
+        closeButton.addEventListener(
+            "click",
+            function () {
+
+                closeSquadRequestDetails();
+
+            }
+        );
+
     }
 
-    const details = document.getElementById(
-    "squadRequestModalContent"
-);
+}
 
-    if (!details) {
-        console.error(
-            "squadRequestDetailsContent was not found."
-        );
-        return;
-    }
+
+// ========================================
+// GET MODAL CONTENT
+// ========================================
+
+const details =
+    document.getElementById(
+        "squadRequestModalContent"
+    );
+
+if (!details) {
+
+    console.error(
+        "Squad request modal content was not found."
+    );
+
+    return;
+
+}
 
     let reasonText =
         request.reason ||
