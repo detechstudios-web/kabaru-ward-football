@@ -7059,6 +7059,22 @@ async function rejectSquadChangeRequest(
 
 ensureSquadRequestsDashboard();
     // ========================================
+// MAKE SQUAD REQUEST FUNCTIONS AVAILABLE
+// TO DYNAMIC BUTTONS
+// ========================================
+
+window.openSquadRequestDetails =
+    openSquadRequestDetails;
+
+window.closeSquadRequestDetails =
+    closeSquadRequestDetails;
+
+window.approveSquadChangeRequest =
+    approveSquadChangeRequest;
+
+window.rejectSquadChangeRequest =
+    rejectSquadChangeRequest;
+    // ========================================
     // START DASHBOARD
     // ========================================
 
