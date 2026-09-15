@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Free Agents - Kabaru Ward Football</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --green-dark: #04351f;
+    --green: #075b35;
+    --green-light: #0b7545;
+    --gold: #f5c542;
+    --gold-light: #ffe082;
+    --white: #ffffff;
+    --light: #f5f7f6;
+    --border: #dfe7e2;
+    --text: #17231d;
+    --muted: #6b7770;
+    --danger: #b42318;
+    --shadow: 0 10px 30px rgba(4, 53, 31, 0.10);
+}
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    background: var(--light);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+.header {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green)
+        );
+    color: var(--white);
+    padding: 18px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.15);
+}
+
+.header-inner {
+    max-width: 1150px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-ball {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    flex-shrink: 0;
+}
+
+.brand-text h1 {
+    font-size: 18px;
+    line-height: 1.1;
+}
+
+.brand-text p {
+    font-size: 11px;
+    color: var(--gold-light);
+    margin-top: 3px;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--white);
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.back-button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* ========================================
+   HERO
+======================================== */
+
+.hero {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            #0a6940
+        );
+    color: var(--white);
+    padding: 55px 20px 70px;
+}
+
+.hero-inner {
+    max-width: 1000px;
+    margin: auto;
+    text-align: center;
+}
+
+.hero-kicker {
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.hero h2 {
+    font-size: clamp(32px, 7vw, 58px);
+    line-height: 1;
+    margin-bottom: 18px;
+}
+
+.hero p {
+    max-width: 700px;
+    margin: auto;
+    color: rgba(255,255,255,0.85);
+    font-size: 16px;
+}
+
+/* ========================================
+   MAIN
+======================================== */
+
+.container {
+    max-width: 1150px;
+    margin: -30px auto 60px;
+    padding: 0 20px;
+    position: relative;
+}
+
+.status-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 22px;
+    margin-bottom: 25px;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.status-title {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.status-count {
+    background: var(--green);
+    color: var(--white);
+    border-radius: 30px;
+    padding: 7px 15px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ========================================
+   LOADING
+======================================== */
+
+.loading {
+    text-align: center;
+    padding: 70px 20px;
+    color: var(--muted);
+}
+
+.spinner {
+    width: 38px;
+    height: 38px;
+    border: 4px solid #dce8e1;
+    border-top-color: var(--green);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================================
+   FREE AGENTS GRID
+======================================== */
+
+.agents-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(270px, 1fr)
+        );
+    gap: 22px;
+}
+
+.agent-card {
+    background: var(--white);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.agent-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 16px 35px rgba(4, 53, 31, 0.15);
+}
+
+.agent-top {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green)
+        );
+    padding: 25px 20px 30px;
+    text-align: center;
+    color: var(--white);
+}
+
+.photo-wrapper {
+    position: relative;
+    width: 105px;
+    height: 105px;
+    margin: 0 auto 15px;
+}
+
+.agent-photo {
+    width: 105px;
+    height: 105px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--gold);
+    background: #e7eee9;
+}
+
+.no-photo {
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    border: 4px solid var(--gold);
+    background: #e7eee9;
+    color: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    font-weight: 800;
+}
+
+.jersey-badge {
+    position: absolute;
+    right: -3px;
+    bottom: 0;
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--green-dark);
+    border: 3px solid var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 12px;
+}
+
+.agent-name {
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.agent-position {
+    color: var(--gold-light);
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.agent-body {
+    padding: 20px;
+}
+
+.former-club {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    background: #f6f9f7;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.former-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 4px;
+}
+
+.former-logo-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: var(--green-dark);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+}
+
+.former-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}
+
+.former-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--green-dark);
+    margin-top: 2px;
+}
+
+.club-date {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.agent-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+}
+
+.btn {
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 45px;
+    border-radius: 9px;
+    font-weight: 800;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-profile {
+    background: #edf4ef;
+    color: var(--green-dark);
+}
+
+.btn-profile:hover {
+    background: #dfece3;
+}
+
+.btn-sign {
+    background: var(--gold);
+    color: var(--green-dark);
+}
+
+.btn-sign:hover {
+    background: #e9b82e;
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   EMPTY STATE
+======================================== */
+
+.empty-state {
+    background: var(--white);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 60px 25px;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.empty-icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.empty-state h3 {
+    color: var(--green-dark);
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--muted);
+    max-width: 550px;
+    margin: auto;
+}
+
+/* ========================================
+   MODAL
+======================================== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.68);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 5000;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal {
+    width: 100%;
+    max-width: 520px;
+    max-height: 92vh;
+    overflow-y: auto;
+    background: var(--white);
+    border-radius: 18px;
+    box-shadow:
+        0 25px 70px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-dark),
+            var(--green)
+        );
+    color: var(--white);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.modal-header h3 {
+    font-size: 21px;
+}
+
+.modal-header p {
+    font-size: 12px;
+    color: var(--gold-light);
+    margin-top: 4px;
+}
+
+.close-modal {
+    border: none;
+    background: transparent;
+    color: var(--white);
+    font-size: 27px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 22px;
+}
+
+.selected-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    background: #f5f8f6;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.selected-player img,
+.selected-player-placeholder {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    background: #e7eee9;
+}
+
+.selected-player-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-dark);
+    font-weight: 900;
+    font-size: 20px;
+}
+
+.selected-player strong {
+    display: block;
+    color: var(--green-dark);
+}
+
+.selected-player span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--green-dark);
+    margin-bottom: 7px;
+}
+
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid #ccd8d0;
+    border-radius: 9px;
+    padding: 12px 13px;
+    font-size: 14px;
+    background: var(--white);
+    color: var(--text);
+    outline: none;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--green);
+    box-shadow:
+        0 0 0 3px rgba(7,91,53,0.08);
+}
+
+.form-group textarea {
+    min-height: 95px;
+    resize: vertical;
+}
+
+.form-help {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 5px;
+}
+
+.modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    background: #edf0ee;
+    color: var(--text);
+}
+
+.btn-submit {
+    background: var(--green);
+    color: var(--white);
+}
+
+.btn-submit:hover {
+    background: var(--green-dark);
+}
+
+/* ========================================
+   MESSAGE
+======================================== */
+
+.message {
+    display: none;
+    padding: 12px 14px;
+    border-radius: 9px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.message.show {
+    display: block;
+}
+
+.message.success {
+    background: #e8f6ed;
+    color: #176b37;
+    border: 1px solid #bce3c8;
+}
+
+.message.error {
+    background: #fff0ef;
+    color: var(--danger);
+    border: 1px solid #f0c5c1;
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+
+.footer {
+    background: var(--green-dark);
+    color: rgba(255,255,255,0.75);
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 12px;
+}
+
+.footer strong {
+    color: var(--gold);
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+
+    .header-inner {
+        align-items: flex-start;
+    }
+
+    .brand-text h1 {
+        font-size: 16px;
+    }
+
+    .back-button {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .hero {
+        padding: 42px 18px 60px;
+    }
+
+    .container {
+        padding: 0 14px;
+    }
+
+    .modal-actions {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ========================================
+     HEADER
+======================================== -->
+
+<header class="header">
+
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <div class="brand-ball">
+                ⚽
+            </div>
+
+            <div class="brand-text">
+
+                <h1>KABARU WARD FOOTBALL</h1>
+
+                <p>
+                    Player Movement
+                </p>
+
+            </div>
+
+        </div>
+
+        <a
+            href="index.html"
+            class="back-button"
+        >
+            ← Back to Website
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- ========================================
+     HERO
+======================================== -->
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div class="hero-kicker">
+            Player Movement
+        </div>
+
+        <h2>
+            Free Agents
+        </h2>
+
+        <p>
+            Players currently without a club and available
+            for registration by approved Kabaru Ward football
+            teams.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     MAIN
+======================================== -->
+
+<main class="container">
+
+    <div class="status-card">
+
+        <div class="status-row">
+
+            <div class="status-title">
+                Available Players
+            </div>
+
+            <div
+                class="status-count"
+                id="agentCount"
+            >
+                Loading...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+
+        <div class="spinner"></div>
+
+        Loading free agents...
+
+    </div>
+
+
+    <div
+        id="agentsGrid"
+        class="agents-grid"
+        style="display:none;"
+    ></div>
+
+
+    <div
+        id="emptyState"
+        class="empty-state"
+        style="display:none;"
+    >
+
+        <div class="empty-icon">
+            🏃⚽
+        </div>
+
+        <h3>
+            No Free Agents Available
+        </h3>
+
+        <p>
+            There are currently no players registered
+            as free agents. Players released by their clubs
+            and approved by the administrator will appear
+            here.
+        </p>
+
+    </div>
+
+</main>
+
+
+<!-- ========================================
+     SIGN PLAYER MODAL
+======================================== -->
+
+<div
+    id="signModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h3>
+                    Sign Player
+                </h3>
+
+                <p>
+                    Submit a request to sign this free agent
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="close-modal"
+                onclick="closeSignModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <div
+                id="formMessage"
+                class="message"
+            ></div>
+
+
+            <div
+                id="selectedPlayer"
+                class="selected-player"
+            ></div>
+
+
+            <div class="form-group">
+
+                <label for="teamSelect">
+                    SELECT YOUR TEAM
+                </label>
+
+                <select
+                    id="teamSelect"
+                >
+
+                    <option value="">
+                        Loading approved teams...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSelect">
+                    SELECT COMPETITION
+                </label>
+
+                <select
+                    id="competitionSelect"
+                >
+
+                    <option value="">
+                        Loading competitions...
+                    </option>
+
+                </select>
+
+                <div class="form-help">
+
+                    Choose <strong>All Competitions</strong>
+                    if the player should be registered with
+                    your team generally. Choose a specific
+                    competition for competition-specific
+                    registration.
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="reasonInput">
+                    REASON / NOTES
+                </label>
+
+                <textarea
+                    id="reasonInput"
+                    placeholder="Optional notes about why your team wants to sign this player..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-cancel"
+                    onclick="closeSignModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="submitSignButton"
+                    class="btn btn-submit"
+                    onclick="submitSigningRequest()"
+                >
+                    Submit Request
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     FOOTER
+======================================== -->
+
+<footer class="footer">
+
+    <strong>
+        KABARU WARD FOOTBALL
+    </strong>
+
+    <br>
+
+    Professional football management for Kabaru Ward
+
+</footer>
+
+
+<script>
+
+/* ========================================
+   GLOBAL VARIABLES
+======================================== */
+
+let freeAgents = [];
+
+let approvedTeams = [];
+
+let competitions = [];
+
+let selectedPlayerId = null;
+
+
+/* ========================================
+   ESCAPE HTML
+======================================== */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* ========================================
+   INITIAL LOAD
+======================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        await loadFreeAgents();
+
+        await loadApprovedTeams();
+
+        await loadCompetitions();
+
+    }
+);
+
+
+/* ========================================
+   LOAD FREE AGENTS
+======================================== */
+
+async function loadFreeAgents() {
+
+    const loading =
+        document.getElementById("loading");
+
+    const grid =
+        document.getElementById("agentsGrid");
+
+    const emptyState =
+        document.getElementById("emptyState");
+
+    const count =
+        document.getElementById("agentCount");
+
+    try {
+
+        const {
+            data: players,
+            error
+        } =
+            await supabaseClient
+                .from("players")
+                .select(`
+                    id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    photo_url,
+                    team_id,
+                    registration_status
+                `)
+                .is("team_id", null)
+                .eq(
+                    "registration_status",
+                    "Approved"
+                )
+                .order(
+                    "full_name",
+                    {
+                        ascending: true
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        freeAgents = players || [];
+
+        /*
+         * Load previous club history.
+         * This is used to display the player's
+         * former club and logo.
+         */
+
+        if (freeAgents.length > 0) {
+
+            const playerIds =
+                freeAgents.map(
+                    player => player.id
+                );
+
+            const {
+                data: histories,
+                error: historyError
+            } =
+                await supabaseClient
+                    .from("player_club_history")
+                    .select(`
+                        id,
+                        player_id,
+                        team_id,
+                        joined_at,
+                        left_at,
+                        movement_type,
+                        status,
+                        teams (
+                            id,
+                            name,
+                            short_name,
+                            logo_url
+                        )
+                    `)
+                    .in(
+                        "player_id",
+                        playerIds
+                    )
+                    .eq(
+                        "status",
+                        "Previous"
+                    )
+                    .order(
+                        "left_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+            if (historyError) {
+                console.error(
+                    "Club history loading error:",
+                    historyError
+                );
+            }
+
+            const historyList =
+                histories || [];
+
+            freeAgents =
+                freeAgents.map(
+                    function (player) {
+
+                        const playerHistory =
+                            historyList
+                                .filter(
+                                    history =>
+                                        Number(
+                                            history.player_id
+                                        ) ===
+                                        Number(
+                                            player.id
+                                        )
+                                )
+                                .sort(
+                                    function (a, b) {
+
+                                        return String(
+                                            b.left_at || ""
+                                        ).localeCompare(
+                                            String(
+                                                a.left_at || ""
+                                            )
+                                        );
+
+                                    }
+                                );
+
+                        return {
+                            ...player,
+                            formerClub:
+                                playerHistory[0] || null
+                        };
+
+                    }
+                );
+
+        }
+
+        loading.style.display = "none";
+
+        count.textContent =
+            freeAgents.length +
+            (
+                freeAgents.length === 1
+                    ? " Player"
+                    : " Players"
+            );
+
+        if (freeAgents.length === 0) {
+
+            emptyState.style.display = "block";
+
+            return;
+        }
+
+        grid.style.display = "grid";
+
+        renderFreeAgents();
+
+    } catch (error) {
+
+        console.error(
+            "Free agent loading error:",
+            error
+        );
+
+        loading.style.display = "none";
+
+        count.textContent = "Error";
+
+        emptyState.style.display = "block";
+
+        emptyState.innerHTML = `
+
+            <div class="empty-icon">
+                ⚠️
+            </div>
+
+            <h3>
+                Unable to Load Free Agents
+            </h3>
+
+            <p>
+                Please refresh the page and try again.
+            </p>
+
+        `;
+
+    }
+
+}
+
+
+/* ========================================
+   RENDER FREE AGENTS
+======================================== */
+
+function renderFreeAgents() {
+
+    const grid =
+        document.getElementById("agentsGrid");
+
+    grid.innerHTML =
+        freeAgents
+            .map(
+                function (player) {
+
+                    const photo =
+                        player.photo_url
+                            ? `
+                                <img
+                                    src="${escapeHtml(player.photo_url)}"
+                                    class="agent-photo"
+                                    alt="${escapeHtml(player.full_name)}"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                >
+
+                                <div
+                                    class="no-photo"
+                                    style="display:none;"
+                                >
+                                    ${escapeHtml(
+                                        (player.full_name || "?")
+                                            .charAt(0)
+                                            .toUpperCase()
+                                    )}
+                                </div>
+                            `
+                            : `
+                                <div class="no-photo">
+                                    ${escapeHtml(
+                                        (player.full_name || "?")
+                                            .charAt(0)
+                                            .toUpperCase()
+                                    )}
+                                </div>
+                            `;
+
+
+                    const jersey =
+                        player.jersey_number
+                            ? escapeHtml(
+                                player.jersey_number
+                            )
+                            : "—";
+
+
+                    const formerClub =
+                        player.formerClub;
+
+
+                    let formerClubHtml = `
+
+                        <div class="former-logo-placeholder">
+                            ⚽
+                        </div>
+
+                        <div>
+
+                            <div class="former-label">
+                                Former Club
+                            </div>
+
+                            <div class="former-name">
+                                Free Agent
+                            </div>
+
+                        </div>
+
+                    `;
+
+
+                    if (formerClub) {
+
+                        const team =
+                            formerClub.teams;
+
+
+                        const teamName =
+                            team?.name ||
+                            "Former Club";
+
+
+                        const logo =
+                            team?.logo_url;
+
+
+                        const leftDate =
+                            formerClub.left_at
+                                ? formatDate(
+                                    formerClub.left_at
+                                )
+                                : "";
+
+
+                        formerClubHtml = `
+
+                            ${
+                                logo
+                                    ? `
+                                        <img
+                                            src="${escapeHtml(logo)}"
+                                            class="former-logo"
+                                            alt="${escapeHtml(teamName)}"
+                                            onerror="this.style.display='none';"
+                                        >
+                                    `
+                                    : `
+                                        <div class="former-logo-placeholder">
+                                            ⚽
+                                        </div>
+                                    `
+                            }
+
+                            <div>
+
+                                <div class="former-label">
+                                    Former Club
+                                </div>
+
+                                <div class="former-name">
+                                    ${escapeHtml(teamName)}
+                                </div>
+
+                                ${
+                                    leftDate
+                                        ? `
+                                            <div class="club-date">
+                                                Released:
+                                                ${escapeHtml(leftDate)}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                            </div>
+
+                        `;
+
+                    }
+
+
+                    return `
+
+                        <article class="agent-card">
+
+                            <div class="agent-top">
+
+                                <div class="photo-wrapper">
+
+                                    ${photo}
+
+                                    <div class="jersey-badge">
+                                        ${jersey}
+                                    </div>
+
+                                </div>
+
+                                <div class="agent-name">
+                                    ${escapeHtml(
+                                        player.full_name
+                                    )}
+                                </div>
+
+                                <div class="agent-position">
+                                    ${
+                                        escapeHtml(
+                                            player.position ||
+                                            "Player"
+                                        )
+                                    }
+                                </div>
+
+                            </div>
+
+
+                            <div class="agent-body">
+
+                                <div class="former-club">
+
+                                    ${formerClubHtml}
+
+                                </div>
+
+
+                                <div class="agent-actions">
+
+                                    <a
+                                        href="player-profile.html?id=${encodeURIComponent(player.id)}"
+                                        class="btn btn-profile"
+                                    >
+                                        👤 View Player Profile
+                                    </a>
+
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-sign"
+                                        onclick="openSignModal(${Number(player.id)})"
+                                    >
+                                        ✍️ Sign Player
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* ========================================
+   LOAD APPROVED TEAMS
+======================================== */
+
+async function loadApprovedTeams() {
+
+    const select =
+        document.getElementById("teamSelect");
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("teams")
+                .select(`
+                    id,
+                    name,
+                    short_name
+                `)
+                .eq(
+                    "registration_status",
+                    "Approved"
+                )
+                .order(
+                    "name",
+                    {
+                        ascending: true
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        approvedTeams = data || [];
+
+        select.innerHTML = `
+
+            <option value="">
+                Select your team
+            </option>
+
+            ${
+                approvedTeams
+                    .map(
+                        team => `
+
+                            <option
+                                value="${Number(team.id)}"
+                            >
+                                ${escapeHtml(
+                                    team.name
+                                )}
+                                ${
+                                    team.short_name
+                                        ? ` (${escapeHtml(team.short_name)})`
+                                        : ""
+                                }
+                            </option>
+
+                        `
+                    )
+                    .join("")
+            }
+
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "Approved teams loading error:",
+            error
+        );
+
+        select.innerHTML = `
+
+            <option value="">
+                Unable to load teams
+            </option>
+
+        `;
+
+    }
+
+}
+
+
+/* ========================================
+   LOAD COMPETITIONS
+======================================== */
+
+async function loadCompetitions() {
+
+    const select =
+        document.getElementById(
+            "competitionSelect"
+        );
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("competitions")
+                .select(`
+                    id,
+                    name,
+                    competition_type,
+                    season,
+                    status,
+                    start_date,
+                    end_date
+                `)
+                .order(
+                    "start_date",
+                    {
+                        ascending: true
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        competitions = data || [];
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Empty value = NULL competition_id.
+         *
+         * This means the player is being signed
+         * generally, rather than for one specific
+         * competition.
+         */
+
+        select.innerHTML = `
+
+            <option value="">
+                All Competitions
+            </option>
+
+            ${
+                competitions
+                    .map(
+                        competition => {
+
+                            const type =
+                                competition.competition_type
+                                    ? ` • ${competition.competition_type}`
+                                    : "";
+
+                            const season =
+                                competition.season
+                                    ? ` • ${competition.season}`
+                                    : "";
+
+                            return `
+
+                                <option
+                                    value="${Number(competition.id)}"
+                                >
+                                    ${escapeHtml(
+                                        competition.name
+                                    )}
+                                    ${escapeHtml(type)}
+                                    ${escapeHtml(season)}
+                                </option>
+
+                            `;
+
+                        }
+                    )
+                    .join("")
+            }
+
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "Competition loading error:",
+            error
+        );
+
+        select.innerHTML = `
+
+            <option value="">
+                All Competitions
+            </option>
+
+        `;
+
+    }
+
+}
+
+
+/* ========================================
+   OPEN SIGN MODAL
+======================================== */
+
+function openSignModal(playerId) {
+
+    const player =
+        freeAgents.find(
+            item =>
+                Number(item.id) ===
+                Number(playerId)
+        );
+
+    if (!player) {
+        return;
+    }
+
+    selectedPlayerId =
+        Number(player.id);
+
+
+    const selectedPlayer =
+        document.getElementById(
+            "selectedPlayer"
+        );
+
+
+    const photoHtml =
+        player.photo_url
+            ? `
+
+                <img
+                    src="${escapeHtml(player.photo_url)}"
+                    alt="${escapeHtml(player.full_name)}"
+                    onerror="this.style.display='none';"
+                >
+
+            `
+            : `
+
+                <div class="selected-player-placeholder">
+                    ${escapeHtml(
+                        (player.full_name || "?")
+                            .charAt(0)
+                            .toUpperCase()
+                    )}
+                </div>
+
+            `;
+
+
+    selectedPlayer.innerHTML = `
+
+        ${photoHtml}
+
+        <div>
+
+            <strong>
+                ${escapeHtml(player.full_name)}
+            </strong>
+
+            <span>
+                ${
+                    escapeHtml(
+                        player.position ||
+                        "Player"
+                    )
+                }
+
+                ${
+                    player.jersey_number
+                        ? ` • #${escapeHtml(player.jersey_number)}`
+                        : ""
+                }
+            </span>
+
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "teamSelect"
+    ).value = "";
+
+
+    document.getElementById(
+        "competitionSelect"
+    ).value = "";
+
+
+    document.getElementById(
+        "reasonInput"
+    ).value = "";
+
+
+    clearFormMessage();
+
+
+    document.getElementById(
+        "submitSignButton"
+    ).disabled = false;
+
+
+    document.getElementById(
+        "submitSignButton"
+    ).textContent =
+        "Submit Request";
+
+
+    document.getElementById(
+        "signModal"
+    ).classList.add("show");
+
+}
+
+
+/* ========================================
+   CLOSE SIGN MODAL
+======================================== */
+
+function closeSignModal() {
+
+    selectedPlayerId = null;
+
+    document.getElementById(
+        "signModal"
+    ).classList.remove("show");
+
+}
+
+
+/* ========================================
+   SUBMIT SIGNING REQUEST
+======================================== */
+
+async function submitSigningRequest() {
+
+    const teamId =
+        document.getElementById(
+            "teamSelect"
+        ).value;
+
+
+    const competitionValue =
+        document.getElementById(
+            "competitionSelect"
+        ).value;
+
+
+    const reason =
+        document.getElementById(
+            "reasonInput"
+        ).value.trim();
+
+
+    const button =
+        document.getElementById(
+            "submitSignButton"
+        );
+
+
+    clearFormMessage();
+
+
+    if (!selectedPlayerId) {
+
+        showFormMessage(
+            "Please select a player.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!teamId) {
+
+        showFormMessage(
+            "Please select your team.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * If competitionValue is empty,
+     * we send null.
+     *
+     * That means:
+     *
+     * competition_id = NULL
+     *
+     * = All Competitions.
+     */
+
+    const competitionId =
+        competitionValue
+            ? Number(competitionValue)
+            : null;
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Submitting...";
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.rpc(
+                "request_free_agent_signing",
+                {
+                    p_player_id:
+                        Number(selectedPlayerId),
+
+                    p_to_team_id:
+                        Number(teamId),
+
+                    p_competition_id:
+                        competitionId,
+
+                    p_reason:
+                        reason || null
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        console.log(
+            "Signing request response:",
+            data
+        );
+
+
+        showFormMessage(
+            "✅ Signing request submitted successfully. It is now awaiting administrator approval.",
+            "success"
+        );
+
+
+        button.textContent =
+            "Request Submitted";
+
+
+        setTimeout(
+            function () {
+
+                closeSignModal();
+
+            },
+            2200
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Signing request error:",
+            error
+        );
+
+
+        showFormMessage(
+            error.message ||
+            "Unable to submit signing request. Please try again.",
+            "error"
+        );
+
+
+        button.disabled = false;
+
+        button.textContent =
+            "Submit Request";
+
+    }
+
+}
+
+
+/* ========================================
+   FORM MESSAGE
+======================================== */
+
+function showFormMessage(
+    message,
+    type
+) {
+
+    const element =
+        document.getElementById(
+            "formMessage"
+        );
+
+    element.textContent =
+        message;
+
+    element.className =
+        "message show " +
+        (
+            type === "success"
+                ? "success"
+                : "error"
+        );
+
+}
+
+
+function clearFormMessage() {
+
+    const element =
+        document.getElementById(
+            "formMessage"
+        );
+
+    element.textContent = "";
+
+    element.className =
+        "message";
+
+}
+
+
+/* ========================================
+   FORMAT DATE
+======================================== */
+
+function formatDate(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const date =
+        new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.toLocaleDateString(
+        "en-KE",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* ========================================
+   CLOSE MODAL WHEN CLICKING OUTSIDE
+======================================== */
+
+document.getElementById(
+    "signModal"
+).addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target ===
+            this
+        ) {
+
+            closeSignModal();
+
+        }
+
+    }
+);
+
+
+/* ========================================
+   ESC KEY
+======================================== */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeSignModal();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
