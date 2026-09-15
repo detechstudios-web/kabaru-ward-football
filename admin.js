@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             showMessage(
-                "❌ Supabase library did not load.",
+                "âŒ Supabase library did not load.",
                 "error"
             );
 
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             showMessage(
-                "❌ Supabase connection did not load.",
+                "âŒ Supabase connection did not load.",
                 "error"
             );
 
@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!user) {
 
                 showMessage(
-                    "❌ You are not logged in.",
+                    "âŒ You are not logged in.",
                     "error"
                 );
 
@@ -375,7 +375,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!admin) {
 
                 showMessage(
-                    "❌ This account is not an administrator.",
+                    "âŒ This account is not an administrator.",
                     "error"
                 );
 
@@ -384,7 +384,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             showMessage(
-                "✅ Administrator access granted.",
+                "âœ… Administrator access granted.",
                 "success"
             );
 
@@ -401,7 +401,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             showMessage(
-                "❌ Admin verification failed: " +
+                "âŒ Admin verification failed: " +
                 (
                     error.message ||
                     "Unknown error"
@@ -487,7 +487,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         option.textContent =
                             competition.name +
-                            " — " +
+                            " â€” " +
                             (
                                 competition.season ||
                                 ""
@@ -561,7 +561,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         >
 
                             <h3>
-                                🏆
+                                ðŸ†
                                 ${escapeHtml(
                                     competition.name
                                 )}
@@ -637,7 +637,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             competitionsList.innerHTML =
                 '<div class="empty-message">' +
-                '❌ Unable to load competitions: ' +
+                'âŒ Unable to load competitions: ' +
                 escapeHtml(
                     error.message ||
                     "Unknown error"
@@ -694,7 +694,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     margin-bottom:8px;
                     color:#04351f;
                 ">
-                    ⚙️ Squad Registration Controls
+                    âš™ï¸ Squad Registration Controls
                 </h2>
 
                 <p style="
@@ -932,7 +932,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     margin:0 0 5px 0;
                                     color:#04351f;
                                 ">
-                                    🏆
+                                    ðŸ†
                                     ${escapeHtml(
                                         competition.name
                                     )}
@@ -946,7 +946,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         competition.competition_type ||
                                         "Competition"
                                     )}
-                                    •
+                                    â€¢
                                     Season
                                     ${escapeHtml(
                                         competition.season ||
@@ -975,8 +975,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                                 ${
                                     updatesAllowed
-                                        ? "🟢 UPDATES OPEN"
-                                        : "🔴 UPDATES CLOSED"
+                                        ? "ðŸŸ¢ UPDATES OPEN"
+                                        : "ðŸ”´ UPDATES CLOSED"
                                 }
 
                             </div>
@@ -1014,7 +1014,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                🟢 Allow squad/team change requests
+                                ðŸŸ¢ Allow squad/team change requests
 
                             </label>
 
@@ -1066,7 +1066,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                ➕ Add players
+                                âž• Add players
 
                             </label>
 
@@ -1090,7 +1090,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                ➖ Remove players
+                                âž– Remove players
 
                             </label>
 
@@ -1114,7 +1114,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                ✏️ Edit players
+                                âœï¸ Edit players
 
                             </label>
 
@@ -1138,7 +1138,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                🏷️ Edit team
+                                ðŸ·ï¸ Edit team
 
                             </label>
 
@@ -1167,7 +1167,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     font-weight:800;
                                     margin-bottom:7px;
                                 ">
-                                    📅 Opening Date & Time
+                                    ðŸ“… Opening Date & Time
                                 </label>
 
                                 <input
@@ -1195,7 +1195,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     font-weight:800;
                                     margin-bottom:7px;
                                 ">
-                                    📅 Closing Date & Time
+                                    ðŸ“… Closing Date & Time
                                 </label>
 
                                 <input
@@ -1241,7 +1241,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     font-weight:800;
                                     margin-bottom:7px;
                                 ">
-                                    👥 Maximum Squad Size
+                                    ðŸ‘¥ Maximum Squad Size
                                 </label>
 
                                 <input
@@ -1286,7 +1286,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         }
                                     >
 
-                                    🔒 Lock registration completely
+                                    ðŸ”’ Lock registration completely
 
                                 </label>
 
@@ -1316,7 +1316,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     cursor:pointer;
                                 "
                             >
-                                💾 Save Competition Controls
+                                ðŸ’¾ Save Competition Controls
                             </button>
 
                             <span
@@ -1407,7 +1407,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             ) {
 
                                 message.textContent =
-                                    "❌ Maximum squad size must be at least 1.";
+                                    "âŒ Maximum squad size must be at least 1.";
 
                                 message.style.color =
                                     "#b00020";
@@ -1420,7 +1420,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             ) {
 
                                 message.textContent =
-                                    "❌ Maximum squad size cannot exceed 100.";
+                                    "âŒ Maximum squad size cannot exceed 100.";
 
                                 message.style.color =
                                     "#b00020";
@@ -1449,7 +1449,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 ) {
 
                                     message.textContent =
-                                        "❌ Closing date/time must be after opening date/time.";
+                                        "âŒ Closing date/time must be after opening date/time.";
 
                                     message.style.color =
                                         "#b00020";
@@ -1539,7 +1539,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 }
 
                                 message.textContent =
-                                    "✅ Competition controls saved successfully.";
+                                    "âœ… Competition controls saved successfully.";
 
                                 message.style.color =
                                     "#087f3e";
@@ -1552,7 +1552,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 );
 
                                 message.textContent =
-                                    "❌ Unable to save: " +
+                                    "âŒ Unable to save: " +
                                     (
                                         error.message ||
                                         "Unknown error"
@@ -1589,7 +1589,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             settingsList.innerHTML = `
                 <div class="empty-message">
-                    ❌ Unable to load squad controls:
+                    âŒ Unable to load squad controls:
                     ${escapeHtml(
                         error.message ||
                         "Unknown error"
@@ -1701,7 +1701,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!name) {
 
                     competitionFormMessage.textContent =
-                        "❌ Please enter the competition name.";
+                        "âŒ Please enter the competition name.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1713,7 +1713,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!competitionType) {
 
                     competitionFormMessage.textContent =
-                        "❌ Please select the competition type.";
+                        "âŒ Please select the competition type.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1725,7 +1725,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!season) {
 
                     competitionFormMessage.textContent =
-                        "❌ Please enter the season.";
+                        "âŒ Please enter the season.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1741,7 +1741,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     competitionFormMessage.textContent =
-                        "❌ End date cannot be before start date.";
+                        "âŒ End date cannot be before start date.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1810,7 +1810,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     competitionFormMessage.textContent =
-                        "✅ Competition created successfully!";
+                        "âœ… Competition created successfully!";
 
 
                     competitionFormMessage.style.display =
@@ -1834,7 +1834,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     competitionFormMessage.textContent =
-                        "❌ Unable to create competition: " +
+                        "âŒ Unable to create competition: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -2303,7 +2303,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showFixtureMessage(
-                        "✅ Fixture created successfully!",
+                        "âœ… Fixture created successfully!",
                         "success"
                     );
 
@@ -2325,7 +2325,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showFixtureMessage(
-                        "❌ Unable to create fixture: " +
+                        "âŒ Unable to create fixture: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -2533,7 +2533,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     card.innerHTML = `
 
                         <h3>
-                            ⚽
+                            âš½
                             ${escapeHtml(
                                 home
                                     ? home.name
@@ -2548,7 +2548,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </h3>
 
                         <p>
-                            🏆
+                            ðŸ†
                             ${escapeHtml(
                                 competition
                                     ? competition.name
@@ -2557,28 +2557,28 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </p>
 
                         <p>
-                            📅
+                            ðŸ“…
                             ${formatDate(
                                 fixture.match_date
                             )}
                         </p>
 
                         <p>
-                            ⏰
+                            â°
                             ${formatTime(
                                 fixture.kick_off
                             )}
                         </p>
 
                         <p>
-                            📍
+                            ðŸ“
                             ${escapeHtml(
                                 fixture.venue || "-"
                             )}
                         </p>
 
                         <p>
-                            🔢
+                            ðŸ”¢
                             ${escapeHtml(
                                 fixture.matchday ||
                                 "-"
@@ -2586,7 +2586,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </p>
 
                         <p>
-                            📢
+                            ðŸ“¢
                             <strong>
                                 ${escapeHtml(
                                     fixture.status ||
@@ -2600,7 +2600,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn delete-fixture-btn"
                             data-id="${fixture.id}"
                         >
-                            🗑️ Delete Fixture
+                            ðŸ—‘ï¸ Delete Fixture
                         </button>
 
                     `;
@@ -2648,7 +2648,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="admin-card">
 
                     <h3>
-                        ❌ Unable to Load Fixtures
+                        âŒ Unable to Load Fixtures
                     </h3>
 
                     <p>
@@ -3010,7 +3010,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 ? away.name
                                 : "Unknown Away Team"
                         ) +
-                        " — " +
+                        " â€” " +
                         formatDate(
                             fixture.match_date
                         );
@@ -3311,7 +3311,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 class="remove-goal-btn"
                 title="Remove goal"
             >
-                ✕
+                âœ•
             </button>
 
         `;
@@ -3641,7 +3641,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 homeGoalWarning.textContent =
-                    "⚠️ Score is " +
+                    "âš ï¸ Score is " +
                     homeTotal +
                     " but " +
                     enteredHomeGoals +
@@ -3667,7 +3667,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 awayGoalWarning.textContent =
-                    "⚠️ Score is " +
+                    "âš ï¸ Score is " +
                     awayTotal +
                     " but " +
                     enteredAwayGoals +
@@ -3728,7 +3728,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         section.innerHTML = `
 
             <h3>
-                👥 Player Appearances
+                ðŸ‘¥ Player Appearances
             </h3>
 
             <p>
@@ -4247,7 +4247,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!currentFixture) {
 
                     showResultMessage(
-                        "❌ Unable to find selected fixture.",
+                        "âŒ Unable to find selected fixture.",
                         "error"
                     );
 
@@ -4366,7 +4366,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         selectedFixtureInfo.innerHTML = `
 
                             <strong>
-                                ⚽
+                                âš½
                                 ${escapeHtml(
                                     homeName
                                 )}
@@ -4378,7 +4378,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             <br>
 
-                            🏆 Matchday:
+                            ðŸ† Matchday:
                             ${escapeHtml(
                                 currentFixture.matchday ||
                                 "-"
@@ -4386,21 +4386,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             <br>
 
-                            📅
+                            ðŸ“…
                             ${formatDate(
                                 currentFixture.match_date
                             )}
 
                             &nbsp;&nbsp;
 
-                            ⏰
+                            â°
                             ${formatTime(
                                 currentFixture.kick_off
                             )}
 
                             <br>
 
-                            📍
+                            ðŸ“
                             ${escapeHtml(
                                 currentFixture.venue ||
                                 "-"
@@ -4478,7 +4478,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showResultMessage(
-                        "❌ Unable to load players: " +
+                        "âŒ Unable to load players: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -4645,7 +4645,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!homeValidation.valid) {
 
                     showResultMessage(
-                        "❌ " +
+                        "âŒ " +
                         homeValidation.message,
                         "error"
                     );
@@ -4664,7 +4664,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!awayValidation.valid) {
 
                     showResultMessage(
-                        "❌ " +
+                        "âŒ " +
                         awayValidation.message,
                         "error"
                     );
@@ -4699,7 +4699,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "❌ Home score is " +
+                        "âŒ Home score is " +
                         homeFinalScore +
                         " but you entered " +
                         homeScorers.length +
@@ -4717,7 +4717,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "❌ Away score is " +
+                        "âŒ Away score is " +
                         awayFinalScore +
                         " but you entered " +
                         awayScorers.length +
@@ -4742,7 +4742,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "❌ " +
+                        "âŒ " +
                         appearanceValidation.message,
                         "error"
                     );
@@ -4782,7 +4782,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "❌ " +
+                        "âŒ " +
                         scorerAppearanceValidation.message,
                         "error"
                     );
@@ -4807,7 +4807,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "❌ " +
+                        "âŒ " +
                         assistValidation.message,
                         "error"
                     );
@@ -5152,13 +5152,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                     // ========================================
 
                     showResultMessage(
-                        "✅ Match result saved successfully!",
+                        "âœ… Match result saved successfully!",
                         "success"
                     );
 
 
                     alert(
-                        "✅ Match result saved successfully!"
+                        "âœ… Match result saved successfully!"
                     );
 
 
@@ -5247,7 +5247,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showResultMessage(
-                        "❌ Unable to save result: " +
+                        "âŒ Unable to save result: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -5263,7 +5263,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     saveResultBtn.textContent =
-                        "💾 SAVE RESULT";
+                        "ðŸ’¾ SAVE RESULT";
                 }
 
             }
@@ -5323,7 +5323,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 pendingTeams.innerHTML =
                     "<div class='empty-message'>" +
-                    "🎉 No pending team registrations." +
+                    "ðŸŽ‰ No pending team registrations." +
                     "</div>";
 
                 return;
@@ -5458,7 +5458,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 card.innerHTML = `
 
                     <h2>
-                        ⚽
+                        âš½
                         ${escapeHtml(
                             team.name
                         )}
@@ -5536,7 +5536,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     <h3>
-                        👥 Players
+                        ðŸ‘¥ Players
                         (${players ? players.length : 0}/20)
                     </h3>
 
@@ -5551,7 +5551,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn approve-btn"
                             data-id="${team.id}"
                         >
-                            ✅ Approve Team
+                            âœ… Approve Team
                         </button>
 
 
@@ -5560,7 +5560,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn reject-btn"
                             data-id="${team.id}"
                         >
-                            ❌ Reject Team
+                            âŒ Reject Team
                         </button>
 
                     </div>
@@ -5629,7 +5629,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="admin-card">
 
                     <h3>
-                        ❌ Unable to Load
+                        âŒ Unable to Load
                 </h3>
 
                     <p>
@@ -5704,7 +5704,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             alert(
-                "✅ Team approved successfully!"
+                "âœ… Team approved successfully!"
             );
 
 
@@ -5924,1822 +5924,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
     }
 
-```javascript
-// ========================================
-// SQUAD & TEAM CHANGE REQUESTS
-// ADMIN REVIEW SYSTEM
-// ========================================
-
-let squadChangeRequests = [];
-let selectedSquadRequest = null;
-let squadRequestFilter = "Pending";
-let squadRequestSearch = "";
-
-// ========================================
-// ENSURE SQUAD REQUEST DASHBOARD
-// ========================================
-
-function ensureSquadRequestsDashboard() {
-
-    if (
-        document.getElementById(
-            "squadChangeRequestsSection"
-        )
-    ) {
-        return;
-    }
-
-    const main =
-        document.querySelector("main");
-
-    if (!main) {
-        console.error(
-            "Admin main element not found."
-        );
-        return;
-    }
-
-    const section =
-        document.createElement("section");
-
-    section.id =
-        "squadChangeRequestsSection";
-
-    section.className =
-        "admin-section";
-
-    section.innerHTML = `
-        <div class="section-header">
-            <div>
-                <h2>
-                    ⚽ Squad & Team Change Requests
-                </h2>
-
-                <p>
-                    Review and approve requests
-                    submitted by teams.
-                </p>
-            </div>
-
-            <button
-                type="button"
-                id="refreshSquadRequestsBtn"
-                class="btn"
-            >
-                🔄 Refresh
-            </button>
-        </div>
-
-        <div
-            id="squadRequestCounters"
-            class="dashboard-grid"
-        >
-            <div class="dashboard-card">
-                <h3>Pending</h3>
-                <div
-                    id="pendingSquadRequests"
-                    class="dashboard-number"
-                >
-                    0
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <h3>Approved</h3>
-                <div
-                    id="approvedSquadRequests"
-                    class="dashboard-number"
-                >
-                    0
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <h3>Rejected</h3>
-                <div
-                    id="rejectedSquadRequests"
-                    class="dashboard-number"
-                >
-                    0
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <h3>Total</h3>
-                <div
-                    id="totalSquadRequests"
-                    class="dashboard-number"
-                >
-                    0
-                </div>
-            </div>
-        </div>
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label
-                    for="squadRequestStatusFilter"
-                >
-                    Request Status
-                </label>
-
-                <select
-                    id="squadRequestStatusFilter"
-                    class="form-control"
-                >
-                    <option value="Pending">
-                        Pending
-                    </option>
-
-                    <option value="Approved">
-                        Approved
-                    </option>
-
-                    <option value="Rejected">
-                        Rejected
-                    </option>
-
-                    <option value="All">
-                        All
-                    </option>
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label
-                    for="squadRequestSearch"
-                >
-                    Search
-                </label>
-
-                <input
-                    type="text"
-                    id="squadRequestSearch"
-                    class="form-control"
-                    placeholder="Search team, player or request type..."
-                >
-
-            </div>
-
-        </div>
-
-        <div
-            id="squadChangeRequestsList"
-            class="admin-list"
-        >
-            <p>
-                Loading squad change requests...
-            </p>
-        </div>
-    `;
-
-    main.appendChild(section);
-
-    const statusFilter =
-        document.getElementById(
-            "squadRequestStatusFilter"
-        );
-
-    const searchInput =
-        document.getElementById(
-            "squadRequestSearch"
-        );
-
-    const refreshButton =
-        document.getElementById(
-            "refreshSquadRequestsBtn"
-        );
-
-    if (statusFilter) {
-
-        statusFilter.addEventListener(
-            "change",
-            async function () {
-
-                squadRequestFilter =
-                    this.value;
-
-                renderSquadChangeRequests();
-            }
-        );
-
-    }
-
-    if (searchInput) {
-
-        searchInput.addEventListener(
-            "input",
-            function () {
-
-                squadRequestSearch =
-                    this.value
-                        .trim()
-                        .toLowerCase();
-
-                renderSquadChangeRequests();
-            }
-        );
-
-    }
-
-    if (refreshButton) {
-
-        refreshButton.addEventListener(
-            "click",
-            async function () {
-
-                await loadSquadChangeRequests();
-
-            }
-        );
-
-    }
-}
-
-
-// ========================================
-// PARSE TEAM EDIT REQUEST
-// ========================================
-
-function parseTeamEditReason(reason) {
-
-    if (!reason) {
-        return {};
-    }
-
-    try {
-
-        const parsed =
-            JSON.parse(reason);
-
-        if (
-            parsed &&
-            typeof parsed === "object"
-        ) {
-            return parsed;
-        }
-
-    } catch (error) {
-        // Normal text reason.
-    }
-
-    return {
-        reason: reason
-    };
-}
-
-
-// ========================================
-// REQUEST TYPE LABEL
-// ========================================
-
-function getSquadRequestTypeLabel(
-    request
-) {
-
-    const type =
-        request &&
-        request.request_type
-            ? request.request_type
-            : "";
-
-    switch (type) {
-
-        case "Add":
-            return "➕ Add Player";
-
-        case "Remove":
-            return "➖ Remove Player";
-
-        case "Edit Player":
-            return "✏️ Edit Player";
-
-        case "Edit Team":
-            return "🏟️ Edit Team";
-
-        default:
-            return type || "Unknown";
-
-    }
-}
-
-
-// ========================================
-// STATUS CLASS
-// ========================================
-
-function getSquadRequestStatusClass(
-    status
-) {
-
-    const value =
-        String(status || "")
-            .toLowerCase();
-
-    if (value === "approved") {
-        return "status-approved";
-    }
-
-    if (value === "rejected") {
-        return "status-rejected";
-    }
-
-    if (value === "cancelled") {
-        return "status-cancelled";
-    }
-
-    return "status-pending";
-}
-
-
-// ========================================
-// REQUEST TEAM NAME
-// ========================================
-
-function getSquadRequestTeamName(
-    request
-) {
-
-    if (
-        request &&
-        request.teams &&
-        request.teams.name
-    ) {
-        return request.teams.name;
-    }
-
-    return (
-        request &&
-        request.team_id
-    )
-        ? "Team #" + request.team_id
-        : "Unknown Team";
-}
-
-
-// ========================================
-// REQUEST COMPETITION NAME
-// ========================================
-
-function getSquadRequestCompetitionName(
-    request
-) {
-
-    if (
-        request &&
-        request.competitions &&
-        request.competitions.name
-    ) {
-        return request.competitions.name;
-    }
-
-    return (
-        request &&
-        request.competition_id
-    )
-        ? "Competition #" +
-          request.competition_id
-        : "Unknown Competition";
-}
-
-
-// ========================================
-// REQUEST PLAYER NAME
-// ========================================
-
-function getSquadRequestPlayerName(
-    request
-) {
-
-    if (
-        request &&
-        request.players &&
-        request.players.full_name
-    ) {
-        return request.players.full_name;
-    }
-
-    if (
-        request &&
-        request.requested_full_name
-    ) {
-        return request.requested_full_name;
-    }
-
-    return "-";
-}
-
-
-// ========================================
-// REQUEST SEARCH TEXT
-// ========================================
-
-function getSquadRequestSearchText(
-    request
-) {
-
-    const teamName =
-        getSquadRequestTeamName(
-            request
-        );
-
-    const competitionName =
-        getSquadRequestCompetitionName(
-            request
-        );
-
-    const playerName =
-        getSquadRequestPlayerName(
-            request
-        );
-
-    const requestType =
-        getSquadRequestTypeLabel(
-            request
-        );
-
-    return (
-        teamName +
-        " " +
-        competitionName +
-        " " +
-        playerName +
-        " " +
-        requestType +
-        " " +
-        (request.reason || "")
-    )
-        .toLowerCase();
-}
-
-
-// ========================================
-// REQUEST COUNTERS
-// ========================================
-
-function renderSquadRequestCounters() {
-
-    const pending =
-        squadChangeRequests.filter(
-            function (request) {
-                return (
-                    request.status ===
-                    "Pending"
-                );
-            }
-        ).length;
-
-    const approved =
-        squadChangeRequests.filter(
-            function (request) {
-                return (
-                    request.status ===
-                    "Approved"
-                );
-            }
-        ).length;
-
-    const rejected =
-        squadChangeRequests.filter(
-            function (request) {
-                return (
-                    request.status ===
-                    "Rejected"
-                );
-            }
-        ).length;
-
-    const total =
-        squadChangeRequests.length;
-
-    const pendingEl =
-        document.getElementById(
-            "pendingSquadRequests"
-        );
-
-    const approvedEl =
-        document.getElementById(
-            "approvedSquadRequests"
-        );
-
-    const rejectedEl =
-        document.getElementById(
-            "rejectedSquadRequests"
-        );
-
-    const totalEl =
-        document.getElementById(
-            "totalSquadRequests"
-        );
-
-    if (pendingEl) {
-        pendingEl.textContent =
-            pending;
-    }
-
-    if (approvedEl) {
-        approvedEl.textContent =
-            approved;
-    }
-
-    if (rejectedEl) {
-        rejectedEl.textContent =
-            rejected;
-    }
-
-    if (totalEl) {
-        totalEl.textContent =
-            total;
-    }
-}
-
-
-// ========================================
-// LOAD SQUAD CHANGE REQUESTS
-// ========================================
-
-async function loadSquadChangeRequests() {
-
-    const list =
-        document.getElementById(
-            "squadChangeRequestsList"
-        );
-
-    if (list) {
-
-        list.innerHTML = `
-            <p>
-                Loading squad change requests...
-            </p>
-        `;
-
-    }
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("squad_change_requests")
-        .select(`
-            *,
-            teams:team_id (
-                id,
-                name,
-                short_name,
-                logo_url
-            ),
-            competitions:competition_id (
-                id,
-                name,
-                competition_type,
-                season
-            ),
-            players:player_id (
-                id,
-                full_name,
-                jersey_number,
-                position,
-                photo_url
-            )
-        `)
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
-        );
-
-    if (error) {
-
-        console.error(
-            "Unable to load squad change requests:",
-            error
-        );
-
-        if (list) {
-
-            list.innerHTML = `
-                <div class="error-message">
-                    Unable to load squad change requests.
-                    <br>
-                    ${escapeHtml(
-                        error.message ||
-                        "Unknown error"
-                    )}
-                </div>
-            `;
-
-        }
-
-        return;
-
-    }
-
-    squadChangeRequests =
-        data || [];
-
-    renderSquadRequestCounters();
-
-    renderSquadChangeRequests();
-}
-
-
-// ========================================
-// RENDER REQUESTS
-// ========================================
-
-function renderSquadChangeRequests() {
-
-    const list =
-        document.getElementById(
-            "squadChangeRequestsList"
-        );
-
-    if (!list) {
-        return;
-    }
-
-    let filtered =
-        [...squadChangeRequests];
-
-    if (
-        squadRequestFilter !==
-        "All"
-    ) {
-
-        filtered =
-            filtered.filter(
-                function (request) {
-
-                    return (
-                        request.status ===
-                        squadRequestFilter
-                    );
-
-                }
-            );
-
-    }
-
-    if (squadRequestSearch) {
-
-        filtered =
-            filtered.filter(
-                function (request) {
-
-                    return getSquadRequestSearchText(
-                        request
-                    ).includes(
-                        squadRequestSearch
-                    );
-
-                }
-            );
-
-    }
-
-    if (!filtered.length) {
-
-        list.innerHTML = `
-            <div class="empty-state">
-                <h3>
-                    No requests found
-                </h3>
-
-                <p>
-                    There are no squad or team
-                    change requests matching
-                    the current filter.
-                </p>
-            </div>
-        `;
-
-        return;
-    }
-
-    list.innerHTML =
-        filtered
-            .map(
-                function (request) {
-
-                    const teamName =
-                        getSquadRequestTeamName(
-                            request
-                        );
-
-                    const competitionName =
-                        getSquadRequestCompetitionName(
-                            request
-                        );
-
-                    const playerName =
-                        getSquadRequestPlayerName(
-                            request
-                        );
-
-                    const requestType =
-                        getSquadRequestTypeLabel(
-                            request
-                        );
-
-                    const statusClass =
-                        getSquadRequestStatusClass(
-                            request.status
-                        );
-
-                    const createdDate =
-                        request.created_at
-                            ? new Date(
-                                request.created_at
-                              ).toLocaleString(
-                                "en-KE"
-                              )
-                            : "-";
-
-                    return `
-                        <div
-                            class="admin-list-item"
-                            data-request-id="${Number(
-                                request.id
-                            )}"
-                        >
-
-                            <div class="request-main">
-
-                                <div class="request-title">
-                                    ${escapeHtml(
-                                        requestType
-                                    )}
-                                </div>
-
-                                <div class="request-meta">
-                                    <strong>
-                                        ${escapeHtml(
-                                            teamName
-                                        )}
-                                    </strong>
-                                </div>
-
-                                <div class="request-meta">
-                                    Competition:
-                                    ${escapeHtml(
-                                        competitionName
-                                    )}
-                                </div>
-
-                                <div class="request-meta">
-                                    Player:
-                                    ${escapeHtml(
-                                        playerName
-                                    )}
-                                </div>
-
-                                <div class="request-meta">
-                                    Submitted:
-                                    ${escapeHtml(
-                                        createdDate
-                                    )}
-                                </div>
-
-                            </div>
-
-                            <div class="request-side">
-
-                                <span
-                                    class="${statusClass}"
-                                >
-                                    ${escapeHtml(
-                                        request.status ||
-                                        "Pending"
-                                    )}
-                                </span>
-
-                                <button
-                                    type="button"
-                                    class="btn request-details-btn"
-                                    data-request-id="${Number(
-                                        request.id
-                                    )}"
-                                >
-                                    View Details
-                                </button>
-
-                            </div>
-
-                        </div>
-                    `;
-
-                }
-            )
-            .join("");
-
-    const buttons =
-        list.querySelectorAll(
-            ".request-details-btn"
-        );
-
-    buttons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const id =
-                        Number(
-                            this.dataset.requestId
-                        );
-
-                    openSquadRequestDetails(
-                        id
-                    );
-
-                }
-            );
-
-        }
-    );
-}
-
-
-// ========================================
-// OPEN REQUEST DETAILS
-// ========================================
-
-function openSquadRequestDetails(
-    requestId
-) {
-
-    const request =
-        squadChangeRequests.find(
-            function (item) {
-
-                return Number(
-                    item.id
-                ) === Number(
-                    requestId
-                );
-
-            }
-        );
-
-    if (!request) {
-
-        alert(
-            "Request could not be found."
-        );
-
-        return;
-    }
-
-    selectedSquadRequest =
-        request;
-
-    let modal =
-        document.getElementById(
-            "squadRequestModal"
-        );
-
-    if (!modal) {
-
-        modal =
-            document.createElement(
-                "div"
-            );
-
-        modal.id =
-            "squadRequestModal";
-
-        modal.className =
-            "admin-modal";
-
-        document.body.appendChild(
-            modal
-        );
-
-    }
-
-    const teamName =
-        getSquadRequestTeamName(
-            request
-        );
-
-    const competitionName =
-        getSquadRequestCompetitionName(
-            request
-        );
-
-    const requestType =
-        getSquadRequestTypeLabel(
-            request
-        );
-
-    const playerName =
-        getSquadRequestPlayerName(
-            request
-        );
-
-    const teamEditData =
-        request.request_type ===
-        "Edit Team"
-            ? parseTeamEditReason(
-                request.reason
-            )
-            : {};
-
-    let detailsHtml = "";
-
-    if (
-        request.request_type ===
-        "Add"
-    ) {
-
-        detailsHtml = `
-            <div class="request-detail-grid">
-
-                <div>
-                    <strong>
-                        Full Name
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.requested_full_name ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Jersey Number
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.requested_jersey_number ??
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Position
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.requested_position ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Photo
-                    </strong>
-
-                    <span>
-                        ${
-                            request.requested_photo_url
-                                ? "Uploaded"
-                                : "No photo"
-                        }
-                    </span>
-                </div>
-
-            </div>
-        `;
-
-    } else if (
-        request.request_type ===
-        "Remove"
-    ) {
-
-        detailsHtml = `
-            <div class="request-detail-grid">
-
-                <div>
-                    <strong>
-                        Player
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            playerName
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Player ID
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.player_id ??
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-            </div>
-        `;
-
-    } else if (
-        request.request_type ===
-        "Edit Player"
-    ) {
-
-        detailsHtml = `
-            <div class="request-detail-grid">
-
-                <div>
-                    <strong>
-                        Current Player
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            playerName
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        New Name
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.requested_full_name ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        New Jersey
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.requested_jersey_number ??
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        New Position
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.requested_position ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        New Photo
-                    </strong>
-
-                    <span>
-                        ${
-                            request.requested_photo_url
-                                ? "Uploaded"
-                                : "No new photo"
-                        }
-                    </span>
-                </div>
-
-            </div>
-        `;
-
-    } else if (
-        request.request_type ===
-        "Edit Team"
-    ) {
-
-        detailsHtml = `
-            <div class="request-detail-grid">
-
-                <div>
-                    <strong>
-                        New Team Name
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            request.requested_full_name ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Short Name
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            teamEditData.short_name ||
-                            request.requested_position ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Location
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            teamEditData.location ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Coach
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            teamEditData.coach_name ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Captain
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            teamEditData.captain_name ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Vice Captain
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            teamEditData.vice_captain_name ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Discipline Master
-                    </strong>
-
-                    <span>
-                        ${escapeHtml(
-                            teamEditData.discipline_master_name ||
-                            "-"
-                        )}
-                    </span>
-                </div>
-
-                <div>
-                    <strong>
-                        Logo
-                    </strong>
-
-                    <span>
-                        ${
-                            request.requested_photo_url
-                                ? "Uploaded"
-                                : "No new logo"
-                        }
-                    </span>
-                </div>
-
-            </div>
-        `;
-
-    }
-
-    const reasonText =
-        teamEditData.reason ||
-        request.reason ||
-        "No reason provided.";
-
-    const reviewedDate =
-        request.reviewed_at
-            ? new Date(
-                request.reviewed_at
-              ).toLocaleString(
-                "en-KE"
-              )
-            : "-";
-
-    modal.innerHTML = `
-        <div
-            class="admin-modal-overlay"
-            id="squadRequestModalOverlay"
-        >
-
-            <div class="admin-modal-content">
-
-                <div class="admin-modal-header">
-
-                    <div>
-                        <h2>
-                            ${escapeHtml(
-                                requestType
-                            )}
-                        </h2>
-
-                        <p>
-                            Request #${Number(
-                                request.id
-                            )}
-                        </p>
-                    </div>
-
-                    <button
-                        type="button"
-                        id="closeSquadRequestModal"
-                        class="modal-close"
-                    >
-                        ×
-                    </button>
-
-                </div>
-
-                <div class="request-summary">
-
-                    <div>
-                        <strong>
-                            Team
-                        </strong>
-
-                        <span>
-                            ${escapeHtml(
-                                teamName
-                            )}
-                        </span>
-                    </div>
-
-                    <div>
-                        <strong>
-                            Competition
-                        </strong>
-
-                        <span>
-                            ${escapeHtml(
-                                competitionName
-                            )}
-                        </span>
-                    </div>
-
-                    <div>
-                        <strong>
-                            Status
-                        </strong>
-
-                        <span>
-                            ${escapeHtml(
-                                request.status ||
-                                "Pending"
-                            )}
-                        </span>
-                    </div>
-
-                    <div>
-                        <strong>
-                            Submitted
-                        </strong>
-
-                        <span>
-                            ${escapeHtml(
-                                request.created_at
-                                    ? new Date(
-                                        request.created_at
-                                      ).toLocaleString(
-                                        "en-KE"
-                                      )
-                                    : "-"
-                            )}
-                        </span>
-                    </div>
-
-                </div>
-
-                <hr>
-
-                ${detailsHtml}
-
-                <div class="request-reason">
-
-                    <h3>
-                        Reason
-                    </h3>
-
-                    <p>
-                        ${escapeHtml(
-                            reasonText
-                        )}
-                    </p>
-
-                </div>
-
-                ${
-                    request.status ===
-                    "Pending"
-                        ? `
-                            <div class="form-group">
-
-                                <label
-                                    for="squadRequestAdminNotes"
-                                >
-                                    Admin Notes
-                                </label>
-
-                                <textarea
-                                    id="squadRequestAdminNotes"
-                                    class="form-control"
-                                    rows="4"
-                                    placeholder="Optional notes..."
-                                ></textarea>
-
-                            </div>
-
-                            <div class="modal-actions">
-
-                                <button
-                                    type="button"
-                                    id="approveSquadRequestBtn"
-                                    class="btn btn-success"
-                                >
-                                    ✅ Approve
-                                </button>
-
-                                <button
-                                    type="button"
-                                    id="rejectSquadRequestBtn"
-                                    class="btn btn-danger"
-                                >
-                                    ❌ Reject
-                                </button>
-
-                                <button
-                                    type="button"
-                                    id="cancelSquadRequestBtn"
-                                    class="btn"
-                                >
-                                    Cancel
-                                </button>
-
-                            </div>
-                        `
-                        : `
-                            <div class="request-review">
-
-                                <p>
-                                    Reviewed:
-                                    ${escapeHtml(
-                                        reviewedDate
-                                    )}
-                                </p>
-
-                                ${
-                                    request.admin_notes
-                                        ? `
-                                            <p>
-                                                <strong>
-                                                    Admin Notes:
-                                                </strong>
-                                                ${escapeHtml(
-                                                    request.admin_notes
-                                                )}
-                                            </p>
-                                        `
-                                        : ""
-                                }
-
-                            </div>
-
-                            <div class="modal-actions">
-
-                                <button
-                                    type="button"
-                                    id="cancelSquadRequestBtn"
-                                    class="btn"
-                                >
-                                    Close
-                                </button>
-
-                            </div>
-                        `
-                }
-
-            </div>
-
-        </div>
-    `;
-
-    modal.style.display =
-        "block";
-
-    const closeButton =
-        document.getElementById(
-            "closeSquadRequestModal"
-        );
-
-    const cancelButton =
-        document.getElementById(
-            "cancelSquadRequestBtn"
-        );
-
-    if (closeButton) {
-
-        closeButton.addEventListener(
-            "click",
-            closeSquadRequestModal
-        );
-
-    }
-
-    if (cancelButton) {
-
-        cancelButton.addEventListener(
-            "click",
-            closeSquadRequestModal
-        );
-
-    }
-
-    const overlay =
-        document.getElementById(
-            "squadRequestModalOverlay"
-        );
-
-    if (overlay) {
-
-        overlay.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    event.target ===
-                    overlay
-                ) {
-
-                    closeSquadRequestModal();
-
-                }
-
-            }
-        );
-
-    }
-
-    const approveButton =
-        document.getElementById(
-            "approveSquadRequestBtn"
-        );
-
-    const rejectButton =
-        document.getElementById(
-            "rejectSquadRequestBtn"
-        );
-
-    if (approveButton) {
-
-        approveButton.addEventListener(
-            "click",
-            approveSquadChangeRequest
-        );
-
-    }
-
-    if (rejectButton) {
-
-        rejectButton.addEventListener(
-            "click",
-            rejectSquadChangeRequest
-        );
-
-    }
-}
-
-
-// ========================================
-// CLOSE REQUEST MODAL
-// ========================================
-
-function closeSquadRequestModal() {
-
-    const modal =
-        document.getElementById(
-            "squadRequestModal"
-        );
-
-    if (modal) {
-
-        modal.style.display =
-            "none";
-
-    }
-
-    selectedSquadRequest =
-        null;
-}
-
-
-// ========================================
-// GET ADMIN NOTES
-// ========================================
-
-function getSquadRequestAdminNotes() {
-
-    const notes =
-        document.getElementById(
-            "squadRequestAdminNotes"
-        );
-
-    return notes
-        ? notes.value.trim()
-        : "";
-}
-
-
-// ========================================
-// APPROVE REQUEST
-// ========================================
-
-async function approveSquadChangeRequest() {
-
-    if (!selectedSquadRequest) {
-
-        alert(
-            "No request selected."
-        );
-
-        return;
-    }
-
-    const request =
-        selectedSquadRequest;
-
-    const id =
-        Number(request.id);
-
-    const confirmed =
-        confirm(
-            "Approve this request?\n\n" +
-            getSquadRequestTypeLabel(
-                request
-            ) +
-            "\n" +
-            getSquadRequestTeamName(
-                request
-            )
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    const notes =
-        getSquadRequestAdminNotes();
-
-    const button =
-        document.getElementById(
-            "approveSquadRequestBtn"
-        );
-
-    if (button) {
-
-        button.disabled =
-            true;
-
-        button.textContent =
-            "Approving...";
-
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.rpc(
-            "approve_squad_change_request",
-            {
-                p_request_id: id,
-                p_admin_notes:
-                    notes || null
-            }
-        );
-
-    if (error) {
-
-        console.error(
-            "Unable to approve squad request:",
-            error
-        );
-
-        alert(
-            "Unable to approve request:\n\n" +
-            (
-                error.message ||
-                "Unknown error"
-            )
-        );
-
-        if (button) {
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "✅ Approve";
-
-        }
-
-        return;
-    }
-
-    console.log(
-        "Squad request approved:",
-        data
-    );
-
-    alert(
-        "✅ Request approved successfully."
-    );
-
-    closeSquadRequestModal();
-
-    await loadSquadChangeRequests();
-
-    if (
-        typeof loadApprovedTeams ===
-        "function"
-    ) {
-
-        await loadApprovedTeams();
-
-    }
-
-    if (
-        typeof loadResultFixtures ===
-        "function"
-    ) {
-
-        await loadResultFixtures();
-
-    }
-}
-
-
-// ========================================
-// REJECT REQUEST
-// ========================================
-
-async function rejectSquadChangeRequest() {
-
-    if (!selectedSquadRequest) {
-
-        alert(
-            "No request selected."
-        );
-
-        return;
-    }
-
-    const request =
-        selectedSquadRequest;
-
-    const id =
-        Number(request.id);
-
-    const confirmed =
-        confirm(
-            "Reject this request?\n\n" +
-            getSquadRequestTypeLabel(
-                request
-            ) +
-            "\n" +
-            getSquadRequestTeamName(
-                request
-            )
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    const notes =
-        getSquadRequestAdminNotes();
-
-    const button =
-        document.getElementById(
-            "rejectSquadRequestBtn"
-        );
-
-    if (button) {
-
-        button.disabled =
-            true;
-
-        button.textContent =
-            "Rejecting...";
-
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.rpc(
-            "reject_squad_change_request",
-            {
-                p_request_id: id,
-                p_admin_notes:
-                    notes || null
-            }
-        );
-
-    if (error) {
-
-        console.error(
-            "Unable to reject squad request:",
-            error
-        );
-
-        alert(
-            "Unable to reject request:\n\n" +
-            (
-                error.message ||
-                "Unknown error"
-            )
-        );
-
-        if (button) {
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "❌ Reject";
-
-        }
-
-        return;
-    }
-
-    console.log(
-        "Squad request rejected:",
-        data
-    );
-
-    alert(
-        "Request rejected successfully."
-    );
-
-    closeSquadRequestModal();
-
-    await loadSquadChangeRequests();
-}
-
-
-// ========================================
-// INITIALIZE SQUAD REQUEST DASHBOARD
-// ========================================
-
-ensureSquadRequestsDashboard();
-```
 
     // ========================================
     // START DASHBOARD
@@ -7765,13 +5949,12 @@ ensureSquadRequestsDashboard();
 
 
         await loadCompetitions();
-await loadCompetitionRegistrationSettings();
-await loadApprovedTeams();
-await loadVenues();
-await loadFixtures();
-await loadResultFixtures();
-await loadPendingTeams();
-await loadSquadChangeRequests();
+    await loadCompetitionRegistrationSettings();
+    await loadApprovedTeams();
+    await loadVenues();
+    await loadFixtures();
+    await loadResultFixtures();
+    await loadPendingTeams();
 
 
     console.log(
