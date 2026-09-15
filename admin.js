@@ -7765,12 +7765,13 @@ ensureSquadRequestsDashboard();
 
 
         await loadCompetitions();
-    await loadCompetitionRegistrationSettings();
-    await loadApprovedTeams();
-    await loadVenues();
-    await loadFixtures();
-    await loadResultFixtures();
-    await loadPendingTeams();
+await loadCompetitionRegistrationSettings();
+await loadApprovedTeams();
+await loadVenues();
+await loadFixtures();
+await loadResultFixtures();
+await loadPendingTeams();
+await loadSquadChangeRequests();
 
 
     console.log(
