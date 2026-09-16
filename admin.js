@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             showMessage(
-                "Ã¢ÂÅ’ Supabase library did not load.",
+                "❌ Supabase library did not load.",
                 "error"
             );
 
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             showMessage(
-                "Ã¢ÂÅ’ Supabase connection did not load.",
+                "❌ Supabase connection did not load.",
                 "error"
             );
 
@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!user) {
 
                 showMessage(
-                    "Ã¢ÂÅ’ You are not logged in.",
+                    "❌ You are not logged in.",
                     "error"
                 );
 
@@ -375,7 +375,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!admin) {
 
                 showMessage(
-                    "Ã¢ÂÅ’ This account is not an administrator.",
+                    "❌ This account is not an administrator.",
                     "error"
                 );
 
@@ -384,7 +384,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             showMessage(
-                "Ã¢Å“â€¦ Administrator access granted.",
+                "✅ Administrator access granted.",
                 "success"
             );
 
@@ -401,7 +401,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             showMessage(
-                "Ã¢ÂÅ’ Admin verification failed: " +
+                "❌ Admin verification failed: " +
                 (
                     error.message ||
                     "Unknown error"
@@ -487,7 +487,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         option.textContent =
                             competition.name +
-                            " Ã¢â‚¬â€ " +
+                            " — " +
                             (
                                 competition.season ||
                                 ""
@@ -561,11 +561,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                         >
 
                             <h3>
-                                Ã°Å¸Ââ€ 
+                                🏆
                                 ${escapeHtml(
                                     competition.name
                                 )}
                             </h3>
+
 
                             <div class="team-details">
 
@@ -577,6 +578,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     )}
                                 </div>
 
+
                                 <div class="detail">
                                     <strong>Season</strong><br>
                                     ${escapeHtml(
@@ -585,15 +587,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     )}
                                 </div>
 
+
                                 <div class="detail">
                                     <strong>Start Date</strong><br>
                                     ${startDate}
                                 </div>
 
+
                                 <div class="detail">
                                     <strong>End Date</strong><br>
                                     ${endDate}
                                 </div>
+
 
                                 <div class="detail">
                                     <strong>Status</strong><br>
@@ -603,6 +608,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 </div>
 
                             </div>
+
 
                             ${
                                 competition.description
@@ -637,7 +643,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             competitionsList.innerHTML =
                 '<div class="empty-message">' +
-                'Ã¢ÂÅ’ Unable to load competitions: ' +
+                '❌ Unable to load competitions: ' +
                 escapeHtml(
                     error.message ||
                     "Unknown error"
@@ -645,6 +651,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 '</div>';
         }
     }
+
+
     // ========================================
     // COMPETITION SQUAD MANAGEMENT SETTINGS
     // ========================================
@@ -656,9 +664,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "competitionsList"
             );
 
+
         if (!competitionsList) {
             return;
         }
+
 
         // ----------------------------------------
         // CREATE SETTINGS CONTAINER
@@ -668,6 +678,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById(
                 "competitionRegistrationSettings"
             );
+
 
         if (!settingsContainer) {
 
@@ -687,6 +698,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
         }
 
+
         settingsContainer.innerHTML = `
             <div class="admin-card">
 
@@ -694,7 +706,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     margin-bottom:8px;
                     color:#04351f;
                 ">
-                    Ã¢Å¡â„¢Ã¯Â¸Â Squad Registration Controls
+                    ⚙️ Squad Registration Controls
                 </h2>
 
                 <p style="
@@ -719,14 +731,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             </div>
         `;
 
+
         const settingsList =
             document.getElementById(
                 "competitionSettingsList"
             );
 
+
         if (!settingsList) {
             return;
         }
+
 
         try {
 
@@ -754,9 +769,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                         }
                     );
 
+
             if (competitionError) {
                 throw competitionError;
             }
+
 
             if (
                 !competitions ||
@@ -772,6 +789,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
             }
 
+
             // ----------------------------------------
             // LOAD EXISTING SETTINGS
             // ----------------------------------------
@@ -786,11 +804,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                     )
                     .select("*");
 
+
             if (settingsError) {
                 throw settingsError;
             }
 
+
             const settingsMap = {};
+
 
             (settings || []).forEach(
                 function (setting) {
@@ -804,11 +825,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             );
 
+
             // ----------------------------------------
             // RENDER
             // ----------------------------------------
 
-            settingsList.innerHTML = "";
+            settingsList.innerHTML =
+                "";
+
 
             competitions.forEach(
                 function (competition) {
@@ -820,19 +844,23 @@ document.addEventListener("DOMContentLoaded", async function () {
                             )
                         ] || {};
 
+
                     const card =
                         document.createElement(
                             "div"
                         );
 
+
                     card.className =
                         "admin-card";
+
 
                     card.style.cssText = `
                         margin-top:15px;
                         border-left:5px solid #f5c542;
                         background:#fff;
                     `;
+
 
                     // ----------------------------------------
                     // SAFE VALUES
@@ -861,6 +889,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             existing.max_squad_size || 20
                         );
 
+
                     // ----------------------------------------
                     // DATETIME FORMATTER
                     // ----------------------------------------
@@ -873,8 +902,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             return "";
                         }
 
+
                         const date =
                             new Date(value);
+
 
                         if (
                             Number.isNaN(
@@ -884,8 +915,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             return "";
                         }
 
+
                         const pad =
                             function (number) {
+
                                 return String(
                                     number
                                 ).padStart(
@@ -893,6 +926,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     "0"
                                 );
                             };
+
 
                         return (
                             date.getFullYear() +
@@ -915,6 +949,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         );
                     }
 
+
                     card.innerHTML = `
 
                         <div style="
@@ -932,7 +967,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     margin:0 0 5px 0;
                                     color:#04351f;
                                 ">
-                                    Ã°Å¸Ââ€ 
+                                    🏆
                                     ${escapeHtml(
                                         competition.name
                                     )}
@@ -946,7 +981,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         competition.competition_type ||
                                         "Competition"
                                     )}
-                                    Ã¢â‚¬Â¢
+                                    •
                                     Season
                                     ${escapeHtml(
                                         competition.season ||
@@ -955,6 +990,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 </div>
 
                             </div>
+
 
                             <div style="
                                 font-size:13px;
@@ -975,13 +1011,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                                 ${
                                     updatesAllowed
-                                        ? "Ã°Å¸Å¸Â¢ UPDATES OPEN"
-                                        : "Ã°Å¸â€Â´ UPDATES CLOSED"
+                                        ? "🟢 UPDATES OPEN"
+                                        : "🔴 UPDATES CLOSED"
                                 }
 
                             </div>
 
                         </div>
+
 
                         <!-- MASTER SWITCH -->
 
@@ -1002,11 +1039,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                                 <input
                                     type="checkbox"
-                                    class="competition-updates-allowed"
-                                    style="
-                                        width:20px;
-                                        height:20px;
-                                    "
+                                    id="updatesAllowed-${competition.id}"
                                     ${
                                         updatesAllowed
                                             ? "checked"
@@ -1014,51 +1047,35 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                Ã°Å¸Å¸Â¢ Allow squad/team change requests
+                                🟢 Allow squad/team change requests
 
                             </label>
 
-                            <p style="
-                                margin:8px 0 0 30px;
-                                color:#777;
-                                font-size:13px;
-                            ">
-                                Turn this OFF to completely prevent
-                                teams from submitting squad changes
-                                for this competition.
-                            </p>
-
                         </div>
 
-                        <!-- CHANGE TYPES -->
+
+                        <!-- PERMISSIONS -->
 
                         <div style="
                             display:grid;
-                            grid-template-columns:
-                                repeat(
-                                    auto-fit,
-                                    minmax(
-                                        210px,
-                                        1fr
-                                    )
-                                );
-                            gap:10px;
-                            margin-bottom:18px;
+                            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+                            gap:12px;
+                            margin-bottom:15px;
                         ">
 
                             <label style="
+                                display:flex;
+                                align-items:center;
+                                gap:8px;
                                 padding:12px;
                                 border:1px solid #ddd;
                                 border-radius:8px;
-                                display:flex;
-                                gap:8px;
-                                align-items:center;
                                 cursor:pointer;
                             ">
 
                                 <input
                                     type="checkbox"
-                                    class="allow-add-players"
+                                    id="allowAdd-${competition.id}"
                                     ${
                                         allowAddPlayers
                                             ? "checked"
@@ -1066,23 +1083,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                Ã¢Å¾â€¢ Add players
+                                ➕ Add players
 
                             </label>
 
+
                             <label style="
+                                display:flex;
+                                align-items:center;
+                                gap:8px;
                                 padding:12px;
                                 border:1px solid #ddd;
                                 border-radius:8px;
-                                display:flex;
-                                gap:8px;
-                                align-items:center;
                                 cursor:pointer;
                             ">
 
                                 <input
                                     type="checkbox"
-                                    class="allow-remove-players"
+                                    id="allowRemove-${competition.id}"
                                     ${
                                         allowRemovePlayers
                                             ? "checked"
@@ -1090,23 +1108,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                Ã¢Å¾â€“ Remove players
+                                ➖ Remove players
 
                             </label>
 
+
                             <label style="
+                                display:flex;
+                                align-items:center;
+                                gap:8px;
                                 padding:12px;
                                 border:1px solid #ddd;
                                 border-radius:8px;
-                                display:flex;
-                                gap:8px;
-                                align-items:center;
                                 cursor:pointer;
                             ">
 
                                 <input
                                     type="checkbox"
-                                    class="allow-edit-players"
+                                    id="allowEdit-${competition.id}"
                                     ${
                                         allowEditPlayers
                                             ? "checked"
@@ -1114,23 +1133,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                Ã¢Å“ÂÃ¯Â¸Â Edit players
+                                ✏️ Edit players
 
                             </label>
 
+
                             <label style="
+                                display:flex;
+                                align-items:center;
+                                gap:8px;
                                 padding:12px;
                                 border:1px solid #ddd;
                                 border-radius:8px;
-                                display:flex;
-                                gap:8px;
-                                align-items:center;
                                 cursor:pointer;
                             ">
 
                                 <input
                                     type="checkbox"
-                                    class="allow-edit-team"
+                                    id="allowEditTeam-${competition.id}"
                                     ${
                                         allowEditTeam
                                             ? "checked"
@@ -1138,440 +1158,170 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                Ã°Å¸ÂÂ·Ã¯Â¸Â Edit team
+                                🏷️ Edit team
 
                             </label>
 
                         </div>
 
-                        <!-- TIME WINDOW -->
+
+                        <!-- DATE WINDOW -->
 
                         <div style="
                             display:grid;
-                            grid-template-columns:
-                                repeat(
-                                    auto-fit,
-                                    minmax(
-                                        220px,
-                                        1fr
-                                    )
-                                );
+                            grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
                             gap:15px;
-                            margin-bottom:18px;
+                            margin-bottom:15px;
                         ">
 
                             <div>
 
-                                <label style="
-                                    display:block;
-                                    font-weight:800;
-                                    margin-bottom:7px;
-                                ">
-                                    Ã°Å¸â€œâ€¦ Opening Date & Time
+                                <label
+                                    for="startDatetime-${competition.id}"
+                                    style="
+                                        display:block;
+                                        font-weight:800;
+                                        margin-bottom:6px;
+                                    "
+                                >
+                                    📅 Opening Date & Time
                                 </label>
 
                                 <input
                                     type="datetime-local"
-                                    class="registration-start"
-                                    value="${
-                                        datetimeLocalValue(
-                                            existing.start_datetime
-                                        )
-                                    }"
-                                    style="
-                                        width:100%;
-                                        padding:11px;
-                                        border:1px solid #ccc;
-                                        border-radius:7px;
-                                    "
+                                    id="startDatetime-${competition.id}"
+                                    class="form-control"
+                                    value="${datetimeLocalValue(
+                                        existing.start_datetime
+                                    )}"
                                 >
 
                             </div>
 
+
                             <div>
 
-                                <label style="
-                                    display:block;
-                                    font-weight:800;
-                                    margin-bottom:7px;
-                                ">
-                                    Ã°Å¸â€œâ€¦ Closing Date & Time
+                                <label
+                                    for="endDatetime-${competition.id}"
+                                    style="
+                                        display:block;
+                                        font-weight:800;
+                                        margin-bottom:6px;
+                                    "
+                                >
+                                    📅 Closing Date & Time
                                 </label>
 
                                 <input
                                     type="datetime-local"
-                                    class="registration-end"
-                                    value="${
-                                        datetimeLocalValue(
-                                            existing.end_datetime
-                                        )
-                                    }"
-                                    style="
-                                        width:100%;
-                                        padding:11px;
-                                        border:1px solid #ccc;
-                                        border-radius:7px;
-                                    "
+                                    id="endDatetime-${competition.id}"
+                                    class="form-control"
+                                    value="${datetimeLocalValue(
+                                        existing.end_datetime
+                                    )}"
                                 >
 
                             </div>
 
                         </div>
 
-                        <!-- SQUAD SIZE + LOCK -->
+
+                        <!-- MAX SQUAD SIZE -->
 
                         <div style="
-                            display:grid;
-                            grid-template-columns:
-                                repeat(
-                                    auto-fit,
-                                    minmax(
-                                        220px,
-                                        1fr
-                                    )
-                                );
-                            gap:15px;
-                            margin-bottom:18px;
+                            margin-bottom:15px;
                         ">
 
-                            <div>
-
-                                <label style="
-                                    display:block;
-                                    font-weight:800;
-                                    margin-bottom:7px;
-                                ">
-                                    Ã°Å¸â€˜Â¥ Maximum Squad Size
-                                </label>
-
-                                <input
-                                    type="number"
-                                    min="1"
-                                    max="100"
-                                    class="max-squad-size"
-                                    value="${maxSquadSize}"
-                                    style="
-                                        width:100%;
-                                        padding:11px;
-                                        border:1px solid #ccc;
-                                        border-radius:7px;
-                                    "
-                                >
-
-                            </div>
-
-                            <div style="
-                                display:flex;
-                                align-items:end;
-                            ">
-
-                                <label style="
-                                    width:100%;
-                                    padding:12px;
-                                    border:1px solid #ddd;
-                                    border-radius:8px;
-                                    display:flex;
-                                    gap:8px;
-                                    align-items:center;
-                                    cursor:pointer;
-                                ">
-
-                                    <input
-                                        type="checkbox"
-                                        class="registration-locked"
-                                        ${
-                                            registrationLocked
-                                                ? "checked"
-                                                : ""
-                                        }
-                                    >
-
-                                    Ã°Å¸â€â€™ Lock registration completely
-
-                                </label>
-
-                            </div>
-
-                        </div>
-
-                        <!-- SAVE -->
-
-                        <div style="
-                            display:flex;
-                            align-items:center;
-                            gap:12px;
-                            flex-wrap:wrap;
-                        ">
-
-                            <button
-                                type="button"
-                                class="save-registration-settings"
+                            <label
+                                for="maxSquad-${competition.id}"
                                 style="
-                                    background:#075b35;
-                                    color:white;
-                                    border:none;
-                                    padding:12px 20px;
-                                    border-radius:7px;
-                                    font-weight:900;
-                                    cursor:pointer;
+                                    display:block;
+                                    font-weight:800;
+                                    margin-bottom:6px;
                                 "
                             >
-                                Ã°Å¸â€™Â¾ Save Competition Controls
-                            </button>
+                                👥 Maximum Squad Size
+                            </label>
 
-                            <span
-                                class="registration-settings-message"
-                                style="
-                                    font-size:13px;
-                                    font-weight:700;
-                                "
-                            ></span>
+                            <input
+                                type="number"
+                                id="maxSquad-${competition.id}"
+                                class="form-control"
+                                min="1"
+                                max="100"
+                                value="${maxSquadSize}"
+                            >
 
                         </div>
+
+
+                        <!-- LOCK -->
+
+                        <div style="
+                            padding:15px;
+                            background:#fff8e1;
+                            border:1px solid #f5c542;
+                            border-radius:10px;
+                            margin-bottom:15px;
+                        ">
+
+                            <label style="
+                                display:flex;
+                                align-items:center;
+                                gap:10px;
+                                font-weight:900;
+                                cursor:pointer;
+                            ">
+
+                                <input
+                                    type="checkbox"
+                                    id="registrationLocked-${competition.id}"
+                                    ${
+                                        registrationLocked
+                                            ? "checked"
+                                            : ""
+                                    }
+                                >
+
+                                🔒 Lock registration completely
+
+                            </label>
+
+                            <div style="
+                                margin-top:8px;
+                                color:#666;
+                                font-size:13px;
+                                line-height:1.5;
+                            ">
+                                When locked, teams cannot submit
+                                new squad or team change requests
+                                for this competition.
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            onclick="saveCompetitionRegistrationSettings(${competition.id})"
+                        >
+                            💾 Save Competition Controls
+                        </button>
+
+                        <div
+                            id="competitionSettingsMessage-${competition.id}"
+                            style="
+                                display:none;
+                                margin-top:10px;
+                                padding:10px;
+                                border-radius:8px;
+                                font-size:14px;
+                            "
+                        ></div>
 
                     `;
 
-                    // ----------------------------------------
-                    // SAVE BUTTON
-                    // ----------------------------------------
-
-                    const saveButton =
-                        card.querySelector(
-                            ".save-registration-settings"
-                        );
-
-                    saveButton.addEventListener(
-                        "click",
-                        async function () {
-
-                            const message =
-                                card.querySelector(
-                                    ".registration-settings-message"
-                                );
-
-                            const updatesAllowedInput =
-                                card.querySelector(
-                                    ".competition-updates-allowed"
-                                );
-
-                            const addPlayersInput =
-                                card.querySelector(
-                                    ".allow-add-players"
-                                );
-
-                            const removePlayersInput =
-                                card.querySelector(
-                                    ".allow-remove-players"
-                                );
-
-                            const editPlayersInput =
-                                card.querySelector(
-                                    ".allow-edit-players"
-                                );
-
-                            const editTeamInput =
-                                card.querySelector(
-                                    ".allow-edit-team"
-                                );
-
-                            const startInput =
-                                card.querySelector(
-                                    ".registration-start"
-                                );
-
-                            const endInput =
-                                card.querySelector(
-                                    ".registration-end"
-                                );
-
-                            const maxSquadInput =
-                                card.querySelector(
-                                    ".max-squad-size"
-                                );
-
-                            const lockedInput =
-                                card.querySelector(
-                                    ".registration-locked"
-                                );
-
-                            let maxSquad =
-                                Number(
-                                    maxSquadInput.value
-                                );
-
-                            if (
-                                !Number.isFinite(
-                                    maxSquad
-                                ) ||
-                                maxSquad < 1
-                            ) {
-
-                                message.textContent =
-                                    "Ã¢ÂÅ’ Maximum squad size must be at least 1.";
-
-                                message.style.color =
-                                    "#b00020";
-
-                                return;
-                            }
-
-                            if (
-                                maxSquad > 100
-                            ) {
-
-                                message.textContent =
-                                    "Ã¢ÂÅ’ Maximum squad size cannot exceed 100.";
-
-                                message.style.color =
-                                    "#b00020";
-
-                                return;
-                            }
-
-                            if (
-                                startInput.value &&
-                                endInput.value
-                            ) {
-
-                                const startDate =
-                                    new Date(
-                                        startInput.value
-                                    );
-
-                                const endDate =
-                                    new Date(
-                                        endInput.value
-                                    );
-
-                                if (
-                                    endDate <=
-                                    startDate
-                                ) {
-
-                                    message.textContent =
-                                        "Ã¢ÂÅ’ Closing date/time must be after opening date/time.";
-
-                                    message.style.color =
-                                        "#b00020";
-
-                                    return;
-                                }
-                            }
-
-                            saveButton.disabled =
-                                true;
-
-                            saveButton.style.opacity =
-                                "0.6";
-
-                            message.textContent =
-                                "Saving...";
-
-                            message.style.color =
-                                "#666";
-
-                            try {
-
-                                const payload = {
-
-                                    competition_id:
-                                        competition.id,
-
-                                    updates_allowed:
-                                        updatesAllowedInput
-                                            .checked,
-
-                                    allow_add_players:
-                                        addPlayersInput
-                                            .checked,
-
-                                    allow_remove_players:
-                                        removePlayersInput
-                                            .checked,
-
-                                    allow_edit_players:
-                                        editPlayersInput
-                                            .checked,
-
-                                    allow_edit_team:
-                                        editTeamInput
-                                            .checked,
-
-                                    start_datetime:
-                                        startInput.value
-                                            ? new Date(
-                                                startInput.value
-                                            ).toISOString()
-                                            : null,
-
-                                    end_datetime:
-                                        endInput.value
-                                            ? new Date(
-                                                endInput.value
-                                            ).toISOString()
-                                            : null,
-
-                                    max_squad_size:
-                                        maxSquad,
-
-                                    registration_locked:
-                                        lockedInput
-                                            .checked
-                                };
-
-                                const {
-                                    error
-                                } =
-                                    await supabaseClient
-                                        .from(
-                                            "competition_registration_settings"
-                                        )
-                                        .upsert(
-                                            payload,
-                                            {
-                                                onConflict:
-                                                    "competition_id"
-                                            }
-                                        );
-
-                                if (error) {
-                                    throw error;
-                                }
-
-                                message.textContent =
-                                    "Ã¢Å“â€¦ Competition controls saved successfully.";
-
-                                message.style.color =
-                                    "#087f3e";
-
-                            } catch (error) {
-
-                                console.error(
-                                    "SAVE REGISTRATION SETTINGS ERROR:",
-                                    error
-                                );
-
-                                message.textContent =
-                                    "Ã¢ÂÅ’ Unable to save: " +
-                                    (
-                                        error.message ||
-                                        "Unknown error"
-                                    );
-
-                                message.style.color =
-                                    "#b00020";
-
-                            } finally {
-
-                                saveButton.disabled =
-                                    false;
-
-                                saveButton.style.opacity =
-                                    "1";
-                            }
-
-                        }
-                    );
 
                     settingsList.appendChild(
                         card
@@ -1580,16 +1330,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             );
 
+
         } catch (error) {
 
             console.error(
-                "LOAD REGISTRATION SETTINGS ERROR:",
+                "COMPETITION SETTINGS ERROR:",
                 error
             );
 
+
             settingsList.innerHTML = `
                 <div class="empty-message">
-                    Ã¢ÂÅ’ Unable to load squad controls:
+                    ❌ Unable to load squad controls:
                     ${escapeHtml(
                         error.message ||
                         "Unknown error"
@@ -1598,19 +1350,286 @@ document.addEventListener("DOMContentLoaded", async function () {
             `;
         }
     }
+
+
+    // ========================================
+    // SAVE COMPETITION REGISTRATION SETTINGS
+    // ========================================
+
+    window.saveCompetitionRegistrationSettings =
+        async function (competitionId) {
+
+            const updatesAllowedEl =
+                document.getElementById(
+                    "updatesAllowed-" +
+                    competitionId
+                );
+
+            const allowAddEl =
+                document.getElementById(
+                    "allowAdd-" +
+                    competitionId
+                );
+
+            const allowRemoveEl =
+                document.getElementById(
+                    "allowRemove-" +
+                    competitionId
+                );
+
+            const allowEditEl =
+                document.getElementById(
+                    "allowEdit-" +
+                    competitionId
+                );
+
+            const allowEditTeamEl =
+                document.getElementById(
+                    "allowEditTeam-" +
+                    competitionId
+                );
+
+            const startDatetimeEl =
+                document.getElementById(
+                    "startDatetime-" +
+                    competitionId
+                );
+
+            const endDatetimeEl =
+                document.getElementById(
+                    "endDatetime-" +
+                    competitionId
+                );
+
+            const maxSquadEl =
+                document.getElementById(
+                    "maxSquad-" +
+                    competitionId
+                );
+
+            const registrationLockedEl =
+                document.getElementById(
+                    "registrationLocked-" +
+                    competitionId
+                );
+
+            const messageEl =
+                document.getElementById(
+                    "competitionSettingsMessage-" +
+                    competitionId
+                );
+
+
+            if (!messageEl) {
+                return;
+            }
+
+
+            messageEl.style.display =
+                "block";
+
+            messageEl.style.background =
+                "#f5f5f5";
+
+            messageEl.style.color =
+                "#333";
+
+            messageEl.textContent =
+                "Saving competition controls...";
+
+
+            const updatesAllowed =
+                updatesAllowedEl
+                    ? updatesAllowedEl.checked
+                    : false;
+
+            const allowAddPlayers =
+                allowAddEl
+                    ? allowAddEl.checked
+                    : false;
+
+            const allowRemovePlayers =
+                allowRemoveEl
+                    ? allowRemoveEl.checked
+                    : false;
+
+            const allowEditPlayers =
+                allowEditEl
+                    ? allowEditEl.checked
+                    : false;
+
+            const allowEditTeam =
+                allowEditTeamEl
+                    ? allowEditTeamEl.checked
+                    : false;
+
+            const startDatetime =
+                startDatetimeEl &&
+                startDatetimeEl.value
+                    ? new Date(
+                        startDatetimeEl.value
+                    ).toISOString()
+                    : null;
+
+            const endDatetime =
+                endDatetimeEl &&
+                endDatetimeEl.value
+                    ? new Date(
+                        endDatetimeEl.value
+                    ).toISOString()
+                    : null;
+
+            const maxSquadSize =
+                maxSquadEl
+                    ? Number(
+                        maxSquadEl.value
+                    )
+                    : 20;
+
+            const registrationLocked =
+                registrationLockedEl
+                    ? registrationLockedEl.checked
+                    : false;
+
+
+            if (
+                !Number.isFinite(
+                    maxSquadSize
+                ) ||
+                maxSquadSize < 1
+            ) {
+
+                messageEl.style.background =
+                    "#fdecec";
+
+                messageEl.style.color =
+                    "#b00020";
+
+                messageEl.textContent =
+                    "❌ Maximum squad size must be at least 1.";
+
+                return;
+            }
+
+
+            if (
+                startDatetime &&
+                endDatetime &&
+                new Date(startDatetime) >
+                    new Date(endDatetime)
+            ) {
+
+                messageEl.style.background =
+                    "#fdecec";
+
+                messageEl.style.color =
+                    "#b00020";
+
+                messageEl.textContent =
+                    "❌ Opening date/time cannot be after closing date/time.";
+
+                return;
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "competition_registration_settings"
+                        )
+                        .upsert(
+                            {
+                                competition_id:
+                                    competitionId,
+
+                                updates_allowed:
+                                    updatesAllowed,
+
+                                allow_add_players:
+                                    allowAddPlayers,
+
+                                allow_remove_players:
+                                    allowRemovePlayers,
+
+                                allow_edit_players:
+                                    allowEditPlayers,
+
+                                allow_edit_team:
+                                    allowEditTeam,
+
+                                start_datetime:
+                                    startDatetime,
+
+                                end_datetime:
+                                    endDatetime,
+
+                                max_squad_size:
+                                    maxSquadSize,
+
+                                registration_locked:
+                                    registrationLocked
+                            },
+                            {
+                                onConflict:
+                                    "competition_id"
+                            }
+                        );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            messageEl.style.background =
+                "#e8f7ee";
+
+            messageEl.style.color =
+                "#087f3e";
+
+            messageEl.textContent =
+                "✅ Competition controls saved successfully.";
+
+
+            } catch (error) {
+
+                console.error(
+                    "SAVE COMPETITION SETTINGS ERROR:",
+                    error
+                );
+
+
+                messageEl.style.background =
+                    "#fdecec";
+
+                messageEl.style.color =
+                    "#b00020";
+
+                messageEl.textContent =
+                    "❌ Unable to save competition controls: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    );
+            }
+        };
+
+
     // ========================================
     // CREATE COMPETITION
     // ========================================
 
-    if (createCompetitionButton) {
+    if (competitionForm) {
 
-        createCompetitionButton.addEventListener(
-            "click",
-            async function () {
+        competitionForm.addEventListener(
+            "submit",
+            async function (event) {
 
-                console.log(
-                    "CREATE COMPETITION BUTTON CLICKED"
-                );
+                event.preventDefault();
 
 
                 const nameInput =
@@ -1649,11 +1668,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     );
 
 
-                if (!competitionFormMessage) {
-                    return;
-                }
-
-
                 const name =
                     nameInput
                         ? nameInput.value.trim()
@@ -1668,7 +1682,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const season =
                     seasonInput
-                        ? seasonInput.value.trim()
+                        ? String(
+                            seasonInput.value
+                        ).trim()
                         : "";
 
 
@@ -1701,7 +1717,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!name) {
 
                     competitionFormMessage.textContent =
-                        "Ã¢ÂÅ’ Please enter the competition name.";
+                        "❌ Please enter the competition name.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1713,7 +1729,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!competitionType) {
 
                     competitionFormMessage.textContent =
-                        "Ã¢ÂÅ’ Please select the competition type.";
+                        "❌ Please select the competition type.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1725,7 +1741,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!season) {
 
                     competitionFormMessage.textContent =
-                        "Ã¢ÂÅ’ Please enter the season.";
+                        "❌ Please enter the season.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1741,7 +1757,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     competitionFormMessage.textContent =
-                        "Ã¢ÂÅ’ End date cannot be before start date.";
+                        "❌ End date cannot be before start date.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1810,7 +1826,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     competitionFormMessage.textContent =
-                        "Ã¢Å“â€¦ Competition created successfully!";
+                        "✅ Competition created successfully!";
 
 
                     competitionFormMessage.style.display =
@@ -1834,7 +1850,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     competitionFormMessage.textContent =
-                        "Ã¢ÂÅ’ Unable to create competition: " +
+                        "❌ Unable to create competition: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -2206,7 +2222,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showFixtureMessage(
-                        "Home and away teams must be different.",
+                        "Home team and away team cannot be the same.",
                         "error"
                     );
 
@@ -2236,26 +2252,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
-                if (!venue) {
-
-                    showFixtureMessage(
-                        "Please select a venue.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
                 try {
 
-                    showFixtureMessage(
-                        "Creating fixture...",
-                        ""
-                    );
-
-
                     const {
+                        data,
                         error
                     } =
                         await supabaseClient
@@ -2284,17 +2284,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     kickOffValue,
 
                                 venue:
-                                    venue,
+                                    venue ||
+                                    null,
 
                                 matchday:
                                     matchdayValue ||
                                     null,
 
                                 status:
-                                    statusValue ||
-                                    "Scheduled"
+                                    statusValue
 
-                            });
+                            })
+                            .select()
+                            .single();
 
 
                     if (error) {
@@ -2303,29 +2305,29 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showFixtureMessage(
-                        "Ã¢Å“â€¦ Fixture created successfully!",
+                        "Fixture created successfully.",
                         "success"
                     );
 
 
-                    fixtureForm.reset();
+                    if (fixtureForm) {
+                        fixtureForm.reset();
+                    }
 
 
                     await loadFixtures();
-
-                    await loadResultFixtures();
 
 
                 } catch (error) {
 
                     console.error(
-                        "Create fixture error:",
+                        "CREATE FIXTURE ERROR:",
                         error
                     );
 
 
                     showFixtureMessage(
-                        "Ã¢ÂÅ’ Unable to create fixture: " +
+                        "Unable to create fixture: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -2337,6 +2339,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         );
     }
+
 
     // ========================================
     // LOAD FIXTURES
@@ -2350,32 +2353,52 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         fixturesList.innerHTML =
-            "<div class='empty-message'>" +
-            "Loading fixtures..." +
-            "</div>";
+            '<div class="empty-message">' +
+            'Loading fixtures...' +
+            '</div>';
 
 
         try {
 
             const {
-                data: fixtures,
+                data,
                 error
             } =
                 await supabaseClient
                     .from("fixtures")
-                    .select(
-                        "id, competition_id, home_team_id, away_team_id, match_date, kick_off, venue, matchday, status"
-                    )
+                    .select(`
+                        id,
+                        competition_id,
+                        home_team_id,
+                        away_team_id,
+                        match_date,
+                        kick_off,
+                        venue,
+                        matchday,
+                        status,
+                        created_at,
+                        competition:competitions (
+                            id,
+                            name,
+                            season
+                        ),
+                        home_team:teams!fixtures_home_team_id_fkey (
+                            id,
+                            name,
+                            short_name,
+                            logo_url
+                        ),
+                        away_team:teams!fixtures_away_team_id_fkey (
+                            id,
+                            name,
+                            short_name,
+                            logo_url
+                        )
+                    `)
                     .order(
                         "match_date",
                         {
-                            ascending: true
-                        }
-                    )
-                    .order(
-                        "kick_off",
-                        {
-                            ascending: true
+                            ascending: false
                         }
                     );
 
@@ -2386,281 +2409,179 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             if (
-                !fixtures ||
-                fixtures.length === 0
+                !data ||
+                data.length === 0
             ) {
 
                 fixturesList.innerHTML =
-                    "<div class='empty-message'>" +
-                    "No fixtures have been created yet." +
-                    "</div>";
+                    '<div class="empty-message">' +
+                    'No fixtures found.' +
+                    '</div>';
 
                 return;
             }
 
 
-            const teamIds = [
-                ...new Set(
-                    fixtures.flatMap(
-                        function (fixture) {
-
-                            return [
-                                fixture.home_team_id,
-                                fixture.away_team_id
-                            ];
-
-                        }
-                    )
-                )
-            ];
+            let html = "";
 
 
-            const competitionIds = [
-                ...new Set(
-                    fixtures.map(
-                        function (fixture) {
+            data.forEach(
+                function (fixture) {
 
-                            return fixture.competition_id;
+                    const competition =
+                        fixture.competition ||
+                        {};
 
-                        }
-                    )
-                )
-            ];
+                    const home =
+                        fixture.home_team ||
+                        {};
 
+                    const away =
+                        fixture.away_team ||
+                        {};
 
-            const {
-                data: teams,
-                error: teamsError
-            } =
-                await supabaseClient
-                    .from("teams")
-                    .select(
-                        "id, name, short_name"
-                    )
-                    .in(
-                        "id",
-                        teamIds
-                    );
+                    const fixtureStatusValue =
+                        fixture.status ||
+                        "Scheduled";
 
 
-            if (teamsError) {
-                throw teamsError;
-            }
+                    html += `
+
+                        <div
+                            class="admin-card"
+                            style="
+                                margin-top:15px;
+                                border-left:5px solid #16803c;
+                            "
+                        >
+
+                            <div style="
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:flex-start;
+                                gap:15px;
+                                flex-wrap:wrap;
+                            ">
+
+                                <div style="flex:1;">
+
+                                    <h3>
+                                        ⚽
+                                        ${escapeHtml(
+                                            home.name ||
+                                            "Home Team"
+                                        )}
+                                        vs
+                                        ${escapeHtml(
+                                            away.name ||
+                                            "Away Team"
+                                        )}
+                                    </h3>
+
+                                    <p>
+                                        <strong>Competition:</strong>
+                                        ${escapeHtml(
+                                            competition.name ||
+                                            "Competition"
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>Season:</strong>
+                                        ${escapeHtml(
+                                            competition.season ||
+                                            "-"
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>Date:</strong>
+                                        ${formatDate(
+                                            fixture.match_date
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>Kick-off:</strong>
+                                        ${escapeHtml(
+                                            fixture.kick_off ||
+                                            "-"
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>Venue:</strong>
+                                        ${escapeHtml(
+                                            fixture.venue ||
+                                            "-"
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>Matchday:</strong>
+                                        ${escapeHtml(
+                                            fixture.matchday ||
+                                            "-"
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>Status:</strong>
+                                        ${escapeHtml(
+                                            fixtureStatusValue
+                                        )}
+                                    </p>
+
+                                </div>
 
 
-            const {
-                data: competitions,
-                error: competitionsError
-            } =
-                await supabaseClient
-                    .from("competitions")
-                    .select(
-                        "id, name, season"
-                    )
-                    .in(
-                        "id",
-                        competitionIds
-                    );
+                                <div style="
+                                    display:flex;
+                                    gap:8px;
+                                    flex-wrap:wrap;
+                                ">
 
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger"
+                                        onclick="deleteFixture(${Number(
+                                            fixture.id
+                                        )})"
+                                    >
+                                        🗑️ Delete Fixture
+                                    </button>
 
-            if (competitionsError) {
-                throw competitionsError;
-            }
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+                }
+            );
 
 
             fixturesList.innerHTML =
-                "";
-
-
-            fixtures.forEach(
-                function (fixture) {
-
-                    const home =
-                        (teams || []).find(
-                            function (team) {
-
-                                return Number(
-                                    team.id
-                                ) ===
-                                Number(
-                                    fixture.home_team_id
-                                );
-
-                            }
-                        );
-
-
-                    const away =
-                        (teams || []).find(
-                            function (team) {
-
-                                return Number(
-                                    team.id
-                                ) ===
-                                Number(
-                                    fixture.away_team_id
-                                );
-
-                            }
-                        );
-
-
-                    const competition =
-                        (competitions || []).find(
-                            function (item) {
-
-                                return Number(
-                                    item.id
-                                ) ===
-                                Number(
-                                    fixture.competition_id
-                                );
-
-                            }
-                        );
-
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    card.className =
-                        "admin-card";
-
-
-                    card.innerHTML = `
-
-                        <h3>
-                            Ã¢Å¡Â½
-                            ${escapeHtml(
-                                home
-                                    ? home.name
-                                    : "Unknown Team"
-                            )}
-                            vs
-                            ${escapeHtml(
-                                away
-                                    ? away.name
-                                    : "Unknown Team"
-                            )}
-                        </h3>
-
-                        <p>
-                            Ã°Å¸Ââ€ 
-                            ${escapeHtml(
-                                competition
-                                    ? competition.name
-                                    : "Unknown Competition"
-                            )}
-                        </p>
-
-                        <p>
-                            Ã°Å¸â€œâ€¦
-                            ${formatDate(
-                                fixture.match_date
-                            )}
-                        </p>
-
-                        <p>
-                            Ã¢ÂÂ°
-                            ${formatTime(
-                                fixture.kick_off
-                            )}
-                        </p>
-
-                        <p>
-                            Ã°Å¸â€œÂ
-                            ${escapeHtml(
-                                fixture.venue || "-"
-                            )}
-                        </p>
-
-                        <p>
-                            Ã°Å¸â€Â¢
-                            ${escapeHtml(
-                                fixture.matchday ||
-                                "-"
-                            )}
-                        </p>
-
-                        <p>
-                            Ã°Å¸â€œÂ¢
-                            <strong>
-                                ${escapeHtml(
-                                    fixture.status ||
-                                    "-"
-                                )}
-                            </strong>
-                        </p>
-
-                        <button
-                            type="button"
-                            class="admin-btn delete-fixture-btn"
-                            data-id="${fixture.id}"
-                        >
-                            Ã°Å¸â€”â€˜Ã¯Â¸Â Delete Fixture
-                        </button>
-
-                    `;
-
-
-                    fixturesList.appendChild(
-                        card
-                    );
-
-
-                    const deleteButton =
-                        card.querySelector(
-                            ".delete-fixture-btn"
-                        );
-
-
-                    if (deleteButton) {
-
-                        deleteButton.addEventListener(
-                            "click",
-                            function () {
-
-                                deleteFixture(
-                                    fixture.id
-                                );
-
-                            }
-                        );
-                    }
-
-                }
-            );
+                html;
 
 
         } catch (error) {
 
             console.error(
-                "Fixture loading error:",
+                "LOAD FIXTURES ERROR:",
                 error
             );
 
 
-            fixturesList.innerHTML = `
-
-                <div class="admin-card">
-
-                    <h3>
-                        Ã¢ÂÅ’ Unable to Load Fixtures
-                    </h3>
-
-                    <p>
-                        ${escapeHtml(
-                            error.message ||
-                            "Unknown error"
-                        )}
-                    </p>
-
-                </div>
-
-            `;
+            fixturesList.innerHTML =
+                '<div class="empty-message">' +
+                '❌ Unable to load fixtures: ' +
+                escapeHtml(
+                    error.message ||
+                    "Unknown error"
+                ) +
+                '</div>';
         }
     }
 
@@ -2669,67 +2590,68 @@ document.addEventListener("DOMContentLoaded", async function () {
     // DELETE FIXTURE
     // ========================================
 
-    async function deleteFixture(id) {
+    window.deleteFixture =
+        async function (fixtureId) {
 
-        if (
-            !confirm(
-                "Are you sure you want to delete this fixture?"
-            )
-        ) {
-            return;
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from("fixtures")
-                    .delete()
-                    .eq(
-                        "id",
-                        id
-                    );
-
-
-            if (error) {
-                throw error;
+            if (
+                !window.confirm(
+                    "Are you sure you want to delete this fixture?"
+                )
+            ) {
+                return;
             }
 
 
-            alert(
-                "Fixture deleted successfully."
-            );
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("fixtures")
+                        .delete()
+                        .eq(
+                            "id",
+                            fixtureId
+                        );
 
 
-            await loadFixtures();
-
-            await loadResultFixtures();
-
-
-        } catch (error) {
-
-            console.error(
-                "Delete fixture error:",
-                error
-            );
+                if (error) {
+                    throw error;
+                }
 
 
-            alert(
-                "Unable to delete fixture: " +
-                (
-                    error.message ||
-                    "Unknown error"
-                )
-            );
-        }
-    }
+                showFixtureMessage(
+                    "Fixture deleted successfully.",
+                    "success"
+                );
+
+
+                await loadFixtures();
+
+
+            } catch (error) {
+
+                console.error(
+                    "DELETE FIXTURE ERROR:",
+                    error
+                );
+
+
+                showFixtureMessage(
+                    "Unable to delete fixture: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+            }
+        };
 
 
     // ========================================
-    // RESULT MANAGER
+    // LOAD RESULT FIXTURES
     // ========================================
 
     async function loadResultFixtures() {
@@ -2746,8 +2668,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         try {
 
             const {
-                data: fixtures,
-                error: fixturesError
+                data,
+                error
             } =
                 await supabaseClient
                     .from("fixtures")
@@ -2760,232 +2682,58 @@ document.addEventListener("DOMContentLoaded", async function () {
                         kick_off,
                         venue,
                         matchday,
-                        status
+                        status,
+                        competition:competitions (
+                            id,
+                            name,
+                            season
+                        ),
+                        home_team:teams!fixtures_home_team_id_fkey (
+                            id,
+                            name,
+                            short_name
+                        ),
+                        away_team:teams!fixtures_away_team_id_fkey (
+                            id,
+                            name,
+                            short_name
+                        )
                     `)
-                    .in(
-                        "status",
-                        [
-                            "Scheduled",
-                            "Published"
-                        ]
-                    )
                     .order(
                         "match_date",
                         {
-                            ascending: true
-                        }
-                    )
-                    .order(
-                        "kick_off",
-                        {
-                            ascending: true
+                            ascending: false
                         }
                     );
 
 
-            if (fixturesError) {
-                throw fixturesError;
+            if (error) {
+                throw error;
             }
-
-
-            if (
-                !fixtures ||
-                fixtures.length === 0
-            ) {
-
-                resultFixtureSelect.innerHTML =
-                    "<option value=''>" +
-                    "No available fixtures" +
-                    "</option>";
-
-                resultFixtures = [];
-
-                return;
-            }
-
-
-            const {
-                data: existingResults,
-                error: resultsError
-            } =
-                await supabaseClient
-                    .from("results")
-                    .select(
-                        "fixture_id"
-                    );
-
-
-            if (resultsError) {
-                throw resultsError;
-            }
-
-
-            const completedFixtureIds =
-                new Set(
-                    (existingResults || []).map(
-                        function (result) {
-
-                            return Number(
-                                result.fixture_id
-                            );
-
-                        }
-                    )
-                );
-
-
-            const availableFixtures =
-                fixtures.filter(
-                    function (fixture) {
-
-                        return !completedFixtureIds.has(
-                            Number(
-                                fixture.id
-                            )
-                        );
-
-                    }
-                );
 
 
             resultFixtures =
-                availableFixtures;
-
-
-            if (
-                availableFixtures.length === 0
-            ) {
-
-                resultFixtureSelect.innerHTML =
-                    "<option value=''>" +
-                    "All fixtures already have results" +
-                    "</option>";
-
-                return;
-            }
-
-
-            const teamIds = [
-                ...new Set(
-                    availableFixtures.flatMap(
-                        function (fixture) {
-
-                            return [
-                                fixture.home_team_id,
-                                fixture.away_team_id
-                            ];
-
-                        }
-                    )
-                )
-            ];
-
-
-            const competitionIds = [
-                ...new Set(
-                    availableFixtures.map(
-                        function (fixture) {
-
-                            return fixture.competition_id;
-
-                        }
-                    )
-                )
-            ];
-
-
-            const {
-                data: teams,
-                error: teamsError
-            } =
-                await supabaseClient
-                    .from("teams")
-                    .select(
-                        "id, name, short_name"
-                    )
-                    .in(
-                        "id",
-                        teamIds
-                    );
-
-
-            if (teamsError) {
-                throw teamsError;
-            }
-
-
-            const {
-                data: competitions,
-                error: competitionsError
-            } =
-                await supabaseClient
-                    .from("competitions")
-                    .select(
-                        "id, name, season"
-                    )
-                    .in(
-                        "id",
-                        competitionIds
-                    );
-
-
-            if (competitionsError) {
-                throw competitionsError;
-            }
+                data || [];
 
 
             resultFixtureSelect.innerHTML =
-                "<option value=''>" +
-                "Select fixture" +
-                "</option>";
+                "<option value=''>Select fixture</option>";
 
 
-            availableFixtures.forEach(
+            resultFixtures.forEach(
                 function (fixture) {
 
                     const home =
-                        (teams || []).find(
-                            function (team) {
-
-                                return Number(
-                                    team.id
-                                ) ===
-                                Number(
-                                    fixture.home_team_id
-                                );
-
-                            }
-                        );
-
+                        fixture.home_team ||
+                        {};
 
                     const away =
-                        (teams || []).find(
-                            function (team) {
-
-                                return Number(
-                                    team.id
-                                ) ===
-                                Number(
-                                    fixture.away_team_id
-                                );
-
-                            }
-                        );
-
+                        fixture.away_team ||
+                        {};
 
                     const competition =
-                        (competitions || []).find(
-                            function (item) {
-
-                                return Number(
-                                    item.id
-                                ) ===
-                                Number(
-                                    fixture.competition_id
-                                );
-
-                            }
-                        );
+                        fixture.competition ||
+                        {};
 
 
                     const option =
@@ -2999,20 +2747,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     option.textContent =
+                        formatDate(
+                            fixture.match_date
+                        ) +
+                        " | " +
                         (
-                            home
-                                ? home.name
-                                : "Unknown Home Team"
+                            home.name ||
+                            "Home"
                         ) +
                         " vs " +
                         (
-                            away
-                                ? away.name
-                                : "Unknown Away Team"
+                            away.name ||
+                            "Away"
                         ) +
-                        " Ã¢â‚¬â€ " +
-                        formatDate(
-                            fixture.match_date
+                        " | " +
+                        (
+                            competition.name ||
+                            "Competition"
                         );
 
 
@@ -3028,39 +2779,30 @@ document.addEventListener("DOMContentLoaded", async function () {
         } catch (error) {
 
             console.error(
-                "Result fixtures loading error:",
+                "LOAD RESULT FIXTURES ERROR:",
                 error
             );
 
 
             resultFixtureSelect.innerHTML =
-                "<option value=''>" +
-                "Unable to load fixtures" +
-                "</option>";
+                "<option value=''>Unable to load fixtures</option>";
         }
     }
 
 
     // ========================================
-    // LOAD TEAM PLAYERS FOR RESULT
+    // LOAD PLAYERS FOR RESULT ENTRY
     // ========================================
 
-    async function loadResultPlayers() {
-
-        if (!currentFixture) {
-            return;
-        }
-
-
-        homePlayers = [];
-
-        awayPlayers = [];
-
+    async function loadPlayersForResult(
+        teamId,
+        targetArrayName
+    ) {
 
         try {
 
             const {
-                data: players,
+                data,
                 error
             } =
                 await supabaseClient
@@ -3071,14 +2813,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                         full_name,
                         jersey_number,
                         position,
+                        photo_url,
                         registration_status
                     `)
-                    .in(
+                    .eq(
                         "team_id",
-                        [
-                            currentFixture.home_team_id,
-                            currentFixture.away_team_id
-                        ]
+                        Number(teamId)
                     )
                     .eq(
                         "registration_status",
@@ -3097,127 +2837,269 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            (players || []).forEach(
-                function (player) {
+            if (
+                targetArrayName ===
+                "home"
+            ) {
 
-                    if (
-                        Number(
-                            player.team_id
-                        ) ===
-                        Number(
-                            currentFixture.home_team_id
-                        )
-                    ) {
+                homePlayers =
+                    data || [];
 
-                        homePlayers.push(
-                            player
-                        );
-                    }
+            } else {
+
+                awayPlayers =
+                    data || [];
+            }
 
 
-                    if (
-                        Number(
-                            player.team_id
-                        ) ===
-                        Number(
-                            currentFixture.away_team_id
-                        )
-                    ) {
-
-                        awayPlayers.push(
-                            player
-                        );
-                    }
-
-                }
-            );
+            return data || [];
 
 
         } catch (error) {
 
             console.error(
-                "Result player loading error:",
+                "LOAD PLAYERS ERROR:",
                 error
             );
 
 
-            throw error;
+            return [];
         }
     }
 
+
     // ========================================
-    // CREATE PLAYER OPTIONS
+    // RESULT FIXTURE CHANGE
     // ========================================
 
-    function createPlayerOptions(
-        players,
-        placeholder
-    ) {
+    if (resultFixtureSelect) {
 
-        let html =
-            "<option value=''>" +
-            escapeHtml(
-                placeholder ||
-                "Select player"
-            ) +
-            "</option>";
+        resultFixtureSelect.addEventListener(
+            "change",
+            async function () {
+
+                const fixtureId =
+                    this.value;
 
 
-        players.forEach(
-            function (player) {
+                if (!fixtureId) {
 
-                html += `
+                    if (selectedFixtureInfo) {
+                        selectedFixtureInfo.innerHTML =
+                            "";
+                    }
 
-                    <option value="${player.id}">
+                    if (resultScoreSection) {
+                        resultScoreSection.style.display =
+                            "none";
+                    }
 
-                        ${escapeHtml(
-                            player.full_name
-                        )}
+                    return;
+                }
 
-                        ${
-                            player.jersey_number
-                                ? " (#" +
-                                  escapeHtml(
-                                      player.jersey_number
-                                  ) +
-                                  ")"
-                                : ""
+
+                currentFixture =
+                    resultFixtures.find(
+                        function (fixture) {
+                            return String(
+                                fixture.id
+                            ) === String(
+                                fixtureId
+                            );
                         }
+                    );
 
-                    </option>
 
-                `;
+                if (!currentFixture) {
+                    return;
+                }
+
+
+                const home =
+                    currentFixture.home_team ||
+                    {};
+
+                const away =
+                    currentFixture.away_team ||
+                    {};
+
+                const competition =
+                    currentFixture.competition ||
+                    {};
+
+
+                if (selectedFixtureInfo) {
+
+                    selectedFixtureInfo.innerHTML = `
+
+                        <div
+                            class="admin-card"
+                            style="
+                                margin-top:15px;
+                                border-left:5px solid #f5c542;
+                            "
+                        >
+
+                            <h3>
+                                ⚽
+                                ${escapeHtml(
+                                    home.name ||
+                                    "Home Team"
+                                )}
+                                vs
+                                ${escapeHtml(
+                                    away.name ||
+                                    "Away Team"
+                                )}
+                            </h3>
+
+                            <p>
+                                <strong>Competition:</strong>
+                                ${escapeHtml(
+                                    competition.name ||
+                                    "Competition"
+                                )}
+                            </p>
+
+                            <p>
+                                <strong>Season:</strong>
+                                ${escapeHtml(
+                                    competition.season ||
+                                    "-"
+                                )}
+                            </p>
+
+                            <p>
+                                <strong>Date:</strong>
+                                ${formatDate(
+                                    currentFixture.match_date
+                                )}
+                            </p>
+
+                            <p>
+                                <strong>Kick-off:</strong>
+                                ${escapeHtml(
+                                    currentFixture.kick_off ||
+                                    "-"
+                                )}
+                            </p>
+
+                            <p>
+                                <strong>Venue:</strong>
+                                ${escapeHtml(
+                                    currentFixture.venue ||
+                                    "-"
+                                )}
+                            </p>
+
+                            <p>
+                                <strong>Matchday:</strong>
+                                ${escapeHtml(
+                                    currentFixture.matchday ||
+                                    "-"
+                                )}
+                            </p>
+
+                        </div>
+
+                    `;
+                }
+
+
+                if (resultHomeTeamName) {
+
+                    resultHomeTeamName.textContent =
+                        home.name ||
+                        "Home Team";
+                }
+
+
+                if (resultAwayTeamName) {
+
+                    resultAwayTeamName.textContent =
+                        away.name ||
+                        "Away Team";
+                }
+
+
+                if (homeGoalTeamLabel) {
+
+                    homeGoalTeamLabel.textContent =
+                        home.name ||
+                        "Home Team";
+                }
+
+
+                if (awayGoalTeamLabel) {
+
+                    awayGoalTeamLabel.textContent =
+                        away.name ||
+                        "Away Team";
+                }
+
+
+                await loadPlayersForResult(
+                    home.id,
+                    "home"
+                );
+
+                await loadPlayersForResult(
+                    away.id,
+                    "away"
+                );
+
+
+                if (homeGoalsContainer) {
+                    homeGoalsContainer.innerHTML =
+                        "";
+                }
+
+                if (awayGoalsContainer) {
+                    awayGoalsContainer.innerHTML =
+                        "";
+                }
+
+
+                if (homeScore) {
+                    homeScore.value =
+                        "";
+                }
+
+                if (awayScore) {
+                    awayScore.value =
+                        "";
+                }
+
+
+                if (homeGoalWarning) {
+                    homeGoalWarning.style.display =
+                        "none";
+                }
+
+                if (awayGoalWarning) {
+                    awayGoalWarning.style.display =
+                        "none";
+                }
+
+
+                if (resultScoreSection) {
+                    resultScoreSection.style.display =
+                        "block";
+                }
+
             }
         );
-
-
-        return html;
     }
 
 
     // ========================================
-    // CREATE ASSIST OPTIONS
+    // ADD GOAL ROW
     // ========================================
 
-    function createAssistOptions(
-        players
-    ) {
-
-        return createPlayerOptions(
-            players,
-            "No assist"
-        );
-    }
-
-
-    // ========================================
-    // ADD SCORER ROW
-    // ========================================
-
-    function addScorerRow(
+    function addGoalRow(
         container,
         players,
-        side
+        teamLabel
     ) {
 
         if (!container) {
@@ -3226,95 +3108,172 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         const row =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         row.className =
-            "goal-entry";
+            "goal-row";
 
 
-        row.style.display =
-            "grid";
-
-        row.style.gridTemplateColumns =
-            "minmax(150px, 1fr) minmax(80px, 100px) minmax(150px, 1fr) auto auto";
-
-        row.style.gap =
-            "8px";
-
-        row.style.alignItems =
-            "center";
-
-        row.style.marginBottom =
-            "10px";
-
-
-        row.innerHTML = `
-
-            <select
-                class="scorer-player"
-                data-side="${side}"
-            >
-
-                ${createPlayerOptions(
-                    players,
-                    "Select scorer"
-                )}
-
-            </select>
-
-
-            <input
-                type="number"
-                class="scorer-minute"
-                placeholder="Minute"
-                min="1"
-                max="130"
-                inputmode="numeric"
-                autocomplete="off"
-            >
-
-
-            <select
-                class="assist-player"
-                data-side="${side}"
-            >
-
-                ${createAssistOptions(
-                    players
-                )}
-
-            </select>
-
-
-            <label style="
-                display:flex;
-                align-items:center;
-                gap:5px;
-                white-space:nowrap;
-            ">
-
-                <input
-                    type="checkbox"
-                    class="goal-penalty"
-                >
-
-                Penalty
-
-            </label>
-
-
-            <button
-                type="button"
-                class="remove-goal-btn"
-                title="Remove goal"
-            >
-                Ã¢Å“â€¢
-            </button>
-
+        row.style.cssText = `
+            display:grid;
+            grid-template-columns:1fr 100px 100px 70px;
+            gap:10px;
+            margin-bottom:10px;
+            align-items:center;
         `;
+
+
+        const playerSelect =
+            document.createElement(
+                "select"
+            );
+
+
+        playerSelect.className =
+            "form-control";
+
+
+        playerSelect.innerHTML =
+            "<option value=''>Select scorer</option>";
+
+
+        players.forEach(
+            function (player) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    player.id;
+
+
+                option.textContent =
+                    (
+                        player.jersey_number
+                            ? "#" +
+                              player.jersey_number +
+                              " "
+                            : ""
+                    ) +
+                    player.full_name;
+
+
+                playerSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        const minuteInput =
+            document.createElement(
+                "input"
+            );
+
+
+        minuteInput.type =
+            "number";
+
+        minuteInput.min =
+            "1";
+
+        minuteInput.max =
+            "130";
+
+        minuteInput.placeholder =
+            "Minute";
+
+        minuteInput.className =
+            "form-control";
+
+
+        const penaltyLabel =
+            document.createElement(
+                "label"
+            );
+
+
+        penaltyLabel.style.cssText = `
+            display:flex;
+            align-items:center;
+            gap:5px;
+            font-size:13px;
+            white-space:nowrap;
+        `;
+
+
+        const penaltyCheckbox =
+            document.createElement(
+                "input"
+            );
+
+
+        penaltyCheckbox.type =
+            "checkbox";
+
+
+        penaltyLabel.appendChild(
+            penaltyCheckbox
+        );
+
+
+        penaltyLabel.appendChild(
+            document.createTextNode(
+                "Penalty"
+            )
+        );
+
+
+        const removeButton =
+            document.createElement(
+                "button"
+            );
+
+
+        removeButton.type =
+            "button";
+
+
+        removeButton.className =
+            "btn btn-danger";
+
+
+        removeButton.textContent =
+            "✖️";
+
+
+        removeButton.addEventListener(
+            "click",
+            function () {
+
+                row.remove();
+
+                updateGoalWarnings();
+
+            }
+        );
+
+
+        row.appendChild(
+            playerSelect
+        );
+
+        row.appendChild(
+            minuteInput
+        );
+
+        row.appendChild(
+            penaltyLabel
+        );
+
+        row.appendChild(
+            removeButton
+        );
 
 
         container.appendChild(
@@ -3322,272 +3281,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-        const removeButton =
-            row.querySelector(
-                ".remove-goal-btn"
-            );
-
-
-        if (removeButton) {
-
-            removeButton.addEventListener(
-                "click",
-                function () {
-
-                    row.remove();
-
-                    updateGoalWarnings();
-
-                }
-            );
-        }
-
-
-        const minuteInput =
-            row.querySelector(
-                ".scorer-minute"
-            );
-
-
-        if (minuteInput) {
-
-            minuteInput.addEventListener(
-                "input",
-                function () {
-
-                    updateGoalWarnings();
-
-                }
-            );
-        }
-
-
-        const playerSelect =
-            row.querySelector(
-                ".scorer-player"
-            );
-
-
-        if (playerSelect) {
-
-            playerSelect.addEventListener(
-                "change",
-                function () {
-
-                    updateGoalWarnings();
-
-                }
-            );
-        }
-
-
         updateGoalWarnings();
-    }
-
-
-    // ========================================
-    // GET MINUTE FROM ROW
-    // ========================================
-
-    function getMinuteFromRow(row) {
-
-        const input =
-            row.querySelector(
-                ".scorer-minute"
-            );
-
-
-        if (!input) {
-            return null;
-        }
-
-
-        const value =
-            input.value.trim();
-
-
-        if (!value) {
-            return null;
-        }
-
-
-        const minute =
-            Number(value);
-
-
-        if (
-            !Number.isInteger(
-                minute
-            ) ||
-            minute < 1 ||
-            minute > 130
-        ) {
-
-            return null;
-        }
-
-
-        return minute;
-    }
-
-
-    // ========================================
-    // GET SCORER DATA
-    // ========================================
-
-    function getScorerData(container) {
-
-        if (!container) {
-            return [];
-        }
-
-
-        const rows =
-            container.querySelectorAll(
-                ".goal-entry"
-            );
-
-
-        const scorerData = [];
-
-
-        rows.forEach(
-            function (row) {
-
-                const playerSelect =
-                    row.querySelector(
-                        ".scorer-player"
-                    );
-
-
-                const assistSelect =
-                    row.querySelector(
-                        ".assist-player"
-                    );
-
-
-                const penaltyCheckbox =
-                    row.querySelector(
-                        ".goal-penalty"
-                    );
-
-
-                if (!playerSelect) {
-                    return;
-                }
-
-
-                const playerId =
-                    playerSelect.value;
-
-
-                const minute =
-                    getMinuteFromRow(
-                        row
-                    );
-
-
-                const assistPlayerId =
-                    assistSelect
-                        ? assistSelect.value
-                        : "";
-
-
-                const isPenalty =
-                    penaltyCheckbox
-                        ? penaltyCheckbox.checked
-                        : false;
-
-
-                if (!playerId) {
-                    return;
-                }
-
-
-                if (minute === null) {
-                    return;
-                }
-
-
-                scorerData.push({
-
-                    player_id:
-                        Number(
-                            playerId
-                        ),
-
-                    minute:
-                        minute,
-
-                    assist_player_id:
-                        assistPlayerId
-                            ? Number(
-                                assistPlayerId
-                              )
-                            : null,
-
-                    is_penalty:
-                        isPenalty
-
-                });
-
-            }
-        );
-
-
-        return scorerData;
-    }
-
-
-    // ========================================
-    // COUNT GOALS
-    // ========================================
-
-    function countGoals(container) {
-
-        if (!container) {
-            return 0;
-        }
-
-
-        const rows =
-            container.querySelectorAll(
-                ".goal-entry"
-            );
-
-
-        let count = 0;
-
-
-        rows.forEach(
-            function (row) {
-
-                const playerSelect =
-                    row.querySelector(
-                        ".scorer-player"
-                    );
-
-
-                const minute =
-                    getMinuteFromRow(
-                        row
-                    );
-
-
-                if (
-                    playerSelect &&
-                    playerSelect.value &&
-                    minute !== null
-                ) {
-
-                    count++;
-                }
-
-            }
-        );
-
-
-        return count;
     }
 
 
@@ -3597,55 +3291,54 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function updateGoalWarnings() {
 
-        if (
-            !homeScore ||
-            !awayScore
-        ) {
-            return;
-        }
+        const homeScoreValue =
+            homeScore
+                ? Number(
+                    homeScore.value ||
+                    0
+                )
+                : 0;
+
+        const awayScoreValue =
+            awayScore
+                ? Number(
+                    awayScore.value ||
+                    0
+                )
+                : 0;
 
 
-        const homeTotal =
-            Number(
-                homeScore.value
-            ) || 0;
+        const homeGoalRows =
+            homeGoalsContainer
+                ? homeGoalsContainer
+                    .querySelectorAll(
+                        ".goal-row"
+                    )
+                    .length
+                : 0;
 
-
-        const awayTotal =
-            Number(
-                awayScore.value
-            ) || 0;
-
-
-        const enteredHomeGoals =
-            countGoals(
-                homeGoalsContainer
-            );
-
-
-        const enteredAwayGoals =
-            countGoals(
-                awayGoalsContainer
-            );
+        const awayGoalRows =
+            awayGoalsContainer
+                ? awayGoalsContainer
+                    .querySelectorAll(
+                        ".goal-row"
+                    )
+                    .length
+                : 0;
 
 
         if (homeGoalWarning) {
 
             if (
-                enteredHomeGoals !==
-                homeTotal
+                homeGoalRows !==
+                homeScoreValue
             ) {
 
                 homeGoalWarning.style.display =
                     "block";
 
-
                 homeGoalWarning.textContent =
-                    "Ã¢Å¡ Ã¯Â¸Â Score is " +
-                    homeTotal +
-                    " but " +
-                    enteredHomeGoals +
-                    " home goal(s) have been entered.";
+                    `⚠️ Score is ${homeScoreValue}, but ${homeGoalRows} home goal row(s) have been entered.`;
 
             } else {
 
@@ -3658,20 +3351,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (awayGoalWarning) {
 
             if (
-                enteredAwayGoals !==
-                awayTotal
+                awayGoalRows !==
+                awayScoreValue
             ) {
 
                 awayGoalWarning.style.display =
                     "block";
 
-
                 awayGoalWarning.textContent =
-                    "Ã¢Å¡ Ã¯Â¸Â Score is " +
-                    awayTotal +
-                    " but " +
-                    enteredAwayGoals +
-                    " away goal(s) have been entered.";
+                    `⚠️ Score is ${awayScoreValue}, but ${awayGoalRows} away goal row(s) have been entered.`;
 
             } else {
 
@@ -3679,816 +3367,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     "none";
             }
         }
-    }
-
-
-    // ========================================
-    // CREATE APPEARANCE SECTION
-    // ========================================
-
-    function createAppearanceSection() {
-
-        if (
-            !resultScoreSection ||
-            !currentFixture
-        ) {
-            return;
-        }
-
-
-        const existing =
-            document.getElementById(
-                "appearanceSection"
-            );
-
-
-        if (existing) {
-            existing.remove();
-        }
-
-
-        const section =
-            document.createElement(
-                "div"
-            );
-
-
-        section.id =
-            "appearanceSection";
-
-
-        section.className =
-            "admin-card";
-
-
-        section.style.marginTop =
-            "25px";
-
-
-        section.innerHTML = `
-
-            <h3>
-                Ã°Å¸â€˜Â¥ Player Appearances
-            </h3>
-
-            <p>
-                Select every player who appeared
-                in this match.
-            </p>
-
-            <div style="margin-top:15px;">
-
-                <h4>
-                    ${escapeHtml(
-                        resultHomeTeamName
-                            ? resultHomeTeamName.textContent
-                            : "Home Team"
-                    )}
-                </h4>
-
-                <div id="homeAppearances"></div>
-
-            </div>
-
-            <div style="margin-top:20px;">
-
-                <h4>
-                    ${escapeHtml(
-                        resultAwayTeamName
-                            ? resultAwayTeamName.textContent
-                            : "Away Team"
-                    )}
-                </h4>
-
-                <div id="awayAppearances"></div>
-
-            </div>
-
-        `;
-
-
-        resultScoreSection.appendChild(
-            section
-        );
-
-
-        const homeContainer =
-            document.getElementById(
-                "homeAppearances"
-            );
-
-
-        const awayContainer =
-            document.getElementById(
-                "awayAppearances"
-            );
-
-
-        if (homeContainer) {
-
-            homePlayers.forEach(
-                function (player) {
-
-                    homeContainer.innerHTML += `
-
-                        <label style="
-                            display:block;
-                            margin:8px 0;
-                            padding:8px;
-                        ">
-
-                            <input
-                                type="checkbox"
-                                class="appearance-player"
-                                value="${player.id}"
-                                data-team="home"
-                            >
-
-                            ${escapeHtml(
-                                player.full_name
-                            )}
-
-                            ${
-                                player.jersey_number
-                                    ? " (#" +
-                                      escapeHtml(
-                                          player.jersey_number
-                                      ) +
-                                      ")"
-                                    : ""
-                            }
-
-                        </label>
-
-                    `;
-
-                }
-            );
-        }
-
-
-        if (awayContainer) {
-
-            awayPlayers.forEach(
-                function (player) {
-
-                    awayContainer.innerHTML += `
-
-                        <label style="
-                            display:block;
-                            margin:8px 0;
-                            padding:8px;
-                        ">
-
-                            <input
-                                type="checkbox"
-                                class="appearance-player"
-                                value="${player.id}"
-                                data-team="away"
-                            >
-
-                            ${escapeHtml(
-                                player.full_name
-                            )}
-
-                            ${
-                                player.jersey_number
-                                    ? " (#" +
-                                      escapeHtml(
-                                          player.jersey_number
-                                      ) +
-                                      ")"
-                                    : ""
-                            }
-
-                        </label>
-
-                    `;
-
-                }
-            );
-        }
-    }
-
-
-    // ========================================
-    // GET APPEARANCES
-    // ========================================
-
-    function getAppearancePlayers() {
-
-        const checkboxes =
-            document.querySelectorAll(
-                ".appearance-player:checked"
-            );
-
-
-        const playerIds = [];
-
-
-        checkboxes.forEach(
-            function (checkbox) {
-
-                playerIds.push(
-                    Number(
-                        checkbox.value
-                    )
-                );
-
-            }
-        );
-
-
-        return playerIds;
-    }
-
-
-    // ========================================
-    // VALIDATE APPEARANCES
-    // ========================================
-
-    function validateAppearances() {
-
-        const appearances =
-            getAppearancePlayers();
-
-
-        if (
-            appearances.length === 0
-        ) {
-
-            return {
-
-                valid: false,
-
-                message:
-                    "Please select at least one player who appeared in the match."
-
-            };
-        }
-
-
-        return {
-
-            valid: true,
-
-            message: ""
-
-        };
-    }
-
-
-    // ========================================
-    // VALIDATE SCORERS ARE APPEARANCES
-    // ========================================
-
-    function validateScorersAreAppearances(
-        scorerData,
-        appearancePlayers
-    ) {
-
-        const appearanceSet =
-            new Set(
-                appearancePlayers
-            );
-
-
-        for (
-            let i = 0;
-            i < scorerData.length;
-            i++
-        ) {
-
-            const playerId =
-                scorerData[i].player_id;
-
-
-            if (
-                !appearanceSet.has(
-                    playerId
-                )
-            ) {
-
-                return {
-
-                    valid: false,
-
-                    message:
-                        "Every goal scorer must also be marked as having appeared in the match."
-
-                };
-            }
-        }
-
-
-        return {
-
-            valid: true,
-
-            message: ""
-
-        };
-    }
-
-
-    // ========================================
-    // VALIDATE ASSIST PROVIDERS
-    // ========================================
-
-    function validateAssistProviders(
-        scorerData,
-        appearancePlayers
-    ) {
-
-        const appearanceSet =
-            new Set(
-                appearancePlayers
-            );
-
-
-        for (
-            let i = 0;
-            i < scorerData.length;
-            i++
-        ) {
-
-            const assistPlayerId =
-                scorerData[i].assist_player_id;
-
-
-            if (!assistPlayerId) {
-                continue;
-            }
-
-
-            // Assist provider must have appeared
-            if (
-                !appearanceSet.has(
-                    assistPlayerId
-                )
-            ) {
-
-                return {
-
-                    valid: false,
-
-                    message:
-                        "Every assist provider must also be marked as having appeared in the match."
-
-                };
-            }
-
-
-            // An assist provider cannot be the scorer
-            if (
-                Number(
-                    assistPlayerId
-                ) ===
-                Number(
-                    scorerData[i].player_id
-                )
-            ) {
-
-                return {
-
-                    valid: false,
-
-                    message:
-                        "A player cannot be recorded as assisting their own goal."
-
-                };
-            }
-        }
-
-
-        return {
-
-            valid: true,
-
-            message: ""
-
-        };
-    }
-
-
-    // ========================================
-    // VALIDATE GOAL MINUTES
-    // ========================================
-
-    function validateGoalMinutes(
-        container,
-        teamName
-    ) {
-
-        if (!container) {
-
-            return {
-
-                valid: true,
-
-                message: ""
-
-            };
-        }
-
-
-        const rows =
-            container.querySelectorAll(
-                ".goal-entry"
-            );
-
-
-        for (
-            let i = 0;
-            i < rows.length;
-            i++
-        ) {
-
-            const row =
-                rows[i];
-
-
-            const playerSelect =
-                row.querySelector(
-                    ".scorer-player"
-                );
-
-
-            const minuteInput =
-                row.querySelector(
-                    ".scorer-minute"
-                );
-
-
-            const playerId =
-                playerSelect
-                    ? playerSelect.value
-                    : "";
-
-
-            const minute =
-                getMinuteFromRow(
-                    row
-                );
-
-
-            if (
-                playerId &&
-                minute === null
-            ) {
-
-                return {
-
-                    valid: false,
-
-                    message:
-                        "Please enter a valid goal minute between 1 and 130 for " +
-                        teamName +
-                        " scorer #" +
-                        (i + 1) +
-                        "."
-
-                };
-            }
-
-
-            if (
-                minuteInput &&
-                minuteInput.value.trim() &&
-                minute === null
-            ) {
-
-                return {
-
-                    valid: false,
-
-                    message:
-                        "Goal minutes must be whole numbers between 1 and 130."
-
-                };
-            }
-        }
-
-
-        return {
-
-            valid: true,
-
-            message: ""
-
-        };
-    }
-
-
-    // ========================================
-    // FIXTURE SELECTION
-    // ========================================
-
-    if (resultFixtureSelect) {
-
-        resultFixtureSelect.addEventListener(
-            "change",
-            async function () {
-
-                const fixtureId =
-                    resultFixtureSelect.value;
-
-
-                if (!fixtureId) {
-
-                    currentFixture =
-                        null;
-
-
-                    if (selectedFixtureInfo) {
-
-                        selectedFixtureInfo.style.display =
-                            "none";
-                    }
-
-
-                    if (resultScoreSection) {
-
-                        resultScoreSection.style.display =
-                            "none";
-                    }
-
-
-                    const appearanceSection =
-                        document.getElementById(
-                            "appearanceSection"
-                        );
-
-
-                    if (appearanceSection) {
-                        appearanceSection.remove();
-                    }
-
-
-                    return;
-                }
-
-
-                currentFixture =
-                    resultFixtures.find(
-                        function (fixture) {
-
-                            return Number(
-                                fixture.id
-                            ) ===
-                            Number(
-                                fixtureId
-                            );
-
-                        }
-                    );
-
-
-                if (!currentFixture) {
-
-                    showResultMessage(
-                        "Ã¢ÂÅ’ Unable to find selected fixture.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                try {
-
-                    showResultMessage(
-                        "Loading players...",
-                        ""
-                    );
-
-
-                    await loadResultPlayers();
-
-
-                    const {
-                        data: teams,
-                        error: teamsError
-                    } =
-                        await supabaseClient
-                            .from("teams")
-                            .select(
-                                "id, name, short_name"
-                            )
-                            .in(
-                                "id",
-                                [
-                                    currentFixture.home_team_id,
-                                    currentFixture.away_team_id
-                                ]
-                            );
-
-
-                    if (teamsError) {
-                        throw teamsError;
-                    }
-
-
-                    const home =
-                        (teams || []).find(
-                            function (team) {
-
-                                return Number(
-                                    team.id
-                                ) ===
-                                Number(
-                                    currentFixture.home_team_id
-                                );
-
-                            }
-                        );
-
-
-                    const away =
-                        (teams || []).find(
-                            function (team) {
-
-                                return Number(
-                                    team.id
-                                ) ===
-                                Number(
-                                    currentFixture.away_team_id
-                                );
-
-                            }
-                        );
-
-
-                    const homeName =
-                        home
-                            ? home.name
-                            : "Home Team";
-
-
-                    const awayName =
-                        away
-                            ? away.name
-                            : "Away Team";
-
-
-                    if (resultHomeTeamName) {
-
-                        resultHomeTeamName.textContent =
-                            homeName;
-                    }
-
-
-                    if (resultAwayTeamName) {
-
-                        resultAwayTeamName.textContent =
-                            awayName;
-                    }
-
-
-                    if (homeGoalTeamLabel) {
-
-                        homeGoalTeamLabel.textContent =
-                            homeName +
-                            " goal scorers";
-                    }
-
-
-                    if (awayGoalTeamLabel) {
-
-                        awayGoalTeamLabel.textContent =
-                            awayName +
-                            " goal scorers";
-                    }
-
-
-                    if (selectedFixtureInfo) {
-
-                        selectedFixtureInfo.innerHTML = `
-
-                            <strong>
-                                Ã¢Å¡Â½
-                                ${escapeHtml(
-                                    homeName
-                                )}
-                                vs
-                                ${escapeHtml(
-                                    awayName
-                                )}
-                            </strong>
-
-                            <br>
-
-                            Ã°Å¸Ââ€  Matchday:
-                            ${escapeHtml(
-                                currentFixture.matchday ||
-                                "-"
-                            )}
-
-                            <br>
-
-                            Ã°Å¸â€œâ€¦
-                            ${formatDate(
-                                currentFixture.match_date
-                            )}
-
-                            &nbsp;&nbsp;
-
-                            Ã¢ÂÂ°
-                            ${formatTime(
-                                currentFixture.kick_off
-                            )}
-
-                            <br>
-
-                            Ã°Å¸â€œÂ
-                            ${escapeHtml(
-                                currentFixture.venue ||
-                                "-"
-                            )}
-
-                        `;
-
-
-                        selectedFixtureInfo.style.display =
-                            "block";
-                    }
-
-
-                    if (homeGoalsContainer) {
-
-                        homeGoalsContainer.innerHTML =
-                            "";
-                    }
-
-
-                    if (awayGoalsContainer) {
-
-                        awayGoalsContainer.innerHTML =
-                            "";
-                    }
-
-
-                    if (homeScore) {
-
-                        homeScore.value =
-                            0;
-                    }
-
-
-                    if (awayScore) {
-
-                        awayScore.value =
-                            0;
-                    }
-
-
-                    if (matchReport) {
-
-                        matchReport.value =
-                            "";
-                    }
-
-
-                    if (resultScoreSection) {
-
-                        resultScoreSection.style.display =
-                            "block";
-                    }
-
-
-                    if (resultFormMessage) {
-
-                        resultFormMessage.style.display =
-                            "none";
-                    }
-
-
-                    createAppearanceSection();
-
-
-                    updateGoalWarnings();
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Loading result players error:",
-                        error
-                    );
-
-
-                    showResultMessage(
-                        "Ã¢ÂÅ’ Unable to load players: " +
-                        (
-                            error.message ||
-                            "Unknown error"
-                        ),
-                        "error"
-                    );
-                }
-
-            }
-        );
     }
 
 
@@ -4502,10 +3380,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             "click",
             function () {
 
-                addScorerRow(
+                addGoalRow(
                     homeGoalsContainer,
                     homePlayers,
-                    "home"
+                    "Home"
                 );
 
             }
@@ -4523,20 +3401,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             "click",
             function () {
 
-                addScorerRow(
+                addGoalRow(
                     awayGoalsContainer,
                     awayPlayers,
-                    "away"
+                    "Away"
                 );
 
             }
         );
     }
 
-
-    // ========================================
-    // SCORE INPUT CHANGES
-    // ========================================
 
     if (homeScore) {
 
@@ -4545,6 +3419,1132 @@ document.addEventListener("DOMContentLoaded", async function () {
             updateGoalWarnings
         );
     }
+
+
+    if (awayScore) {
+
+        awayScore.addEventListener(
+            "input",
+            updateGoalWarnings
+        );
+    }
+
+
+    // ========================================
+    // SAVE RESULT
+    // ========================================
+
+    if (saveResultBtn) {
+
+        saveResultBtn.addEventListener(
+            "click",
+            async function () {
+
+                if (!currentFixture) {
+
+                    showResultMessage(
+                        "Please select a fixture first.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                const homeScoreValue =
+                    Number(
+                        homeScore
+                            ? homeScore.value
+                            : 0
+                    );
+
+
+                const awayScoreValue =
+                    Number(
+                        awayScore
+                            ? awayScore.value
+                            : 0
+                    );
+
+
+                if (
+                    !Number.isInteger(
+                        homeScoreValue
+                    ) ||
+                    !Number.isInteger(
+                        awayScoreValue
+                    ) ||
+                    homeScoreValue < 0 ||
+                    awayScoreValue < 0
+                ) {
+
+                    showResultMessage(
+                        "Scores must be valid non-negative numbers.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                const homeGoalRows =
+                    homeGoalsContainer
+                        ? Array.from(
+                            homeGoalsContainer
+                                .querySelectorAll(
+                                    ".goal-row"
+                                )
+                        )
+                        : [];
+
+
+                const awayGoalRows =
+                    awayGoalsContainer
+                        ? Array.from(
+                            awayGoalsContainer
+                                .querySelectorAll(
+                                    ".goal-row"
+                                )
+                        )
+                        : [];
+
+
+                if (
+                    homeGoalRows.length !==
+                    homeScoreValue
+                ) {
+
+                    showResultMessage(
+                        "The number of home goal entries must match the home score.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    awayGoalRows.length !==
+                    awayScoreValue
+                ) {
+
+                    showResultMessage(
+                        "The number of away goal entries must match the away score.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                const homeGoals =
+                    [];
+
+                const awayGoals =
+                    [];
+
+
+                homeGoalRows.forEach(
+                    function (row) {
+
+                        const selects =
+                            row.querySelectorAll(
+                                "select"
+                            );
+
+                        const inputs =
+                            row.querySelectorAll(
+                                "input"
+                            );
+
+                        const playerId =
+                            selects[0]
+                                ? selects[0].value
+                                : "";
+
+                        const minute =
+                            inputs[0]
+                                ? inputs[0].value
+                                : "";
+
+                        const penalty =
+                            inputs[1]
+                                ? inputs[1].checked
+                                : false;
+
+
+                        if (playerId) {
+
+                            homeGoals.push({
+                                player_id:
+                                    Number(
+                                        playerId
+                                    ),
+                                minute:
+                                    minute
+                                        ? Number(
+                                            minute
+                                        )
+                                        : null,
+                                is_penalty:
+                                    penalty
+                            });
+
+                        }
+
+                    }
+                );
+
+
+                awayGoalRows.forEach(
+                    function (row) {
+
+                        const selects =
+                            row.querySelectorAll(
+                                "select"
+                            );
+
+                        const inputs =
+                            row.querySelectorAll(
+                                "input"
+                            );
+
+                        const playerId =
+                            selects[0]
+                                ? selects[0].value
+                                : "";
+
+                        const minute =
+                            inputs[0]
+                                ? inputs[0].value
+                                : "";
+
+                        const penalty =
+                            inputs[1]
+                                ? inputs[1].checked
+                                : false;
+
+
+                        if (playerId) {
+
+                            awayGoals.push({
+                                player_id:
+                                    Number(
+                                        playerId
+                                    ),
+                                minute:
+                                    minute
+                                        ? Number(
+                                            minute
+                                        )
+                                        : null,
+                                is_penalty:
+                                    penalty
+                            });
+
+                        }
+
+                    }
+                );
+
+
+                if (
+                    homeGoals.length !==
+                    homeScoreValue
+                ) {
+
+                    showResultMessage(
+                        "Every home goal must have a scorer selected.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    awayGoals.length !==
+                    awayScoreValue
+                ) {
+
+                    showResultMessage(
+                        "Every away goal must have a scorer selected.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                const report =
+                    matchReport
+                        ? matchReport.value.trim()
+                        : "";
+
+
+                saveResultBtn.disabled =
+                    true;
+
+                saveResultBtn.textContent =
+                    "Saving...";
+
+
+                try {
+
+                    // ----------------------------------------
+                    // CHECK FOR EXISTING RESULT
+                    // ----------------------------------------
+
+                    const {
+                        data: existingResult,
+                        error: existingResultError
+                    } =
+                        await supabaseClient
+                            .from("results")
+                            .select(
+                                "id"
+                            )
+                            .eq(
+                                "fixture_id",
+                                currentFixture.id
+                            )
+                            .maybeSingle();
+
+
+                    if (existingResultError) {
+                        throw existingResultError;
+                    }
+
+
+                    let resultId;
+
+
+                    // ----------------------------------------
+                    // CREATE OR UPDATE RESULT
+                    // ----------------------------------------
+
+                    if (existingResult) {
+
+                        resultId =
+                            existingResult.id;
+
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient
+                                .from("results")
+                                .update({
+                                    home_score:
+                                        homeScoreValue,
+
+                                    away_score:
+                                        awayScoreValue,
+
+                                    match_report:
+                                        report ||
+                                        null
+                                })
+                                .eq(
+                                    "id",
+                                    resultId
+                                );
+
+
+                        if (error) {
+                            throw error;
+                        }
+
+
+                        // Delete old goal scorers
+                        const {
+                            error:
+                                deleteGoalsError
+                        } =
+                            await supabaseClient
+                                .from("goal_scorers")
+                                .delete()
+                                .eq(
+                                    "result_id",
+                                    resultId
+                                );
+
+
+                        if (deleteGoalsError) {
+                            throw deleteGoalsError;
+                        }
+
+
+                        // Delete old player match stats
+                        const {
+                            error:
+                                deleteStatsError
+                        } =
+                            await supabaseClient
+                                .from(
+                                    "player_match_stats"
+                                )
+                                .delete()
+                                .eq(
+                                    "result_id",
+                                    resultId
+                                );
+
+
+                        if (deleteStatsError) {
+                            throw deleteStatsError;
+                        }
+
+
+                    } else {
+
+                        const {
+                            data,
+                            error
+                        } =
+                            await supabaseClient
+                                .from("results")
+                                .insert({
+                                    fixture_id:
+                                        currentFixture.id,
+
+                                    home_score:
+                                        homeScoreValue,
+
+                                    away_score:
+                                        awayScoreValue,
+
+                                    match_report:
+                                        report ||
+                                        null
+                                })
+                                .select(
+                                    "id"
+                                )
+                                .single();
+
+
+                        if (error) {
+                            throw error;
+                        }
+
+
+                        resultId =
+                            data.id;
+                    }
+
+
+                    // ----------------------------------------
+                    // INSERT GOAL SCORERS
+                    // ----------------------------------------
+
+                    const goalRows =
+                        homeGoals.map(
+                            function (goal) {
+
+                                return {
+                                    result_id:
+                                        resultId,
+
+                                    player_id:
+                                        goal.player_id,
+
+                                    minute:
+                                        goal.minute,
+
+                                    is_penalty:
+                                        goal.is_penalty
+                                };
+
+                            }
+                        ).concat(
+                            awayGoals.map(
+                                function (goal) {
+
+                                    return {
+                                        result_id:
+                                            resultId,
+
+                                        player_id:
+                                            goal.player_id,
+
+                                        minute:
+                                            goal.minute,
+
+                                        is_penalty:
+                                            goal.is_penalty
+                                    };
+
+                                }
+                            )
+                        );
+
+
+                    if (
+                        goalRows.length > 0
+                    ) {
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient
+                                .from(
+                                    "goal_scorers"
+                                )
+                                .insert(
+                                    goalRows
+                                );
+
+
+                        if (error) {
+                            throw error;
+                        }
+                    }
+
+
+                    // ----------------------------------------
+                    // CALCULATE PLAYER MATCH STATS
+                    // ----------------------------------------
+
+                    const statsMap =
+                        {};
+
+
+                    function addPlayerStat(
+                        playerId,
+                        goals
+                    ) {
+
+                        const key =
+                            String(
+                                playerId
+                            );
+
+
+                        if (!statsMap[key]) {
+
+                            statsMap[key] = {
+                                result_id:
+                                    resultId,
+
+                                player_id:
+                                    Number(
+                                        playerId
+                                    ),
+
+                                appearances:
+                                    1,
+
+                                goals:
+                                    0,
+
+                                assists:
+                                    0,
+
+                                yellow_cards:
+                                    0,
+
+                                red_cards:
+                                    0
+                            };
+                        }
+
+
+                        statsMap[key].goals +=
+                            Number(
+                                goals || 0
+                            );
+                    }
+
+
+                    homeGoals.forEach(
+                        function (goal) {
+
+                            addPlayerStat(
+                                goal.player_id,
+                                1
+                            );
+
+                        }
+                    );
+
+
+                    awayGoals.forEach(
+                        function (goal) {
+
+                            addPlayerStat(
+                                goal.player_id,
+                                1
+                            );
+
+                        }
+                    );
+
+
+                    const allHomePlayers =
+                        homePlayers || [];
+
+                    const allAwayPlayers =
+                        awayPlayers || [];
+
+
+                    allHomePlayers.forEach(
+                        function (player) {
+
+                            const key =
+                                String(
+                                    player.id
+                                );
+
+                            if (!statsMap[key]) {
+
+                                statsMap[key] = {
+                                    result_id:
+                                        resultId,
+
+                                    player_id:
+                                        Number(
+                                            player.id
+                                        ),
+
+                                    appearances:
+                                        1,
+
+                                    goals:
+                                        0,
+
+                                    assists:
+                                        0,
+
+                                    yellow_cards:
+                                        0,
+
+                                    red_cards:
+                                        0
+                                };
+                            }
+
+                        }
+                    );
+
+
+                    allAwayPlayers.forEach(
+                        function (player) {
+
+                            const key =
+                                String(
+                                    player.id
+                                );
+
+                            if (!statsMap[key]) {
+
+                                statsMap[key] = {
+                                    result_id:
+                                        resultId,
+
+                                    player_id:
+                                        Number(
+                                            player.id
+                                        ),
+
+                                    appearances:
+                                        1,
+
+                                    goals:
+                                        0,
+
+                                    assists:
+                                        0,
+
+                                    yellow_cards:
+                                        0,
+
+                                    red_cards:
+                                        0
+                                };
+                            }
+
+                        }
+                    );
+
+
+                    const statsRows =
+                        Object.values(
+                            statsMap
+                        );
+
+
+                    if (
+                        statsRows.length > 0
+                    ) {
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient
+                                .from(
+                                    "player_match_stats"
+                                )
+                                .insert(
+                                    statsRows
+                                );
+
+
+                        if (error) {
+                            throw error;
+                        }
+                    }
+
+
+                    // ----------------------------------------
+                    // MARK FIXTURE COMPLETED
+                    // ----------------------------------------
+
+                    const {
+                        error:
+                            fixtureUpdateError
+                    } =
+                        await supabaseClient
+                            .from("fixtures")
+                            .update({
+                                status:
+                                    "Completed"
+                            })
+                            .eq(
+                                "id",
+                                currentFixture.id
+                            );
+
+
+                    if (fixtureUpdateError) {
+                        throw fixtureUpdateError;
+                    }
+
+
+                    showResultMessage(
+                        "🎉 Result saved successfully.",
+                        "success"
+                    );
+
+
+                    await loadResultFixtures();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "SAVE RESULT ERROR:",
+                        error
+                    );
+
+
+                    showResultMessage(
+                        "❌ Unable to save result: " +
+                        (
+                            error.message ||
+                            "Unknown error"
+                        ),
+                        "error"
+                    );
+
+
+                } finally {
+
+                    saveResultBtn.disabled =
+                        false;
+
+                    saveResultBtn.textContent =
+                        "💾 SAVE RESULT";
+                }
+
+            }
+        );
+    }
+
+
+    // ========================================
+    // LOAD PENDING TEAM REGISTRATIONS
+    // ========================================
+
+    async function loadPendingTeams() {
+
+        if (!pendingTeams) {
+            return;
+        }
+
+
+        pendingTeams.innerHTML =
+            '<div class="empty-message">' +
+            'Loading pending team registrations...' +
+            '</div>';
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("teams")
+                    .select(`
+                        id,
+                        name,
+                        short_name,
+                        logo_url,
+                        location,
+                        coach_name,
+                        captain_name,
+                        vice_captain_name,
+                        discipline_master_name,
+                        phone,
+                        email,
+                        registration_status,
+                        created_at
+                    `)
+                    .eq(
+                        "registration_status",
+                        "Pending"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                pendingTeams.innerHTML =
+                    `
+                    <div class="empty-message">
+                        🎉 No pending team registrations.
+                    </div>
+                    `;
+
+                return;
+            }
+
+
+            let html = "";
+
+
+            data.forEach(
+                function (team) {
+
+                    html += `
+                        <div class="admin-card">
+
+                            <h3>
+                                👥
+                                ${escapeHtml(
+                                    team.name ||
+                                    "Unnamed Team"
+                                )}
+                            </h3>
+
+                            <div class="team-details">
+
+                                <div class="detail">
+                                    <strong>Short Name</strong><br>
+                                    ${escapeHtml(
+                                        team.short_name ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Location</strong><br>
+                                    ${escapeHtml(
+                                        team.location ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Coach</strong><br>
+                                    ${escapeHtml(
+                                        team.coach_name ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Captain</strong><br>
+                                    ${escapeHtml(
+                                        team.captain_name ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Vice Captain</strong><br>
+                                    ${escapeHtml(
+                                        team.vice_captain_name ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Discipline Master</strong><br>
+                                    ${escapeHtml(
+                                        team.discipline_master_name ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Phone</strong><br>
+                                    ${escapeHtml(
+                                        team.phone ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Email</strong><br>
+                                    ${escapeHtml(
+                                        team.email ||
+                                        "-"
+                                    )}
+                                </div>
+
+                                <div class="detail">
+                                    <strong>Submitted</strong><br>
+                                    ${formatDateTime(
+                                        team.created_at
+                                    )}
+                                </div>
+
+                            </div>
+
+                            ${
+                                team.logo_url
+                                    ? `
+                                        <div style="margin-top:15px;">
+                                            <img
+                                                src="${escapeHtml(
+                                                    team.logo_url
+                                                )}"
+                                                alt="Team logo"
+                                                style="
+                                                    width:90px;
+                                                    height:90px;
+                                                    object-fit:contain;
+                                                    border:1px solid #ddd;
+                                                    border-radius:10px;
+                                                "
+                                            >
+                                        </div>
+                                      `
+                                    : ""
+                            }
+
+                            <div
+                                style="
+                                    display:flex;
+                                    gap:10px;
+                                    margin-top:15px;
+                                    flex-wrap:wrap;
+                                "
+                            >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    onclick="approveTeam(${Number(
+                                        team.id
+                                    )})"
+                                >
+                                    ✅ Approve Team
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-danger"
+                                    onclick="rejectTeam(${Number(
+                                        team.id
+                                    )})"
+                                >
+                                    ❌ Reject Team
+                                </button>
+
+                            </div>
+
+                        </div>
+                    `;
+                }
+            );
+
+
+            pendingTeams.innerHTML =
+                html;
+
+
+        } catch (error) {
+
+            console.error(
+                "LOAD PENDING TEAMS ERROR:",
+                error
+            );
+
+
+            pendingTeams.innerHTML =
+                `
+                <div class="empty-message">
+                    ❌ Unable to load pending team registrations:
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </div>
+                `;
+        }
+    }
+
+
+    // ========================================
+    // APPROVE TEAM
+    // ========================================
+
+    window.approveTeam =
+        async function (teamId) {
+
+            if (
+                !window.confirm(
+                    "Approve this team?"
+                )
+            ) {
+                return;
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("teams")
+                        .update({
+                            registration_status:
+                                "Approved"
+                        })
+                        .eq(
+                            "id",
+                            teamId
+                        );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                showMessage(
+                    "Team approved successfully.",
+                    "success"
+                );
+
+
+                await loadPendingTeams();
+
+
+            } catch (error) {
+
+                console.error(
+                    "APPROVE TEAM ERROR:",
+                    error
+                );
+
+
+                showMessage(
+                    "❌ Unable to approve team: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+            }
+        };
+
+
+    // ========================================
+    // REJECT TEAM
+    // ========================================
+
+    window.rejectTeam =
+        async function (teamId) {
+
+            if (
+                !window.confirm(
+                    "Reject this team?"
+                )
+            ) {
+                return;
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("teams")
+                        .update({
+                            registration_status:
+                                "Rejected"
+                        })
+                        .eq(
+                            "id",
+                            teamId
+                        );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                showMessage(
+                    "Team rejected successfully.",
+                    "success"
+                );
+
+
+                await loadPendingTeams();
+
+
+            } catch (error) {
+
+                console.error(
+                    "REJECT TEAM ERROR:",
+                    error
+                );
+
+
+                showMessage(
+                    "❌ Unable to reject team: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+            }
+        };
+        }
 
 
     if (awayScore) {
@@ -4645,7 +4645,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!homeValidation.valid) {
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ " +
+                        "❌ " +
                         homeValidation.message,
                         "error"
                     );
@@ -4664,7 +4664,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!awayValidation.valid) {
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ " +
+                        "❌ " +
                         awayValidation.message,
                         "error"
                     );
@@ -4699,7 +4699,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ Home score is " +
+                        "❌ Home score is " +
                         homeFinalScore +
                         " but you entered " +
                         homeScorers.length +
@@ -4717,7 +4717,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ Away score is " +
+                        "❌ Away score is " +
                         awayFinalScore +
                         " but you entered " +
                         awayScorers.length +
@@ -4742,7 +4742,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ " +
+                        "❌ " +
                         appearanceValidation.message,
                         "error"
                     );
@@ -4782,7 +4782,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ " +
+                        "❌ " +
                         scorerAppearanceValidation.message,
                         "error"
                     );
@@ -4807,7 +4807,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ " +
+                        "❌ " +
                         assistValidation.message,
                         "error"
                     );
@@ -4934,7 +4934,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                             goal.is_penalty
 
                                     };
-
                                 }
                             );
 
@@ -5055,7 +5054,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         0
 
                                 };
-
                             }
                         );
 
@@ -5102,7 +5100,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     "id",
                                     result.id
                                 );
-
 
                             throw statsError;
                         }
@@ -5152,13 +5149,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                     // ========================================
 
                     showResultMessage(
-                        "Ã¢Å“â€¦ Match result saved successfully!",
+                        "✅ Match result saved successfully!",
                         "success"
                     );
 
 
                     alert(
-                        "Ã¢Å“â€¦ Match result saved successfully!"
+                        "✅ Match result saved successfully!"
                     );
 
 
@@ -5247,7 +5244,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showResultMessage(
-                        "Ã¢ÂÅ’ Unable to save result: " +
+                        "❌ Unable to save result: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -5263,7 +5260,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     saveResultBtn.textContent =
-                        "Ã°Å¸â€™Â¾ SAVE RESULT";
+                        "💾 SAVE RESULT";
                 }
 
             }
@@ -5323,7 +5320,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 pendingTeams.innerHTML =
                     "<div class='empty-message'>" +
-                    "Ã°Å¸Å½â€° No pending team registrations." +
+                    "🎉 No pending team registrations." +
                     "</div>";
 
                 return;
@@ -5458,7 +5455,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 card.innerHTML = `
 
                     <h2>
-                        Ã¢Å¡Â½
+                        ⚽
                         ${escapeHtml(
                             team.name
                         )}
@@ -5536,10 +5533,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     <h3>
-                        Ã°Å¸â€˜Â¥ Players
+                        👥 Players
                         (${players ? players.length : 0}/20)
                     </h3>
 
+
+                    ${playersHtml}
 
                     ${playersHtml}
 
@@ -5551,7 +5550,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn approve-btn"
                             data-id="${team.id}"
                         >
-                            Ã¢Å“â€¦ Approve Team
+                            ✅ Approve Team
                         </button>
 
 
@@ -5560,7 +5559,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn reject-btn"
                             data-id="${team.id}"
                         >
-                            Ã¢ÂÅ’ Reject Team
+                            ❌ Reject Team
                         </button>
 
                     </div>
@@ -5629,8 +5628,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="admin-card">
 
                     <h3>
-                        Ã¢ÂÅ’ Unable to Load
-                </h3>
+                        ❌ Unable to Load
+                    </h3>
 
                     <p>
                         ${escapeHtml(
@@ -5704,7 +5703,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             alert(
-                "Ã¢Å“â€¦ Team approved successfully!"
+                "✅ Team approved successfully!"
             );
 
 
@@ -5960,7 +5959,7 @@ function ensureSquadRequestsDashboard() {
     section.innerHTML = `
         <div class="section-header">
             <div>
-                <h2>ðŸ‘¥ Squad & Team Change Requests</h2>
+                <h2>👥 Squad & Team Change Requests</h2>
                 <p>
                     Review requests submitted by approved teams.
                     Changes are only applied after administrator approval.
@@ -6025,22 +6024,23 @@ function ensureSquadRequestsDashboard() {
 
         </div>
 
-        <div id="squadRequestsList">
+        <div id="squadRequestList">
 
             <div class="loading">
-                Loading squad requests...
+                Loading requests...
             </div>
 
         </div>
-
     `;
 
     dashboardSection.appendChild(section);
+
 
     const filter =
         document.getElementById(
             "squadRequestFilter"
         );
+
 
     if (filter) {
 
@@ -6051,17 +6051,18 @@ function ensureSquadRequestsDashboard() {
                 squadRequestFilter =
                     this.value;
 
-                renderSquadChangeRequests();
+                renderSquadRequestsDashboard();
 
             }
         );
-
     }
+
 
     const search =
         document.getElementById(
             "squadRequestSearch"
         );
+
 
     if (search) {
 
@@ -6074,180 +6075,164 @@ function ensureSquadRequestsDashboard() {
                         .trim()
                         .toLowerCase();
 
-                renderSquadChangeRequests();
+                renderSquadRequestsDashboard();
 
             }
         );
-
     }
-
 }
 
 
 // ----------------------------------------
-// REQUEST TYPE LABEL
-// ----------------------------------------
-
-function getSquadRequestTypeLabel(type) {
-
-    const value =
-        String(type || "")
-            .trim()
-            .toLowerCase();
-
-    if (
-        value === "add" ||
-        value === "add player"
-    ) {
-        return "âž• Add Player";
-    }
-
-    if (
-        value === "remove" ||
-        value === "remove player"
-    ) {
-        return "âž– Remove Player";
-    }
-
-    if (value === "edit player") {
-        return "âœï¸ Edit Player";
-    }
-
-    if (value === "edit team") {
-        return "ðŸ·ï¸ Edit Team";
-    }
-
-    return type || "Unknown";
-
-}
-
-
-// ----------------------------------------
-// LOAD REQUESTS
+// LOAD SQUAD REQUESTS
 // ----------------------------------------
 
 async function loadSquadChangeRequests() {
 
-    try {
+    const list =
+        document.getElementById(
+            "squadRequestList"
+        );
 
-        ensureSquadRequestsDashboard();
+
+    if (!list) {
+        return;
+    }
+
+
+    list.innerHTML = `
+        <div class="loading">
+            Loading requests...
+        </div>
+    `;
+
+
+    try {
 
         const {
             data,
             error
-        } = await supabaseClient
-            .from("squad_change_requests")
-            .select(`
-                *,
-                teams (
-                    id,
-                    name,
-                    short_name
-                ),
-                competitions (
-                    id,
-                    name,
-                    season
-                ),
-                players (
-                    id,
-                    full_name,
-                    jersey_number,
-                    position,
-                    photo_url
+        } =
+            await supabaseClient
+                .from(
+                    "squad_change_requests"
                 )
-            `)
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
+                .select(`
+                    *,
+                    teams:team_id (
+                        id,
+                        name,
+                        short_name,
+                        logo_url
+                    ),
+                    players:player_id (
+                        id,
+                        full_name,
+                        jersey_number,
+                        position,
+                        photo_url
+                    ),
+                    competitions:competition_id (
+                        id,
+                        name,
+                        season
+                    )
+                `)
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
 
         if (error) {
             throw error;
         }
 
+
         squadChangeRequests =
             data || [];
 
-        renderSquadChangeRequestCounters();
 
-        renderSquadChangeRequests();
+        renderSquadRequestsDashboard();
+
 
     } catch (error) {
 
         console.error(
-            "Load squad requests error:",
+            "Squad request load error:",
             error
         );
 
-        const list =
-            document.getElementById(
-                "squadRequestsList"
-            );
 
-        if (list) {
+        list.innerHTML = `
+            <div class="admin-card">
 
-            list.innerHTML = `
-                <div class="error-message">
-                    Failed to load squad requests:
+                <h3>
+                    ❌ Unable to Load Requests
+                </h3>
+
+                <p>
                     ${escapeHtml(
                         error.message ||
                         "Unknown error"
                     )}
-                </div>
-            `;
+                </p>
 
-        }
-
+            </div>
+        `;
     }
-
 }
 
 
 // ----------------------------------------
-// REQUEST COUNTERS
+// RENDER REQUEST COUNTERS
 // ----------------------------------------
 
-function renderSquadChangeRequestCounters() {
+function renderSquadRequestCounters() {
 
-    const container =
+    const counters =
         document.getElementById(
             "squadRequestCounters"
         );
 
-    if (!container) {
+
+    if (!counters) {
         return;
     }
 
+
     const pending =
         squadChangeRequests.filter(
-            request =>
-                request.status === "Pending"
+            function (request) {
+                return request.status === "Pending";
+            }
         ).length;
+
 
     const approved =
         squadChangeRequests.filter(
-            request =>
-                request.status === "Approved"
+            function (request) {
+                return request.status === "Approved";
+            }
         ).length;
+
 
     const rejected =
         squadChangeRequests.filter(
-            request =>
-                request.status === "Rejected"
+            function (request) {
+                return request.status === "Rejected";
+            }
         ).length;
 
-    const total =
-        squadChangeRequests.length;
 
-    container.innerHTML = `
+    counters.innerHTML = `
 
         <div class="stat-card">
 
             <div class="stat-icon">
-                â³
+                ⏳
             </div>
 
             <div class="stat-number">
@@ -6255,15 +6240,16 @@ function renderSquadChangeRequestCounters() {
             </div>
 
             <div class="stat-label">
-                Pending Requests
+                Pending
             </div>
 
         </div>
 
+
         <div class="stat-card">
 
             <div class="stat-icon">
-                âœ…
+                ✅
             </div>
 
             <div class="stat-number">
@@ -6276,10 +6262,11 @@ function renderSquadChangeRequestCounters() {
 
         </div>
 
+
         <div class="stat-card">
 
             <div class="stat-icon">
-                âŒ
+                ❌
             </div>
 
             <div class="stat-number">
@@ -6292,24 +6279,52 @@ function renderSquadChangeRequestCounters() {
 
         </div>
 
-        <div class="stat-card">
-
-            <div class="stat-icon">
-                ðŸ“‹
-            </div>
-
-            <div class="stat-number">
-                ${total}
-            </div>
-
-            <div class="stat-label">
-                Total Requests
-            </div>
-
-        </div>
-
     `;
+}
 
+
+// ----------------------------------------
+// REQUEST TYPE LABEL
+// ----------------------------------------
+
+function squadRequestTypeLabel(type) {
+
+    if (
+        type ===
+        "Add Player"
+    ) {
+        return "➕ Add Player";
+    }
+
+
+    if (
+        type ===
+        "Remove Player"
+    ) {
+        return "➖ Remove Player";
+    }
+
+
+    if (
+        type ===
+        "Edit Player"
+    ) {
+        return "✏️ Edit Player";
+    }
+
+
+    if (
+        type ===
+        "Edit Team"
+    ) {
+        return "🏷️ Edit Team";
+    }
+
+
+    return escapeHtml(
+        type ||
+        "Request"
+    );
 }
 
 
@@ -6317,218 +6332,361 @@ function renderSquadChangeRequestCounters() {
 // RENDER REQUESTS
 // ----------------------------------------
 
-function renderSquadChangeRequests() {
+function renderSquadRequestsDashboard() {
 
-    const container =
+    renderSquadRequestCounters();
+
+
+    const list =
         document.getElementById(
-            "squadRequestsList"
+            "squadRequestList"
         );
 
-    if (!container) {
+
+    if (!list) {
         return;
     }
+
 
     let requests =
         [...squadChangeRequests];
 
+
     if (
-        squadRequestFilter !== "All"
+        squadRequestFilter !==
+        "All"
     ) {
 
         requests =
             requests.filter(
-                request =>
-                    request.status ===
-                    squadRequestFilter
-            );
+                function (request) {
 
+                    return (
+                        request.status ===
+                        squadRequestFilter
+                    );
+
+                }
+            );
     }
+
 
     if (squadRequestSearch) {
 
         requests =
             requests.filter(
-                request => {
+                function (request) {
 
                     const teamName =
                         request.teams?.name ||
                         "";
 
-                    const shortName =
-                        request.teams?.short_name ||
-                        "";
 
-                    const competition =
-                        request.competitions?.name ||
-                        "";
-
-                    const player =
+                    const playerName =
                         request.players?.full_name ||
                         request.requested_full_name ||
                         "";
+
 
                     const requestType =
                         request.request_type ||
                         "";
 
-                    const searchable =
+
+                    const combined =
                         (
                             teamName +
                             " " +
-                            shortName +
-                            " " +
-                            competition +
-                            " " +
-                            player +
+                            playerName +
                             " " +
                             requestType
-                        )
-                        .toLowerCase();
+                        ).toLowerCase();
 
-                    return searchable.includes(
+
+                    return combined.includes(
                         squadRequestSearch
                     );
 
                 }
             );
-
     }
 
-    if (!requests.length) {
 
-        container.innerHTML = `
-            <div class="empty-state">
+    if (
+        requests.length ===
+        0
+    ) {
 
-                <div
-                    style="
-                        font-size:42px;
-                        margin-bottom:10px;
-                    "
-                >
-                    ðŸ“‹
-                </div>
+        list.innerHTML = `
 
-                <h3>
-                    No ${squadRequestFilter.toLowerCase()}
-                    requests
-                </h3>
+            <div class="empty">
 
-                <p>
-                    There are currently no squad or
-                    team change requests matching
-                    your selection.
-                </p>
+                No squad or team
+                change requests found.
 
             </div>
+
         `;
 
         return;
     }
 
-    container.innerHTML =
-        requests
-            .map(
-                request =>
-                    createSquadRequestCard(
-                        request
-                    )
-            )
-            .join("");
 
-}
+    list.innerHTML = "";
 
 
-// ----------------------------------------
-// REQUEST CARD
-// ----------------------------------------
+    requests.forEach(
+        function (request) {
 
-function createSquadRequestCard(
-    request
-) {
+            const team =
+                request.teams ||
+                {};
 
-    const teamName =
-        request.teams?.name ||
-        "Unknown Team";
 
-    const competitionName =
-        request.competitions?.name ||
-        "Unknown Competition";
+            const player =
+                request.players ||
+                {};
 
-    const playerName =
-        request.players?.full_name ||
-        request.requested_full_name ||
-        "Team Information";
 
-    const type =
-        getSquadRequestTypeLabel(
-            request.request_type
-        );
+            const competition =
+                request.competitions ||
+                {};
 
-    const status =
-        request.status ||
-        "Pending";
 
-    const createdAt =
-        request.created_at
-            ? new Date(
+            let statusClass =
+                "request-pending";
+
+
+            if (
+                request.status ===
+                "Approved"
+            ) {
+
+                statusClass =
+                    "request-approved";
+
+            }
+            else if (
+                request.status ===
+                "Rejected"
+            ) {
+
+                statusClass =
+                    "request-rejected";
+
+            }
+
+
+            const submitted =
                 request.created_at
-            ).toLocaleString()
-            : "Unknown date";
+                    ? new Date(
+                        request.created_at
+                    ).toLocaleString(
+                        "en-KE"
+                    )
+                    : "-";
 
-    let statusClass =
-        "pending";
 
-    if (
-        status === "Approved"
-    ) {
-        statusClass = "approved";
-    }
+            const reviewed =
+                request.reviewed_at
+                    ? new Date(
+                        request.reviewed_at
+                    ).toLocaleString(
+                        "en-KE"
+                    )
+                    : null;
 
-    if (
-        status === "Rejected"
-    ) {
-        statusClass = "rejected";
-    }
 
-    return `
+            let playerPhoto =
+                player.photo_url ||
+                request.requested_photo_url ||
+                "";
 
-        <div
-            class="form-card"
-            style="
-                margin-bottom:15px;
-                border-left:5px solid
-                ${
-                    status === "Approved"
-                        ? "#198754"
-                        : status === "Rejected"
-                            ? "#dc3545"
-                            : "#f5c542"
-                };
-            "
-        >
 
-            <div
-                style="
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:flex-start;
-                    gap:15px;
-                    flex-wrap:wrap;
-                "
-            >
+            const photo =
+                playerPhoto
+                    ? `
+                        <img
+                            src="${escapeHtml(
+                                playerPhoto
+                            )}"
+                            alt="Player photo"
+                            style="
+                                width:64px;
+                                height:64px;
+                                object-fit:cover;
+                                border-radius:50%;
+                                border:2px solid #ddd;
+                            "
+                        >
+                    `
+                    : `
+                        <div
+                            style="
+                                width:64px;
+                                height:64px;
+                                border-radius:50%;
+                                background:#eee;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                font-size:28px;
+                            "
+                        >
+                            👤
+                        </div>
+                    `;
 
-                <div>
 
-                    <h3>
-                        ${escapeHtml(type)}
-                    </h3>
+            const playerName =
+                request.request_type ===
+                    "Edit Team"
+                    ? (
+                        request.requested_full_name ||
+                        team.name ||
+                        "Team Information"
+                    )
+                    : (
+                        player.full_name ||
+                        request.requested_full_name ||
+                        "Player"
+                    );
 
-                    <p>
-                        <strong>
-                            Team:
-                        </strong>
-                        ${escapeHtml(teamName)}
-                    </p>
+
+            const jersey =
+                request.requested_jersey_number ??
+                player.jersey_number ??
+                null;
+
+
+            const position =
+                request.requested_position ||
+                player.position ||
+                null;
+
+
+            const competitionName =
+                competition.name ||
+                "Club Squad";
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "admin-card";
+
+
+            card.innerHTML = `
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:15px;
+                        align-items:flex-start;
+                        flex-wrap:wrap;
+                    "
+                >
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:14px;
+                            align-items:center;
+                        "
+                    >
+
+                        ${photo}
+
+                        <div>
+
+                            <h3>
+                                ${squadRequestTypeLabel(
+                                    request.request_type
+                                )}
+                            </h3>
+
+                            <p>
+                                <strong>
+                                    ${escapeHtml(
+                                        playerName
+                                    )}
+                                </strong>
+                            </p>
+
+                            <p>
+                                Team:
+                                ${escapeHtml(
+                                    team.name ||
+                                    "Unknown Team"
+                                )}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="${statusClass}"
+                        style="
+                            padding:8px 12px;
+                            border-radius:20px;
+                            font-weight:700;
+                        "
+                    >
+                        ${escapeHtml(
+                            request.status ||
+                            "Pending"
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    style="
+                        margin-top:15px;
+                        display:grid;
+                        gap:7px;
+                    "
+                >
+
+                    ${
+                        jersey !== null
+                            ? `
+                                <p>
+                                    <strong>
+                                        Jersey:
+                                    </strong>
+                                    ${escapeHtml(
+                                        jersey
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
+
+
+                    ${
+                        position
+                            ? `
+                                <p>
+                                    <strong>
+                                        Position:
+                                    </strong>
+                                    ${escapeHtml(
+                                        position
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
+
 
                     <p>
                         <strong>
@@ -6539,785 +6697,663 @@ function createSquadRequestCard(
                         )}
                     </p>
 
-                    <p>
-                        <strong>
-                            Player:
-                        </strong>
-                        ${escapeHtml(playerName)}
-                    </p>
 
                     <p>
                         <strong>
                             Submitted:
                         </strong>
-                        ${escapeHtml(createdAt)}
+                        ${escapeHtml(
+                            submitted
+                        )}
                     </p>
 
+
+                    ${
+                        request.reason
+                            ? `
+                                <p>
+                                    <strong>
+                                        Reason:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.reason
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
+
+
+                    ${
+                        request.admin_notes
+                            ? `
+                                <p>
+                                    <strong>
+                                        Admin Notes:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.admin_notes
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
+
+
+                    ${
+                        reviewed
+                            ? `
+                                <p>
+                                    <strong>
+                                        Reviewed:
+                                    </strong>
+                                    ${escapeHtml(
+                                        reviewed
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
+
                 </div>
 
-                <div>
 
-                    <span
-                        style="
-                            display:inline-block;
-                            padding:7px 12px;
-                            border-radius:20px;
-                            font-weight:700;
-                            background:
-                                ${
-                                    status === "Approved"
-                                        ? "#d1e7dd"
-                                        : status === "Rejected"
-                                            ? "#f8d7da"
-                                            : "#fff3cd"
-                                };
-                            color:
-                                ${
-                                    status === "Approved"
-                                        ? "#0f5132"
-                                        : status === "Rejected"
-                                            ? "#842029"
-                                            : "#664d03"
-                                };
-                        "
+                <div
+                    style="
+                        margin-top:18px;
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                    "
+                >
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        onclick="openSquadRequestDetails(
+                            ${Number(
+                                request.id
+                            )}
+                        )"
                     >
-                        ${escapeHtml(status)}
-                    </span>
+                        👁️ View Details
+                    </button>
+
+
+                    ${
+                        request.status ===
+                        "Pending"
+                            ? `
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    onclick="approveSquadChangeRequest(
+                                        ${Number(
+                                            request.id
+                                        )}
+                                    )"
+                                >
+                                    ✅ Approve
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-danger"
+                                    onclick="rejectSquadChangeRequest(
+                                        ${Number(
+                                            request.id
+                                        )}
+                                    )"
+                                >
+                                    ❌ Reject
+                                </button>
+                            `
+                            : ""
+                    }
 
                 </div>
 
-            </div>
+            `;
+
+
+            list.appendChild(
+                card
+            );
+
+        }
+    );
+}
+
+
+// ----------------------------------------
+// OPEN REQUEST DETAILS
+// ----------------------------------------
+
+function openSquadRequestDetails(
+    requestId
+) {
+
+    selectedSquadRequest =
+        squadChangeRequests.find(
+            function (request) {
+
+                return (
+                    Number(
+                        request.id
+                    ) ===
+                    Number(
+                        requestId
+                    )
+                );
+
+            }
+        );
+
+
+    if (!selectedSquadRequest) {
+
+        alert(
+            "Request not found."
+        );
+
+        return;
+    }
+
+
+    let modal =
+        document.getElementById(
+            "squadRequestModal"
+        );
+
+
+    if (!modal) {
+
+        modal =
+            document.createElement(
+                "div"
+            );
+
+
+        modal.id =
+            "squadRequestModal";
+
+
+        modal.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.70);
+            z-index:99999;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            overflow:auto;
+        `;
+
+
+        modal.innerHTML = `
 
             <div
                 style="
-                    margin-top:15px;
-                    display:flex;
-                    gap:10px;
-                    flex-wrap:wrap;
+                    width:100%;
+                    max-width:760px;
+                    max-height:90vh;
+                    overflow:auto;
+                    background:#fff;
+                    border-radius:16px;
+                    box-shadow:0 20px 60px rgba(0,0,0,.30);
+                    position:relative;
+                    padding:25px;
                 "
             >
 
                 <button
                     type="button"
-                    class="btn btn-primary"
-                    onclick="openSquadRequestDetails(${Number(
-                        request.id
-                    )})"
+                    id="closeSquadRequestModal"
+                    style="
+                        position:absolute;
+                        right:15px;
+                        top:10px;
+                        width:40px;
+                        height:40px;
+                        border:none;
+                        background:#f1f1f1;
+                        border-radius:50%;
+                        font-size:25px;
+                        font-weight:900;
+                        cursor:pointer;
+                    "
                 >
-                    ðŸ‘ï¸ View Details
+                    ×
                 </button>
+
+
+                <div
+                    id="squadRequestModalContent"
+                ></div>
 
             </div>
 
-        </div>
-
-    `;
-
-}
+        `;
 
 
-// ----------------------------------------
-// REQUEST DETAILS
-// ----------------------------------------
+        document.body.appendChild(
+            modal
+        );
 
-// ========================================
-// OPEN SQUAD REQUEST DETAILS
-// ========================================
 
-function openSquadRequestDetails(requestId) {
+        document
+            .getElementById(
+                "closeSquadRequestModal"
+            )
+            ?.addEventListener(
+                "click",
+                function () {
 
-    const request = squadChangeRequests.find(function (item) {
-        return Number(item.id) === Number(requestId);
-    });
+                    modal.style.display =
+                        "none";
 
-    if (!request) {
-        alert("Request not found.");
+                }
+            );
+    }
+
+
+    const request =
+        selectedSquadRequest;
+
+
+    const team =
+        request.teams ||
+        {};
+
+
+    const player =
+        request.players ||
+        {};
+
+
+    const competition =
+        request.competitions ||
+        {};
+
+
+    const content =
+        document.getElementById(
+            "squadRequestModalContent"
+        );
+
+
+    if (!content) {
         return;
     }
 
-    selectedSquadRequest = request;
 
-    const type = getSquadRequestTypeLabel(
-        request.request_type
-    );
-
-
-    let modal =
-    document.getElementById(
-        "squadRequestModal"
-    );
+    const playerPhoto =
+        player.photo_url ||
+        request.requested_photo_url ||
+        "";
 
 
-// ========================================
-// CREATE MODAL IF IT DOES NOT EXIST
-// ========================================
+    const photo =
+        playerPhoto
+            ? `
+                <img
+                    src="${escapeHtml(
+                        playerPhoto
+                    )}"
+                    alt="Player photo"
+                    style="
+                        width:110px;
+                        height:110px;
+                        object-fit:cover;
+                        border-radius:50%;
+                        border:3px solid #ddd;
+                    "
+                >
+            `
+            : `
+                <div
+                    style="
+                        width:110px;
+                        height:110px;
+                        border-radius:50%;
+                        background:#eee;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-size:45px;
+                    "
+                >
+                    👤
+                </div>
+            `;
 
-if (!modal) {
 
-    modal =
-        document.createElement("div");
+    content.innerHTML = `
 
-    modal.id =
-        "squadRequestModal";
+        <h2>
+            👥 Squad & Team Request Details
+        </h2>
 
-    modal.style.cssText = `
-        position:fixed;
-        inset:0;
-        background:rgba(0,0,0,0.70);
-        z-index:99999;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:20px;
-        overflow:auto;
-    `;
-
-    modal.innerHTML = `
 
         <div
             style="
-                width:100%;
-                max-width:760px;
-                max-height:90vh;
-                overflow:auto;
-                background:#ffffff;
-                border-radius:16px;
-                box-shadow:0 20px 60px rgba(0,0,0,0.30);
-                position:relative;
-                padding:25px;
+                margin-top:20px;
+                display:flex;
+                gap:18px;
+                align-items:center;
+                flex-wrap:wrap;
             "
         >
 
-            <button
-                type="button"
-                id="closeSquadRequestModal"
-                style="
-                    position:absolute;
-                    right:15px;
-                    top:10px;
-                    width:40px;
-                    height:40px;
-                    border:none;
-                    background:#f1f1f1;
-                    border-radius:50%;
-                    font-size:25px;
-                    font-weight:900;
-                    cursor:pointer;
-                    color:#333;
-                "
-            >
-                Ã—
-            </button>
+            ${photo}
 
-            <div
-                id="squadRequestModalContent"
-            ></div>
+            <div>
+
+                <h3>
+                    ${squadRequestTypeLabel(
+                        request.request_type
+                    )}
+                </h3>
+
+                <p>
+                    <strong>
+                        Team:
+                    </strong>
+                    ${escapeHtml(
+                        team.name ||
+                        "Unknown Team"
+                    )}
+                </p>
+
+            </div>
 
         </div>
 
-    `;
 
-    document.body.appendChild(modal);
+        <div
+            style="
+                margin-top:20px;
+                display:grid;
+                gap:9px;
+            "
+        >
 
-    const closeButton =
-        document.getElementById(
-            "closeSquadRequestModal"
-        );
+            <p>
+                <strong>
+                    Request ID:
+                </strong>
+                ${escapeHtml(
+                    request.id
+                )}
+            </p>
 
-    if (closeButton) {
 
-        closeButton.addEventListener(
-            "click",
-            function () {
+            <p>
+                <strong>
+                    Request Type:
+                </strong>
+                ${squadRequestTypeLabel(
+                    request.request_type
+                )}
+            </p>
 
-                closeSquadRequestDetails();
 
+            ${
+                request.player_id
+                    ? `
+                        <p>
+                            <strong>
+                                Player ID:
+                            </strong>
+                            ${escapeHtml(
+                                request.player_id
+                            )}
+                        </p>
+                    `
+                    : ""
             }
-        );
-
-    }
-
-}
 
 
-// ========================================
-// GET MODAL CONTENT
-// ========================================
-
-const details =
-    document.getElementById(
-        "squadRequestModalContent"
-    );
-
-if (!details) {
-
-    console.error(
-        "Squad request modal content was not found."
-    );
-
-    return;
-
-}
-
-    let reasonText =
-        request.reason ||
-        "No reason provided.";
-
-    let parsedReason = null;
-
-    /*
-     * Edit Team requests store additional
-     * requested information inside reason
-     * as JSON.
-     */
-    if (
-        request.request_type === "Edit Team" &&
-        request.reason
-    ) {
-        try {
-            parsedReason = JSON.parse(request.reason);
-        } catch (error) {
-            parsedReason = null;
-        }
-    }
-
-    let html = "";
-
-    html += `
-        <div class="request-detail-row">
-            <strong>Request Type:</strong>
-            <span>${escapeHtml(type)}</span>
-        </div>
-
-        <div class="request-detail-row">
-            <strong>Team:</strong>
-            <span>
+            <p>
+                <strong>
+                    Player:
+                </strong>
                 ${escapeHtml(
-                    request.teams?.name ||
-                    "Unknown Team"
+                    player.full_name ||
+                    request.requested_full_name ||
+                    "Not applicable"
                 )}
-            </span>
-        </div>
+            </p>
 
-        <div class="request-detail-row">
-            <strong>Competition:</strong>
-            <span>
+
+            ${
+                request.requested_jersey_number ??
+                player.jersey_number
+                    ? `
+                        <p>
+                            <strong>
+                                Jersey:
+                            </strong>
+                            ${escapeHtml(
+                                request.requested_jersey_number ??
+                                player.jersey_number
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            ${
+                request.requested_position ||
+                player.position
+                    ? `
+                        <p>
+                            <strong>
+                                Position:
+                            </strong>
+                            ${escapeHtml(
+                                request.requested_position ||
+                                player.position
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            ${
+                request.requested_full_name
+                    ? `
+                        <p>
+                            <strong>
+                                Requested Name:
+                            </strong>
+                            ${escapeHtml(
+                                request.requested_full_name
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            ${
+                request.requested_photo_url
+                    ? `
+                        <p>
+                            <strong>
+                                Requested Photo:
+                            </strong>
+                            Uploaded
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            <p>
+                <strong>
+                    Competition:
+                </strong>
                 ${escapeHtml(
-                    request.competitions?.name ||
-                    "Unknown Competition"
+                    competition.name ||
+                    "Club Squad"
                 )}
-            </span>
-        </div>
-    `;
-
-
-    // ========================================
-    // ADD PLAYER
-    // ========================================
-
-    if (
-        request.request_type === "Add" ||
-        request.request_type === "Add Player"
-    ) {
-
-        html += `
-            <hr>
-
-            <h3>âž• Requested Player</h3>
-
-            <div class="request-detail-row">
-                <strong>Full Name:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.requested_full_name ||
-                        "Not provided"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Jersey Number:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.requested_jersey_number ??
-                        "Not provided"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Position:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.requested_position ||
-                        "Not provided"
-                    )}
-                </span>
-            </div>
-        `;
-
-        if (request.requested_photo_url) {
-
-            html += `
-                <div class="request-photo-preview">
-                    <strong>Player Photo:</strong>
-
-                    <br>
-
-                    <img
-                        src="${escapeHtml(
-                            request.requested_photo_url
-                        )}"
-                        alt="Requested player photo"
-                        style="
-                            width:100px;
-                            height:100px;
-                            object-fit:cover;
-                            border-radius:50%;
-                            margin-top:10px;
-                        "
-                    >
-                </div>
-            `;
-
-        } else {
-
-            html += `
-                <div class="request-detail-row">
-                    <strong>Player Photo:</strong>
-                    <span>No photo provided</span>
-                </div>
-            `;
-        }
-
-        html += `
-            <div class="request-detail-row">
-                <strong>Reason:</strong>
-                <span>
-                    ${escapeHtml(reasonText)}
-                </span>
-            </div>
-        `;
-    }
-
-
-    // ========================================
-    // REMOVE PLAYER
-    // ========================================
-
-    else if (
-        request.request_type === "Remove" ||
-        request.request_type === "Remove Player"
-    ) {
-
-        html += `
-            <hr>
-
-            <h3>âž– Player Removal</h3>
-
-            <div class="request-detail-row">
-                <strong>Player:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.players?.full_name ||
-                        "Unknown Player"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Jersey Number:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.players?.jersey_number ??
-                        "Not available"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Position:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.players?.position ||
-                        "Not available"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Reason:</strong>
-                <span>
-                    ${escapeHtml(reasonText)}
-                </span>
-            </div>
-        `;
-    }
-
-
-    // ========================================
-    // EDIT PLAYER
-    // ========================================
-
-    else if (
-        request.request_type === "Edit Player"
-    ) {
-
-        html += `
-            <hr>
-
-            <h3>âœï¸ Player Information Change</h3>
-
-            <div class="request-detail-row">
-                <strong>Current Player:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.players?.full_name ||
-                        "Unknown Player"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Current Jersey:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.players?.jersey_number ??
-                        "Not available"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Current Position:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.players?.position ||
-                        "Not available"
-                    )}
-                </span>
-            </div>
-
-            <hr>
-
-            <h3>Requested Changes</h3>
-
-            <div class="request-detail-row">
-                <strong>New Name:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.requested_full_name ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>New Jersey:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.requested_jersey_number ??
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>New Position:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.requested_position ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-        `;
-
-        if (request.requested_photo_url) {
-
-            html += `
-                <div class="request-photo-preview">
-                    <strong>New Player Photo:</strong>
-
-                    <br>
-
-                    <img
-                        src="${escapeHtml(
-                            request.requested_photo_url
-                        )}"
-                        alt="Requested player photo"
-                        style="
-                            width:100px;
-                            height:100px;
-                            object-fit:cover;
-                            border-radius:50%;
-                            margin-top:10px;
-                        "
-                    >
-                </div>
-            `;
-
-        } else {
-
-            html += `
-                <div class="request-detail-row">
-                    <strong>New Player Photo:</strong>
-                    <span>No change</span>
-                </div>
-            `;
-        }
-
-        html += `
-            <div class="request-detail-row">
-                <strong>Reason:</strong>
-                <span>
-                    ${escapeHtml(reasonText)}
-                </span>
-            </div>
-        `;
-    }
-
-
-    // ========================================
-    // EDIT TEAM
-    // ========================================
-
-    else if (
-        request.request_type === "Edit Team"
-    ) {
-
-        html += `
-            <hr>
-
-            <h3>ðŸ·ï¸ Requested Team Changes</h3>
-
-            <div class="request-detail-row">
-                <strong>Team Name:</strong>
-                <span>
-                    ${escapeHtml(
-                        request.teams?.name ||
-                        request.requested_full_name ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Short Name:</strong>
-                <span>
-                    ${escapeHtml(
-                        parsedReason?.short_name ||
-                        request.requested_position ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Location:</strong>
-                <span>
-                    ${escapeHtml(
-                        parsedReason?.location ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Coach:</strong>
-                <span>
-                    ${escapeHtml(
-                        parsedReason?.coach_name ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Captain:</strong>
-                <span>
-                    ${escapeHtml(
-                        parsedReason?.captain_name ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Vice Captain:</strong>
-                <span>
-                    ${escapeHtml(
-                        parsedReason?.vice_captain_name ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Discipline Master:</strong>
-                <span>
-                    ${escapeHtml(
-                        parsedReason?.discipline_master_name ||
-                        "No change"
-                    )}
-                </span>
-            </div>
-
-            <div class="request-detail-row">
-                <strong>Logo:</strong>
-                <span>
-                    ${
-                        parsedReason?.logo_url
-                            ? "New logo provided"
-                            : "No new logo"
-                    }
-                </span>
-            </div>
-        `;
-
-        if (parsedReason?.logo_url) {
-
-            html += `
-                <div class="request-photo-preview">
-                    <strong>New Team Logo:</strong>
-
-                    <br>
-
-                    <img
-                        src="${escapeHtml(
-                            parsedReason.logo_url
-                        )}"
-                        alt="Requested team logo"
-                        style="
-                            width:100px;
-                            height:100px;
-                            object-fit:cover;
-                            border-radius:50%;
-                            margin-top:10px;
-                        "
-                    >
-                </div>
-            `;
-        }
-
-        html += `
-            <div class="request-detail-row">
-                <strong>Reason:</strong>
-                <span>
-                    ${escapeHtml(
-                        parsedReason?.reason ||
-                        "No reason provided."
-                    )}
-                </span>
-            </div>
-        `;
-    }
-
-
-    // ========================================
-    // COMMON INFORMATION
-    // ========================================
-
-    html += `
-        <hr>
-
-        <div class="request-detail-row">
-            <strong>Status:</strong>
-            <span>
+            </p>
+
+
+            ${
+                competition.season
+                    ? `
+                        <p>
+                            <strong>
+                                Season:
+                            </strong>
+                            ${escapeHtml(
+                                competition.season
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            <p>
+                <strong>
+                    Status:
+                </strong>
                 ${escapeHtml(
                     request.status ||
                     "Pending"
                 )}
-            </span>
-        </div>
+            </p>
 
-        <div class="request-detail-row">
-            <strong>Submitted:</strong>
-            <span>
-                ${
+
+            <p>
+                <strong>
+                    Submitted:
+                </strong>
+                ${escapeHtml(
                     request.created_at
                         ? new Date(
                             request.created_at
-                        ).toLocaleString()
-                        : "Unknown"
-                }
-            </span>
+                        ).toLocaleString(
+                            "en-KE"
+                        )
+                        : "-"
+                )}
+            </p>
+
+
+            ${
+                request.reason
+                    ? `
+                        <p>
+                            <strong>
+                                Reason:
+                            </strong>
+                            ${escapeHtml(
+                                request.reason
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            ${
+                request.admin_notes
+                    ? `
+                        <p>
+                            <strong>
+                                Administrator Notes:
+                            </strong>
+                            ${escapeHtml(
+                                request.admin_notes
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+
+            ${
+                request.reviewed_at
+                    ? `
+                        <p>
+                            <strong>
+                                Reviewed:
+                            </strong>
+                            ${escapeHtml(
+                                new Date(
+                                    request.reviewed_at
+                                ).toLocaleString(
+                                    "en-KE"
+                                )
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
         </div>
+
+
+        ${
+            request.status ===
+            "Pending"
+                ? `
+                    <div
+                        style="
+                            margin-top:25px;
+                            display:flex;
+                            gap:10px;
+                            flex-wrap:wrap;
+                        "
+                    >
+
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            onclick="approveSquadChangeRequest(
+                                ${Number(
+                                    request.id
+                                )}
+                            )"
+                        >
+                            ✅ Approve Request
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            onclick="rejectSquadChangeRequest(
+                                ${Number(
+                                    request.id
+                                )}
+                            )"
+                        >
+                            ❌ Reject Request
+                        </button>
+
+                    </div>
+                `
+                : ""
+        }
+
     `;
 
 
-    // ========================================
-    // ADMIN ACTIONS
-    // ========================================
-
-    if (request.status === "Pending") {
-
-        html += `
-            <div
-                style="
-                    display:flex;
-                    gap:10px;
-                    flex-wrap:wrap;
-                    margin-top:20px;
-                "
-            >
-
-                <button
-                    class="btn btn-success"
-                    onclick="
-                        approveSquadChangeRequest(
-                            ${Number(request.id)}
-                        )
-                    "
-                >
-                    âœ… Approve Request
-                </button>
-
-                <button
-                    class="btn btn-danger"
-                    onclick="
-                        rejectSquadChangeRequest(
-                            ${Number(request.id)}
-                        )
-                    "
-                >
-                    âŒ Reject Request
-                </button>
-
-            </div>
-        `;
-    }
-
-    details.innerHTML = html;
-
-    modal.style.display = "flex";
-}
-
-
-// ========================================
-// HTML ESCAPE HELPER
-// ========================================
-
-function escapeHtml(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return "";
-    }
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    modal.style.display =
+        "flex";
 }
 
 
 // ----------------------------------------
-// CLOSE DETAILS
+// CLOSE REQUEST DETAILS
 // ----------------------------------------
 
 function closeSquadRequestDetails() {
@@ -7327,74 +7363,145 @@ function closeSquadRequestDetails() {
             "squadRequestModal"
         );
 
+
     if (modal) {
 
-        modal.remove();
-
+        modal.style.display =
+            "none";
     }
-
 }
 
 
 // ----------------------------------------
-// APPROVE REQUEST
+// APPROVE SQUAD REQUEST
 // ----------------------------------------
 
 async function approveSquadChangeRequest(
     requestId
 ) {
 
-    if (!confirm(
-        "Approve this request?"
-    )) {
+    const request =
+        squadChangeRequests.find(
+            function (item) {
+
+                return (
+                    Number(
+                        item.id
+                    ) ===
+                    Number(
+                        requestId
+                    )
+                );
+
+            }
+        );
+
+
+    if (!request) {
+
+        alert(
+            "Request not found."
+        );
+
         return;
     }
+
+
+    if (
+        request.status !==
+        "Pending"
+    ) {
+
+        alert(
+            "This request has already been processed."
+        );
+
+        return;
+    }
+
+
+    const notes =
+        prompt(
+            "Enter administrator notes for approval (optional):"
+        );
+
+
+    if (
+        notes ===
+        null
+    ) {
+
+        return;
+    }
+
+
+    const cleanedNotes =
+        notes.trim() ||
+        "Approved by administrator.";
+
 
     try {
 
         const {
             data,
             error
-        } = await supabaseClient.rpc(
-            "approve_squad_change_request",
-            {
-                p_request_id:
-                    Number(requestId),
+        } =
+            await supabaseClient.rpc(
+                "approve_squad_change_request",
+                {
+                    p_request_id:
+                        Number(
+                            requestId
+                        ),
+                    p_admin_notes:
+                        cleanedNotes
+                }
+            );
 
-                p_admin_notes:
-                    "Approved by administrator."
-            }
-        );
 
         if (error) {
             throw error;
         }
 
+
         if (
             data &&
-            data.success === false
+            data.success ===
+            false
         ) {
+
             throw new Error(
                 data.message ||
                 "Approval failed."
             );
         }
 
+
         showMessage(
-            "Request approved successfully.",
+            "Squad/team change request approved successfully.",
             "success"
         );
 
+
         closeSquadRequestDetails();
 
+
         await loadSquadChangeRequests();
+
+
+        await loadApprovedTeams();
+
+
+        await loadResultFixtures();
+
 
     } catch (error) {
 
         console.error(
-            "Approve request error:",
+            "Approve squad request error:",
             error
         );
+
 
         showMessage(
             "Approval failed: " +
@@ -7404,77 +7511,134 @@ async function approveSquadChangeRequest(
             ),
             "error"
         );
-
     }
-
 }
 
 
 // ----------------------------------------
-// REJECT REQUEST
+// REJECT SQUAD REQUEST
 // ----------------------------------------
 
 async function rejectSquadChangeRequest(
     requestId
 ) {
 
-    const notes =
-        prompt(
-            "Enter a reason for rejecting this request:"
+    const request =
+        squadChangeRequests.find(
+            function (item) {
+
+                return (
+                    Number(
+                        item.id
+                    ) ===
+                    Number(
+                        requestId
+                    )
+                );
+
+            }
         );
 
-    if (
-        notes === null
-    ) {
+
+    if (!request) {
+
+        alert(
+            "Request not found."
+        );
+
         return;
     }
+
+
+    if (
+        request.status !==
+        "Pending"
+    ) {
+
+        alert(
+            "This request has already been processed."
+        );
+
+        return;
+    }
+
+
+    const notes =
+        prompt(
+            "Enter the reason for rejecting this request:"
+        );
+
+
+    if (
+        notes ===
+        null
+    ) {
+
+        return;
+    }
+
+
+    const cleanedNotes =
+        notes.trim() ||
+        "Rejected by administrator.";
+
 
     try {
 
         const {
             data,
             error
-        } = await supabaseClient.rpc(
-            "reject_squad_change_request",
-            {
-                p_request_id:
-                    Number(requestId),
+        } =
+            await supabaseClient.rpc(
+                "reject_squad_change_request",
+                {
+                    p_request_id:
+                        Number(
+                            requestId
+                        ),
+                    p_admin_notes:
+                        cleanedNotes
+                }
+            );
 
-                p_admin_notes:
-                    notes.trim() ||
-                    "Rejected by administrator."
-            }
-        );
 
         if (error) {
             throw error;
         }
 
+
         if (
             data &&
-            data.success === false
+            data.success ===
+            false
         ) {
+
             throw new Error(
                 data.message ||
                 "Rejection failed."
             );
         }
 
+
         showMessage(
-            "Request rejected successfully.",
+            "Squad/team change request rejected.",
             "success"
         );
 
+
         closeSquadRequestDetails();
 
+
         await loadSquadChangeRequests();
+
 
     } catch (error) {
 
         console.error(
-            "Reject request error:",
+            "Reject squad request error:",
             error
         );
+
 
         showMessage(
             "Rejection failed: " +
@@ -7484,11 +7648,8 @@ async function rejectSquadChangeRequest(
             ),
             "error"
         );
-
     }
-
 }
-
 
 
 // ========================================
@@ -7523,7 +7684,8 @@ function ensurePlayerMovementDashboard() {
 
     section.innerHTML = `
         <div class="section-header">
-            <div><h2>🔄 Player Movement</h2>
+            <div>
+                <h2>🔄 Player Movement</h2>
                 <p>
                     Manage player releases, transfers, free-agent signings,
                     completed transfers and currently available free agents.
@@ -7542,7 +7704,7 @@ function ensurePlayerMovementDashboard() {
                     <option value="Transfer">🔁 Pending Transfers</option>
                     <option value="Free Agent Signing">🆓 Pending Free-Agent Signings</option>
                     <option value="Completed Transfer">✅ Completed Transfers</option>
-                <option value="Free Agents">🆓 Free Agents</option>
+                    <option value="Free Agents">🆓 Free Agents</option>
                     <option value="All">📋 All Movement Requests</option>
                 </select>
             </div>
@@ -7586,294 +7748,285 @@ function ensurePlayerMovementDashboard() {
     }
 }
 
-function movementStatusClass(status) {
-    const value = String(status || "Pending").toLowerCase();
-
-    if (value === "approved") return "approved";
-    if (value === "rejected") return "rejected";
-
-    return "pending";
-}
-
-function movementStatusBadge(status) {
-    const safeStatus = escapeHtml(status || "Pending");
-    const cls = movementStatusClass(status);
-
-    const background =
-        cls === "approved" ? "#d1e7dd" :
-        cls === "rejected" ? "#f8d7da" :
-        "#fff3cd";
-
-    const color =
-        cls === "approved" ? "#0f5132" :
-        cls === "rejected" ? "#842029" :
-        "#664d03";
-
-    return `
-        <span style="
-            display:inline-block;
-            padding:7px 12px;
-            border-radius:20px;
-            font-weight:700;
-            background:${background};
-            color:${color};
-        ">${safeStatus}</span>
-    `;
-}
-
-function movementRequestTypeLabel(type) {
-    if (type === "Release") return "📤 Release Player";
-if (type === "Transfer") return "🔁 Player Transfer";
-if (type === "Free Agent Signing") return "🆓 Free-Agent Signing";
-    return escapeHtml(type || "Player Movement");
-}
-
-function movementPlayerName(request) {
-    return request.players?.full_name || "Unknown Player";
-}
-
-function movementTeamName(team) {
-    return team?.name || "Unknown Team";
-}
-
 async function loadPlayerMovementDashboard() {
 
+    const list =
+        document.getElementById("playerMovementList");
+
+    if (!list) {
+        return;
+    }
+
+    list.innerHTML = `
+        <div class="loading">
+            Loading player movement...
+        </div>
+    `;
+
     try {
-        ensurePlayerMovementDashboard();
 
         const {
             data,
             error
-        } = await supabaseClient
-            .from("player_movement_requests")
-            .select(`
-                id,
-                player_id,
-                request_type,
-                requesting_team_id,
-                from_team_id,
-                to_team_id,
-                competition_id,
-                from_team_status,
-                from_team_reviewed_at,
-                from_team_notes,
-                admin_status,
-                reviewed_at,
-                admin_notes,
-                reason,
-                status,
-                created_at,
-                updated_at,
-                players (
-                    id,
-                    full_name,
-                    jersey_number,
-                    position,
-                    photo_url,
-                    team_id
-                ),
-                from_team:teams!player_movement_requests_from_team_id_fkey (
-                    id,
-                    name,
-                    short_name,
-                    logo_url
-                ),
-                to_team:teams!player_movement_requests_to_team_id_fkey (
-                    id,
-                    name,
-                    short_name,
-                    logo_url
-                ),
-                competitions (
-                    id,
-                    name,
-                    season,
-                    competition_type
-                )
-            `)
-            .order("created_at", { ascending: false });
+        } =
+            await supabaseClient
+                .from("player_movement_requests")
+                .select(`
+                    *,
+                    players:player_id (
+                        id,
+                        full_name,
+                        jersey_number,
+                        position,
+                        photo_url,
+                        team_id
+                    ),
+                    from_team:from_team_id (
+                        id,
+                        name,
+                        short_name,
+                        logo_url
+                    ),
+                    to_team:to_team_id (
+                        id,
+                        name,
+                        short_name,
+                        logo_url
+                    ),
+                    competitions:competition_id (
+                        id,
+                        name,
+                        season
+                    )
+                `)
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
 
         if (error) {
             throw error;
         }
 
-        playerMovementRequests = data || [];
+        playerMovementRequests =
+            data || [];
 
         const {
-            data: completedTransfers,
-            error: completedError
-        } = await supabaseClient
-            .from("player_movement_requests")
-            .select(`
-                id,
-                player_id,
-                request_type,
-                from_team_id,
-                to_team_id,
-                competition_id,
-                admin_status,
-                reviewed_at,
-                admin_notes,
-                reason,
-                status,
-                created_at,
-                updated_at,
-                players (
-                    id,
-                    full_name,
-                    jersey_number,
-                    position,
-                    photo_url
-                ),
-                from_team:teams!player_movement_requests_from_team_id_fkey (
-                    id,
-                    name,
-                    short_name,
-                    logo_url
-                ),
-                to_team:teams!player_movement_requests_to_team_id_fkey (
-                    id,
-                    name,
-                    short_name,
-                    logo_url
-                ),
-                competitions (
-                    id,
-                    name,
-                    season,
-                    competition_type
-                )
-            `)
-            .eq("request_type", "Transfer")
-            .eq("status", "Approved")
-            .order("reviewed_at", { ascending: false });
-
-        if (completedError) {
-            throw completedError;
-        }
-
-        playerMovementCompletedTransfers = completedTransfers || [];
-
-        const {
-            data: freeAgents,
-            error: freeAgentError
-        } = await supabaseClient
-            .from("players")
-            .select(`
-                id,
-                full_name,
-                jersey_number,
-                position,
-                photo_url,
-                registration_status,
-                team_id
-            `)
-            .is("team_id", null)
-            .eq("registration_status", "Approved")
-            .order("full_name", { ascending: true });
-
-        if (freeAgentError) {
-            throw freeAgentError;
-        }
-
-        playerMovementFreeAgents = freeAgents || [];
-
-        const playerIds =
-            playerMovementFreeAgents.map(function (player) {
-                return Number(player.id);
-            });
-
-        if (playerIds.length) {
-            const {
-                data: histories,
-                error: historyError
-            } = await supabaseClient
+            data: historyData,
+            error: historyError
+        } =
+            await supabaseClient
                 .from("player_club_history")
                 .select(`
-                    id,
-                    player_id,
-                    team_id,
-                    joined_at,
-                    left_at,
-                    movement_type,
-                    status,
-                    notes,
-                    team:teams (
+                    *,
+                    players:player_id (
+                        id,
+                        full_name,
+                        jersey_number,
+                        position,
+                        photo_url
+                    ),
+                    teams:team_id (
                         id,
                         name,
                         short_name,
                         logo_url
                     )
                 `)
-                .in("player_id", playerIds)
-                .order("joined_at", { ascending: false });
+                .eq(
+                    "movement_type",
+                    "Transfer"
+                )
+                .eq(
+                    "status",
+                    "Previous"
+                )
+                .order(
+                    "joined_at",
+                    {
+                        ascending:false
+                    }
+                );
 
-            if (historyError) {
-                throw historyError;
-            }
-
-            playerMovementFreeAgents =
-                playerMovementFreeAgents.map(function (player) {
-                    const history =
-                        (histories || []).find(function (item) {
-                            return Number(item.player_id) === Number(player.id);
-                        });
-
-                    return {
-                        ...player,
-                        formerHistory: history || null
-                    };
-                });
+        if (historyError) {
+            throw historyError;
         }
 
-        renderPlayerMovementCounters();
+        playerMovementCompletedTransfers =
+            historyData || [];
+
+        const {
+            data: freeAgentPlayers,
+            error: freeAgentError
+        } =
+            await supabaseClient
+                .from("players")
+                .select(`
+                    id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    photo_url,
+                    team_id,
+                    registration_status
+                `)
+                .is(
+                    "team_id",
+                    null
+                )
+                .eq(
+                    "registration_status",
+                    "Approved"
+                )
+                .order(
+                    "full_name",
+                    {
+                        ascending:true
+                    }
+                );
+
+        if (freeAgentError) {
+            throw freeAgentError;
+        }
+
+        playerMovementFreeAgents =
+            freeAgentPlayers || [];
+
         renderPlayerMovementDashboard();
 
     } catch (error) {
 
         console.error(
-            "Load player movement error:",
+            "Player movement load error:",
             error
         );
 
-        const list =
-            document.getElementById("playerMovementList");
+        list.innerHTML = `
+            <div class="admin-card">
 
-        if (list) {
-            list.innerHTML = `
-                <div class="error-message">
-                    Failed to load player movement:
-                    ${escapeHtml(error.message || "Unknown error")}
-                </div>
-            `;
-        }
+                <h3>
+                    ❌ Unable to Load Player Movement
+                </h3>
+
+                <p>
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </p>
+
+            </div>
+        `;
     }
+}
+
+function movementRequestTypeLabel(type) {
+
+    if (type === "Release") return "📤 Release Player";
+    if (type === "Transfer") return "🔁 Player Transfer";
+    if (type === "Free Agent Signing") return "🆓 Free-Agent Signing";
+
+    return escapeHtml(type || "Player Movement");
+}
+
+function movementStatusBadge(status) {
+
+    const safeStatus =
+        status || "Pending";
+
+    let background =
+        "#fff3cd";
+
+    let color =
+        "#856404";
+
+    if (safeStatus === "Approved") {
+        background =
+            "#d4edda";
+
+        color =
+            "#155724";
+    }
+
+    if (safeStatus === "Rejected") {
+        background =
+            "#f8d7da";
+
+        color =
+            "#721c24";
+    }
+
+    return `
+        <span
+            style="
+                display:inline-block;
+                padding:6px 10px;
+                border-radius:20px;
+                background:${background};
+                color:${color};
+                font-weight:700;
+            "
+        >
+            ${escapeHtml(safeStatus)}
+        </span>
+    `;
+}
+
+function movementTeamName(team) {
+
+    if (!team) {
+        return "Unknown Team";
+    }
+
+    return (
+        team.short_name ||
+        team.name ||
+        "Unknown Team"
+    );
 }
 
 function renderPlayerMovementCounters() {
 
-    const container =
-        document.getElementById("playerMovementCounters");
+    const counters =
+        document.getElementById(
+            "playerMovementCounters"
+        );
 
-    if (!container) return;
+    if (!counters) {
+        return;
+    }
 
     const pendingReleases =
-        playerMovementRequests.filter(function (request) {
-            return request.request_type === "Release" &&
-                   request.status === "Pending";
-        }).length;
+        playerMovementRequests.filter(
+            function (request) {
+                return (
+                    request.request_type === "Release" &&
+                    request.status === "Pending"
+                );
+            }
+        ).length;
 
     const pendingTransfers =
-        playerMovementRequests.filter(function (request) {
-            return request.request_type === "Transfer" &&
-                   request.status === "Pending";
-        }).length;
+        playerMovementRequests.filter(
+            function (request) {
+                return (
+                    request.request_type === "Transfer" &&
+                    request.status === "Pending"
+                );
+            }
+        ).length;
 
     const pendingSignings =
-        playerMovementRequests.filter(function (request) {
-            return request.request_type === "Free Agent Signing" &&
-                   request.status === "Pending";
-        }).length;
+        playerMovementRequests.filter(
+            function (request) {
+                return (
+                    request.request_type === "Free Agent Signing" &&
+                    request.status === "Pending"
+                );
+            }
+        ).length;
 
     const completedTransfers =
         playerMovementCompletedTransfers.length;
@@ -7881,376 +8034,1231 @@ function renderPlayerMovementCounters() {
     const freeAgents =
         playerMovementFreeAgents.length;
 
-    container.innerHTML = `
+    counters.innerHTML = `
+
         <div class="stat-card">
-            <div class="stat-icon">ðŸ“¤</div>
+            <div class="stat-icon">📤</div>
             <div class="stat-number">${pendingReleases}</div>
             <div class="stat-label">Pending Releases</div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">ðŸ”</div>
+            <div class="stat-icon">🔁</div>
             <div class="stat-number">${pendingTransfers}</div>
             <div class="stat-label">Pending Transfers</div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">ðŸ†“</div>
+            <div class="stat-icon">🆓</div>
             <div class="stat-number">${pendingSignings}</div>
             <div class="stat-label">Pending Free-Agent Signings</div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">ðŸ†</div>
+            <div class="stat-icon">🏆</div>
             <div class="stat-number">${completedTransfers}</div>
             <div class="stat-label">Completed Transfers</div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">ðŸ‘¤</div>
+            <div class="stat-icon">👤</div>
             <div class="stat-number">${freeAgents}</div>
             <div class="stat-label">Free Agents</div>
         </div>
+
     `;
 }
 
 function renderPlayerMovementDashboard() {
 
-    const container =
-        document.getElementById("playerMovementList");
+    renderPlayerMovementCounters();
 
-    if (!container) return;
+    const list =
+        document.getElementById(
+            "playerMovementList"
+        );
 
-    let items = [];
-
-    if (playerMovementFilter === "Free Agents") {
-        items = playerMovementFreeAgents.map(function (player) {
-            return {
-                kind: "free-agent",
-                player: player
-            };
-        });
-    }
-    else if (playerMovementFilter === "Completed Transfer") {
-        items = playerMovementCompletedTransfers.map(function (request) {
-            return {
-                kind: "completed-transfer",
-                request: request
-            };
-        });
-    }
-    else {
-        items = playerMovementRequests
-            .filter(function (request) {
-
-                if (playerMovementFilter === "Pending") {
-                    return request.status === "Pending";
-                }
-
-                if (playerMovementFilter === "All") {
-                    return true;
-                }
-
-                return request.request_type === playerMovementFilter;
-            })
-            .map(function (request) {
-                return {
-                    kind: "request",
-                    request: request
-                };
-            });
-    }
-
-    if (playerMovementSearch) {
-        items = items.filter(function (item) {
-
-            const request = item.request || {};
-            const player = item.player || request.players || {};
-            const fromTeam = request.from_team || {};
-            const toTeam = request.to_team || {};
-            const formerTeam = item.player?.formerHistory?.team || {};
-
-            const searchable = [
-                player.full_name,
-                player.position,
-                fromTeam.name,
-                toTeam.name,
-                formerTeam.name,
-                request.request_type,
-                request.status
-            ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
-
-            return searchable.includes(playerMovementSearch);
-        });
-    }
-
-    if (!items.length) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div style="font-size:42px;margin-bottom:10px;">ðŸ”„</div>
-                <h3>No Player Movement Records</h3>
-                <p>
-                    There are currently no records matching this selection.
-                </p>
-            </div>
-        `;
+    if (!list) {
         return;
     }
 
-    container.innerHTML = items.map(function (item) {
-        if (item.kind === "free-agent") {
-            return createFreeAgentAdminCard(item.player);
-        }
+    if (
+        playerMovementFilter ===
+        "Free Agents"
+    ) {
 
-        if (item.kind === "completed-transfer") {
-            return createCompletedTransferAdminCard(item.request);
-        }
+        renderPlayerMovementFreeAgents(
+            list
+        );
 
-        return createPlayerMovementRequestCard(item.request);
-    }).join("");
-}
+        return;
+    }
 
-function createPlayerMovementRequestCard(request) {
+    if (
+        playerMovementFilter ===
+        "Completed Transfer"
+    ) {
 
-    const player = request.players || {};
-    const fromTeam = request.from_team || {};
-    const toTeam = request.to_team || {};
-    const competition = request.competitions || {};
+        renderPlayerMovementCompletedTransfers(
+            list
+        );
 
-    const isTransfer =
-        request.request_type === "Transfer";
+        return;
+    }
 
-    const waitingForTeam =
-        isTransfer &&
-        request.from_team_status !== "Approved";
+    let requests =
+        [...playerMovementRequests];
 
-    const status = request.status || "Pending";
-    const submitted = request.created_at
-        ? new Date(request.created_at).toLocaleString()
-        : "Unknown date";
+    if (
+        playerMovementFilter ===
+        "Pending"
+    ) {
 
-    const photo = player.photo_url
-        ? `<img src="${escapeHtml(player.photo_url)}"
-                alt="Player photo"
-                style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:2px solid #ddd;">`
-        : `<div style="width:64px;height:64px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:28px;">👤</div>`;
+        requests =
+            requests.filter(
+                function (request) {
+                    return (
+                        request.status ===
+                        "Pending"
+                    );
+                }
+            );
 
-    const adminActionButtons = status === "Pending"
-        ? `
-            <button
-                type="button"
-                class="btn btn-primary"
-                onclick="reviewPlayerMovement(${Number(request.id)}, 'approve')"
-                ${waitingForTeam ? "disabled style=\"opacity:.55;cursor:not-allowed;\"" : ""}
-            >
-                ✅ Approve
-            </button>
+    }
+    else if (
+        playerMovementFilter !==
+        "All"
+    ) {
 
-            <button
-                type="button"
-                class="btn btn-danger"
-                onclick="reviewPlayerMovement(${Number(request.id)}, 'reject')"
-            >
-                ❌ Reject
-            </button>
-        `
-        : "";
+        requests =
+            requests.filter(
+                function (request) {
+                    return (
+                        request.request_type ===
+                        playerMovementFilter
+                    );
+                }
+            );
+    }
 
-    return `
-        <div class="form-card" style="margin-bottom:15px;border-left:5px solid ${
-            status === "Approved" ? "#198754" :
-            status === "Rejected" ? "#dc3545" :
-            "#f5c542"
-        }">
+    if (playerMovementSearch) {
 
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;">
+        requests =
+            requests.filter(
+                function (request) {
 
-                <div style="display:flex;gap:14px;align-items:center;min-width:250px;">
-                    ${photo}
+                    const player =
+                        request.players ||
+                        {};
+
+                    const fromTeam =
+                        request.from_team ||
+                        {};
+
+                    const toTeam =
+                        request.to_team ||
+                        {};
+
+                    const searchText =
+                        (
+                            player.full_name ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            fromTeam.name ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            toTeam.name ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            request.request_type ||
+                            ""
+                        );
+
+                    return searchText
+                        .toLowerCase()
+                        .includes(
+                            playerMovementSearch
+                        );
+                }
+            );
+    }
+
+    if (
+        requests.length ===
+        0
+    ) {
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                <div
+                    style="
+                        font-size:42px;
+                        margin-bottom:10px;
+                    "
+                >
+                    🔄
+                </div>
+
+                <p>
+                    No player movement requests found.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    requests.forEach(
+        function (request) {
+
+            const player =
+                request.players ||
+                {};
+
+            const fromTeam =
+                request.from_team ||
+                {};
+
+            const toTeam =
+                request.to_team ||
+                {};
+
+            const competition =
+                request.competitions ||
+                {};
+
+            const status =
+                request.status ||
+                "Pending";
+
+            const submitted =
+                request.created_at
+                    ? new Date(
+                        request.created_at
+                    ).toLocaleString(
+                        "en-KE"
+                    )
+                    : "-";
+
+            const photo =
+                player.photo_url
+                    ? `
+                        <img
+                            src="${escapeHtml(
+                                player.photo_url
+                            )}"
+                            alt="Player photo"
+                            style="
+                                width:64px;
+                                height:64px;
+                                object-fit:cover;
+                                border-radius:50%;
+                                border:2px solid #ddd;
+                            "
+                        >
+                    `
+                    : `
+                        <div
+                            style="
+                                width:64px;
+                                height:64px;
+                                border-radius:50%;
+                                background:#eee;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                font-size:28px;
+                            "
+                        >
+                            👤
+                        </div>
+                    `;
+
+            const waitingForTeam =
+                request.request_type ===
+                    "Transfer" &&
+                request.from_team_status !==
+                    "Approved";
+
+            const adminActionButtons =
+                status === "Pending"
+                    ? `
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            onclick="reviewPlayerMovement(
+                                ${Number(request.id)},
+                                'approve'
+                            )"
+                            ${
+                                waitingForTeam
+                                    ? "disabled style=\"opacity:.55;cursor:not-allowed;\""
+                                    : ""
+                            }
+                        >
+                            ✅ Approve
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            onclick="reviewPlayerMovement(
+                                ${Number(request.id)},
+                                'reject'
+                            )"
+                        >
+                            ❌ Reject
+                        </button>
+                    `
+                    : "";
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "admin-card";
+
+            card.innerHTML = `
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:15px;
+                        align-items:flex-start;
+                        flex-wrap:wrap;
+                    "
+                >
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:14px;
+                            align-items:center;
+                        "
+                    >
+
+                        ${photo}
+
+                        <div>
+
+                            <h3>
+                                ${movementRequestTypeLabel(
+                                    request.request_type
+                                )}
+                            </h3>
+
+                            <p>
+                                <strong>
+                                    ${escapeHtml(
+                                        player.full_name ||
+                                        "Unknown Player"
+                                    )}
+                                </strong>
+                            </p>
+
+                            <p>
+                                ${escapeHtml(
+                                    player.position ||
+                                    "Position not available"
+                                )}
+                                ${
+                                    player.jersey_number !== null &&
+                                    player.jersey_number !== undefined
+                                        ? `
+                                            • Jersey
+                                            ${escapeHtml(
+                                                player.jersey_number
+                                            )}
+                                        `
+                                        : ""
+                                }
+                            </p>
+
+                        </div>
+
+                    </div>
+
                     <div>
-                        <h3 style="margin-bottom:5px;">
-                            ${movementRequestTypeLabel(request.request_type)}
-                        </h3>
-                        <p><strong>Player:</strong> ${escapeHtml(player.full_name || "Unknown Player")}</p>
-                        <p><strong>Position:</strong> ${escapeHtml(player.position || "Not available")}</p>
-                        <p><strong>Jersey:</strong> ${escapeHtml(player.jersey_number ?? "Not available")}</p>
+                        ${movementStatusBadge(
+                            status
+                        )}
                     </div>
+
                 </div>
 
-                <div>
-                    ${movementStatusBadge(status)}
-                </div>
-            </div>
 
-            <div style="margin-top:15px;display:grid;gap:7px;">
-                <p><strong>From Team:</strong> ${escapeHtml(movementTeamName(fromTeam))}</p>
-                <p><strong>To Team:</strong> ${
-    request.request_type === "Release"
-        ? "Free Agent"
-        : escapeHtml(movementTeamName(toTeam))
-}</p>
-                <p><strong>Competition:</strong> ${escapeHtml(competition.name || "Club Squad")}</p>
-                <p><strong>Submitted:</strong> ${escapeHtml(submitted)}</p>
-                <p><strong>Current Team Approval:</strong> ${escapeHtml(request.from_team_status || "Not Required")}</p>
-                <p><strong>Administrator Approval:</strong> ${escapeHtml(request.admin_status || status)}</p>
-                ${waitingForTeam ? `
-                    <p style="color:#856404;background:#fff3cd;padding:10px;border-radius:8px;">
-                        ⏳ Waiting for the current team to approve this transfer before administrator approval.
+                <div
+                    style="
+                        margin-top:18px;
+                        display:grid;
+                        gap:7px;
+                    "
+                >
+
+                    <p>
+                        <strong>
+                            From Team:
+                        </strong>
+                        ${escapeHtml(
+                            movementTeamName(
+                                fromTeam
+                            )
+                        )}
                     </p>
-                ` : ""}
-                ${request.reason ? `
-                    <p><strong>Reason:</strong> ${escapeHtml(request.reason)}</p>
-                ` : ""}
-                ${request.admin_notes ? `
-                    <p><strong>Admin Notes:</strong> ${escapeHtml(request.admin_notes)}</p>
-                ` : ""}
-                ${request.from_team_notes ? `
-                    <p><strong>Current Team Notes:</strong> ${escapeHtml(request.from_team_notes)}</p>
-                ` : ""}
-            </div>
 
-            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
-                ${adminActionButtons}
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    onclick="openPlayerMovementDetails(${Number(request.id)})"
+
+                    <p>
+                        <strong>
+                            To Team:
+                        </strong>
+                        ${
+                            request.request_type ===
+                            "Release"
+                                ? "Free Agent"
+                                : escapeHtml(
+                                    movementTeamName(
+                                        toTeam
+                                    )
+                                )
+                        }
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Competition:
+                        </strong>
+                        ${escapeHtml(
+                            competition.name ||
+                            "Club Squad"
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Submitted:
+                        </strong>
+                        ${escapeHtml(
+                            submitted
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Current Team Approval:
+                        </strong>
+                        ${escapeHtml(
+                            request.from_team_status ||
+                            "Not Required"
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>
+                            Administrator Approval:
+                        </strong>
+                        ${escapeHtml(
+                            request.admin_status ||
+                            status
+                        )}
+                    </p>
+
+
+                    ${
+                        waitingForTeam
+                            ? `
+                                <p
+                                    style="
+                                        color:#856404;
+                                        background:#fff3cd;
+                                        padding:10px;
+                                        border-radius:8px;
+                                    "
+                                >
+                                    ⏳ Waiting for the current team
+                                    to approve this transfer before
+                                    administrator approval.
+                                </p>
+                            `
+                            : ""
+                    }
+
+
+                    ${
+                        request.reason
+                            ? `
+                                <p>
+                                    <strong>
+                                        Reason:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.reason
+                                    )}
+                                </p>
+                            `
+                            : ""
+                    }
+
+                </div>
+
+
+                <div
+                    style="
+                        margin-top:18px;
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                    "
                 >
-                   👁️ View Details
-                </button>
-            </div>
-        </div>
-    `;
+
+                    ${adminActionButtons}
+
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="openPlayerMovementDetails(
+                            ${Number(request.id)}
+                        )"
+                    >
+                        👁️ View Details
+                    </button>
+
+                </div>
+
+            `;
+
+            list.appendChild(
+                card
+            );
+        }
+    );
 }
 
-function createCompletedTransferAdminCard(request) {
+function renderPlayerMovementCompletedTransfers(
+    list
+) {
 
-    const player = request.players || {};
-    const fromTeam = request.from_team || {};
-    const toTeam = request.to_team || {};
-    const competition = request.competitions || {};
+    if (
+        playerMovementCompletedTransfers.length ===
+        0
+    ) {
 
-    const completedAt = request.reviewed_at
-        ? new Date(request.reviewed_at).toLocaleString()
-        : "Unknown date";
+        list.innerHTML = `
 
-    const photo = player.photo_url
-        ? `<img src="${escapeHtml(player.photo_url)}"
-                alt="Player photo"
-                style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:2px solid #ddd;">`
-        : `<div style="width:64px;height:64px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:28px;">ðŸ‘¤</div>`;
+            <div class="empty">
 
-    return `
-        <div class="form-card" style="margin-bottom:15px;border-left:5px solid #198754;">
-            <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
-                ${photo}
-                <div style="flex:1;min-width:220px;">
-                    <h3>🏆 Completed Transfer</h3>
-                    <p><strong>Player:</strong> ${escapeHtml(player.full_name || "Unknown Player")}</p>
-                    <p><strong>From:</strong> ${escapeHtml(movementTeamName(fromTeam))}</p>
-                    <p><strong>To:</strong> ${escapeHtml(movementTeamName(toTeam))}</p>
-                    <p><strong>Competition:</strong> ${escapeHtml(competition.name || "Club Squad")}</p>
-                    <p><strong>Completed:</strong> ${escapeHtml(completedAt)}</p>
-                </div>
-                <div>${movementStatusBadge("Approved")}</div>
-            </div>
-
-            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    onclick="openPlayerMovementDetails(${Number(request.id)})"
+                <div
+                    style="
+                        font-size:42px;
+                        margin-bottom:10px;
+                    "
                 >
-                    👁️ View Details
-                </button>
-            </div>
-        </div>
-    `;
-}
-
-function createFreeAgentAdminCard(player) {
-
-    const history = player.formerHistory || {};
-    const formerTeam = history.team || {};
-
-    const photo = player.photo_url
-        ? `<img src="${escapeHtml(player.photo_url)}"
-                alt="Player photo"
-                style="width:72px;height:72px;object-fit:cover;border-radius:50%;border:2px solid #ddd;">`
-        : `<div style="width:72px;height:72px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:30px;">ðŸ‘¤</div>`;
-
-    const releasedAt = history.left_at
-        ? new Date(history.left_at).toLocaleDateString()
-        : "Not recorded";
-
-    const formerLogo = formerTeam.logo_url
-        ? `<img src="${escapeHtml(formerTeam.logo_url)}"
-                alt="Former team logo"
-                style="width:42px;height:42px;object-fit:contain;border-radius:8px;">`
-        : "";
-
-    return `
-        <div class="form-card" style="margin-bottom:15px;border-left:5px solid #f5c542;">
-            <div style="display:flex;gap:15px;align-items:center;flex-wrap:wrap;">
-                ${photo}
-                <div style="flex:1;min-width:220px;">
-                    <h3>🆓 ${escapeHtml(player.full_name || "Unknown Player")}</h3>
-                    <p><strong>Position:</strong> ${escapeHtml(player.position || "Not available")}</p>
-                    <p><strong>Jersey:</strong> ${escapeHtml(player.jersey_number ?? "Not available")}</p>
-                    <p><strong>Status:</strong> Free Agent</p>
+                    🏆
                 </div>
-                <div style="text-align:center;min-width:130px;">
-                    ${formerLogo}
-                    <div style="margin-top:5px;font-weight:700;">
-                        ${escapeHtml(formerTeam.name || "No Former Club")}
+
+                <p>
+                    No completed transfers found.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    let transfers =
+        [...playerMovementCompletedTransfers];
+
+    if (playerMovementSearch) {
+
+        transfers =
+            transfers.filter(
+                function (history) {
+
+                    const player =
+                        history.players ||
+                        {};
+
+                    const team =
+                        history.teams ||
+                        {};
+
+                    const text =
+                        (
+                            player.full_name ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            team.name ||
+                            ""
+                        ) +
+                        " Transfer";
+
+                    return text
+                        .toLowerCase()
+                        .includes(
+                            playerMovementSearch
+                        );
+                }
+            );
+    }
+
+    if (
+        transfers.length ===
+        0
+    ) {
+
+        list.innerHTML = `
+            <div class="empty">
+                No completed transfers match your search.
+            </div>
+        `;
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    transfers.forEach(
+        function (history) {
+
+            const player =
+                history.players ||
+                {};
+
+            const team =
+                history.teams ||
+                {};
+
+            const joined =
+                history.joined_at
+                    ? new Date(
+                        history.joined_at
+                    ).toLocaleDateString(
+                        "en-KE"
+                    )
+                    : "-";
+
+            const left =
+                history.left_at
+                    ? new Date(
+                        history.left_at
+                    ).toLocaleDateString(
+                        "en-KE"
+                    )
+                    : "Current";
+
+            const photo =
+                player.photo_url
+                    ? `
+                        <img
+                            src="${escapeHtml(
+                                player.photo_url
+                            )}"
+                            alt="Player photo"
+                            style="
+                                width:64px;
+                                height:64px;
+                                object-fit:cover;
+                                border-radius:50%;
+                                border:2px solid #ddd;
+                            "
+                        >
+                    `
+                    : `
+                        <div
+                            style="
+                                width:64px;
+                                height:64px;
+                                border-radius:50%;
+                                background:#eee;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                font-size:28px;
+                            "
+                        >
+                            👤
+                        </div>
+                    `;
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "admin-card";
+
+            card.innerHTML = `
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:15px;
+                        align-items:flex-start;
+                        flex-wrap:wrap;
+                    "
+                >
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:14px;
+                            align-items:center;
+                        "
+                    >
+
+                        ${photo}
+
+                        <div>
+
+                            <h3>
+                                🏆 Completed Transfer
+                            </h3>
+
+                            <p>
+                                <strong>
+                                    ${escapeHtml(
+                                        player.full_name ||
+                                        "Unknown Player"
+                                    )}
+                                </strong>
+                            </p>
+
+                            <p>
+                                ${escapeHtml(
+                                    player.position ||
+                                    "Position not available"
+                                )}
+                                ${
+                                    player.jersey_number !== null &&
+                                    player.jersey_number !== undefined
+                                        ? `
+                                            • Jersey
+                                            ${escapeHtml(
+                                                player.jersey_number
+                                            )}
+                                        `
+                                        : ""
+                                }
+                            </p>
+
+                        </div>
+
                     </div>
+
+                    <div>
+                        ${movementStatusBadge(
+                            "Approved"
+                        )}
+                    </div>
+
                 </div>
+
+
+                <div
+                    style="
+                        margin-top:18px;
+                        display:grid;
+                        gap:7px;
+                    "
+                >
+
+                    <p>
+                        <strong>
+                            Club:
+                        </strong>
+                        ${escapeHtml(
+                            team.name ||
+                            "Unknown Team"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Joined:
+                        </strong>
+                        ${escapeHtml(
+                            joined
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Left:
+                        </strong>
+                        ${escapeHtml(
+                            left
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Movement:
+                        </strong>
+                        Transfer
+                    </p>
+
+                </div>
+
+
+                <div
+                    style="
+                        margin-top:18px;
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                    "
+                >
+
+                    <a
+                        href="player-profile.html?id=${Number(
+                            player.id
+                        )}"
+                        class="btn btn-primary"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        👤 View Player Profile
+                    </a>
+
+                </div>
+
+            `;
+
+            list.appendChild(
+                card
+            );
+        }
+    );
+}
+
+async function renderPlayerMovementFreeAgents(
+    list
+) {
+
+    let freeAgents =
+        [...playerMovementFreeAgents];
+
+    if (playerMovementSearch) {
+
+        freeAgents =
+            freeAgents.filter(
+                function (player) {
+
+                    return (
+                        player.full_name ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            playerMovementSearch
+                        );
+                }
+            );
+    }
+
+    if (
+        freeAgents.length ===
+        0
+    ) {
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                <div
+                    style="
+                        font-size:42px;
+                        margin-bottom:10px;
+                    "
+                >
+                    🆓
+                </div>
+
+                <p>
+                    No free agents found.
+                </p>
+
             </div>
 
-            <div style="margin-top:12px;display:grid;gap:6px;">
-                <p><strong>Former Club:</strong> ${escapeHtml(formerTeam.name || "Not recorded")}</p>
-                <p><strong>Released:</strong> ${escapeHtml(releasedAt)}</p>
-                ${history.movement_type ? `<p><strong>Movement:</strong> ${escapeHtml(history.movement_type)}</p>` : ""}
+        `;
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    for (
+        const player of freeAgents
+    ) {
+
+        let history = null;
+
+        try {
+
+            const {
+                data
+            } =
+                await supabaseClient
+                    .from(
+                        "player_club_history"
+                    )
+                    .select(`
+                        *,
+                        teams:team_id (
+                            id,
+                            name,
+                            short_name,
+                            logo_url
+                        )
+                    `)
+                    .eq(
+                        "player_id",
+                        player.id
+                    )
+                    .eq(
+                        "movement_type",
+                        "Release"
+                    )
+                    .order(
+                        "joined_at",
+                        {
+                            ascending:false
+                        }
+                    )
+                    .limit(1)
+                    .maybeSingle();
+
+            history =
+                data ||
+                null;
+
+        } catch (error) {
+
+            console.warn(
+                "Free agent history error:",
+                error
+            );
+        }
+
+        const formerTeam =
+            history?.teams ||
+            {};
+
+        const releasedAt =
+            history?.left_at
+                ? new Date(
+                    history.left_at
+                ).toLocaleDateString(
+                    "en-KE"
+                )
+                : "Not recorded";
+
+        const formerLogo =
+            formerTeam.logo_url
+                ? `
+                    <img
+                        src="${escapeHtml(
+                            formerTeam.logo_url
+                        )}"
+                        alt="Former team logo"
+                        style="
+                            width:65px;
+                            height:65px;
+                            object-fit:contain;
+                            border-radius:10px;
+                            border:1px solid #ddd;
+                            background:#fff;
+                        "
+                    >
+                `
+                : `
+                    <div
+                        style="
+                            width:65px;
+                            height:65px;
+                            border-radius:10px;
+                            background:#f2f2f2;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            font-size:28px;
+                        "
+                    >
+                        ⚽
+                    </div>
+                `;
+
+        const photo =
+            player.photo_url
+                ? `
+                    <img
+                        src="${escapeHtml(
+                            player.photo_url
+                        )}"
+                        alt="Player photo"
+                        style="
+                            width:72px;
+                            height:72px;
+                            object-fit:cover;
+                            border-radius:50%;
+                            border:2px solid #ddd;
+                        "
+                    >
+                `
+                : `
+                    <div
+                        style="
+                            width:72px;
+                            height:72px;
+                            border-radius:50%;
+                            background:#eee;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            font-size:30px;
+                        "
+                    >
+                        👤
+                    </div>
+                `;
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+        card.className =
+            "admin-card";
+
+        card.innerHTML = `
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    gap:18px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <div
+                    style="
+                        display:flex;
+                        gap:14px;
+                        align-items:center;
+                    "
+                >
+
+                    ${photo}
+
+                    <div>
+
+                        <h3>
+                            🆓 ${escapeHtml(
+                                player.full_name ||
+                                "Unknown Player"
+                            )}
+                        </h3>
+
+                        <p>
+                            ${escapeHtml(
+                                player.position ||
+                                "Position not available"
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Jersey:
+                            </strong>
+                            ${escapeHtml(
+                                player.jersey_number ??
+                                "Not available"
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Status:
+                            </strong>
+                            Free Agent
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    style="
+                        text-align:center;
+                        min-width:130px;
+                    "
+                >
+
+                    ${formerLogo}
+
+                    <div
+                        style="
+                            margin-top:5px;
+                            font-weight:700;
+                        "
+                    >
+                        ${escapeHtml(
+                            formerTeam.name ||
+                            "No Former Club"
+                        )}
+                    </div>
+
+                </div>
+
             </div>
 
-            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+
+            <div
+                style="
+                    margin-top:12px;
+                    display:grid;
+                    gap:6px;
+                "
+            >
+
+                <p>
+                    <strong>
+                        Former Club:
+                    </strong>
+                    ${escapeHtml(
+                        formerTeam.name ||
+                        "Not recorded"
+                    )}
+                </p>
+
+                <p>
+                    <strong>
+                        Released:
+                    </strong>
+                    ${escapeHtml(
+                        releasedAt
+                    )}
+                </p>
+
+                ${
+                    history?.movement_type
+                        ? `
+                            <p>
+                                <strong>
+                                    Movement:
+                                </strong>
+                                ${escapeHtml(
+                                    history.movement_type
+                                )}
+                            </p>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div
+                style="
+                    margin-top:15px;
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                "
+            >
+
                 <a
-                    href="player-profile.html?id=${Number(player.id)}"
+                    href="player-profile.html?id=${Number(
+                        player.id
+                    )}"
                     class="btn btn-primary"
                     target="_blank"
                     rel="noopener"
                 >
-                    ðŸ‘¤ View Player Profile
+                    👤 View Player Profile
                 </a>
+
             </div>
-        </div>
-    `;
+
+        `;
+
+        list.appendChild(
+            card
+        );
+    }
 }
 
-function openPlayerMovementDetails(requestId) {
+function openPlayerMovementDetails(
+    requestId
+) {
 
     const request =
-        playerMovementRequests.find(function (item) {
-            return Number(item.id) === Number(requestId);
-        }) ||
-        playerMovementCompletedTransfers.find(function (item) {
-            return Number(item.id) === Number(requestId);
-        });
+        playerMovementRequests.find(
+            function (item) {
+                return (
+                    Number(item.id) ===
+                    Number(requestId)
+                );
+            }
+        ) ||
+        playerMovementCompletedTransfers.find(
+            function (item) {
+                return (
+                    Number(item.id) ===
+                    Number(requestId)
+                );
+            }
+        );
 
     if (!request) {
-        alert("Movement request not found.");
+        alert(
+            "Movement request not found."
+        );
         return;
     }
 
     let modal =
-        document.getElementById("playerMovementModal");
+        document.getElementById(
+            "playerMovementModal"
+        );
 
     if (!modal) {
-        modal = document.createElement("div");
-        modal.id = "playerMovementModal";
+
+        modal =
+            document.createElement(
+                "div"
+            );
+
+        modal.id =
+            "playerMovementModal";
+
         modal.style.cssText = `
             position:fixed;
             inset:0;
@@ -8291,133 +9299,409 @@ function openPlayerMovementDetails(requestId) {
                         font-weight:900;
                         cursor:pointer;
                     "
-                >Ã—</button>
-                <div id="playerMovementModalContent"></div>
+                >×</button>
+
+                <div
+                    id="playerMovementModalContent"
+                ></div>
             </div>
         `;
 
-        document.body.appendChild(modal);
+        document.body.appendChild(
+            modal
+        );
 
-        document.getElementById("closePlayerMovementModal")
-            ?.addEventListener("click", function () {
-                modal.style.display = "none";
-            });
+        document
+            .getElementById(
+                "closePlayerMovementModal"
+            )
+            ?.addEventListener(
+                "click",
+                function () {
+                    modal.style.display =
+                        "none";
+                }
+            );
     }
 
-    const player = request.players || {};
-    const fromTeam = request.from_team || {};
-    const toTeam = request.to_team || {};
-    const competition = request.competitions || {};
+    const player =
+        request.players ||
+        {};
 
-    const content = document.getElementById("playerMovementModalContent");
+    const fromTeam =
+        request.from_team ||
+        {};
+
+    const toTeam =
+        request.to_team ||
+        {};
+
+    const competition =
+        request.competitions ||
+        {};
+
+    const content =
+        document.getElementById(
+            "playerMovementModalContent"
+        );
 
     if (!content) return;
 
     content.innerHTML = `
-        <h2>🔄 Player Movement Details</h2>
 
-        <div style="margin-top:18px;display:grid;gap:9px;">
-            <p><strong>Request ID:</strong> ${escapeHtml(request.id)}</p>
-            <p><strong>Movement:</strong> ${movementRequestTypeLabel(request.request_type)}</p>
-            <p><strong>Player:</strong> ${escapeHtml(player.full_name || "Unknown Player")}</p>
-            <p><strong>Position:</strong> ${escapeHtml(player.position || "Not available")}</p>
-            <p><strong>Jersey:</strong> ${escapeHtml(player.jersey_number ?? "Not available")}</p>
-            <p><strong>From Team:</strong> ${escapeHtml(fromTeam.name || "Not applicable")}</p>
-            <p><strong>To Team:</strong> ${escapeHtml(toTeam.name || "Not applicable")}</p>
-            <p><strong>Competition:</strong> ${escapeHtml(competition.name || "Club Squad")}</p>
-            <p><strong>Current Team Status:</strong> ${escapeHtml(request.from_team_status || "Not Required")}</p>
-            <p><strong>Administrator Status:</strong> ${escapeHtml(request.admin_status || request.status || "Pending")}</p>
-            <p><strong>Overall Status:</strong> ${movementStatusBadge(request.status || "Pending")}</p>
-            <p><strong>Reason:</strong> ${escapeHtml(request.reason || "No reason provided.")}</p>
-            <p><strong>Submitted:</strong> ${escapeHtml(request.created_at ? new Date(request.created_at).toLocaleString() : "Unknown")}</p>
-            ${request.from_team_notes ? `<p><strong>Current Team Notes:</strong> ${escapeHtml(request.from_team_notes)}</p>` : ""}
-            ${request.admin_notes ? `<p><strong>Admin Notes:</strong> ${escapeHtml(request.admin_notes)}</p>` : ""}
-            ${request.reviewed_at ? `<p><strong>Reviewed:</strong> ${escapeHtml(new Date(request.reviewed_at).toLocaleString())}</p>` : ""}
+        <h2>
+            🔄 Player Movement Details
+        </h2>
+
+        <div
+            style="
+                margin-top:18px;
+                display:grid;
+                gap:9px;
+            "
+        >
+
+            <p>
+                <strong>
+                    Request ID:
+                </strong>
+                ${escapeHtml(
+                    request.id
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Movement:
+                </strong>
+                ${movementRequestTypeLabel(
+                    request.request_type
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Player:
+                </strong>
+                ${escapeHtml(
+                    player.full_name ||
+                    "Unknown Player"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Position:
+                </strong>
+                ${escapeHtml(
+                    player.position ||
+                    "Not available"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Jersey:
+                </strong>
+                ${escapeHtml(
+                    player.jersey_number ??
+                    "Not available"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    From Team:
+                </strong>
+                ${escapeHtml(
+                    fromTeam.name ||
+                    "Not applicable"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    To Team:
+                </strong>
+                ${
+                    request.request_type ===
+                    "Release"
+                        ? "Free Agent"
+                        : escapeHtml(
+                            toTeam.name ||
+                            "Not applicable"
+                        )
+                }
+            </p>
+
+            <p>
+                <strong>
+                    Competition:
+                </strong>
+                ${escapeHtml(
+                    competition.name ||
+                    "Club Squad"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Current Team Status:
+                </strong>
+                ${escapeHtml(
+                    request.from_team_status ||
+                    "Not Required"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Administrator Status:
+                </strong>
+                ${escapeHtml(
+                    request.admin_status ||
+                    request.status ||
+                    "Pending"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Overall Status:
+                </strong>
+                ${movementStatusBadge(
+                    request.status ||
+                    "Pending"
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Reason:
+                </strong>
+                ${escapeHtml(
+                    request.reason ||
+                    "No reason provided."
+                )}
+            </p>
+
+            <p>
+                <strong>
+                    Submitted:
+                </strong>
+                ${escapeHtml(
+                    request.created_at
+                        ? new Date(
+                            request.created_at
+                        ).toLocaleString()
+                        : "Unknown"
+                )}
+            </p>
+
+            ${
+                request.from_team_notes
+                    ? `
+                        <p>
+                            <strong>
+                                Current Team Notes:
+                            </strong>
+                            ${escapeHtml(
+                                request.from_team_notes
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+            ${
+                request.admin_notes
+                    ? `
+                        <p>
+                            <strong>
+                                Admin Notes:
+                            </strong>
+                            ${escapeHtml(
+                                request.admin_notes
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
+            ${
+                request.reviewed_at
+                    ? `
+                        <p>
+                            <strong>
+                                Reviewed:
+                            </strong>
+                            ${escapeHtml(
+                                new Date(
+                                    request.reviewed_at
+                                ).toLocaleString()
+                            )}
+                        </p>
+                    `
+                    : ""
+            }
+
         </div>
+
     `;
 
-    modal.style.display = "flex";
+    modal.style.display =
+        "flex";
 }
 
-async function reviewPlayerMovement(requestId, action) {
+async function reviewPlayerMovement(
+    requestId,
+    action
+) {
 
     const request =
-        playerMovementRequests.find(function (item) {
-            return Number(item.id) === Number(requestId);
-        });
+        playerMovementRequests.find(
+            function (item) {
+                return (
+                    Number(item.id) ===
+                    Number(requestId)
+                );
+            }
+        );
 
     if (!request) {
-        alert("Movement request not found.");
-        return;
-    }
-
-    if (request.status !== "Pending") {
-        alert("This movement request has already been processed.");
+        alert(
+            "Movement request not found."
+        );
         return;
     }
 
     if (
-        request.request_type === "Transfer" &&
-        action === "approve" &&
-        request.from_team_status !== "Approved"
+        request.status !==
+        "Pending"
     ) {
-        alert("This transfer is waiting for approval from the current team.");
+        alert(
+            "This movement request has already been processed."
+        );
         return;
     }
 
-    const promptText = action === "approve"
-        ? "Enter administrator notes for approving this movement (optional):"
-        : "Enter the reason for rejecting this movement request:";
+    if (
+        request.request_type ===
+            "Transfer" &&
+        action ===
+            "approve" &&
+        request.from_team_status !==
+            "Approved"
+    ) {
 
-    const notes = prompt(promptText);
+        alert(
+            "This transfer is waiting for approval from the current team."
+        );
 
-    if (notes === null) {
+        return;
+    }
+
+    const promptText =
+        action === "approve"
+            ? "Enter administrator notes for approving this movement (optional):"
+            : "Enter the reason for rejecting this movement request:";
+
+    const notes =
+        prompt(
+            promptText
+        );
+
+    if (
+        notes ===
+        null
+    ) {
         return;
     }
 
     const cleanedNotes =
         notes.trim() ||
-        (action === "approve"
-            ? "Approved by administrator."
-            : "Rejected by administrator.");
+        (
+            action ===
+            "approve"
+                ? "Approved by administrator."
+                : "Rejected by administrator."
+        );
 
     let rpcName = "";
 
-    if (request.request_type === "Release") {
-        rpcName = action === "approve"
-            ? "approve_player_release"
-            : "reject_player_release";
+    if (
+        request.request_type ===
+        "Release"
+    ) {
+
+        rpcName =
+            action === "approve"
+                ? "approve_player_release"
+                : "reject_player_release";
+
     }
-    else if (request.request_type === "Free Agent Signing") {
-        rpcName = action === "approve"
-            ? "approve_free_agent_signing"
-            : "reject_free_agent_signing";
+    else if (
+        request.request_type ===
+        "Free Agent Signing"
+    ) {
+
+        rpcName =
+            action === "approve"
+                ? "approve_free_agent_signing"
+                : "reject_free_agent_signing";
+
     }
-    else if (request.request_type === "Transfer") {
-        rpcName = action === "approve"
-            ? "approve_player_transfer"
-            : "reject_player_transfer";
+    else if (
+        request.request_type ===
+        "Transfer"
+    ) {
+
+        rpcName =
+            action === "approve"
+                ? "approve_player_transfer"
+                : "reject_player_transfer";
+
     }
     else {
-        alert("Unsupported player movement type.");
+
+        alert(
+            "Unsupported player movement type."
+        );
+
         return;
     }
 
     try {
 
-        const { data, error } =
-            await supabaseClient.rpc(rpcName, {
-                p_request_id: Number(requestId),
-                p_admin_notes: cleanedNotes
-            });
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.rpc(
+                rpcName,
+                {
+                    p_request_id:
+                        Number(
+                            requestId
+                        ),
+                    p_admin_notes:
+                        cleanedNotes
+                }
+            );
 
         if (error) {
             throw error;
         }
 
-        if (data && data.success === false) {
+        if (
+            data &&
+            data.success ===
+            false
+        ) {
+
             throw new Error(
-                data.message || "Movement operation failed."
+                data.message ||
+                "Movement operation failed."
             );
         }
 
@@ -8438,10 +9722,15 @@ async function reviewPlayerMovement(requestId, action) {
         );
 
         showMessage(
-            (action === "approve"
-                ? "Approval failed: "
-                : "Rejection failed: ") +
-            (error.message || "Unknown error"),
+            (
+                action === "approve"
+                    ? "Approval failed: "
+                    : "Rejection failed: "
+            ) +
+            (
+                error.message ||
+                "Unknown error"
+            ),
             "error"
         );
     }
@@ -8458,7 +9747,9 @@ window.reviewPlayerMovement =
 // ========================================
 
 ensureSquadRequestsDashboard();
-    // ========================================
+
+
+// ========================================
 // MAKE SQUAD REQUEST FUNCTIONS AVAILABLE
 // TO DYNAMIC BUTTONS
 // ========================================
@@ -8474,43 +9765,54 @@ window.approveSquadChangeRequest =
 
 window.rejectSquadChangeRequest =
     rejectSquadChangeRequest;
-    // ========================================
-    // START DASHBOARD
-    // ========================================
-
-    console.log(
-        "Kabaru Ward Football Admin JS started."
-    );
 
 
-    const isAdmin =
-        await checkAdmin();
+// ========================================
+// START DASHBOARD
+// ========================================
+
+console.log(
+    "Kabaru Ward Football Admin JS started."
+);
 
 
-    if (!isAdmin) {
-        return;
-    }
+const isAdmin =
+    await checkAdmin();
 
 
-    console.log(
-        "Loading admin dashboard data..."
-    );
+if (!isAdmin) {
+    return;
+}
+
+
+console.log(
+    "Loading admin dashboard data..."
+);
 
 
 await loadCompetitions();
+
 await loadCompetitionRegistrationSettings();
+
 await loadApprovedTeams();
+
 await loadVenues();
+
 await loadFixtures();
+
 await loadResultFixtures();
+
 await loadPendingTeams();
+
 await loadSquadChangeRequests();
+
 ensurePlayerMovementDashboard();
+
 await loadPlayerMovementDashboard();
 
 
-    console.log(
-        "Kabaru Ward Football Admin Dashboard loaded."
-    );
+console.log(
+    "Kabaru Ward Football Admin Dashboard loaded."
+);
 
 });
