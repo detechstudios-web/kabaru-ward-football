@@ -1494,30 +1494,92 @@ footer strong {
         </div>
 
         <div class="card-subtitle">
-            Select a player from your current squad and the approved team you want to transfer the player to.
-            Your request will first go to the player's current team for approval.
+            Select the club where the player currently plays,
+            then select the player you want to sign.
+            Your request will first go to the player's current
+            club for approval.
         </div>
 
         <form id="transferForm">
 
+            <!-- CURRENT CLUB -->
             <div class="form-group">
-                <label for="transferPlayerSelect">Player *</label>
-                <select id="transferPlayerSelect" class="form-control" required>
-                    <option value="">Select player</option>
+                <label for="transferCurrentTeamSelect">
+                    Current Club *
+                </label>
+
+                <select
+                    id="transferCurrentTeamSelect"
+                    class="form-control"
+                    required
+                >
+                    <option value="">
+                        Select current club
+                    </option>
                 </select>
+
+                <small>
+                    Select the club where the player currently plays.
+                </small>
             </div>
 
-            <div id="transferPlayerPreview" class="movement-player-preview" style="display:none;"></div>
-
+            <!-- PLAYER -->
             <div class="form-group">
-                <label for="transferDestinationSelect">Destination Team *</label>
-                <select id="transferDestinationSelect" class="form-control" required>
-                    <option value="">Loading approved teams...</option>
+                <label for="transferPlayerSelect">
+                    Player *
+                </label>
+
+                <select
+                    id="transferPlayerSelect"
+                    class="form-control"
+                    required
+                    disabled
+                >
+                    <option value="">
+                        Select current club first
+                    </option>
                 </select>
+
+                <small>
+                    Players from the selected club will appear here.
+                </small>
             </div>
 
+            <!-- PLAYER PREVIEW -->
+            <div
+                id="transferPlayerPreview"
+                class="movement-player-preview"
+                style="display:none;"
+            ></div>
+
+            <!-- DESTINATION CLUB -->
             <div class="form-group">
-                <label for="transferReason">Reason / Notes</label>
+
+                <label for="transferDestinationDisplay">
+                    Destination Club
+                </label>
+
+                <input
+                    type="text"
+                    id="transferDestinationDisplay"
+                    class="form-control"
+                    readonly
+                >
+
+                <small>
+                    This is your club. It is automatically selected
+                    because you are requesting the transfer.
+                </small>
+
+            </div>
+
+            <!-- REASON -->
+            <div class="form-group">
+
+                <label for="transferReason">
+                    Reason / Notes
+                </label>
+
                 <textarea
                     id="transferReason"
                     class="form-control"
@@ -1525,13 +1587,33 @@ footer strong {
                     maxlength="1000"
                     placeholder="Optional: explain the reason for the transfer request."
                 ></textarea>
+
             </div>
 
-            <div id="transferFormMessage" class="message" style="display:none;"></div>
+            <div
+                id="transferFormMessage"
+                class="message"
+                style="display:none;"
+            ></div>
 
             <div class="movement-actions">
-                <button type="button" id="cancelTransferBtn" class="btn btn-secondary">Cancel</button>
-                <button type="submit" id="submitTransferBtn" class="btn btn-primary">Submit Transfer Request</button>
+
+                <button
+                    type="button"
+                    id="cancelTransferBtn"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="submitTransferBtn"
+                    class="btn btn-primary"
+                >
+                    Submit Transfer Request
+                </button>
+
             </div>
 
         </form>
