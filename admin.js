@@ -8046,7 +8046,7 @@ function createPlayerMovementRequestCard(request) {
                 onclick="reviewPlayerMovement(${Number(request.id)}, 'approve')"
                 ${waitingForTeam ? "disabled style=\"opacity:.55;cursor:not-allowed;\"" : ""}
             >
-                âœ… Approve
+                ✅ Approve
             </button>
 
             <button
@@ -8054,7 +8054,7 @@ function createPlayerMovementRequestCard(request) {
                 class="btn btn-danger"
                 onclick="reviewPlayerMovement(${Number(request.id)}, 'reject')"
             >
-                âŒ Reject
+                ❌ Reject
             </button>
         `
         : "";
@@ -8119,7 +8119,7 @@ function createPlayerMovementRequestCard(request) {
                     class="btn btn-secondary"
                     onclick="openPlayerMovementDetails(${Number(request.id)})"
                 >
-                    ðŸ‘ï¸ View Details
+                   👁️ View Details
                 </button>
             </div>
         </div>
@@ -8148,7 +8148,7 @@ function createCompletedTransferAdminCard(request) {
             <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
                 ${photo}
                 <div style="flex:1;min-width:220px;">
-                    <h3>ðŸ† Completed Transfer</h3>
+                    <h3>🏆 Completed Transfer</h3>
                     <p><strong>Player:</strong> ${escapeHtml(player.full_name || "Unknown Player")}</p>
                     <p><strong>From:</strong> ${escapeHtml(movementTeamName(fromTeam))}</p>
                     <p><strong>To:</strong> ${escapeHtml(movementTeamName(toTeam))}</p>
@@ -8164,7 +8164,7 @@ function createCompletedTransferAdminCard(request) {
                     class="btn btn-secondary"
                     onclick="openPlayerMovementDetails(${Number(request.id)})"
                 >
-                    ðŸ‘ï¸ View Details
+                    👁️ View Details
                 </button>
             </div>
         </div>
@@ -8197,7 +8197,7 @@ function createFreeAgentAdminCard(player) {
             <div style="display:flex;gap:15px;align-items:center;flex-wrap:wrap;">
                 ${photo}
                 <div style="flex:1;min-width:220px;">
-                    <h3>ðŸ†“ ${escapeHtml(player.full_name || "Unknown Player")}</h3>
+                    <h3>🆓 ${escapeHtml(player.full_name || "Unknown Player")}</h3>
                     <p><strong>Position:</strong> ${escapeHtml(player.position || "Not available")}</p>
                     <p><strong>Jersey:</strong> ${escapeHtml(player.jersey_number ?? "Not available")}</p>
                     <p><strong>Status:</strong> Free Agent</p>
@@ -8314,7 +8314,7 @@ function openPlayerMovementDetails(requestId) {
     if (!content) return;
 
     content.innerHTML = `
-        <h2>ðŸ”„ Player Movement Details</h2>
+        <h2>🔄 Player Movement Details</h2>
 
         <div style="margin-top:18px;display:grid;gap:9px;">
             <p><strong>Request ID:</strong> ${escapeHtml(request.id)}</p>
