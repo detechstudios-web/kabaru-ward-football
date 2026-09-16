@@ -9413,8 +9413,12 @@ function openPlayerMovementDetails(
                     From Team:
                 </strong>
                 ${escapeHtml(
-                    fromTeam.name ||
-                    "Not applicable"
+                    request.request_type === "Free Agent Signing"
+                        ? "Free Agent"
+                        : (
+                            fromTeam.name ||
+                            "Not applicable"
+                        )
                 )}
             </p>
 
