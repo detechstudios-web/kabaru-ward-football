@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             showMessage(
-                "âŒ Supabase library did not load.",
+                "Ã¢ÂÅ’ Supabase library did not load.",
                 "error"
             );
 
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             showMessage(
-                "âŒ Supabase connection did not load.",
+                "Ã¢ÂÅ’ Supabase connection did not load.",
                 "error"
             );
 
@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!user) {
 
                 showMessage(
-                    "âŒ You are not logged in.",
+                    "Ã¢ÂÅ’ You are not logged in.",
                     "error"
                 );
 
@@ -375,7 +375,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!admin) {
 
                 showMessage(
-                    "âŒ This account is not an administrator.",
+                    "Ã¢ÂÅ’ This account is not an administrator.",
                     "error"
                 );
 
@@ -384,7 +384,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             showMessage(
-                "âœ… Administrator access granted.",
+                "Ã¢Å“â€¦ Administrator access granted.",
                 "success"
             );
 
@@ -401,7 +401,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             showMessage(
-                "âŒ Admin verification failed: " +
+                "Ã¢ÂÅ’ Admin verification failed: " +
                 (
                     error.message ||
                     "Unknown error"
@@ -487,7 +487,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         option.textContent =
                             competition.name +
-                            " â€” " +
+                            " Ã¢â‚¬â€ " +
                             (
                                 competition.season ||
                                 ""
@@ -561,7 +561,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         >
 
                             <h3>
-                                ðŸ†
+                                Ã°Å¸Ââ€ 
                                 ${escapeHtml(
                                     competition.name
                                 )}
@@ -637,7 +637,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             competitionsList.innerHTML =
                 '<div class="empty-message">' +
-                'âŒ Unable to load competitions: ' +
+                'Ã¢ÂÅ’ Unable to load competitions: ' +
                 escapeHtml(
                     error.message ||
                     "Unknown error"
@@ -694,7 +694,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     margin-bottom:8px;
                     color:#04351f;
                 ">
-                    âš™ï¸ Squad Registration Controls
+                    Ã¢Å¡â„¢Ã¯Â¸Â Squad Registration Controls
                 </h2>
 
                 <p style="
@@ -932,7 +932,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     margin:0 0 5px 0;
                                     color:#04351f;
                                 ">
-                                    ðŸ†
+                                    Ã°Å¸Ââ€ 
                                     ${escapeHtml(
                                         competition.name
                                     )}
@@ -946,7 +946,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         competition.competition_type ||
                                         "Competition"
                                     )}
-                                    â€¢
+                                    Ã¢â‚¬Â¢
                                     Season
                                     ${escapeHtml(
                                         competition.season ||
@@ -975,8 +975,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                                 ${
                                     updatesAllowed
-                                        ? "ðŸŸ¢ UPDATES OPEN"
-                                        : "ðŸ”´ UPDATES CLOSED"
+                                        ? "Ã°Å¸Å¸Â¢ UPDATES OPEN"
+                                        : "Ã°Å¸â€Â´ UPDATES CLOSED"
                                 }
 
                             </div>
@@ -1014,7 +1014,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                ðŸŸ¢ Allow squad/team change requests
+                                Ã°Å¸Å¸Â¢ Allow squad/team change requests
 
                             </label>
 
@@ -1066,7 +1066,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                âž• Add players
+                                Ã¢Å¾â€¢ Add players
 
                             </label>
 
@@ -1090,7 +1090,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                âž– Remove players
+                                Ã¢Å¾â€“ Remove players
 
                             </label>
 
@@ -1114,7 +1114,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                âœï¸ Edit players
+                                Ã¢Å“ÂÃ¯Â¸Â Edit players
 
                             </label>
 
@@ -1138,7 +1138,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     }
                                 >
 
-                                ðŸ·ï¸ Edit team
+                                Ã°Å¸ÂÂ·Ã¯Â¸Â Edit team
 
                             </label>
 
@@ -1167,7 +1167,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     font-weight:800;
                                     margin-bottom:7px;
                                 ">
-                                    ðŸ“… Opening Date & Time
+                                    Ã°Å¸â€œâ€¦ Opening Date & Time
                                 </label>
 
                                 <input
@@ -1195,7 +1195,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     font-weight:800;
                                     margin-bottom:7px;
                                 ">
-                                    ðŸ“… Closing Date & Time
+                                    Ã°Å¸â€œâ€¦ Closing Date & Time
                                 </label>
 
                                 <input
@@ -1241,7 +1241,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     font-weight:800;
                                     margin-bottom:7px;
                                 ">
-                                    ðŸ‘¥ Maximum Squad Size
+                                    Ã°Å¸â€˜Â¥ Maximum Squad Size
                                 </label>
 
                                 <input
@@ -1286,7 +1286,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                         }
                                     >
 
-                                    ðŸ”’ Lock registration completely
+                                    Ã°Å¸â€â€™ Lock registration completely
 
                                 </label>
 
@@ -1316,7 +1316,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     cursor:pointer;
                                 "
                             >
-                                ðŸ’¾ Save Competition Controls
+                                Ã°Å¸â€™Â¾ Save Competition Controls
                             </button>
 
                             <span
@@ -1407,7 +1407,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             ) {
 
                                 message.textContent =
-                                    "âŒ Maximum squad size must be at least 1.";
+                                    "Ã¢ÂÅ’ Maximum squad size must be at least 1.";
 
                                 message.style.color =
                                     "#b00020";
@@ -1420,7 +1420,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             ) {
 
                                 message.textContent =
-                                    "âŒ Maximum squad size cannot exceed 100.";
+                                    "Ã¢ÂÅ’ Maximum squad size cannot exceed 100.";
 
                                 message.style.color =
                                     "#b00020";
@@ -1449,7 +1449,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 ) {
 
                                     message.textContent =
-                                        "âŒ Closing date/time must be after opening date/time.";
+                                        "Ã¢ÂÅ’ Closing date/time must be after opening date/time.";
 
                                     message.style.color =
                                         "#b00020";
@@ -1539,7 +1539,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 }
 
                                 message.textContent =
-                                    "âœ… Competition controls saved successfully.";
+                                    "Ã¢Å“â€¦ Competition controls saved successfully.";
 
                                 message.style.color =
                                     "#087f3e";
@@ -1552,7 +1552,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 );
 
                                 message.textContent =
-                                    "âŒ Unable to save: " +
+                                    "Ã¢ÂÅ’ Unable to save: " +
                                     (
                                         error.message ||
                                         "Unknown error"
@@ -1589,7 +1589,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             settingsList.innerHTML = `
                 <div class="empty-message">
-                    âŒ Unable to load squad controls:
+                    Ã¢ÂÅ’ Unable to load squad controls:
                     ${escapeHtml(
                         error.message ||
                         "Unknown error"
@@ -1701,7 +1701,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!name) {
 
                     competitionFormMessage.textContent =
-                        "âŒ Please enter the competition name.";
+                        "Ã¢ÂÅ’ Please enter the competition name.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1713,7 +1713,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!competitionType) {
 
                     competitionFormMessage.textContent =
-                        "âŒ Please select the competition type.";
+                        "Ã¢ÂÅ’ Please select the competition type.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1725,7 +1725,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!season) {
 
                     competitionFormMessage.textContent =
-                        "âŒ Please enter the season.";
+                        "Ã¢ÂÅ’ Please enter the season.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1741,7 +1741,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     competitionFormMessage.textContent =
-                        "âŒ End date cannot be before start date.";
+                        "Ã¢ÂÅ’ End date cannot be before start date.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1810,7 +1810,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     competitionFormMessage.textContent =
-                        "âœ… Competition created successfully!";
+                        "Ã¢Å“â€¦ Competition created successfully!";
 
 
                     competitionFormMessage.style.display =
@@ -1834,7 +1834,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     competitionFormMessage.textContent =
-                        "âŒ Unable to create competition: " +
+                        "Ã¢ÂÅ’ Unable to create competition: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -2303,7 +2303,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showFixtureMessage(
-                        "âœ… Fixture created successfully!",
+                        "Ã¢Å“â€¦ Fixture created successfully!",
                         "success"
                     );
 
@@ -2325,7 +2325,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showFixtureMessage(
-                        "âŒ Unable to create fixture: " +
+                        "Ã¢ÂÅ’ Unable to create fixture: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -2533,7 +2533,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     card.innerHTML = `
 
                         <h3>
-                            âš½
+                            Ã¢Å¡Â½
                             ${escapeHtml(
                                 home
                                     ? home.name
@@ -2548,7 +2548,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </h3>
 
                         <p>
-                            ðŸ†
+                            Ã°Å¸Ââ€ 
                             ${escapeHtml(
                                 competition
                                     ? competition.name
@@ -2557,28 +2557,28 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </p>
 
                         <p>
-                            ðŸ“…
+                            Ã°Å¸â€œâ€¦
                             ${formatDate(
                                 fixture.match_date
                             )}
                         </p>
 
                         <p>
-                            â°
+                            Ã¢ÂÂ°
                             ${formatTime(
                                 fixture.kick_off
                             )}
                         </p>
 
                         <p>
-                            ðŸ“
+                            Ã°Å¸â€œÂ
                             ${escapeHtml(
                                 fixture.venue || "-"
                             )}
                         </p>
 
                         <p>
-                            ðŸ”¢
+                            Ã°Å¸â€Â¢
                             ${escapeHtml(
                                 fixture.matchday ||
                                 "-"
@@ -2586,7 +2586,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </p>
 
                         <p>
-                            ðŸ“¢
+                            Ã°Å¸â€œÂ¢
                             <strong>
                                 ${escapeHtml(
                                     fixture.status ||
@@ -2600,7 +2600,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn delete-fixture-btn"
                             data-id="${fixture.id}"
                         >
-                            ðŸ—‘ï¸ Delete Fixture
+                            Ã°Å¸â€”â€˜Ã¯Â¸Â Delete Fixture
                         </button>
 
                     `;
@@ -2648,7 +2648,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="admin-card">
 
                     <h3>
-                        âŒ Unable to Load Fixtures
+                        Ã¢ÂÅ’ Unable to Load Fixtures
                     </h3>
 
                     <p>
@@ -3010,7 +3010,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 ? away.name
                                 : "Unknown Away Team"
                         ) +
-                        " â€” " +
+                        " Ã¢â‚¬â€ " +
                         formatDate(
                             fixture.match_date
                         );
@@ -3311,7 +3311,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 class="remove-goal-btn"
                 title="Remove goal"
             >
-                âœ•
+                Ã¢Å“â€¢
             </button>
 
         `;
@@ -3641,7 +3641,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 homeGoalWarning.textContent =
-                    "âš ï¸ Score is " +
+                    "Ã¢Å¡ Ã¯Â¸Â Score is " +
                     homeTotal +
                     " but " +
                     enteredHomeGoals +
@@ -3667,7 +3667,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 awayGoalWarning.textContent =
-                    "âš ï¸ Score is " +
+                    "Ã¢Å¡ Ã¯Â¸Â Score is " +
                     awayTotal +
                     " but " +
                     enteredAwayGoals +
@@ -3728,7 +3728,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         section.innerHTML = `
 
             <h3>
-                ðŸ‘¥ Player Appearances
+                Ã°Å¸â€˜Â¥ Player Appearances
             </h3>
 
             <p>
@@ -4247,7 +4247,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!currentFixture) {
 
                     showResultMessage(
-                        "âŒ Unable to find selected fixture.",
+                        "Ã¢ÂÅ’ Unable to find selected fixture.",
                         "error"
                     );
 
@@ -4366,7 +4366,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         selectedFixtureInfo.innerHTML = `
 
                             <strong>
-                                âš½
+                                Ã¢Å¡Â½
                                 ${escapeHtml(
                                     homeName
                                 )}
@@ -4378,7 +4378,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             <br>
 
-                            ðŸ† Matchday:
+                            Ã°Å¸Ââ€  Matchday:
                             ${escapeHtml(
                                 currentFixture.matchday ||
                                 "-"
@@ -4386,21 +4386,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                             <br>
 
-                            ðŸ“…
+                            Ã°Å¸â€œâ€¦
                             ${formatDate(
                                 currentFixture.match_date
                             )}
 
                             &nbsp;&nbsp;
 
-                            â°
+                            Ã¢ÂÂ°
                             ${formatTime(
                                 currentFixture.kick_off
                             )}
 
                             <br>
 
-                            ðŸ“
+                            Ã°Å¸â€œÂ
                             ${escapeHtml(
                                 currentFixture.venue ||
                                 "-"
@@ -4478,7 +4478,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showResultMessage(
-                        "âŒ Unable to load players: " +
+                        "Ã¢ÂÅ’ Unable to load players: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -4645,7 +4645,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!homeValidation.valid) {
 
                     showResultMessage(
-                        "âŒ " +
+                        "Ã¢ÂÅ’ " +
                         homeValidation.message,
                         "error"
                     );
@@ -4664,7 +4664,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (!awayValidation.valid) {
 
                     showResultMessage(
-                        "âŒ " +
+                        "Ã¢ÂÅ’ " +
                         awayValidation.message,
                         "error"
                     );
@@ -4699,7 +4699,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "âŒ Home score is " +
+                        "Ã¢ÂÅ’ Home score is " +
                         homeFinalScore +
                         " but you entered " +
                         homeScorers.length +
@@ -4717,7 +4717,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "âŒ Away score is " +
+                        "Ã¢ÂÅ’ Away score is " +
                         awayFinalScore +
                         " but you entered " +
                         awayScorers.length +
@@ -4742,7 +4742,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "âŒ " +
+                        "Ã¢ÂÅ’ " +
                         appearanceValidation.message,
                         "error"
                     );
@@ -4782,7 +4782,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "âŒ " +
+                        "Ã¢ÂÅ’ " +
                         scorerAppearanceValidation.message,
                         "error"
                     );
@@ -4807,7 +4807,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ) {
 
                     showResultMessage(
-                        "âŒ " +
+                        "Ã¢ÂÅ’ " +
                         assistValidation.message,
                         "error"
                     );
@@ -5152,13 +5152,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                     // ========================================
 
                     showResultMessage(
-                        "âœ… Match result saved successfully!",
+                        "Ã¢Å“â€¦ Match result saved successfully!",
                         "success"
                     );
 
 
                     alert(
-                        "âœ… Match result saved successfully!"
+                        "Ã¢Å“â€¦ Match result saved successfully!"
                     );
 
 
@@ -5247,7 +5247,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     showResultMessage(
-                        "âŒ Unable to save result: " +
+                        "Ã¢ÂÅ’ Unable to save result: " +
                         (
                             error.message ||
                             "Unknown error"
@@ -5263,7 +5263,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     saveResultBtn.textContent =
-                        "ðŸ’¾ SAVE RESULT";
+                        "Ã°Å¸â€™Â¾ SAVE RESULT";
                 }
 
             }
@@ -5323,7 +5323,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 pendingTeams.innerHTML =
                     "<div class='empty-message'>" +
-                    "ðŸŽ‰ No pending team registrations." +
+                    "Ã°Å¸Å½â€° No pending team registrations." +
                     "</div>";
 
                 return;
@@ -5458,7 +5458,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 card.innerHTML = `
 
                     <h2>
-                        âš½
+                        Ã¢Å¡Â½
                         ${escapeHtml(
                             team.name
                         )}
@@ -5536,7 +5536,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                     <h3>
-                        ðŸ‘¥ Players
+                        Ã°Å¸â€˜Â¥ Players
                         (${players ? players.length : 0}/20)
                     </h3>
 
@@ -5551,7 +5551,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn approve-btn"
                             data-id="${team.id}"
                         >
-                            âœ… Approve Team
+                            Ã¢Å“â€¦ Approve Team
                         </button>
 
 
@@ -5560,7 +5560,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             class="admin-btn reject-btn"
                             data-id="${team.id}"
                         >
-                            âŒ Reject Team
+                            Ã¢ÂÅ’ Reject Team
                         </button>
 
                     </div>
@@ -5629,7 +5629,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="admin-card">
 
                     <h3>
-                        âŒ Unable to Load
+                        Ã¢ÂÅ’ Unable to Load
                 </h3>
 
                     <p>
@@ -5704,7 +5704,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             alert(
-                "âœ… Team approved successfully!"
+                "Ã¢Å“â€¦ Team approved successfully!"
             );
 
 
@@ -5960,7 +5960,7 @@ function ensureSquadRequestsDashboard() {
     section.innerHTML = `
         <div class="section-header">
             <div>
-                <h2>👥 Squad & Team Change Requests</h2>
+                <h2>ðŸ‘¥ Squad & Team Change Requests</h2>
                 <p>
                     Review requests submitted by approved teams.
                     Changes are only applied after administrator approval.
@@ -6099,22 +6099,22 @@ function getSquadRequestTypeLabel(type) {
         value === "add" ||
         value === "add player"
     ) {
-        return "➕ Add Player";
+        return "âž• Add Player";
     }
 
     if (
         value === "remove" ||
         value === "remove player"
     ) {
-        return "➖ Remove Player";
+        return "âž– Remove Player";
     }
 
     if (value === "edit player") {
-        return "✏️ Edit Player";
+        return "âœï¸ Edit Player";
     }
 
     if (value === "edit team") {
-        return "🏷️ Edit Team";
+        return "ðŸ·ï¸ Edit Team";
     }
 
     return type || "Unknown";
@@ -6247,7 +6247,7 @@ function renderSquadChangeRequestCounters() {
         <div class="stat-card">
 
             <div class="stat-icon">
-                ⏳
+                â³
             </div>
 
             <div class="stat-number">
@@ -6263,7 +6263,7 @@ function renderSquadChangeRequestCounters() {
         <div class="stat-card">
 
             <div class="stat-icon">
-                ✅
+                âœ…
             </div>
 
             <div class="stat-number">
@@ -6279,7 +6279,7 @@ function renderSquadChangeRequestCounters() {
         <div class="stat-card">
 
             <div class="stat-icon">
-                ❌
+                âŒ
             </div>
 
             <div class="stat-number">
@@ -6295,7 +6295,7 @@ function renderSquadChangeRequestCounters() {
         <div class="stat-card">
 
             <div class="stat-icon">
-                📋
+                ðŸ“‹
             </div>
 
             <div class="stat-number">
@@ -6405,7 +6405,7 @@ function renderSquadChangeRequests() {
                         margin-bottom:10px;
                     "
                 >
-                    📋
+                    ðŸ“‹
                 </div>
 
                 <h3>
@@ -6604,7 +6604,7 @@ function createSquadRequestCard(
                         request.id
                     )})"
                 >
-                    👁️ View Details
+                    ðŸ‘ï¸ View Details
                 </button>
 
             </div>
@@ -6706,7 +6706,7 @@ if (!modal) {
                     color:#333;
                 "
             >
-                ×
+                Ã—
             </button>
 
             <div
@@ -6823,7 +6823,7 @@ if (!details) {
         html += `
             <hr>
 
-            <h3>➕ Requested Player</h3>
+            <h3>âž• Requested Player</h3>
 
             <div class="request-detail-row">
                 <strong>Full Name:</strong>
@@ -6913,7 +6913,7 @@ if (!details) {
         html += `
             <hr>
 
-            <h3>➖ Player Removal</h3>
+            <h3>âž– Player Removal</h3>
 
             <div class="request-detail-row">
                 <strong>Player:</strong>
@@ -6966,7 +6966,7 @@ if (!details) {
         html += `
             <hr>
 
-            <h3>✏️ Player Information Change</h3>
+            <h3>âœï¸ Player Information Change</h3>
 
             <div class="request-detail-row">
                 <strong>Current Player:</strong>
@@ -7089,7 +7089,7 @@ if (!details) {
         html += `
             <hr>
 
-            <h3>🏷️ Requested Team Changes</h3>
+            <h3>ðŸ·ï¸ Requested Team Changes</h3>
 
             <div class="request-detail-row">
                 <strong>Team Name:</strong>
@@ -7270,7 +7270,7 @@ if (!details) {
                         )
                     "
                 >
-                    ✅ Approve Request
+                    âœ… Approve Request
                 </button>
 
                 <button
@@ -7281,7 +7281,7 @@ if (!details) {
                         )
                     "
                 >
-                    ❌ Reject Request
+                    âŒ Reject Request
                 </button>
 
             </div>
@@ -7490,6 +7490,967 @@ async function rejectSquadChangeRequest(
 }
 
 
+
+// ========================================
+// PLAYER MOVEMENT DASHBOARD
+// ADMIN REVIEW SECTION
+// ========================================
+
+let playerMovementRequests = [];
+let playerMovementCompletedTransfers = [];
+let playerMovementFreeAgents = [];
+let playerMovementFilter = "Pending";
+let playerMovementSearch = "";
+
+function ensurePlayerMovementDashboard() {
+
+    if (document.getElementById("playerMovementSection")) {
+        return;
+    }
+
+    const dashboardSection =
+        document.getElementById("dashboard");
+
+    if (!dashboardSection) {
+        return;
+    }
+
+    const section = document.createElement("section");
+
+    section.id = "playerMovementSection";
+    section.className = "admin-section";
+    section.style.marginTop = "24px";
+
+    section.innerHTML = `
+        <div class="section-header">
+            <div>
+                <h2>ðŸ”„ Player Movement</h2>
+                <p>
+                    Manage player releases, transfers, free-agent signings,
+                    completed transfers and currently available free agents.
+                </p>
+            </div>
+        </div>
+
+        <div id="playerMovementCounters" class="dashboard-grid"></div>
+
+        <div class="form-card" style="margin-bottom:20px;">
+            <div class="form-group">
+                <label for="playerMovementFilter">Movement View</label>
+                <select id="playerMovementFilter" class="form-control">
+                    <option value="Pending">â³ Pending Movement</option>
+                    <option value="Release">ðŸ“¤ Pending Releases</option>
+                    <option value="Transfer">ðŸ” Pending Transfers</option>
+                    <option value="Free Agent Signing">ðŸ†“ Pending Free-Agent Signings</option>
+                    <option value="Completed Transfer">âœ… Completed Transfers</option>
+                    <option value="Free Agents">ðŸ†“ Free Agents</option>
+                    <option value="All">ðŸ“‹ All Movement Requests</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="playerMovementSearch">Search</label>
+                <input
+                    type="text"
+                    id="playerMovementSearch"
+                    class="form-control"
+                    placeholder="Search player, team or movement..."
+                >
+            </div>
+        </div>
+
+        <div id="playerMovementList">
+            <div class="loading">Loading player movement...</div>
+        </div>
+    `;
+
+    dashboardSection.appendChild(section);
+
+    const filter =
+        document.getElementById("playerMovementFilter");
+
+    if (filter) {
+        filter.addEventListener("change", function () {
+            playerMovementFilter = this.value;
+            renderPlayerMovementDashboard();
+        });
+    }
+
+    const search =
+        document.getElementById("playerMovementSearch");
+
+    if (search) {
+        search.addEventListener("input", function () {
+            playerMovementSearch = this.value.trim().toLowerCase();
+            renderPlayerMovementDashboard();
+        });
+    }
+}
+
+function movementStatusClass(status) {
+    const value = String(status || "Pending").toLowerCase();
+
+    if (value === "approved") return "approved";
+    if (value === "rejected") return "rejected";
+
+    return "pending";
+}
+
+function movementStatusBadge(status) {
+    const safeStatus = escapeHtml(status || "Pending");
+    const cls = movementStatusClass(status);
+
+    const background =
+        cls === "approved" ? "#d1e7dd" :
+        cls === "rejected" ? "#f8d7da" :
+        "#fff3cd";
+
+    const color =
+        cls === "approved" ? "#0f5132" :
+        cls === "rejected" ? "#842029" :
+        "#664d03";
+
+    return `
+        <span style="
+            display:inline-block;
+            padding:7px 12px;
+            border-radius:20px;
+            font-weight:700;
+            background:${background};
+            color:${color};
+        ">${safeStatus}</span>
+    `;
+}
+
+function movementRequestTypeLabel(type) {
+    if (type === "Release") return "ðŸ“¤ Release Player";
+    if (type === "Transfer") return "ðŸ” Player Transfer";
+    if (type === "Free Agent Signing") return "ðŸ†“ Free-Agent Signing";
+
+    return escapeHtml(type || "Player Movement");
+}
+
+function movementPlayerName(request) {
+    return request.players?.full_name || "Unknown Player";
+}
+
+function movementTeamName(team) {
+    return team?.name || "Unknown Team";
+}
+
+async function loadPlayerMovementDashboard() {
+
+    try {
+        ensurePlayerMovementDashboard();
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("player_movement_requests")
+            .select(`
+                id,
+                player_id,
+                request_type,
+                requesting_team_id,
+                from_team_id,
+                to_team_id,
+                competition_id,
+                from_team_status,
+                from_team_reviewed_at,
+                from_team_notes,
+                admin_status,
+                reviewed_at,
+                admin_notes,
+                reason,
+                status,
+                created_at,
+                updated_at,
+                players (
+                    id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    photo_url,
+                    team_id
+                ),
+                from_team:teams!player_movement_requests_from_team_id_fkey (
+                    id,
+                    name,
+                    short_name,
+                    logo_url
+                ),
+                to_team:teams!player_movement_requests_to_team_id_fkey (
+                    id,
+                    name,
+                    short_name,
+                    logo_url
+                ),
+                competitions (
+                    id,
+                    name,
+                    season,
+                    competition_type
+                )
+            `)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            throw error;
+        }
+
+        playerMovementRequests = data || [];
+
+        const {
+            data: completedTransfers,
+            error: completedError
+        } = await supabaseClient
+            .from("player_movement_requests")
+            .select(`
+                id,
+                player_id,
+                request_type,
+                from_team_id,
+                to_team_id,
+                competition_id,
+                admin_status,
+                reviewed_at,
+                admin_notes,
+                reason,
+                status,
+                created_at,
+                updated_at,
+                players (
+                    id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    photo_url
+                ),
+                from_team:teams!player_movement_requests_from_team_id_fkey (
+                    id,
+                    name,
+                    short_name,
+                    logo_url
+                ),
+                to_team:teams!player_movement_requests_to_team_id_fkey (
+                    id,
+                    name,
+                    short_name,
+                    logo_url
+                ),
+                competitions (
+                    id,
+                    name,
+                    season,
+                    competition_type
+                )
+            `)
+            .eq("request_type", "Transfer")
+            .eq("status", "Approved")
+            .order("reviewed_at", { ascending: false });
+
+        if (completedError) {
+            throw completedError;
+        }
+
+        playerMovementCompletedTransfers = completedTransfers || [];
+
+        const {
+            data: freeAgents,
+            error: freeAgentError
+        } = await supabaseClient
+            .from("players")
+            .select(`
+                id,
+                full_name,
+                jersey_number,
+                position,
+                photo_url,
+                registration_status,
+                team_id
+            `)
+            .is("team_id", null)
+            .eq("registration_status", "Approved")
+            .order("full_name", { ascending: true });
+
+        if (freeAgentError) {
+            throw freeAgentError;
+        }
+
+        playerMovementFreeAgents = freeAgents || [];
+
+        const playerIds =
+            playerMovementFreeAgents.map(function (player) {
+                return Number(player.id);
+            });
+
+        if (playerIds.length) {
+            const {
+                data: histories,
+                error: historyError
+            } = await supabaseClient
+                .from("player_club_history")
+                .select(`
+                    id,
+                    player_id,
+                    team_id,
+                    joined_at,
+                    left_at,
+                    movement_type,
+                    status,
+                    notes,
+                    team:teams (
+                        id,
+                        name,
+                        short_name,
+                        logo_url
+                    )
+                `)
+                .in("player_id", playerIds)
+                .order("joined_at", { ascending: false });
+
+            if (historyError) {
+                throw historyError;
+            }
+
+            playerMovementFreeAgents =
+                playerMovementFreeAgents.map(function (player) {
+                    const history =
+                        (histories || []).find(function (item) {
+                            return Number(item.player_id) === Number(player.id);
+                        });
+
+                    return {
+                        ...player,
+                        formerHistory: history || null
+                    };
+                });
+        }
+
+        renderPlayerMovementCounters();
+        renderPlayerMovementDashboard();
+
+    } catch (error) {
+
+        console.error(
+            "Load player movement error:",
+            error
+        );
+
+        const list =
+            document.getElementById("playerMovementList");
+
+        if (list) {
+            list.innerHTML = `
+                <div class="error-message">
+                    Failed to load player movement:
+                    ${escapeHtml(error.message || "Unknown error")}
+                </div>
+            `;
+        }
+    }
+}
+
+function renderPlayerMovementCounters() {
+
+    const container =
+        document.getElementById("playerMovementCounters");
+
+    if (!container) return;
+
+    const pendingReleases =
+        playerMovementRequests.filter(function (request) {
+            return request.request_type === "Release" &&
+                   request.status === "Pending";
+        }).length;
+
+    const pendingTransfers =
+        playerMovementRequests.filter(function (request) {
+            return request.request_type === "Transfer" &&
+                   request.status === "Pending";
+        }).length;
+
+    const pendingSignings =
+        playerMovementRequests.filter(function (request) {
+            return request.request_type === "Free Agent Signing" &&
+                   request.status === "Pending";
+        }).length;
+
+    const completedTransfers =
+        playerMovementCompletedTransfers.length;
+
+    const freeAgents =
+        playerMovementFreeAgents.length;
+
+    container.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-icon">ðŸ“¤</div>
+            <div class="stat-number">${pendingReleases}</div>
+            <div class="stat-label">Pending Releases</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">ðŸ”</div>
+            <div class="stat-number">${pendingTransfers}</div>
+            <div class="stat-label">Pending Transfers</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">ðŸ†“</div>
+            <div class="stat-number">${pendingSignings}</div>
+            <div class="stat-label">Pending Free-Agent Signings</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">ðŸ†</div>
+            <div class="stat-number">${completedTransfers}</div>
+            <div class="stat-label">Completed Transfers</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">ðŸ‘¤</div>
+            <div class="stat-number">${freeAgents}</div>
+            <div class="stat-label">Free Agents</div>
+        </div>
+    `;
+}
+
+function renderPlayerMovementDashboard() {
+
+    const container =
+        document.getElementById("playerMovementList");
+
+    if (!container) return;
+
+    let items = [];
+
+    if (playerMovementFilter === "Free Agents") {
+        items = playerMovementFreeAgents.map(function (player) {
+            return {
+                kind: "free-agent",
+                player: player
+            };
+        });
+    }
+    else if (playerMovementFilter === "Completed Transfer") {
+        items = playerMovementCompletedTransfers.map(function (request) {
+            return {
+                kind: "completed-transfer",
+                request: request
+            };
+        });
+    }
+    else {
+        items = playerMovementRequests
+            .filter(function (request) {
+
+                if (playerMovementFilter === "Pending") {
+                    return request.status === "Pending";
+                }
+
+                if (playerMovementFilter === "All") {
+                    return true;
+                }
+
+                return request.request_type === playerMovementFilter;
+            })
+            .map(function (request) {
+                return {
+                    kind: "request",
+                    request: request
+                };
+            });
+    }
+
+    if (playerMovementSearch) {
+        items = items.filter(function (item) {
+
+            const request = item.request || {};
+            const player = item.player || request.players || {};
+            const fromTeam = request.from_team || {};
+            const toTeam = request.to_team || {};
+            const formerTeam = item.player?.formerHistory?.team || {};
+
+            const searchable = [
+                player.full_name,
+                player.position,
+                fromTeam.name,
+                toTeam.name,
+                formerTeam.name,
+                request.request_type,
+                request.status
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+            return searchable.includes(playerMovementSearch);
+        });
+    }
+
+    if (!items.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div style="font-size:42px;margin-bottom:10px;">ðŸ”„</div>
+                <h3>No Player Movement Records</h3>
+                <p>
+                    There are currently no records matching this selection.
+                </p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = items.map(function (item) {
+        if (item.kind === "free-agent") {
+            return createFreeAgentAdminCard(item.player);
+        }
+
+        if (item.kind === "completed-transfer") {
+            return createCompletedTransferAdminCard(item.request);
+        }
+
+        return createPlayerMovementRequestCard(item.request);
+    }).join("");
+}
+
+function createPlayerMovementRequestCard(request) {
+
+    const player = request.players || {};
+    const fromTeam = request.from_team || {};
+    const toTeam = request.to_team || {};
+    const competition = request.competitions || {};
+
+    const isTransfer =
+        request.request_type === "Transfer";
+
+    const waitingForTeam =
+        isTransfer &&
+        request.from_team_status !== "Approved";
+
+    const status = request.status || "Pending";
+    const submitted = request.created_at
+        ? new Date(request.created_at).toLocaleString()
+        : "Unknown date";
+
+    const photo = player.photo_url
+        ? `<img src="${escapeHtml(player.photo_url)}"
+                alt="Player photo"
+                style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:2px solid #ddd;">`
+        : `<div style="width:64px;height:64px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:28px;">ðŸ‘¤</div>`;
+
+    const adminActionButtons = status === "Pending"
+        ? `
+            <button
+                type="button"
+                class="btn btn-primary"
+                onclick="reviewPlayerMovement(${Number(request.id)}, 'approve')"
+                ${waitingForTeam ? "disabled style=\"opacity:.55;cursor:not-allowed;\"" : ""}
+            >
+                âœ… Approve
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-danger"
+                onclick="reviewPlayerMovement(${Number(request.id)}, 'reject')"
+            >
+                âŒ Reject
+            </button>
+        `
+        : "";
+
+    return `
+        <div class="form-card" style="margin-bottom:15px;border-left:5px solid ${
+            status === "Approved" ? "#198754" :
+            status === "Rejected" ? "#dc3545" :
+            "#f5c542"
+        }">
+
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;">
+
+                <div style="display:flex;gap:14px;align-items:center;min-width:250px;">
+                    ${photo}
+                    <div>
+                        <h3 style="margin-bottom:5px;">
+                            ${movementRequestTypeLabel(request.request_type)}
+                        </h3>
+                        <p><strong>Player:</strong> ${escapeHtml(player.full_name || "Unknown Player")}</p>
+                        <p><strong>Position:</strong> ${escapeHtml(player.position || "Not available")}</p>
+                        <p><strong>Jersey:</strong> ${escapeHtml(player.jersey_number ?? "Not available")}</p>
+                    </div>
+                </div>
+
+                <div>
+                    ${movementStatusBadge(status)}
+                </div>
+            </div>
+
+            <div style="margin-top:15px;display:grid;gap:7px;">
+                <p><strong>From Team:</strong> ${escapeHtml(movementTeamName(fromTeam))}</p>
+                <p><strong>To Team:</strong> ${escapeHtml(movementTeamName(toTeam))}</p>
+                <p><strong>Competition:</strong> ${escapeHtml(competition.name || "Club Squad")}</p>
+                <p><strong>Submitted:</strong> ${escapeHtml(submitted)}</p>
+                <p><strong>Current Team Approval:</strong> ${escapeHtml(request.from_team_status || "Not Required")}</p>
+                <p><strong>Administrator Approval:</strong> ${escapeHtml(request.admin_status || status)}</p>
+                ${waitingForTeam ? `
+                    <p style="color:#856404;background:#fff3cd;padding:10px;border-radius:8px;">
+                        â³ Waiting for the current team to approve this transfer before administrator approval.
+                    </p>
+                ` : ""}
+                ${request.reason ? `
+                    <p><strong>Reason:</strong> ${escapeHtml(request.reason)}</p>
+                ` : ""}
+                ${request.admin_notes ? `
+                    <p><strong>Admin Notes:</strong> ${escapeHtml(request.admin_notes)}</p>
+                ` : ""}
+                ${request.from_team_notes ? `
+                    <p><strong>Current Team Notes:</strong> ${escapeHtml(request.from_team_notes)}</p>
+                ` : ""}
+            </div>
+
+            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+                ${adminActionButtons}
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="openPlayerMovementDetails(${Number(request.id)})"
+                >
+                    ðŸ‘ï¸ View Details
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function createCompletedTransferAdminCard(request) {
+
+    const player = request.players || {};
+    const fromTeam = request.from_team || {};
+    const toTeam = request.to_team || {};
+    const competition = request.competitions || {};
+
+    const completedAt = request.reviewed_at
+        ? new Date(request.reviewed_at).toLocaleString()
+        : "Unknown date";
+
+    const photo = player.photo_url
+        ? `<img src="${escapeHtml(player.photo_url)}"
+                alt="Player photo"
+                style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:2px solid #ddd;">`
+        : `<div style="width:64px;height:64px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:28px;">ðŸ‘¤</div>`;
+
+    return `
+        <div class="form-card" style="margin-bottom:15px;border-left:5px solid #198754;">
+            <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+                ${photo}
+                <div style="flex:1;min-width:220px;">
+                    <h3>ðŸ† Completed Transfer</h3>
+                    <p><strong>Player:</strong> ${escapeHtml(player.full_name || "Unknown Player")}</p>
+                    <p><strong>From:</strong> ${escapeHtml(movementTeamName(fromTeam))}</p>
+                    <p><strong>To:</strong> ${escapeHtml(movementTeamName(toTeam))}</p>
+                    <p><strong>Competition:</strong> ${escapeHtml(competition.name || "Club Squad")}</p>
+                    <p><strong>Completed:</strong> ${escapeHtml(completedAt)}</p>
+                </div>
+                <div>${movementStatusBadge("Approved")}</div>
+            </div>
+
+            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="openPlayerMovementDetails(${Number(request.id)})"
+                >
+                    ðŸ‘ï¸ View Details
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function createFreeAgentAdminCard(player) {
+
+    const history = player.formerHistory || {};
+    const formerTeam = history.team || {};
+
+    const photo = player.photo_url
+        ? `<img src="${escapeHtml(player.photo_url)}"
+                alt="Player photo"
+                style="width:72px;height:72px;object-fit:cover;border-radius:50%;border:2px solid #ddd;">`
+        : `<div style="width:72px;height:72px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:30px;">ðŸ‘¤</div>`;
+
+    const releasedAt = history.left_at
+        ? new Date(history.left_at).toLocaleDateString()
+        : "Not recorded";
+
+    const formerLogo = formerTeam.logo_url
+        ? `<img src="${escapeHtml(formerTeam.logo_url)}"
+                alt="Former team logo"
+                style="width:42px;height:42px;object-fit:contain;border-radius:8px;">`
+        : "";
+
+    return `
+        <div class="form-card" style="margin-bottom:15px;border-left:5px solid #f5c542;">
+            <div style="display:flex;gap:15px;align-items:center;flex-wrap:wrap;">
+                ${photo}
+                <div style="flex:1;min-width:220px;">
+                    <h3>ðŸ†“ ${escapeHtml(player.full_name || "Unknown Player")}</h3>
+                    <p><strong>Position:</strong> ${escapeHtml(player.position || "Not available")}</p>
+                    <p><strong>Jersey:</strong> ${escapeHtml(player.jersey_number ?? "Not available")}</p>
+                    <p><strong>Status:</strong> Free Agent</p>
+                </div>
+                <div style="text-align:center;min-width:130px;">
+                    ${formerLogo}
+                    <div style="margin-top:5px;font-weight:700;">
+                        ${escapeHtml(formerTeam.name || "No Former Club")}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:12px;display:grid;gap:6px;">
+                <p><strong>Former Club:</strong> ${escapeHtml(formerTeam.name || "Not recorded")}</p>
+                <p><strong>Released:</strong> ${escapeHtml(releasedAt)}</p>
+                ${history.movement_type ? `<p><strong>Movement:</strong> ${escapeHtml(history.movement_type)}</p>` : ""}
+            </div>
+
+            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+                <a
+                    href="player-profile.html?id=${Number(player.id)}"
+                    class="btn btn-primary"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    ðŸ‘¤ View Player Profile
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+function openPlayerMovementDetails(requestId) {
+
+    const request =
+        playerMovementRequests.find(function (item) {
+            return Number(item.id) === Number(requestId);
+        }) ||
+        playerMovementCompletedTransfers.find(function (item) {
+            return Number(item.id) === Number(requestId);
+        });
+
+    if (!request) {
+        alert("Movement request not found.");
+        return;
+    }
+
+    let modal =
+        document.getElementById("playerMovementModal");
+
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "playerMovementModal";
+        modal.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.70);
+            z-index:99999;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            overflow:auto;
+        `;
+
+        modal.innerHTML = `
+            <div style="
+                width:100%;
+                max-width:760px;
+                max-height:90vh;
+                overflow:auto;
+                background:#fff;
+                border-radius:16px;
+                box-shadow:0 20px 60px rgba(0,0,0,.30);
+                position:relative;
+                padding:25px;
+            ">
+                <button
+                    type="button"
+                    id="closePlayerMovementModal"
+                    style="
+                        position:absolute;
+                        right:15px;
+                        top:10px;
+                        width:40px;
+                        height:40px;
+                        border:none;
+                        background:#f1f1f1;
+                        border-radius:50%;
+                        font-size:25px;
+                        font-weight:900;
+                        cursor:pointer;
+                    "
+                >Ã—</button>
+                <div id="playerMovementModalContent"></div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.getElementById("closePlayerMovementModal")
+            ?.addEventListener("click", function () {
+                modal.style.display = "none";
+            });
+    }
+
+    const player = request.players || {};
+    const fromTeam = request.from_team || {};
+    const toTeam = request.to_team || {};
+    const competition = request.competitions || {};
+
+    const content = document.getElementById("playerMovementModalContent");
+
+    if (!content) return;
+
+    content.innerHTML = `
+        <h2>ðŸ”„ Player Movement Details</h2>
+
+        <div style="margin-top:18px;display:grid;gap:9px;">
+            <p><strong>Request ID:</strong> ${escapeHtml(request.id)}</p>
+            <p><strong>Movement:</strong> ${movementRequestTypeLabel(request.request_type)}</p>
+            <p><strong>Player:</strong> ${escapeHtml(player.full_name || "Unknown Player")}</p>
+            <p><strong>Position:</strong> ${escapeHtml(player.position || "Not available")}</p>
+            <p><strong>Jersey:</strong> ${escapeHtml(player.jersey_number ?? "Not available")}</p>
+            <p><strong>From Team:</strong> ${escapeHtml(fromTeam.name || "Not applicable")}</p>
+            <p><strong>To Team:</strong> ${escapeHtml(toTeam.name || "Not applicable")}</p>
+            <p><strong>Competition:</strong> ${escapeHtml(competition.name || "Club Squad")}</p>
+            <p><strong>Current Team Status:</strong> ${escapeHtml(request.from_team_status || "Not Required")}</p>
+            <p><strong>Administrator Status:</strong> ${escapeHtml(request.admin_status || request.status || "Pending")}</p>
+            <p><strong>Overall Status:</strong> ${movementStatusBadge(request.status || "Pending")}</p>
+            <p><strong>Reason:</strong> ${escapeHtml(request.reason || "No reason provided.")}</p>
+            <p><strong>Submitted:</strong> ${escapeHtml(request.created_at ? new Date(request.created_at).toLocaleString() : "Unknown")}</p>
+            ${request.from_team_notes ? `<p><strong>Current Team Notes:</strong> ${escapeHtml(request.from_team_notes)}</p>` : ""}
+            ${request.admin_notes ? `<p><strong>Admin Notes:</strong> ${escapeHtml(request.admin_notes)}</p>` : ""}
+            ${request.reviewed_at ? `<p><strong>Reviewed:</strong> ${escapeHtml(new Date(request.reviewed_at).toLocaleString())}</p>` : ""}
+        </div>
+    `;
+
+    modal.style.display = "flex";
+}
+
+async function reviewPlayerMovement(requestId, action) {
+
+    const request =
+        playerMovementRequests.find(function (item) {
+            return Number(item.id) === Number(requestId);
+        });
+
+    if (!request) {
+        alert("Movement request not found.");
+        return;
+    }
+
+    if (request.status !== "Pending") {
+        alert("This movement request has already been processed.");
+        return;
+    }
+
+    if (
+        request.request_type === "Transfer" &&
+        action === "approve" &&
+        request.from_team_status !== "Approved"
+    ) {
+        alert("This transfer is waiting for approval from the current team.");
+        return;
+    }
+
+    const promptText = action === "approve"
+        ? "Enter administrator notes for approving this movement (optional):"
+        : "Enter the reason for rejecting this movement request:";
+
+    const notes = prompt(promptText);
+
+    if (notes === null) {
+        return;
+    }
+
+    const cleanedNotes =
+        notes.trim() ||
+        (action === "approve"
+            ? "Approved by administrator."
+            : "Rejected by administrator.");
+
+    let rpcName = "";
+
+    if (request.request_type === "Release") {
+        rpcName = action === "approve"
+            ? "approve_player_release"
+            : "reject_player_release";
+    }
+    else if (request.request_type === "Free Agent Signing") {
+        rpcName = action === "approve"
+            ? "approve_free_agent_signing"
+            : "reject_free_agent_signing";
+    }
+    else if (request.request_type === "Transfer") {
+        rpcName = action === "approve"
+            ? "approve_player_transfer"
+            : "reject_player_transfer";
+    }
+    else {
+        alert("Unsupported player movement type.");
+        return;
+    }
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.rpc(rpcName, {
+                p_request_id: Number(requestId),
+                p_admin_notes: cleanedNotes
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        if (data && data.success === false) {
+            throw new Error(
+                data.message || "Movement operation failed."
+            );
+        }
+
+        showMessage(
+            action === "approve"
+                ? "Player movement approved successfully."
+                : "Player movement rejected successfully.",
+            "success"
+        );
+
+        await loadPlayerMovementDashboard();
+
+    } catch (error) {
+
+        console.error(
+            "Player movement review error:",
+            error
+        );
+
+        showMessage(
+            (action === "approve"
+                ? "Approval failed: "
+                : "Rejection failed: ") +
+            (error.message || "Unknown error"),
+            "error"
+        );
+    }
+}
+
+window.openPlayerMovementDetails =
+    openPlayerMovementDetails;
+
+window.reviewPlayerMovement =
+    reviewPlayerMovement;
+
 // ========================================
 // PREPARE SQUAD REQUEST DASHBOARD
 // ========================================
@@ -7542,6 +8503,8 @@ await loadFixtures();
 await loadResultFixtures();
 await loadPendingTeams();
 await loadSquadChangeRequests();
+ensurePlayerMovementDashboard();
+await loadPlayerMovementDashboard();
 
 
     console.log(
