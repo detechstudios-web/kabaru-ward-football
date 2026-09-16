@@ -4544,7 +4544,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
             }
         };
-        }
 
 
     if (awayScore) {
