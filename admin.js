@@ -8036,7 +8036,7 @@ function createPlayerMovementRequestCard(request) {
         ? `<img src="${escapeHtml(player.photo_url)}"
                 alt="Player photo"
                 style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:2px solid #ddd;">`
-        : `<div style="width:64px;height:64px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:28px;">ðŸ‘¤</div>`;
+        : `<div style="width:64px;height:64px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:28px;">👤</div>`;
 
     const adminActionButtons = status === "Pending"
         ? `
@@ -8098,7 +8098,7 @@ function createPlayerMovementRequestCard(request) {
                 <p><strong>Administrator Approval:</strong> ${escapeHtml(request.admin_status || status)}</p>
                 ${waitingForTeam ? `
                     <p style="color:#856404;background:#fff3cd;padding:10px;border-radius:8px;">
-                        â³ Waiting for the current team to approve this transfer before administrator approval.
+                        ⏳ Waiting for the current team to approve this transfer before administrator approval.
                     </p>
                 ` : ""}
                 ${request.reason ? `
