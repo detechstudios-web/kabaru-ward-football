@@ -7523,8 +7523,7 @@ function ensurePlayerMovementDashboard() {
 
     section.innerHTML = `
         <div class="section-header">
-            <div>
-                <h2>ðŸ”„ Player Movement</h2>
+            <div><h2>🔄 Player Movement</h2>
                 <p>
                     Manage player releases, transfers, free-agent signings,
                     completed transfers and currently available free agents.
@@ -7538,13 +7537,13 @@ function ensurePlayerMovementDashboard() {
             <div class="form-group">
                 <label for="playerMovementFilter">Movement View</label>
                 <select id="playerMovementFilter" class="form-control">
-                    <option value="Pending">â³ Pending Movement</option>
-                    <option value="Release">ðŸ“¤ Pending Releases</option>
-                    <option value="Transfer">ðŸ” Pending Transfers</option>
-                    <option value="Free Agent Signing">ðŸ†“ Pending Free-Agent Signings</option>
-                    <option value="Completed Transfer">âœ… Completed Transfers</option>
-                    <option value="Free Agents">ðŸ†“ Free Agents</option>
-                    <option value="All">ðŸ“‹ All Movement Requests</option>
+                    <option value="Pending">⏳ Pending Movement</option>
+                    <option value="Release">📤 Pending Releases</option>
+                    <option value="Transfer">🔁 Pending Transfers</option>
+                    <option value="Free Agent Signing">🆓 Pending Free-Agent Signings</option>
+                    <option value="Completed Transfer">✅ Completed Transfers</option>
+                <option value="Free Agents">🆓 Free Agents</option>
+                    <option value="All">📋 All Movement Requests</option>
                 </select>
             </div>
 
@@ -8089,7 +8088,11 @@ function createPlayerMovementRequestCard(request) {
 
             <div style="margin-top:15px;display:grid;gap:7px;">
                 <p><strong>From Team:</strong> ${escapeHtml(movementTeamName(fromTeam))}</p>
-                <p><strong>To Team:</strong> ${escapeHtml(movementTeamName(toTeam))}</p>
+                <p><strong>To Team:</strong> ${
+    request.request_type === "Release"
+        ? "Free Agent"
+        : escapeHtml(movementTeamName(toTeam))
+}</p>
                 <p><strong>Competition:</strong> ${escapeHtml(competition.name || "Club Squad")}</p>
                 <p><strong>Submitted:</strong> ${escapeHtml(submitted)}</p>
                 <p><strong>Current Team Approval:</strong> ${escapeHtml(request.from_team_status || "Not Required")}</p>
