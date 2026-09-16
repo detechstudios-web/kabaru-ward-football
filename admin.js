@@ -8414,9 +8414,11 @@ function renderPlayerMovementDashboard() {
                             From Team:
                         </strong>
                         ${escapeHtml(
-                            movementTeamName(
-                                fromTeam
-                            )
+                            request.request_type === "Free Agent Signing"
+                                ? "Free Agent"
+                                : movementTeamName(
+                                    fromTeam
+                                )
                         )}
                     </p>
 
