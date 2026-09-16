@@ -1302,6 +1302,31 @@ footer strong {
 
             </div>
 
+
+            <div class="action-card">
+
+                <div class="action-icon">
+                    🚪
+                </div>
+
+                <h3>
+                    Release Player
+                </h3>
+
+                <p>
+                    Request to release one of your players as a Free Agent.
+                </p>
+
+                <button
+                    id="releasePlayerBtn"
+                    class="btn btn-disabled"
+                    disabled
+                >
+                    Release Player
+                </button>
+
+            </div>
+
         </div>
 
         <div class="movement-note">
@@ -1312,6 +1337,10 @@ footer strong {
 
         <div class="movement-note" style="margin-top:10px;">
             <strong>🏟️ Club Squad:</strong> Select <em>All Competitions — Club Squad</em> when you want to manage the player's club relationship rather than a single competition. Competition registration remains separate, so the same club player can be eligible for multiple competitions without creating duplicate player records.
+        </div>
+
+        <div class="movement-note" style="margin-top:10px;">
+            <strong>🚪 Release rule:</strong> Releasing a player creates a pending Free Agent request. The player is not released until the administrator approves it. Approved release removes the player from the current club squad while preserving the player's profile, statistics, and club history.
         </div>
 
     </section>
@@ -1503,6 +1532,80 @@ footer strong {
             <div class="movement-actions">
                 <button type="button" id="cancelTransferBtn" class="btn btn-secondary">Cancel</button>
                 <button type="submit" id="submitTransferBtn" class="btn btn-primary">Submit Transfer Request</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     RELEASE PLAYER MODAL
+======================================== -->
+
+<div
+    id="releaseModal"
+    class="movement-modal"
+    aria-hidden="true"
+>
+
+    <div class="movement-modal-card">
+
+        <div class="movement-modal-head">
+
+            <div>
+                <div class="kicker">PLAYER MOVEMENT</div>
+                <h3>🚪 Release Player</h3>
+            </div>
+
+            <button
+                type="button"
+                id="closeReleaseModal"
+                class="movement-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="card-subtitle">
+            Select a player from your current club squad. The player will remain with the club until the administrator approves the release request. After approval, the player becomes a Free Agent.
+        </div>
+
+        <form id="releaseForm">
+
+            <div class="form-group">
+                <label for="releasePlayerSelect">Player *</label>
+                <select id="releasePlayerSelect" class="form-control" required>
+                    <option value="">Select player</option>
+                </select>
+            </div>
+
+            <div id="releasePlayerPreview" class="movement-player-preview" style="display:none;"></div>
+
+            <div class="form-group">
+                <label for="releaseReason">Reason / Notes</label>
+                <textarea
+                    id="releaseReason"
+                    class="form-control"
+                    rows="4"
+                    maxlength="1000"
+                    placeholder="Optional: explain why the player is being released."
+                ></textarea>
+            </div>
+
+            <div class="movement-note">
+                <strong>Important:</strong> This is only a release request. The player will not become a Free Agent until the administrator approves it.
+            </div>
+
+            <div id="releaseFormMessage" class="message" style="display:none;"></div>
+
+            <div class="movement-actions">
+                <button type="button" id="cancelReleaseBtn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" id="submitReleaseBtn" class="btn btn-primary">Submit Release Request</button>
             </div>
 
         </form>
@@ -1754,6 +1857,57 @@ document.addEventListener(
         const submitTransferBtn =
             document.getElementById(
                 "submitTransferBtn"
+            );
+
+
+        const releasePlayerBtn =
+            document.getElementById(
+                "releasePlayerBtn"
+            );
+
+        const releaseModal =
+            document.getElementById(
+                "releaseModal"
+            );
+
+        const closeReleaseModal =
+            document.getElementById(
+                "closeReleaseModal"
+            );
+
+        const cancelReleaseBtn =
+            document.getElementById(
+                "cancelReleaseBtn"
+            );
+
+        const releaseForm =
+            document.getElementById(
+                "releaseForm"
+            );
+
+        const releasePlayerSelect =
+            document.getElementById(
+                "releasePlayerSelect"
+            );
+
+        const releaseReason =
+            document.getElementById(
+                "releaseReason"
+            );
+
+        const releasePlayerPreview =
+            document.getElementById(
+                "releasePlayerPreview"
+            );
+
+        const releaseFormMessage =
+            document.getElementById(
+                "releaseFormMessage"
+            );
+
+        const submitReleaseBtn =
+            document.getElementById(
+                "submitReleaseBtn"
             );
 
 
@@ -2621,6 +2775,7 @@ document.addEventListener(
             );
 
             updateTransferButton(false);
+            updateReleaseButton(false);
 
         }
 
@@ -2676,11 +2831,13 @@ document.addEventListener(
 
             if (!competitionId) {
                 updateTransferButton(false);
+                updateReleaseButton(false);
                 return;
             }
 
             if (String(competitionId) === "club") {
                 updateTransferButton(true);
+                updateReleaseButton(true);
                 return;
             }
 
@@ -2706,6 +2863,7 @@ document.addEventListener(
             if (error) {
                 console.error("Movement settings error:", error);
                 updateTransferButton(false);
+                updateReleaseButton(false);
                 return;
             }
 
@@ -2719,6 +2877,10 @@ document.addEventListener(
 
             updateTransferButton(
                 canRequestTransfer()
+            );
+
+            updateReleaseButton(
+                canRequestRelease()
             );
         }
 
@@ -2764,6 +2926,59 @@ document.addEventListener(
             } else {
                 requestTransferBtn.disabled = true;
                 requestTransferBtn.className = "btn btn-disabled";
+            }
+        }
+
+
+        function canRequestRelease() {
+
+            if (!currentCompetition) {
+                return false;
+            }
+
+            if (String(competitionSelect.value) === "club") {
+                return true;
+            }
+
+            if (!movementSettings) {
+                return false;
+            }
+
+            if (!movementSettings.allow_releases) {
+                return false;
+            }
+
+            if (movementSettings.registration_locked) {
+                return false;
+            }
+
+            const status =
+                String(currentCompetition.status || "")
+                    .toLowerCase();
+
+            if (
+                status === "active" &&
+                !movementSettings.allow_movement_during_competition
+            ) {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        function updateReleaseButton(enabled) {
+
+            if (!releasePlayerBtn) {
+                return;
+            }
+
+            if (enabled) {
+                releasePlayerBtn.disabled = false;
+                releasePlayerBtn.className = "btn btn-primary";
+            } else {
+                releasePlayerBtn.disabled = true;
+                releasePlayerBtn.className = "btn btn-disabled";
             }
         }
 
@@ -6316,6 +6531,274 @@ editTeamBtn.addEventListener(
 
     }
 );
+
+
+        /*
+        ========================================
+        RELEASE PLAYER
+        ========================================
+        */
+
+        function populateReleasePlayers() {
+
+            releasePlayerSelect.innerHTML =
+                `<option value="">Select player</option>`;
+
+            approvedPlayers.forEach(function (player) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = player.id;
+
+                option.textContent =
+                    player.full_name +
+                    (player.jersey_number !== null && player.jersey_number !== undefined
+                        ? " — #" + player.jersey_number
+                        : "");
+
+                releasePlayerSelect.appendChild(option);
+            });
+
+            updateReleasePlayerPreview();
+        }
+
+
+        function updateReleasePlayerPreview() {
+
+            const selectedId =
+                Number(releasePlayerSelect.value || 0);
+
+            const player =
+                approvedPlayers.find(function (item) {
+                    return Number(item.id) === selectedId;
+                });
+
+            if (!player) {
+                releasePlayerPreview.style.display = "none";
+                releasePlayerPreview.innerHTML = "";
+                return;
+            }
+
+            const photo = player.photo_url
+                ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;">`
+                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;">⚽</div>`;
+
+            releasePlayerPreview.style.display = "flex";
+
+            releasePlayerPreview.innerHTML =
+                photo +
+                `<div>
+                    <strong>${escapeHtml(player.full_name)}</strong><br>
+                    <span>${escapeHtml(player.position || "Player")} · Jersey ${escapeHtml(player.jersey_number ?? "—")}</span>
+                </div>`;
+        }
+
+
+        function openReleaseModal() {
+
+            if (!currentCompetition) {
+                showMessage(
+                    "Please select All Competitions — Club Squad or a competition first.",
+                    "error"
+                );
+                return;
+            }
+
+            if (!canRequestRelease()) {
+                showMessage(
+                    "Player releases are not currently allowed for the selected competition.",
+                    "error"
+                );
+                return;
+            }
+
+            if (!approvedPlayers.length) {
+                showMessage(
+                    "This team has no approved players available for release.",
+                    "error"
+                );
+                return;
+            }
+
+            releaseForm.reset();
+            releaseFormMessage.style.display = "none";
+            releaseFormMessage.textContent = "";
+
+            populateReleasePlayers();
+
+            releaseModal.classList.add("show");
+            releaseModal.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+        }
+
+
+        function closeReleaseModalWindow() {
+            releaseModal.classList.remove("show");
+            releaseModal.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+        }
+
+
+        function showReleaseFormMessage(message, type) {
+            releaseFormMessage.textContent = message;
+            releaseFormMessage.className = "message " + (type || "error");
+            releaseFormMessage.style.display = "block";
+        }
+
+
+        releasePlayerBtn.addEventListener(
+            "click",
+            openReleaseModal
+        );
+
+        closeReleaseModal.addEventListener(
+            "click",
+            closeReleaseModalWindow
+        );
+
+        cancelReleaseBtn.addEventListener(
+            "click",
+            closeReleaseModalWindow
+        );
+
+        releaseModal.addEventListener(
+            "click",
+            function (event) {
+                if (event.target === releaseModal) {
+                    closeReleaseModalWindow();
+                }
+            }
+        );
+
+        releasePlayerSelect.addEventListener(
+            "change",
+            updateReleasePlayerPreview
+        );
+
+        releaseForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                if (!currentCompetition) {
+                    showReleaseFormMessage(
+                        "Please select Club Squad or a competition first.",
+                        "error"
+                    );
+                    return;
+                }
+
+                if (!canRequestRelease()) {
+                    showReleaseFormMessage(
+                        "Player releases are not currently allowed for the selected competition.",
+                        "error"
+                    );
+                    return;
+                }
+
+                const playerId =
+                    Number(releasePlayerSelect.value || 0);
+
+                const reason =
+                    releaseReason.value.trim() || null;
+
+                if (!playerId) {
+                    showReleaseFormMessage(
+                        "Please select a player.",
+                        "error"
+                    );
+                    return;
+                }
+
+                const player =
+                    approvedPlayers.find(function (item) {
+                        return Number(item.id) === playerId;
+                    });
+
+                if (!player) {
+                    showReleaseFormMessage(
+                        "The selected player is no longer available in this squad.",
+                        "error"
+                    );
+                    return;
+                }
+
+                submitReleaseBtn.disabled = true;
+                submitReleaseBtn.textContent = "Submitting...";
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } = await supabaseClient.rpc(
+                        "release_player_to_free_agent",
+                        {
+                            p_player_id: playerId,
+                            p_team_id: Number(teamId),
+                            p_reason: reason
+                        }
+                    );
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    const response = data || {};
+
+                    if (response.success === false) {
+                        throw new Error(
+                            response.message ||
+                            "Release request could not be submitted."
+                        );
+                    }
+
+                    closeReleaseModalWindow();
+
+                    showMessage(
+                        response.message ||
+                        "Release request submitted successfully. The player will remain with the team until an administrator approves the release.",
+                        "success"
+                    );
+
+                    await loadRequests();
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Release player error:",
+                        error
+                    );
+
+                    showReleaseFormMessage(
+                        error.message ||
+                        "Unable to submit release request.",
+                        "error"
+                    );
+
+                }
+                finally {
+                    submitReleaseBtn.disabled = false;
+                    submitReleaseBtn.textContent = "Submit Release Request";
+                }
+            }
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+                if (
+                    event.key === "Escape" &&
+                    releaseModal.classList.contains("show")
+                ) {
+                    closeReleaseModalWindow();
+                }
+            }
+        );
 
 
         /*
