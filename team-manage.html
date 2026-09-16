@@ -3353,50 +3353,456 @@ document.addEventListener(
             requestsContent.style.display =
                 "none";
 
+            try {
 
-            const {
-                data,
-                error
-            } = await supabaseClient
+                /*
+                ========================================
+                LOAD NORMAL SQUAD / TEAM REQUESTS
+                ========================================
+                */
 
-                .from(
-                    "squad_change_requests"
-                )
+                const {
+                    data: squadRequests,
+                    error: squadError
+                } = await supabaseClient
 
-                .select(`
-                    id,
-                    competition_id,
-                    player_id,
-                    request_type,
-                    requested_full_name,
-                    requested_jersey_number,
-                    requested_position,
-                    reason,
-                    status,
-                    admin_notes,
-                    created_at,
-                    reviewed_at,
-                    competition:competitions (
+                    .from("squad_change_requests")
+
+                    .select(`
                         id,
-                        name,
-                        season
-                    )
-                `)
+                        competition_id,
+                        player_id,
+                        request_type,
+                        requested_full_name,
+                        requested_jersey_number,
+                        requested_position,
+                        reason,
+                        status,
+                        admin_notes,
+                        created_at,
+                        reviewed_at,
+                        competition:competitions (
+                            id,
+                            name,
+                            season
+                        )
+                    `)
 
-                .eq(
-                    "team_id",
-                    teamId
-                )
+                    .eq(
+                        "team_id",
+                        teamId
+                    );
 
-                .order(
-                    "created_at",
+                if (squadError) {
+                    throw squadError;
+                }
+
+
+                /*
+                ========================================
+                LOAD PLAYER MOVEMENT REQUESTS
+                Includes Release / Transfer requests.
+                ========================================
+                */
+
+                const {
+                    data: movementRequests,
+                    error: movementError
+                } = await supabaseClient.rpc(
+                    "get_team_player_movement_requests",
                     {
-                        ascending: false
+                        p_team_id: Number(teamId)
+                    }
+                );
+
+                if (movementError) {
+                    throw movementError;
+                }
+
+
+                /*
+                ========================================
+                COMBINE BOTH REQUEST TYPES
+                ========================================
+                */
+
+                const combinedRequests = [];
+
+                (squadRequests || []).forEach(
+                    function (request) {
+                        combinedRequests.push({
+                            source: "squad",
+                            ...request
+                        });
+                    }
+                );
+
+                (movementRequests || []).forEach(
+                    function (request) {
+                        combinedRequests.push({
+                            source: "movement",
+                            ...request
+                        });
                     }
                 );
 
 
-            if (error) {
+                combinedRequests.sort(
+                    function (a, b) {
+                        return String(
+                            b.created_at || ""
+                        ).localeCompare(
+                            String(a.created_at || "")
+                        );
+                    }
+                );
+
+
+                requestsLoading.style.display =
+                    "none";
+
+                requestsContent.style.display =
+                    "block";
+
+                requestsList.innerHTML =
+                    "";
+
+
+                if (
+                    combinedRequests.length === 0
+                ) {
+
+                    requestsList.innerHTML =
+                        `
+                        <div class="empty">
+
+                            No squad change requests
+                            have been submitted yet.
+
+                        </div>
+                        `;
+
+                    return;
+
+                }
+
+
+                combinedRequests.forEach(
+                    function (request) {
+
+                        let statusClass =
+                            "request-pending";
+
+                        if (
+                            request.status ===
+                            "Approved"
+                        ) {
+                            statusClass =
+                                "request-approved";
+                        }
+                        else if (
+                            request.status ===
+                            "Rejected"
+                        ) {
+                            statusClass =
+                                "request-rejected";
+                        }
+
+
+                        /*
+                        ========================================
+                        REQUEST TYPE / COMPETITION / PLAYER
+                        ========================================
+                        */
+
+                        let requestType =
+                            request.request_type ||
+                            "Request";
+
+                        let competitionName =
+                            "Competition";
+
+                        let playerName =
+                            "Existing Player";
+
+                        let jersey =
+                            null;
+
+                        let position =
+                            null;
+
+
+                        if (
+                            request.source ===
+                            "movement"
+                        ) {
+
+                            if (
+                                request.request_type ===
+                                "Release"
+                            ) {
+                                requestType =
+                                    "Release Player";
+                            }
+                            else if (
+                                request.request_type ===
+                                "Free Agent Signing"
+                            ) {
+                                requestType =
+                                    "Free Agent Signing";
+                            }
+                            else if (
+                                request.request_type ===
+                                "Transfer"
+                            ) {
+                                requestType =
+                                    "Player Transfer";
+                            }
+
+                            competitionName =
+                                request.competition_name ||
+                                "Club Squad";
+
+                            playerName =
+                                request.player_name ||
+                                "Player";
+
+                            jersey =
+                                request.jersey_number ??
+                                null;
+
+                            position =
+                                request.position ||
+                                null;
+
+                        }
+                        else {
+
+                            competitionName =
+                                request.competition
+                                    ? request.competition.name
+                                    : "Competition";
+
+                            playerName =
+                                request.requested_full_name ||
+                                (
+                                    request.player_id
+                                        ? "Existing Player"
+                                        : "Team Information"
+                                );
+
+                            jersey =
+                                request.requested_jersey_number ??
+                                null;
+
+                            position =
+                                request.requested_position ||
+                                null;
+
+                        }
+
+
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
+
+                        item.style.border =
+                            "1px solid var(--border)";
+
+                        item.style.borderRadius =
+                            "10px";
+
+                        item.style.padding =
+                            "14px";
+
+                        item.style.marginBottom =
+                            "10px";
+
+
+                        item.innerHTML =
+                            `
+                            <div
+                                style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                    gap:10px;
+                                    flex-wrap:wrap;
+                                "
+                            >
+
+                                <strong
+                                    style="
+                                        color:var(--green-dark);
+                                    "
+                                >
+                                    ${escapeHtml(
+                                        requestType
+                                    )}
+                                </strong>
+
+                                <span
+                                    class="request-status ${statusClass}"
+                                >
+                                    ${escapeHtml(
+                                        request.status ||
+                                        "Pending"
+                                    )}
+                                </span>
+
+                            </div>
+
+                            <div
+                                style="
+                                    margin-top:7px;
+                                    font-size:13px;
+                                    color:var(--gray);
+                                "
+                            >
+
+                                <strong>
+                                    Competition:
+                                </strong>
+
+                                ${escapeHtml(
+                                    competitionName
+                                )}
+
+                                <br>
+
+                                <strong>
+                                    Player:
+                                </strong>
+
+                                ${escapeHtml(
+                                    playerName
+                                )}
+
+                                ${
+                                    jersey !== null
+                                        ? `
+                                        <br>
+                                        <strong>
+                                            Jersey:
+                                        </strong>
+                                        ${escapeHtml(
+                                            jersey
+                                        )}
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    position
+                                        ? `
+                                        <br>
+                                        <strong>
+                                            Position:
+                                        </strong>
+                                        ${escapeHtml(
+                                            position
+                                        )}
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    request.source ===
+                                    "movement" &&
+                                    request.from_team_name
+                                        ? `
+                                        <br>
+                                        <strong>
+                                            From Team:
+                                        </strong>
+                                        ${escapeHtml(
+                                            request.from_team_name
+                                        )}
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    request.source ===
+                                    "movement" &&
+                                    request.to_team_name
+                                        ? `
+                                        <br>
+                                        <strong>
+                                            To Team:
+                                        </strong>
+                                        ${escapeHtml(
+                                            request.to_team_name
+                                        )}
+                                        `
+                                        : ""
+                                }
+
+                                <br>
+
+                                <strong>
+                                    Submitted:
+                                </strong>
+
+                                ${formatDateTime(
+                                    request.created_at
+                                )}
+
+                                ${
+                                    request.reviewed_at
+                                        ? `
+                                        <br>
+                                        <strong>
+                                            Reviewed:
+                                        </strong>
+                                        ${formatDateTime(
+                                            request.reviewed_at
+                                        )}
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    request.reason
+                                        ? `
+                                        <br>
+                                        <strong>
+                                            Reason:
+                                        </strong>
+                                        ${escapeHtml(
+                                            request.reason
+                                        )}
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    request.admin_notes
+                                        ? `
+                                        <br>
+                                        <strong>
+                                            Admin Note:
+                                        </strong>
+                                        ${escapeHtml(
+                                            request.admin_notes
+                                        )}
+                                        `
+                                        : ""
+                                }
+
+                            </div>
+                            `;
+
+
+                        requestsList.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+            }
+            catch (error) {
 
                 console.error(
                     "Request history error:",
@@ -3408,251 +3814,9 @@ document.addEventListener(
                     Unable to load request history.
                     `;
 
-                return;
-
             }
-
-
-            requestsLoading.style.display =
-                "none";
-
-            requestsContent.style.display =
-                "block";
-
-            requestsList.innerHTML =
-                "";
-
-
-            if (
-                !data ||
-                data.length === 0
-            ) {
-
-                requestsList.innerHTML =
-                    `
-                    <div class="empty">
-
-                        No squad change requests
-                        have been submitted yet.
-
-                    </div>
-                    `;
-
-                return;
-
-            }
-
-
-            data.forEach(
-                function (request) {
-
-                    let statusClass =
-                        "request-pending";
-
-                    if (
-                        request.status ===
-                        "Approved"
-                    ) {
-
-                        statusClass =
-                            "request-approved";
-
-                    }
-                    else if (
-                        request.status ===
-                        "Rejected"
-                    ) {
-
-                        statusClass =
-                            "request-rejected";
-
-                    }
-
-
-                    const competitionName =
-                        request.competition
-                            ? request.competition.name
-                            : "Competition";
-
-
-                    const playerName =
-                        request.requested_full_name ||
-                        (
-                            request.player_id
-                                ? "Existing Player"
-                                : "Team Information"
-                        );
-
-
-                    const item =
-                        document.createElement(
-                            "div"
-                        );
-
-                    item.style.border =
-                        "1px solid var(--border)";
-
-                    item.style.borderRadius =
-                        "10px";
-
-                    item.style.padding =
-                        "14px";
-
-                    item.style.marginBottom =
-                        "10px";
-
-
-                    item.innerHTML =
-                        `
-                        <div
-                            style="
-                                display:flex;
-                                justify-content:space-between;
-                                gap:10px;
-                                flex-wrap:wrap;
-                            "
-                        >
-
-                            <strong
-                                style="
-                                    color:var(--green-dark);
-                                "
-                            >
-                                ${escapeHtml(
-                                    request.request_type
-                                )}
-                            </strong>
-
-                            <span
-                                class="request-status ${statusClass}"
-                            >
-                                ${escapeHtml(
-                                    request.status
-                                )}
-                            </span>
-
-                        </div>
-
-                        <div
-                            style="
-                                margin-top:7px;
-                                font-size:13px;
-                                color:var(--gray);
-                            "
-                        >
-
-                            <strong>
-                                Competition:
-                            </strong>
-
-                            ${escapeHtml(
-                                competitionName
-                            )}
-
-                            <br>
-
-                            <strong>
-                                Player:
-                            </strong>
-
-                            ${escapeHtml(
-                                playerName
-                            )}
-
-                            ${
-                                request.requested_jersey_number !==
-                                null
-                                    ? `
-                                    <br>
-                                    <strong>
-                                        Jersey:
-                                    </strong>
-                                    ${escapeHtml(
-                                        request.requested_jersey_number
-                                    )}
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                request.requested_position
-                                    ? `
-                                    <br>
-                                    <strong>
-                                        Position:
-                                    </strong>
-                                    ${escapeHtml(
-                                        request.requested_position
-                                    )}
-                                    `
-                                    : ""
-                            }
-
-                            <br>
-
-                            <strong>
-                                Submitted:
-                            </strong>
-
-                            ${formatDateTime(
-                                request.created_at
-                            )}
-
-                            ${
-                                request.reviewed_at
-                                    ? `
-                                    <br>
-                                    <strong>
-                                        Reviewed:
-                                    </strong>
-                                    ${formatDateTime(
-                                        request.reviewed_at
-                                    )}
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                request.reason
-                                    ? `
-                                    <br>
-                                    <strong>
-                                        Reason:
-                                    </strong>
-                                    ${escapeHtml(
-                                        request.reason
-                                    )}
-                                    `
-                                    : ""
-                            }
-
-                            ${
-                                request.admin_notes
-                                    ? `
-                                    <br>
-                                    <strong>
-                                        Admin Note:
-                                    </strong>
-                                    ${escapeHtml(
-                                        request.admin_notes
-                                    )}
-                                    `
-                                    : ""
-                            }
-
-                        </div>
-                        `;
-
-
-                    requestsList.appendChild(
-                        item
-                    );
-
-                }
-            );
 
         }
-
 
         /*
         ========================================
