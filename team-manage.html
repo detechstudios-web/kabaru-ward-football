@@ -3572,7 +3572,7 @@ document.addEventListener(
                                 null;
 
                             position =
-                                request.position ||
+                                request.player_position ||
                                 null;
 
                         }
@@ -3773,6 +3773,60 @@ document.addEventListener(
                                             request.reason
                                         )}
                                         `
+                                        : ""
+                                }
+
+                                ${
+                                    request.source ===
+                                        "movement"
+                                        ? `
+                                            <br><br>
+                                            <strong>Movement Approval:</strong>
+                                            <div
+                                                style="
+                                                    margin-top:6px;
+                                                    display:flex;
+                                                    flex-direction:column;
+                                                    gap:5px;
+                                                "
+                                            >
+                                                ${
+                                                    request.request_type ===
+                                                        "Transfer"
+                                                        ? `
+                                                            <span>
+                                                                Current Team: 
+                                                                <strong>
+                                                                    ${escapeHtml(
+                                                                        request.from_team_status ||
+                                                                        "Pending"
+                                                                    )}
+                                                                </strong>
+                                                            </span>
+                                                            <span>
+                                                                Administrator: 
+                                                                <strong>
+                                                                    ${escapeHtml(
+                                                                        request.admin_status ||
+                                                                        "Pending"
+                                                                    )}
+                                                                </strong>
+                                                            </span>
+                                                        `
+                                                        : `
+                                                            <span>
+                                                                Administrator: 
+                                                                <strong>
+                                                                    ${escapeHtml(
+                                                                        request.admin_status ||
+                                                                        "Pending"
+                                                                    )}
+                                                                </strong>
+                                                            </span>
+                                                        `
+                                                }
+                                            </div>
+                                          `
                                         : ""
                                 }
 
