@@ -7622,10 +7622,9 @@ function movementStatusBadge(status) {
 }
 
 function movementRequestTypeLabel(type) {
-    if (type === "Release") return "ðŸ“¤ Release Player";
-    if (type === "Transfer") return "ðŸ” Player Transfer";
-    if (type === "Free Agent Signing") return "ðŸ†“ Free-Agent Signing";
-
+    if (type === "Release") return "📤 Release Player";
+if (type === "Transfer") return "🔁 Player Transfer";
+if (type === "Free Agent Signing") return "🆓 Free-Agent Signing";
     return escapeHtml(type || "Player Movement");
 }
 
