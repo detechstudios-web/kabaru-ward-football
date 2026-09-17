@@ -1911,15 +1911,20 @@ document.addEventListener(
                 "transferForm"
             );
 
-        const transferPlayerSelect =
-            document.getElementById(
-                "transferPlayerSelect"
-            );
+        const transferCurrentTeamSelect =
+    document.getElementById(
+        "transferCurrentTeamSelect"
+    );
 
-        const transferDestinationSelect =
-            document.getElementById(
-                "transferDestinationSelect"
-            );
+const transferPlayerSelect =
+    document.getElementById(
+        "transferPlayerSelect"
+    );
+
+const transferDestinationDisplay =
+    document.getElementById(
+        "transferDestinationDisplay"
+    );
 
         const transferReason =
             document.getElementById(
@@ -2006,11 +2011,16 @@ document.addEventListener(
         let currentSettings = null;
 
         let approvedPlayers = [];
+let movementSettings = null;
+let approvedTeams = [];
 
-        let movementSettings = null;
+/*
+========================================
+TRANSFER DATA
+========================================
+*/
 
-        let approvedTeams = [];
-
+let transferAvailablePlayers = [];
 
         // ========================================
         // IMAGE UPLOAD HELPER
