@@ -3296,15 +3296,22 @@ document.addEventListener(
                 ========================================
                 PLAYER MOVEMENT REQUESTS
 
-                A transfer belongs in the history of both
-                clubs involved:
-                - destination club / requesting team
-                - player's current club
+                IMPORTANT:
+                Do NOT use nested Supabase relationships here.
+                The nested teams/players/competitions joins can fail
+                if a foreign-key relationship name differs or if a
+                relationship is not exposed as expected.
+
+                We first load the movement request rows only, then
+                load the related players, teams and competitions
+                separately and attach them in JavaScript.
                 ========================================
                 */
 
+                let movementRequests = [];
+
                 const {
-                    data: movementRequests,
+                    data: movementRows,
                     error: movementError
                 } = await supabaseClient
                     .from("player_movement_requests")
@@ -3324,31 +3331,7 @@ document.addEventListener(
                         reason,
                         status,
                         created_at,
-                        updated_at,
-                        player:players (
-                            id,
-                            full_name,
-                            jersey_number,
-                            position,
-                            photo_url
-                        ),
-                        from_team:teams!player_movement_requests_from_team_id_fkey (
-                            id,
-                            name,
-                            short_name,
-                            logo_url
-                        ),
-                        to_team:teams!player_movement_requests_to_team_id_fkey (
-                            id,
-                            name,
-                            short_name,
-                            logo_url
-                        ),
-                        competition:competitions (
-                            id,
-                            name,
-                            season
-                        )
+                        updated_at
                     `)
                     .or(
                         "requesting_team_id.eq." + teamId +
@@ -3364,6 +3347,180 @@ document.addEventListener(
                         "Movement request history error:",
                         movementError
                     );
+                }
+                else if (movementRows && movementRows.length) {
+
+                    /*
+                    ========================================
+                    COLLECT RELATED IDS
+                    ========================================
+                    */
+
+                    const playerIds = [
+                        ...new Set(
+                            movementRows
+                                .map(function (request) {
+                                    return request.player_id;
+                                })
+                                .filter(function (id) {
+                                    return id !== null &&
+                                           id !== undefined;
+                                })
+                                .map(Number)
+                        )
+                    ];
+
+                    const teamIds = [
+                        ...new Set(
+                            movementRows
+                                .flatMap(function (request) {
+                                    return [
+                                        request.requesting_team_id,
+                                        request.from_team_id,
+                                        request.to_team_id
+                                    ];
+                                })
+                                .filter(function (id) {
+                                    return id !== null &&
+                                           id !== undefined;
+                                })
+                                .map(Number)
+                        )
+                    ];
+
+                    const competitionIds = [
+                        ...new Set(
+                            movementRows
+                                .map(function (request) {
+                                    return request.competition_id;
+                                })
+                                .filter(function (id) {
+                                    return id !== null &&
+                                           id !== undefined;
+                                })
+                                .map(Number)
+                        )
+                    ];
+
+                    /*
+                    ========================================
+                    LOAD RELATED RECORDS SEPARATELY
+                    ========================================
+                    */
+
+                    let playersById = {};
+                    let teamsById = {};
+                    let competitionsById = {};
+
+                    if (playerIds.length) {
+                        const {
+                            data: movementPlayers,
+                            error: movementPlayersError
+                        } = await supabaseClient
+                            .from("players")
+                            .select(`
+                                id,
+                                full_name,
+                                jersey_number,
+                                position,
+                                photo_url
+                            `)
+                            .in("id", playerIds);
+
+                        if (movementPlayersError) {
+                            console.error(
+                                "Movement player lookup error:",
+                                movementPlayersError
+                            );
+                        }
+                        else {
+                            (movementPlayers || []).forEach(function (player) {
+                                playersById[Number(player.id)] = player;
+                            });
+                        }
+                    }
+
+                    if (teamIds.length) {
+                        const {
+                            data: movementTeams,
+                            error: movementTeamsError
+                        } = await supabaseClient
+                            .from("teams")
+                            .select(`
+                                id,
+                                name,
+                                short_name,
+                                logo_url
+                            `)
+                            .in("id", teamIds);
+
+                        if (movementTeamsError) {
+                            console.error(
+                                "Movement team lookup error:",
+                                movementTeamsError
+                            );
+                        }
+                        else {
+                            (movementTeams || []).forEach(function (team) {
+                                teamsById[Number(team.id)] = team;
+                            });
+                        }
+                    }
+
+                    if (competitionIds.length) {
+                        const {
+                            data: movementCompetitions,
+                            error: movementCompetitionsError
+                        } = await supabaseClient
+                            .from("competitions")
+                            .select(`
+                                id,
+                                name,
+                                season
+                            `)
+                            .in("id", competitionIds);
+
+                        if (movementCompetitionsError) {
+                            console.error(
+                                "Movement competition lookup error:",
+                                movementCompetitionsError
+                            );
+                        }
+                        else {
+                            (movementCompetitions || []).forEach(function (competition) {
+                                competitionsById[Number(competition.id)] = competition;
+                            });
+                        }
+                    }
+
+                    /*
+                    ========================================
+                    ATTACH RELATED DATA
+                    ========================================
+                    */
+
+                    movementRequests = movementRows.map(function (request) {
+
+                        return {
+                            ...request,
+
+                            player:
+                                playersById[Number(request.player_id)] ||
+                                null,
+
+                            from_team:
+                                teamsById[Number(request.from_team_id)] ||
+                                null,
+
+                            to_team:
+                                teamsById[Number(request.to_team_id)] ||
+                                null,
+
+                            competition:
+                                competitionsById[Number(request.competition_id)] ||
+                                null
+                        };
+                    });
                 }
 
                 const allRequests = [];
