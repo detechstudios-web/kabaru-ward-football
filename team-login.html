@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Team Portal Login - Kabaru Ward Football</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background:
+        linear-gradient(
+            rgba(4, 53, 31, 0.94),
+            rgba(4, 53, 31, 0.94)
+        ),
+        url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1600&q=80");
+
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 430px;
+}
+
+.logo-section {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 78px;
+    height: 78px;
+
+    margin: 0 auto 12px;
+
+    background: #d4af37;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 40px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.3);
+}
+
+.logo-section h1 {
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+.logo-section p {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.login-card {
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 30px 25px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.3);
+}
+
+.login-card h2 {
+    text-align: center;
+
+    color: #04351f;
+
+    margin-bottom: 8px;
+
+    font-size: 23px;
+}
+
+.subtitle {
+    text-align: center;
+
+    color: #666;
+
+    font-size: 14px;
+
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+
+    font-weight: bold;
+
+    color: #333;
+
+    margin-bottom: 7px;
+
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #075b35;
+
+    box-shadow:
+        0 0 0 3px rgba(7,91,53,0.1);
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 65px;
+}
+
+.show-password {
+    position: absolute;
+
+    right: 10px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: #075b35;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    font-size: 12px;
+}
+
+.login-button {
+    width: 100%;
+
+    padding: 14px;
+
+    background: #075b35;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    margin-top: 5px;
+
+    transition: 0.2s;
+}
+
+.login-button:hover {
+    background: #04351f;
+}
+
+.login-button:disabled {
+    background: #999;
+
+    cursor: not-allowed;
+}
+
+.message {
+    display: none;
+
+    margin-bottom: 18px;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+.message.error {
+    display: block;
+
+    background: #ffe8e8;
+
+    color: #a00000;
+
+    border: 1px solid #ffb5b5;
+}
+
+.message.success {
+    display: block;
+
+    background: #e8f7ed;
+
+    color: #075b35;
+
+    border: 1px solid #a9d8b8;
+}
+
+.back-link {
+    display: block;
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 14px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.security-note {
+    margin-top: 18px;
+
+    padding: 12px;
+
+    background: #f4f7f5;
+
+    border-radius: 8px;
+
+    color: #555;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="logo-section">
+
+        <div class="logo">
+            ⚽
+        </div>
+
+        <h1>
+            KABARU WARD FOOTBALL
+        </h1>
+
+        <p>
+            Official Team Management Portal
+        </p>
+
+    </div>
+
+
+    <div class="login-card">
+
+        <h2>
+            Team Portal Login
+        </h2>
+
+        <p class="subtitle">
+            Sign in to manage your registered team
+        </p>
+
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your team account email"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        id="showPassword"
+                    >
+                        SHOW
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-button"
+                id="loginButton"
+            >
+                LOGIN TO TEAM PORTAL
+            </button>
+
+        </form>
+
+
+        <div class="security-note">
+
+            🔐 Your team portal is protected.
+            Only the account assigned to your registered
+            team can access its management area.
+
+        </div>
+
+    </div>
+
+
+    <a
+        href="index.html"
+        class="back-link"
+    >
+        ← Back to Kabaru Ward Football Website
+    </a>
+
+</div>
+
+
+<script>
+
+/* ========================================
+   SUPABASE CONNECTION
+======================================== */
+
+const SUPABASE_URL =
+    "https://aitcfhalfkdlitaefhfo.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_NyK1UAffJLTxXwyGxD89Ww_O2J-iPhl";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+/* ========================================
+   ELEMENTS
+======================================== */
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const emailInput =
+    document.getElementById("email");
+
+const passwordInput =
+    document.getElementById("password");
+
+const loginButton =
+    document.getElementById("loginButton");
+
+const message =
+    document.getElementById("message");
+
+const showPassword =
+    document.getElementById("showPassword");
+
+
+/* ========================================
+   MESSAGE
+======================================== */
+
+function showMessage(text, type) {
+
+    message.textContent = text;
+
+    message.className =
+        "message " + type;
+
+}
+
+
+/* ========================================
+   SHOW / HIDE PASSWORD
+======================================== */
+
+showPassword.addEventListener(
+    "click",
+    function () {
+
+        if (
+            passwordInput.type ===
+            "password"
+        ) {
+
+            passwordInput.type =
+                "text";
+
+            showPassword.textContent =
+                "HIDE";
+
+        } else {
+
+            passwordInput.type =
+                "password";
+
+            showPassword.textContent =
+                "SHOW";
+        }
+
+    }
+);
+
+
+/* ========================================
+   CHECK EXISTING SESSION
+======================================== */
+
+async function checkExistingSession() {
+
+    const {
+        data: {
+            session
+        }
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    if (!session) {
+        return;
+    }
+
+
+    const {
+        data: account,
+        error
+    } =
+        await supabaseClient
+            .from("team_accounts")
+            .select(`
+                team_id,
+                account_status
+            `)
+            .eq(
+                "user_id",
+                session.user.id
+            )
+            .maybeSingle();
+
+
+    if (
+        !error &&
+        account &&
+        account.account_status ===
+            "Active"
+    ) {
+
+        window.location.href =
+            "team-manage.html";
+
+    }
+
+}
+
+
+/* ========================================
+   LOGIN
+======================================== */
+
+loginForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        const email =
+            emailInput.value.trim();
+
+        const password =
+            passwordInput.value;
+
+
+        if (!email || !password) {
+
+            showMessage(
+                "Please enter your email address and password.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+            "LOGGING IN...";
+
+        message.className =
+            "message";
+
+
+        try {
+
+            /* ------------------------------
+               SUPABASE AUTHENTICATION
+            ------------------------------ */
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth
+                    .signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            if (
+                !data ||
+                !data.user
+            ) {
+
+                throw new Error(
+                    "Login was not completed."
+                );
+
+            }
+
+
+            /* ------------------------------
+               FIND TEAM ACCOUNT
+            ------------------------------ */
+
+            const {
+                data: account,
+                error: accountError
+            } =
+                await supabaseClient
+                    .from("team_accounts")
+                    .select(`
+                        team_id,
+                        account_status
+                    `)
+                    .eq(
+                        "user_id",
+                        data.user.id
+                    )
+                    .maybeSingle();
+
+
+            if (accountError) {
+
+                throw new Error(
+                    "Unable to verify the team portal account."
+                );
+
+            }
+
+
+            if (!account) {
+
+                await supabaseClient.auth.signOut();
+
+                throw new Error(
+                    "This login account has not been assigned to a football team."
+                );
+
+            }
+
+
+            if (
+                account.account_status !==
+                "Active"
+            ) {
+
+                await supabaseClient.auth.signOut();
+
+                throw new Error(
+                    "This team portal account is not currently active."
+                );
+
+            }
+
+
+            /* ------------------------------
+               SUCCESS
+            ------------------------------ */
+
+            showMessage(
+                "Login successful. Opening your team portal...",
+                "success"
+            );
+
+
+            setTimeout(
+                function () {
+
+                    /*
+                     * IMPORTANT:
+                     * We intentionally do not
+                     * add ?id=team_id here.
+                     *
+                     * The next security step will
+                     * make the portal identify the
+                     * team directly from the
+                     * authenticated account.
+                     */
+
+                    window.location.href =
+                        "team-manage.html";
+
+                },
+                700
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Team login error:",
+                error
+            );
+
+
+            showMessage(
+                error.message ||
+                "Login failed. Please check your details and try again.",
+                "error"
+            );
+
+
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "LOGIN TO TEAM PORTAL";
+
+        }
+
+    }
+);
+
+
+/* ========================================
+   INITIALIZE
+======================================== */
+
+checkExistingSession();
+
+</script>
+
+</body>
+
+</html>
