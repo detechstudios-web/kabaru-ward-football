@@ -1595,32 +1595,1099 @@ footer strong {
                 class="message"
                 style="display:none;"
             ></div>
+/*
+========================================
+TRANSFER REQUEST
+========================================
+*/
 
-            <div class="movement-actions">
+/*
+========================================
+LOAD APPROVED CURRENT CLUBS
+========================================
+*/
 
-                <button
-                    type="button"
-                    id="cancelTransferBtn"
-                    class="btn btn-secondary"
+async function loadApprovedTeamsForTransfer() {
+
+    transferCurrentTeamSelect.innerHTML =
+        `<option value="">Select current club</option>`;
+
+    transferPlayerSelect.innerHTML =
+        `<option value="">Select current club first</option>`;
+
+    transferPlayerSelect.disabled = true;
+
+    transferAvailablePlayers = [];
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("teams")
+
+        .select(`
+            id,
+            name,
+            short_name,
+            logo_url,
+            registration_status
+        `)
+
+        .eq(
+            "registration_status",
+            "Approved"
+        )
+
+        .order(
+            "name",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Transfer teams error:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    approvedTeams =
+        (data || [])
+            .filter(
+                function (team) {
+
+                    /*
+                    The requesting/destination team
+                    must not appear as the current club.
+                    */
+
+                    return (
+                        Number(team.id) !==
+                        Number(teamId)
+                    );
+
+                }
+            );
+
+
+    if (
+        approvedTeams.length === 0
+    ) {
+
+        transferCurrentTeamSelect.innerHTML =
+            `<option value="">
+                No other approved clubs available
+            </option>`;
+
+        return;
+
+    }
+
+
+    approvedTeams.forEach(
+        function (team) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                team.id;
+
+            option.textContent =
+                team.name +
+                (
+                    team.short_name
+                        ? " (" +
+                          team.short_name +
+                          ")"
+                        : ""
+                );
+
+            transferCurrentTeamSelect
+                .appendChild(option);
+
+        }
+    );
+
+}
+
+
+/*
+========================================
+LOAD PLAYERS FROM SELECTED CURRENT CLUB
+========================================
+*/
+
+async function loadTransferPlayersFromCurrentClub(
+    currentClubId
+) {
+
+    transferAvailablePlayers = [];
+
+
+    transferPlayerSelect.innerHTML =
+        `<option value="">
+            Loading players...
+        </option>`;
+
+
+    transferPlayerSelect.disabled =
+        true;
+
+
+    if (!currentClubId) {
+
+        transferPlayerSelect.innerHTML =
+            `<option value="">
+                Select current club first
+            </option>`;
+
+        return;
+
+    }
+
+
+    const selectedClubId =
+        Number(currentClubId);
+
+
+    /*
+    ========================================
+    LOAD APPROVED PLAYERS
+    ========================================
+    */
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("players")
+
+        .select(`
+            id,
+            team_id,
+            full_name,
+            jersey_number,
+            position,
+            photo_url,
+            registration_status
+        `)
+
+        .eq(
+            "team_id",
+            selectedClubId
+        )
+
+        .eq(
+            "registration_status",
+            "Approved"
+        )
+
+        .order(
+            "jersey_number",
+            {
+                ascending: true,
+                nullsFirst: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Transfer players error:",
+            error
+        );
+
+        transferPlayerSelect.innerHTML =
+            `<option value="">
+                Unable to load players
+            </option>`;
+
+        throw error;
+
+    }
+
+
+    transferAvailablePlayers =
+        data || [];
+
+
+    if (
+        transferAvailablePlayers.length === 0
+    ) {
+
+        transferPlayerSelect.innerHTML =
+            `<option value="">
+                No approved players in this club
+            </option>`;
+
+        transferPlayerSelect.disabled =
+            true;
+
+        updateTransferPlayerPreview();
+
+        return;
+
+    }
+
+
+    transferPlayerSelect.innerHTML =
+        `<option value="">
+            Select player
+        </option>`;
+
+
+    transferAvailablePlayers.forEach(
+        function (player) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                player.id;
+
+            option.textContent =
+                player.full_name +
+                (
+                    player.jersey_number !== null &&
+                    player.jersey_number !== undefined
+                        ? " — #" +
+                          player.jersey_number
+                        : ""
+                );
+
+
+            transferPlayerSelect
+                .appendChild(option);
+
+        }
+    );
+
+
+    transferPlayerSelect.disabled =
+        false;
+
+
+    updateTransferPlayerPreview();
+
+}
+
+
+/*
+========================================
+TRANSFER PLAYER PREVIEW
+========================================
+*/
+
+function updateTransferPlayerPreview() {
+
+    const selectedId =
+        Number(
+            transferPlayerSelect.value || 0
+        );
+
+
+    const player =
+        transferAvailablePlayers.find(
+            function (item) {
+
+                return (
+                    Number(item.id) ===
+                    selectedId
+                );
+
+            }
+        );
+
+
+    if (!player) {
+
+        transferPlayerPreview.style.display =
+            "none";
+
+        transferPlayerPreview.innerHTML =
+            "";
+
+        return;
+
+    }
+
+
+    const photo =
+        player.photo_url
+
+            ? `
+                <img
+                    src="${escapeHtml(
+                        player.photo_url
+                    )}"
+                    alt="${escapeHtml(
+                        player.full_name
+                    )}"
+                    style="
+                        width:52px;
+                        height:52px;
+                        border-radius:50%;
+                        object-fit:cover;
+                        flex-shrink:0;
+                    "
                 >
-                    Cancel
-                </button>
+              `
 
-                <button
-                    type="submit"
-                    id="submitTransferBtn"
-                    class="btn btn-primary"
+            : `
+                <div
+                    class="jersey"
+                    style="
+                        width:52px;
+                        height:52px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        border-radius:50%;
+                        flex-shrink:0;
+                    "
                 >
-                    Submit Transfer Request
-                </button>
+                    ⚽
+                </div>
+              `;
 
-            </div>
 
-        </form>
+    transferPlayerPreview.style.display =
+        "flex";
 
-    </div>
 
-</div>
+    transferPlayerPreview.innerHTML =
+        photo +
+
+        `
+        <div>
+
+            <strong>
+                ${escapeHtml(
+                    player.full_name
+                )}
+            </strong>
+
+            <br>
+
+            <span>
+                ${escapeHtml(
+                    player.position ||
+                    "Player"
+                )}
+
+                · Jersey
+
+                ${escapeHtml(
+                    player.jersey_number ??
+                    "—"
+                )}
+            </span>
+
+        </div>
+        `;
+
+}
+
+
+/*
+========================================
+OPEN TRANSFER MODAL
+========================================
+*/
+
+function openTransferModal() {
+
+    if (!currentCompetition) {
+
+        showMessage(
+            "Please select Club Squad or a competition first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ========================================
+    CHECK MOVEMENT PERMISSION
+    ========================================
+    */
+
+    if (
+        String(
+            competitionSelect.value
+        ) !== "club" &&
+        !canRequestTransfer()
+    ) {
+
+        showMessage(
+            "Player transfers are not currently allowed for the selected competition.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ========================================
+    RESET FORM
+    ========================================
+    */
+
+    transferForm.reset();
+
+
+    transferFormMessage.style.display =
+        "none";
+
+    transferFormMessage.textContent =
+        "";
+
+
+    transferPlayerPreview.style.display =
+        "none";
+
+    transferPlayerPreview.innerHTML =
+        "";
+
+
+    transferPlayerSelect.innerHTML =
+        `<option value="">
+            Select current club first
+        </option>`;
+
+
+    transferPlayerSelect.disabled =
+        true;
+
+
+    transferAvailablePlayers =
+        [];
+
+
+    /*
+    ========================================
+    AUTOMATIC DESTINATION CLUB
+    ========================================
+    */
+
+    if (currentTeam) {
+
+        transferDestinationDisplay.value =
+            currentTeam.name +
+            (
+                currentTeam.short_name
+                    ? " (" +
+                      currentTeam.short_name +
+                      ")"
+                    : ""
+            );
+
+    }
+    else {
+
+        transferDestinationDisplay.value =
+            "Current Team";
+
+    }
+
+
+    /*
+    ========================================
+    LOAD CURRENT CLUBS
+    ========================================
+    */
+
+    loadApprovedTeamsForTransfer()
+
+        .catch(
+            function (error) {
+
+                console.error(
+                    "Unable to load transfer clubs:",
+                    error
+                );
+
+
+                transferCurrentTeamSelect.innerHTML =
+                    `<option value="">
+                        Unable to load clubs
+                    </option>`;
+
+
+                showTransferFormMessage(
+                    "Unable to load approved clubs: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+        );
+
+
+    /*
+    ========================================
+    SHOW MODAL
+    ========================================
+    */
+
+    transferModal.classList.add(
+        "show"
+    );
+
+    transferModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+/*
+========================================
+CLOSE TRANSFER MODAL
+========================================
+*/
+
+function closeTransferModalWindow() {
+
+    transferModal.classList.remove(
+        "show"
+    );
+
+    transferModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+/*
+========================================
+TRANSFER FORM MESSAGE
+========================================
+*/
+
+function showTransferFormMessage(
+    message,
+    type
+) {
+
+    transferFormMessage.textContent =
+        message;
+
+    transferFormMessage.className =
+        "message " +
+        (
+            type ||
+            "error"
+        );
+
+    transferFormMessage.style.display =
+        "block";
+
+}
+
+
+/*
+========================================
+OPEN BUTTON
+========================================
+*/
+
+requestTransferBtn.addEventListener(
+    "click",
+    openTransferModal
+);
+
+
+/*
+========================================
+CLOSE BUTTON
+========================================
+*/
+
+closeTransferModal.addEventListener(
+    "click",
+    closeTransferModalWindow
+);
+
+
+cancelTransferBtn.addEventListener(
+    "click",
+    closeTransferModalWindow
+);
+
+
+/*
+========================================
+CLICK OUTSIDE MODAL
+========================================
+*/
+
+transferModal.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target ===
+            transferModal
+        ) {
+
+            closeTransferModalWindow();
+
+        }
+
+    }
+);
+
+
+/*
+========================================
+ESCAPE KEY
+========================================
+*/
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape" &&
+            transferModal.classList.contains(
+                "show"
+            )
+        ) {
+
+            closeTransferModalWindow();
+
+        }
+
+    }
+);
+
+
+/*
+========================================
+CURRENT CLUB CHANGE
+========================================
+*/
+
+transferCurrentTeamSelect.addEventListener(
+    "change",
+    async function () {
+
+        const currentClubId =
+            this.value;
+
+
+        transferPlayerPreview.style.display =
+            "none";
+
+        transferPlayerPreview.innerHTML =
+            "";
+
+
+        if (!currentClubId) {
+
+            transferPlayerSelect.innerHTML =
+                `<option value="">
+                    Select current club first
+                </option>`;
+
+            transferPlayerSelect.disabled =
+                true;
+
+            transferAvailablePlayers =
+                [];
+
+            return;
+
+        }
+
+
+        try {
+
+            await loadTransferPlayersFromCurrentClub(
+                currentClubId
+            );
+
+        }
+        catch (error) {
+
+            showTransferFormMessage(
+                "Unable to load players from the selected club: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                ),
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+/*
+========================================
+PLAYER CHANGE
+========================================
+*/
+
+transferPlayerSelect.addEventListener(
+    "change",
+    updateTransferPlayerPreview
+);
+
+
+/*
+========================================
+SUBMIT TRANSFER REQUEST
+========================================
+*/
+
+transferForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        /*
+        ========================================
+        BASIC CHECK
+        ========================================
+        */
+
+        if (!currentCompetition) {
+
+            showTransferFormMessage(
+                "Please select Club Squad or a competition first.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ========================================
+        CHECK TRANSFER PERMISSION
+        ========================================
+        */
+
+        if (
+            String(
+                competitionSelect.value
+            ) !== "club" &&
+            !canRequestTransfer()
+        ) {
+
+            showTransferFormMessage(
+                "Player transfers are not currently allowed for the selected competition.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ========================================
+        GET SELECTED VALUES
+        ========================================
+        */
+
+        const playerId =
+            Number(
+                transferPlayerSelect.value ||
+                0
+            );
+
+
+        const fromTeamId =
+            Number(
+                transferCurrentTeamSelect.value ||
+                0
+            );
+
+
+        /*
+        The destination is always the team
+        whose management page is currently open.
+        */
+
+        const toTeamId =
+            Number(teamId);
+
+
+        const reason =
+            transferReason.value.trim() ||
+            null;
+
+
+        /*
+        ========================================
+        VALIDATION
+        ========================================
+        */
+
+        if (!fromTeamId) {
+
+            showTransferFormMessage(
+                "Please select the player's current club.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (!playerId) {
+
+            showTransferFormMessage(
+                "Please select the player you want to sign.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (!toTeamId) {
+
+            showTransferFormMessage(
+                "The destination club could not be identified.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            fromTeamId ===
+            toTeamId
+        ) {
+
+            showTransferFormMessage(
+                "The player's current club must be different from the destination club.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ========================================
+        VERIFY SELECTED PLAYER
+        ========================================
+        */
+
+        const player =
+            transferAvailablePlayers.find(
+                function (item) {
+
+                    return (
+                        Number(item.id) ===
+                        playerId
+                    );
+
+                }
+            );
+
+
+        if (!player) {
+
+            showTransferFormMessage(
+                "The selected player is no longer available from the selected club.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ========================================
+        EXTRA CLIENT-SIDE SAFETY CHECK
+        ========================================
+        */
+
+        if (
+            Number(player.team_id) !==
+            fromTeamId
+        ) {
+
+            showTransferFormMessage(
+                "The selected player's current club has changed. Please close and reopen the transfer form.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ========================================
+        SUBMIT
+        ========================================
+        */
+
+        submitTransferBtn.disabled =
+            true;
+
+        submitTransferBtn.textContent =
+            "Submitting...";
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.rpc(
+                    "request_player_transfer",
+                    {
+
+                        p_player_id:
+                            playerId,
+
+                        p_from_team_id:
+                            fromTeamId,
+
+                        p_to_team_id:
+                            toTeamId,
+
+                        p_competition_id:
+                            String(
+                                competitionSelect.value
+                            ) === "club"
+
+                                ? null
+
+                                : Number(
+                                    currentCompetition.id
+                                ),
+
+                        p_reason:
+                            reason
+
+                    }
+                );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            const response =
+                data || {};
+
+
+            if (
+                response.success === false
+            ) {
+
+                throw new Error(
+                    response.message ||
+                    "Transfer request could not be submitted."
+                );
+
+            }
+
+
+            /*
+            ========================================
+            SUCCESS
+            ========================================
+            */
+
+            closeTransferModalWindow();
+
+
+            showMessage(
+                response.message ||
+                "Transfer request submitted successfully. The current team must approve it before final administrator approval.",
+                "success"
+            );
+
+
+            await loadRequests();
+
+        }
+        catch (error) {
+
+            console.error(
+                "Transfer request error:",
+                error
+            );
+
+
+            showTransferFormMessage(
+                error.message ||
+                "Unable to submit transfer request.",
+                "error"
+            );
+
+        }
+        finally {
+
+            submitTransferBtn.disabled =
+                false;
+
+            submitTransferBtn.textContent =
+                "Submit Transfer Request";
+
+        }
+
+    }
+);
 
 
 <!-- ========================================
