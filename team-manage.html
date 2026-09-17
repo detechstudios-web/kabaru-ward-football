@@ -942,7 +942,7 @@ footer strong {
         <div class="brand">
 
             <div class="brand-icon">
-                âš½
+                ⚽
             </div>
 
             <div class="brand-text">
@@ -965,7 +965,7 @@ footer strong {
                 href="index.html"
                 class="back-btn"
             >
-                â† Back to Website
+                ← Back to Website
             </a>
 
             <button
@@ -1079,7 +1079,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            ðŸ† Competition
+            🏆 Competition
         </div>
 
         <div class="card-subtitle">
@@ -1141,11 +1141,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        âž• Add Players
+                        ➕ Add Players
                     </strong>
 
                     <span id="allowAdd">
-                        â€”
+                        —
                     </span>
 
                 </div>
@@ -1154,11 +1154,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        âž– Remove Players
+                        ➖ Remove Players
                     </strong>
 
                     <span id="allowRemove">
-                        â€”
+                        —
                     </span>
 
                 </div>
@@ -1167,11 +1167,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        âœï¸ Edit Players
+                        ✏️ Edit Players
                     </strong>
 
                     <span id="allowEditPlayer">
-                        â€”
+                        —
                     </span>
 
                 </div>
@@ -1180,11 +1180,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        ðŸŸï¸ Edit Team
+                        🏟️ Edit Team
                     </strong>
 
                     <span id="allowEditTeam">
-                        â€”
+                        —
                     </span>
 
                 </div>
@@ -1203,7 +1203,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            ðŸ› ï¸ Team Management
+            🛠️ Team Management
         </div>
 
         <div class="card-subtitle">
@@ -1218,7 +1218,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    âž•
+                    ➕
                 </div>
 
                 <h3>
@@ -1244,7 +1244,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    âž–
+                    ➖
                 </div>
 
                 <h3>
@@ -1270,7 +1270,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    âœï¸
+                    ✏️
                 </div>
 
                 <h3>
@@ -1296,7 +1296,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    ðŸŸï¸
+                    🏟️
                 </div>
 
                 <h3>
@@ -1322,7 +1322,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    ðŸ”
+                    🔁
                 </div>
 
                 <h3>
@@ -1347,7 +1347,7 @@ footer strong {
         </div>
 
         <div class="movement-note">
-            <strong>ðŸ” Transfer rule:</strong> A transfer is only a request at this stage.
+            <strong>🔁 Transfer rule:</strong> A transfer is only a request at this stage.
             The current team must review it first, followed by final administrator approval.
             The player is not moved until all required approvals are completed.
         </div>
@@ -1362,7 +1362,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            ðŸ‘¥ Current Squad
+            👥 Current Squad
         </div>
 
         <div class="card-subtitle">
@@ -1435,7 +1435,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            ðŸ“‹ Request History
+            📋 Request History
         </div>
 
         <div class="card-subtitle">
@@ -1488,7 +1488,7 @@ footer strong {
 
             <div>
                 <div class="kicker">PLAYER MOVEMENT</div>
-                <h3>ðŸ” Request Player Transfer</h3>
+                <h3>🔁 Request Player Transfer</h3>
             </div>
 
             <button
@@ -1497,7 +1497,7 @@ footer strong {
                 class="movement-close"
                 aria-label="Close"
             >
-                Ã—
+                ×
             </button>
 
         </div>
@@ -2189,8 +2189,8 @@ document.addEventListener(
 
             teamLocation.textContent =
                 data.location
-                    ? "ðŸ“ " + data.location
-                    : "ðŸ“ Location not specified";
+                    ? "📍 " + data.location
+                    : "📍 Location not specified";
 
 
             if (data.logo_url) {
@@ -2215,7 +2215,7 @@ document.addEventListener(
                     <div
                         class="team-logo-placeholder"
                     >
-                        âš½
+                        ⚽
                     </div>
                     `;
 
@@ -2306,7 +2306,7 @@ document.addEventListener(
                         competition.id;
 
                     option.textContent =
-                        `${competition.name} â€” ${competition.season}`;
+                        `${competition.name} — ${competition.season}`;
 
                     competitionSelect.appendChild(
                         option
@@ -2990,7 +2990,7 @@ document.addEventListener(
                 option.textContent =
                     player.full_name +
                     (player.jersey_number !== null && player.jersey_number !== undefined
-                        ? " â€” #" + player.jersey_number
+                        ? " — #" + player.jersey_number
                         : "");
                 transferPlayerSelect.appendChild(option);
             });
@@ -3018,14 +3018,14 @@ document.addEventListener(
 
             const photo = player.photo_url
                 ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
-                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;">âš½</div>`;
+                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;">⚽</div>`;
 
             transferPlayerPreview.style.display = "flex";
             transferPlayerPreview.innerHTML =
                 photo +
                 `<div style="flex:1;min-width:0;">
                     <strong>${escapeHtml(player.full_name)}</strong><br>
-                    <span>${escapeHtml(player.position || "Player")} Â· Jersey ${escapeHtml(player.jersey_number ?? "â€”")}</span>
+                    <span>${escapeHtml(player.position || "Player")} · Jersey ${escapeHtml(player.jersey_number ?? "—")}</span>
                     <div style="margin-top:8px;">
                         <a
                             href="player-profile.html?id=${encodeURIComponent(player.id)}"
@@ -3034,7 +3034,7 @@ document.addEventListener(
                             class="btn btn-secondary"
                             style="display:inline-block;text-decoration:none;padding:7px 12px;font-size:13px;"
                         >
-                            ðŸ‘¤ View Profile &amp; Statistics
+                            👤 View Profile &amp; Statistics
                         </a>
                     </div>
                 </div>`;
@@ -3250,7 +3250,7 @@ document.addEventListener(
                         photoHtml =
                             `
                             <div class="jersey">
-                                âš½
+                                ⚽
                             </div>
                             `;
 
@@ -3281,7 +3281,7 @@ document.addEventListener(
                             <strong>
                                 ${escapeHtml(
                                     player.jersey_number ??
-                                    "â€”"
+                                    "—"
                                 )}
                             </strong>
                         </td>
@@ -3289,7 +3289,7 @@ document.addEventListener(
                         <td>
                             ${escapeHtml(
                                 player.position ||
-                                "â€”"
+                                "—"
                             )}
                         </td>
 
@@ -3677,7 +3677,7 @@ document.addEventListener(
                             request.from_team_status === "Approved" &&
                             request.admin_status === "Pending"
                         ) {
-                            displayStatus = "Current Club Approved Â· Admin Pending";
+                            displayStatus = "Current Club Approved · Admin Pending";
                             statusClass = "request-pending";
                         }
                         else if (
@@ -3752,7 +3752,7 @@ document.addEventListener(
                                 <strong
                                     style="color:var(--green-dark);"
                                 >
-                                    ðŸ” Transfer Request
+                                    🔁 Transfer Request
                                 </strong>
 
                                 <span
@@ -3898,7 +3898,7 @@ document.addEventListener(
                                         font-weight:700;
                                     "
                                 >
-                                    ðŸ‘¤ View Player Profile & Statistics
+                                    👤 View Player Profile & Statistics
                                 </a>
                             </div>
                         `;
@@ -4100,7 +4100,7 @@ document.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                âž• Request to Add Player
+                ➕ Request to Add Player
             </div>
 
             <div class="card-subtitle">
@@ -4775,7 +4775,7 @@ removePlayerBtn.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                âž– Request to Remove Player
+                ➖ Request to Remove Player
             </div>
 
             <div class="card-subtitle">
@@ -4813,7 +4813,7 @@ removePlayerBtn.addEventListener(
                                             #${escapeHtml(
                                                 String(
                                                     player.jersey_number ??
-                                                    "â€”"
+                                                    "—"
                                                 )
                                             )}
                                             -
@@ -5210,7 +5210,7 @@ editPlayerBtn.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                âœï¸ Request to Edit Player
+                ✏️ Request to Edit Player
             </div>
 
             <div class="card-subtitle">
@@ -5248,7 +5248,7 @@ editPlayerBtn.addEventListener(
                                             #${escapeHtml(
                                                 String(
                                                     player.jersey_number ??
-                                                    "â€”"
+                                                    "—"
                                                 )
                                             )}
                                             -
@@ -6130,7 +6130,7 @@ editTeamBtn.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                âœï¸ Request to Edit Team
+                ✏️ Request to Edit Team
             </div>
 
             <div class="card-subtitle">
