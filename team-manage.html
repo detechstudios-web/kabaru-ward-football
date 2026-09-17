@@ -1302,45 +1302,12 @@ footer strong {
 
             </div>
 
-
-            <div class="action-card">
-
-                <div class="action-icon">
-                    🚪
-                </div>
-
-                <h3>
-                    Release Player
-                </h3>
-
-                <p>
-                    Request to release one of your players as a Free Agent.
-                </p>
-
-                <button
-                    id="releasePlayerBtn"
-                    class="btn btn-disabled"
-                    disabled
-                >
-                    Release Player
-                </button>
-
-            </div>
-
         </div>
 
         <div class="movement-note">
             <strong>🔁 Transfer rule:</strong> A transfer is only a request at this stage.
             The current team must review it first, followed by final administrator approval.
             The player is not moved until all required approvals are completed.
-        </div>
-
-        <div class="movement-note" style="margin-top:10px;">
-            <strong>🏟️ Club Squad:</strong> Select <em>All Competitions — Club Squad</em> when you want to manage the player's club relationship rather than a single competition. Competition registration remains separate, so the same club player can be eligible for multiple competitions without creating duplicate player records.
-        </div>
-
-        <div class="movement-note" style="margin-top:10px;">
-            <strong>🚪 Release rule:</strong> Releasing a player creates a pending Free Agent request. The player is not released until the administrator approves it. Approved release removes the player from the current club squad while preserving the player's profile, statistics, and club history.
         </div>
 
     </section>
@@ -1502,7 +1469,6 @@ footer strong {
 
         <form id="transferForm">
 
-            <!-- CURRENT CLUB -->
             <div class="form-group">
                 <label for="transferCurrentTeamSelect">
                     Current Club *
@@ -1523,7 +1489,6 @@ footer strong {
                 </small>
             </div>
 
-            <!-- PLAYER -->
             <div class="form-group">
                 <label for="transferPlayerSelect">
                     Player *
@@ -1545,16 +1510,13 @@ footer strong {
                 </small>
             </div>
 
-            <!-- PLAYER PREVIEW -->
             <div
                 id="transferPlayerPreview"
                 class="movement-player-preview"
                 style="display:none;"
             ></div>
 
-            <!-- DESTINATION CLUB -->
             <div class="form-group">
-
                 <label for="transferDestinationDisplay">
                     Destination Club
                 </label>
@@ -1570,12 +1532,9 @@ footer strong {
                     This is your club. It is automatically selected
                     because you are requesting the transfer.
                 </small>
-
             </div>
 
-            <!-- REASON -->
             <div class="form-group">
-
                 <label for="transferReason">
                     Reason / Notes
                 </label>
@@ -1587,7 +1546,6 @@ footer strong {
                     maxlength="1000"
                     placeholder="Optional: explain the reason for the transfer request."
                 ></textarea>
-
             </div>
 
             <div
@@ -1595,1166 +1553,23 @@ footer strong {
                 class="message"
                 style="display:none;"
             ></div>
-/*
-========================================
-TRANSFER REQUEST
-========================================
-*/
-
-/*
-========================================
-LOAD APPROVED CURRENT CLUBS
-========================================
-*/
-
-async function loadApprovedTeamsForTransfer() {
-
-    transferCurrentTeamSelect.innerHTML =
-        `<option value="">Select current club</option>`;
-
-    transferPlayerSelect.innerHTML =
-        `<option value="">Select current club first</option>`;
-
-    transferPlayerSelect.disabled = true;
-
-    transferAvailablePlayers = [];
-
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-
-        .from("teams")
-
-        .select(`
-            id,
-            name,
-            short_name,
-            logo_url,
-            registration_status
-        `)
-
-        .eq(
-            "registration_status",
-            "Approved"
-        )
-
-        .order(
-            "name",
-            {
-                ascending: true
-            }
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Transfer teams error:",
-            error
-        );
-
-        throw error;
-
-    }
-
-
-    approvedTeams =
-        (data || [])
-            .filter(
-                function (team) {
-
-                    /*
-                    The requesting/destination team
-                    must not appear as the current club.
-                    */
-
-                    return (
-                        Number(team.id) !==
-                        Number(teamId)
-                    );
-
-                }
-            );
-
-
-    if (
-        approvedTeams.length === 0
-    ) {
-
-        transferCurrentTeamSelect.innerHTML =
-            `<option value="">
-                No other approved clubs available
-            </option>`;
-
-        return;
-
-    }
-
-
-    approvedTeams.forEach(
-        function (team) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                team.id;
-
-            option.textContent =
-                team.name +
-                (
-                    team.short_name
-                        ? " (" +
-                          team.short_name +
-                          ")"
-                        : ""
-                );
-
-            transferCurrentTeamSelect
-                .appendChild(option);
-
-        }
-    );
-
-}
-
-
-/*
-========================================
-LOAD PLAYERS FROM SELECTED CURRENT CLUB
-========================================
-*/
-
-async function loadTransferPlayersFromCurrentClub(
-    currentClubId
-) {
-
-    transferAvailablePlayers = [];
-
-
-    transferPlayerSelect.innerHTML =
-        `<option value="">
-            Loading players...
-        </option>`;
-
-
-    transferPlayerSelect.disabled =
-        true;
-
-
-    if (!currentClubId) {
-
-        transferPlayerSelect.innerHTML =
-            `<option value="">
-                Select current club first
-            </option>`;
-
-        return;
-
-    }
-
-
-    const selectedClubId =
-        Number(currentClubId);
-
-
-    /*
-    ========================================
-    LOAD APPROVED PLAYERS
-    ========================================
-    */
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-
-        .from("players")
-
-        .select(`
-            id,
-            team_id,
-            full_name,
-            jersey_number,
-            position,
-            photo_url,
-            registration_status
-        `)
-
-        .eq(
-            "team_id",
-            selectedClubId
-        )
-
-        .eq(
-            "registration_status",
-            "Approved"
-        )
-
-        .order(
-            "jersey_number",
-            {
-                ascending: true,
-                nullsFirst: false
-            }
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Transfer players error:",
-            error
-        );
-
-        transferPlayerSelect.innerHTML =
-            `<option value="">
-                Unable to load players
-            </option>`;
-
-        throw error;
-
-    }
-
-
-    transferAvailablePlayers =
-        data || [];
-
-
-    if (
-        transferAvailablePlayers.length === 0
-    ) {
-
-        transferPlayerSelect.innerHTML =
-            `<option value="">
-                No approved players in this club
-            </option>`;
-
-        transferPlayerSelect.disabled =
-            true;
-
-        updateTransferPlayerPreview();
-
-        return;
-
-    }
-
-
-    transferPlayerSelect.innerHTML =
-        `<option value="">
-            Select player
-        </option>`;
-
-
-    transferAvailablePlayers.forEach(
-        function (player) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                player.id;
-
-            option.textContent =
-                player.full_name +
-                (
-                    player.jersey_number !== null &&
-                    player.jersey_number !== undefined
-                        ? " — #" +
-                          player.jersey_number
-                        : ""
-                );
-
-
-            transferPlayerSelect
-                .appendChild(option);
-
-        }
-    );
-
-
-    transferPlayerSelect.disabled =
-        false;
-
-
-    updateTransferPlayerPreview();
-
-}
-
-
-/*
-========================================
-TRANSFER PLAYER PREVIEW
-========================================
-*/
-
-function updateTransferPlayerPreview() {
-
-    const selectedId =
-        Number(
-            transferPlayerSelect.value || 0
-        );
-
-
-    const player =
-        transferAvailablePlayers.find(
-            function (item) {
-
-                return (
-                    Number(item.id) ===
-                    selectedId
-                );
-
-            }
-        );
-
-
-    if (!player) {
-
-        transferPlayerPreview.style.display =
-            "none";
-
-        transferPlayerPreview.innerHTML =
-            "";
-
-        return;
-
-    }
-
-
-    const photo =
-        player.photo_url
-
-            ? `
-                <img
-                    src="${escapeHtml(
-                        player.photo_url
-                    )}"
-                    alt="${escapeHtml(
-                        player.full_name
-                    )}"
-                    style="
-                        width:52px;
-                        height:52px;
-                        border-radius:50%;
-                        object-fit:cover;
-                        flex-shrink:0;
-                    "
-                >
-              `
-
-            : `
-                <div
-                    class="jersey"
-                    style="
-                        width:52px;
-                        height:52px;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        border-radius:50%;
-                        flex-shrink:0;
-                    "
-                >
-                    ⚽
-                </div>
-              `;
-
-
-    transferPlayerPreview.style.display =
-        "flex";
-
-
-    transferPlayerPreview.innerHTML =
-        photo +
-
-        `
-        <div>
-
-            <strong>
-                ${escapeHtml(
-                    player.full_name
-                )}
-            </strong>
-
-            <br>
-
-            <span>
-                ${escapeHtml(
-                    player.position ||
-                    "Player"
-                )}
-
-                · Jersey
-
-                ${escapeHtml(
-                    player.jersey_number ??
-                    "—"
-                )}
-            </span>
-
-        </div>
-        `;
-
-}
-
-
-/*
-========================================
-OPEN TRANSFER MODAL
-========================================
-*/
-
-function openTransferModal() {
-
-    if (!currentCompetition) {
-
-        showMessage(
-            "Please select Club Squad or a competition first.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    /*
-    ========================================
-    CHECK MOVEMENT PERMISSION
-    ========================================
-    */
-
-    if (
-        String(
-            competitionSelect.value
-        ) !== "club" &&
-        !canRequestTransfer()
-    ) {
-
-        showMessage(
-            "Player transfers are not currently allowed for the selected competition.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    /*
-    ========================================
-    RESET FORM
-    ========================================
-    */
-
-    transferForm.reset();
-
-
-    transferFormMessage.style.display =
-        "none";
-
-    transferFormMessage.textContent =
-        "";
-
-
-    transferPlayerPreview.style.display =
-        "none";
-
-    transferPlayerPreview.innerHTML =
-        "";
-
-
-    transferPlayerSelect.innerHTML =
-        `<option value="">
-            Select current club first
-        </option>`;
-
-
-    transferPlayerSelect.disabled =
-        true;
-
-
-    transferAvailablePlayers =
-        [];
-
-
-    /*
-    ========================================
-    AUTOMATIC DESTINATION CLUB
-    ========================================
-    */
-
-    if (currentTeam) {
-
-        transferDestinationDisplay.value =
-            currentTeam.name +
-            (
-                currentTeam.short_name
-                    ? " (" +
-                      currentTeam.short_name +
-                      ")"
-                    : ""
-            );
-
-    }
-    else {
-
-        transferDestinationDisplay.value =
-            "Current Team";
-
-    }
-
-
-    /*
-    ========================================
-    LOAD CURRENT CLUBS
-    ========================================
-    */
-
-    loadApprovedTeamsForTransfer()
-
-        .catch(
-            function (error) {
-
-                console.error(
-                    "Unable to load transfer clubs:",
-                    error
-                );
-
-
-                transferCurrentTeamSelect.innerHTML =
-                    `<option value="">
-                        Unable to load clubs
-                    </option>`;
-
-
-                showTransferFormMessage(
-                    "Unable to load approved clubs: " +
-                    (
-                        error.message ||
-                        "Unknown error"
-                    ),
-                    "error"
-                );
-
-            }
-        );
-
-
-    /*
-    ========================================
-    SHOW MODAL
-    ========================================
-    */
-
-    transferModal.classList.add(
-        "show"
-    );
-
-    transferModal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-    document.body.style.overflow =
-        "hidden";
-
-}
-
-
-/*
-========================================
-CLOSE TRANSFER MODAL
-========================================
-*/
-
-function closeTransferModalWindow() {
-
-    transferModal.classList.remove(
-        "show"
-    );
-
-    transferModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-    document.body.style.overflow =
-        "";
-
-}
-
-
-/*
-========================================
-TRANSFER FORM MESSAGE
-========================================
-*/
-
-function showTransferFormMessage(
-    message,
-    type
-) {
-
-    transferFormMessage.textContent =
-        message;
-
-    transferFormMessage.className =
-        "message " +
-        (
-            type ||
-            "error"
-        );
-
-    transferFormMessage.style.display =
-        "block";
-
-}
-
-
-/*
-========================================
-OPEN BUTTON
-========================================
-*/
-
-requestTransferBtn.addEventListener(
-    "click",
-    openTransferModal
-);
-
-
-/*
-========================================
-CLOSE BUTTON
-========================================
-*/
-
-closeTransferModal.addEventListener(
-    "click",
-    closeTransferModalWindow
-);
-
-
-cancelTransferBtn.addEventListener(
-    "click",
-    closeTransferModalWindow
-);
-
-
-/*
-========================================
-CLICK OUTSIDE MODAL
-========================================
-*/
-
-transferModal.addEventListener(
-    "click",
-    function (event) {
-
-        if (
-            event.target ===
-            transferModal
-        ) {
-
-            closeTransferModalWindow();
-
-        }
-
-    }
-);
-
-
-/*
-========================================
-ESCAPE KEY
-========================================
-*/
-
-document.addEventListener(
-    "keydown",
-    function (event) {
-
-        if (
-            event.key === "Escape" &&
-            transferModal.classList.contains(
-                "show"
-            )
-        ) {
-
-            closeTransferModalWindow();
-
-        }
-
-    }
-);
-
-
-/*
-========================================
-CURRENT CLUB CHANGE
-========================================
-*/
-
-transferCurrentTeamSelect.addEventListener(
-    "change",
-    async function () {
-
-        const currentClubId =
-            this.value;
-
-
-        transferPlayerPreview.style.display =
-            "none";
-
-        transferPlayerPreview.innerHTML =
-            "";
-
-
-        if (!currentClubId) {
-
-            transferPlayerSelect.innerHTML =
-                `<option value="">
-                    Select current club first
-                </option>`;
-
-            transferPlayerSelect.disabled =
-                true;
-
-            transferAvailablePlayers =
-                [];
-
-            return;
-
-        }
-
-
-        try {
-
-            await loadTransferPlayersFromCurrentClub(
-                currentClubId
-            );
-
-        }
-        catch (error) {
-
-            showTransferFormMessage(
-                "Unable to load players from the selected club: " +
-                (
-                    error.message ||
-                    "Unknown error"
-                ),
-                "error"
-            );
-
-        }
-
-    }
-);
-
-
-/*
-========================================
-PLAYER CHANGE
-========================================
-*/
-
-transferPlayerSelect.addEventListener(
-    "change",
-    updateTransferPlayerPreview
-);
-
-
-/*
-========================================
-SUBMIT TRANSFER REQUEST
-========================================
-*/
-
-transferForm.addEventListener(
-    "submit",
-    async function (event) {
-
-        event.preventDefault();
-
-
-        /*
-        ========================================
-        BASIC CHECK
-        ========================================
-        */
-
-        if (!currentCompetition) {
-
-            showTransferFormMessage(
-                "Please select Club Squad or a competition first.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        ========================================
-        CHECK TRANSFER PERMISSION
-        ========================================
-        */
-
-        if (
-            String(
-                competitionSelect.value
-            ) !== "club" &&
-            !canRequestTransfer()
-        ) {
-
-            showTransferFormMessage(
-                "Player transfers are not currently allowed for the selected competition.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        ========================================
-        GET SELECTED VALUES
-        ========================================
-        */
-
-        const playerId =
-            Number(
-                transferPlayerSelect.value ||
-                0
-            );
-
-
-        const fromTeamId =
-            Number(
-                transferCurrentTeamSelect.value ||
-                0
-            );
-
-
-        /*
-        The destination is always the team
-        whose management page is currently open.
-        */
-
-        const toTeamId =
-            Number(teamId);
-
-
-        const reason =
-            transferReason.value.trim() ||
-            null;
-
-
-        /*
-        ========================================
-        VALIDATION
-        ========================================
-        */
-
-        if (!fromTeamId) {
-
-            showTransferFormMessage(
-                "Please select the player's current club.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (!playerId) {
-
-            showTransferFormMessage(
-                "Please select the player you want to sign.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (!toTeamId) {
-
-            showTransferFormMessage(
-                "The destination club could not be identified.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            fromTeamId ===
-            toTeamId
-        ) {
-
-            showTransferFormMessage(
-                "The player's current club must be different from the destination club.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        ========================================
-        VERIFY SELECTED PLAYER
-        ========================================
-        */
-
-        const player =
-            transferAvailablePlayers.find(
-                function (item) {
-
-                    return (
-                        Number(item.id) ===
-                        playerId
-                    );
-
-                }
-            );
-
-
-        if (!player) {
-
-            showTransferFormMessage(
-                "The selected player is no longer available from the selected club.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        ========================================
-        EXTRA CLIENT-SIDE SAFETY CHECK
-        ========================================
-        */
-
-        if (
-            Number(player.team_id) !==
-            fromTeamId
-        ) {
-
-            showTransferFormMessage(
-                "The selected player's current club has changed. Please close and reopen the transfer form.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        ========================================
-        SUBMIT
-        ========================================
-        */
-
-        submitTransferBtn.disabled =
-            true;
-
-        submitTransferBtn.textContent =
-            "Submitting...";
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabaseClient.rpc(
-                    "request_player_transfer",
-                    {
-
-                        p_player_id:
-                            playerId,
-
-                        p_from_team_id:
-                            fromTeamId,
-
-                        p_to_team_id:
-                            toTeamId,
-
-                        p_competition_id:
-                            String(
-                                competitionSelect.value
-                            ) === "club"
-
-                                ? null
-
-                                : Number(
-                                    currentCompetition.id
-                                ),
-
-                        p_reason:
-                            reason
-
-                    }
-                );
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            const response =
-                data || {};
-
-
-            if (
-                response.success === false
-            ) {
-
-                throw new Error(
-                    response.message ||
-                    "Transfer request could not be submitted."
-                );
-
-            }
-
-
-            /*
-            ========================================
-            SUCCESS
-            ========================================
-            */
-
-            closeTransferModalWindow();
-
-
-            showMessage(
-                response.message ||
-                "Transfer request submitted successfully. The current team must approve it before final administrator approval.",
-                "success"
-            );
-
-
-            await loadRequests();
-
-        }
-        catch (error) {
-
-            console.error(
-                "Transfer request error:",
-                error
-            );
-
-
-            showTransferFormMessage(
-                error.message ||
-                "Unable to submit transfer request.",
-                "error"
-            );
-
-        }
-        finally {
-
-            submitTransferBtn.disabled =
-                false;
-
-            submitTransferBtn.textContent =
-                "Submit Transfer Request";
-
-        }
-
-    }
-);
-
-
-<!-- ========================================
-     RELEASE PLAYER MODAL
-======================================== -->
-
-<div
-    id="releaseModal"
-    class="movement-modal"
-    aria-hidden="true"
->
-
-    <div class="movement-modal-card">
-
-        <div class="movement-modal-head">
-
-            <div>
-                <div class="kicker">PLAYER MOVEMENT</div>
-                <h3>🚪 Release Player</h3>
-            </div>
-
-            <button
-                type="button"
-                id="closeReleaseModal"
-                class="movement-close"
-                aria-label="Close"
-            >
-                ×
-            </button>
-
-        </div>
-
-        <div class="card-subtitle">
-            Select a player from your current club squad. The player will remain with the club until the administrator approves the release request. After approval, the player becomes a Free Agent.
-        </div>
-
-        <form id="releaseForm">
-
-            <div class="form-group">
-                <label for="releasePlayerSelect">Player *</label>
-                <select id="releasePlayerSelect" class="form-control" required>
-                    <option value="">Select player</option>
-                </select>
-            </div>
-
-            <div id="releasePlayerPreview" class="movement-player-preview" style="display:none;"></div>
-
-            <div class="form-group">
-                <label for="releaseReason">Reason / Notes</label>
-                <textarea
-                    id="releaseReason"
-                    class="form-control"
-                    rows="4"
-                    maxlength="1000"
-                    placeholder="Optional: explain why the player is being released."
-                ></textarea>
-            </div>
-
-            <div class="movement-note">
-                <strong>Important:</strong> This is only a release request. The player will not become a Free Agent until the administrator approves it.
-            </div>
-
-            <div id="releaseFormMessage" class="message" style="display:none;"></div>
 
             <div class="movement-actions">
-                <button type="button" id="cancelReleaseBtn" class="btn btn-secondary">Cancel</button>
-                <button type="submit" id="submitReleaseBtn" class="btn btn-primary">Submit Release Request</button>
+                <button
+                    type="button"
+                    id="cancelTransferBtn"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="submitTransferBtn"
+                    class="btn btn-primary"
+                >
+                    Submit Transfer Request
+                </button>
             </div>
 
         </form>
@@ -2979,19 +1794,19 @@ document.addEventListener(
             );
 
         const transferCurrentTeamSelect =
-    document.getElementById(
-        "transferCurrentTeamSelect"
-    );
+            document.getElementById(
+                "transferCurrentTeamSelect"
+            );
 
-const transferPlayerSelect =
-    document.getElementById(
-        "transferPlayerSelect"
-    );
+        const transferPlayerSelect =
+            document.getElementById(
+                "transferPlayerSelect"
+            );
 
-const transferDestinationDisplay =
-    document.getElementById(
-        "transferDestinationDisplay"
-    );
+        const transferDestinationDisplay =
+            document.getElementById(
+                "transferDestinationDisplay"
+            );
 
         const transferReason =
             document.getElementById(
@@ -3014,57 +1829,6 @@ const transferDestinationDisplay =
             );
 
 
-        const releasePlayerBtn =
-            document.getElementById(
-                "releasePlayerBtn"
-            );
-
-        const releaseModal =
-            document.getElementById(
-                "releaseModal"
-            );
-
-        const closeReleaseModal =
-            document.getElementById(
-                "closeReleaseModal"
-            );
-
-        const cancelReleaseBtn =
-            document.getElementById(
-                "cancelReleaseBtn"
-            );
-
-        const releaseForm =
-            document.getElementById(
-                "releaseForm"
-            );
-
-        const releasePlayerSelect =
-            document.getElementById(
-                "releasePlayerSelect"
-            );
-
-        const releaseReason =
-            document.getElementById(
-                "releaseReason"
-            );
-
-        const releasePlayerPreview =
-            document.getElementById(
-                "releasePlayerPreview"
-            );
-
-        const releaseFormMessage =
-            document.getElementById(
-                "releaseFormMessage"
-            );
-
-        const submitReleaseBtn =
-            document.getElementById(
-                "submitReleaseBtn"
-            );
-
-
         /*
         ========================================
         DATA
@@ -3078,16 +1842,13 @@ const transferDestinationDisplay =
         let currentSettings = null;
 
         let approvedPlayers = [];
-let movementSettings = null;
-let approvedTeams = [];
 
-/*
-========================================
-TRANSFER DATA
-========================================
-*/
+        let movementSettings = null;
 
-let transferAvailablePlayers = [];
+        let transferAvailablePlayers = [];
+
+        let approvedTeams = [];
+
 
         // ========================================
         // IMAGE UPLOAD HELPER
@@ -3451,10 +2212,6 @@ let transferAvailablePlayers = [];
                 <option value="">
                     -- Select Competition --
                 </option>
-
-                <option value="club">
-                    🏟️ All Competitions — Club Squad
-                </option>
                 `;
 
 
@@ -3495,46 +2252,6 @@ let transferAvailablePlayers = [];
             currentCompetition = null;
 
             currentSettings = null;
-
-            /*
-            CLUB SQUAD MODE
-            All Competitions is a club-level view.
-            Competition-specific registration controls are
-            intentionally not applied here. Player movement
-            requests use competition_id = NULL.
-            */
-
-            if (String(competitionId) === "club") {
-
-                statusBadge.textContent =
-                    "Club Squad";
-
-                statusBadge.className =
-                    "status-badge status-open";
-
-                statusMessage.textContent =
-                    "Club-wide squad view. A player belongs to this club once and can then be registered for eligible competitions separately.";
-
-                permissionGrid.style.display =
-                    "none";
-
-                currentCompetition = {
-                    id: null,
-                    name: "All Competitions — Club Squad",
-                    competition_type: "Club",
-                    season: "Club"
-                };
-
-                currentSettings = null;
-
-                disableAllButtons();
-
-                updateTransferButton(
-                    true
-                );
-
-                return;
-            }
 
 
             if (!competitionId) {
@@ -3934,7 +2651,6 @@ let transferAvailablePlayers = [];
             );
 
             updateTransferButton(false);
-            updateReleaseButton(false);
 
         }
 
@@ -3990,13 +2706,6 @@ let transferAvailablePlayers = [];
 
             if (!competitionId) {
                 updateTransferButton(false);
-                updateReleaseButton(false);
-                return;
-            }
-
-            if (String(competitionId) === "club") {
-                updateTransferButton(true);
-                updateReleaseButton(true);
                 return;
             }
 
@@ -4022,7 +2731,6 @@ let transferAvailablePlayers = [];
             if (error) {
                 console.error("Movement settings error:", error);
                 updateTransferButton(false);
-                updateReleaseButton(false);
                 return;
             }
 
@@ -4036,10 +2744,6 @@ let transferAvailablePlayers = [];
 
             updateTransferButton(
                 canRequestTransfer()
-            );
-
-            updateReleaseButton(
-                canRequestRelease()
             );
         }
 
@@ -4089,60 +2793,17 @@ let transferAvailablePlayers = [];
         }
 
 
-        function canRequestRelease() {
-
-            if (!currentCompetition) {
-                return false;
-            }
-
-            if (String(competitionSelect.value) === "club") {
-                return true;
-            }
-
-            if (!movementSettings) {
-                return false;
-            }
-
-            if (!movementSettings.allow_releases) {
-                return false;
-            }
-
-            if (movementSettings.registration_locked) {
-                return false;
-            }
-
-            const status =
-                String(currentCompetition.status || "")
-                    .toLowerCase();
-
-            if (
-                status === "active" &&
-                !movementSettings.allow_movement_during_competition
-            ) {
-                return false;
-            }
-
-            return true;
-        }
-
-
-        function updateReleaseButton(enabled) {
-
-            if (!releasePlayerBtn) {
-                return;
-            }
-
-            if (enabled) {
-                releasePlayerBtn.disabled = false;
-                releasePlayerBtn.className = "btn btn-primary";
-            } else {
-                releasePlayerBtn.disabled = true;
-                releasePlayerBtn.className = "btn btn-disabled";
-            }
-        }
-
-
         async function loadApprovedTeamsForTransfer() {
+
+            transferCurrentTeamSelect.innerHTML =
+                `<option value="">Select current club</option>`;
+
+            transferPlayerSelect.innerHTML =
+                `<option value="">Select current club first</option>`;
+
+            transferPlayerSelect.disabled = true;
+
+            transferAvailablePlayers = [];
 
             const {
                 data,
@@ -4169,12 +2830,9 @@ let transferAvailablePlayers = [];
                     return Number(team.id) !== Number(teamId);
                 });
 
-            transferDestinationSelect.innerHTML =
-                `<option value="">Select destination team</option>`;
-
             if (approvedTeams.length === 0) {
-                transferDestinationSelect.innerHTML =
-                    `<option value="">No other approved teams available</option>`;
+                transferCurrentTeamSelect.innerHTML =
+                    `<option value="">No other approved clubs available</option>`;
                 return;
             }
 
@@ -4184,17 +2842,70 @@ let transferAvailablePlayers = [];
                 option.textContent =
                     team.name +
                     (team.short_name ? " (" + team.short_name + ")" : "");
-                transferDestinationSelect.appendChild(option);
+                transferCurrentTeamSelect.appendChild(option);
             });
         }
 
 
-        function populateTransferPlayers() {
+        async function loadTransferPlayersFromCurrentClub(currentClubId) {
+
+            transferAvailablePlayers = [];
+
+            transferPlayerSelect.innerHTML =
+                `<option value="">Loading players...</option>`;
+
+            transferPlayerSelect.disabled = true;
+
+            if (!currentClubId) {
+                transferPlayerSelect.innerHTML =
+                    `<option value="">Select current club first</option>`;
+                return;
+            }
+
+            const selectedClubId = Number(currentClubId);
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("players")
+                .select(`
+                    id,
+                    team_id,
+                    full_name,
+                    jersey_number,
+                    position,
+                    photo_url,
+                    registration_status
+                `)
+                .eq("team_id", selectedClubId)
+                .eq("registration_status", "Approved")
+                .order("jersey_number", {
+                    ascending: true,
+                    nullsFirst: false
+                });
+
+            if (error) {
+                console.error("Transfer players error:", error);
+                transferPlayerSelect.innerHTML =
+                    `<option value="">Unable to load players</option>`;
+                throw error;
+            }
+
+            transferAvailablePlayers = data || [];
+
+            if (transferAvailablePlayers.length === 0) {
+                transferPlayerSelect.innerHTML =
+                    `<option value="">No approved players in this club</option>`;
+                transferPlayerSelect.disabled = true;
+                updateTransferPlayerPreview();
+                return;
+            }
 
             transferPlayerSelect.innerHTML =
                 `<option value="">Select player</option>`;
 
-            approvedPlayers.forEach(function (player) {
+            transferAvailablePlayers.forEach(function (player) {
                 const option = document.createElement("option");
                 option.value = player.id;
                 option.textContent =
@@ -4205,6 +2916,7 @@ let transferAvailablePlayers = [];
                 transferPlayerSelect.appendChild(option);
             });
 
+            transferPlayerSelect.disabled = false;
             updateTransferPlayerPreview();
         }
 
@@ -4215,7 +2927,7 @@ let transferAvailablePlayers = [];
                 Number(transferPlayerSelect.value || 0);
 
             const player =
-                approvedPlayers.find(function (item) {
+                transferAvailablePlayers.find(function (item) {
                     return Number(item.id) === selectedId;
                 });
 
@@ -4226,8 +2938,8 @@ let transferAvailablePlayers = [];
             }
 
             const photo = player.photo_url
-                ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;">`
-                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;">⚽</div>`;
+                ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;">⚽</div>`;
 
             transferPlayerPreview.style.display = "flex";
             transferPlayerPreview.innerHTML =
@@ -4242,21 +2954,19 @@ let transferAvailablePlayers = [];
         function openTransferModal() {
 
             if (!currentCompetition) {
-                showMessage("Please select Club Squad or a competition first.", "error");
-                return;
-            }
-
-            if (String(competitionSelect.value) !== "club" && !canRequestTransfer()) {
                 showMessage(
-                    "Player transfers are not currently allowed for the selected competition.",
+                    "Please select Club Squad or a competition first.",
                     "error"
                 );
                 return;
             }
 
-            if (!approvedPlayers.length) {
+            if (
+                String(competitionSelect.value) !== "club" &&
+                !canRequestTransfer()
+            ) {
                 showMessage(
-                    "This team has no approved players available for transfer.",
+                    "Player transfers are not currently allowed for the selected competition.",
                     "error"
                 );
                 return;
@@ -4265,14 +2975,29 @@ let transferAvailablePlayers = [];
             transferForm.reset();
             transferFormMessage.style.display = "none";
             transferFormMessage.textContent = "";
-            populateTransferPlayers();
+            transferPlayerPreview.style.display = "none";
+            transferPlayerPreview.innerHTML = "";
+            transferPlayerSelect.innerHTML =
+                `<option value="">Select current club first</option>`;
+            transferPlayerSelect.disabled = true;
+            transferAvailablePlayers = [];
+
+            if (currentTeam) {
+                transferDestinationDisplay.value =
+                    currentTeam.name +
+                    (currentTeam.short_name
+                        ? " (" + currentTeam.short_name + ")"
+                        : "");
+            } else {
+                transferDestinationDisplay.value = "Current Team";
+            }
 
             loadApprovedTeamsForTransfer()
                 .catch(function (error) {
-                    transferDestinationSelect.innerHTML =
-                        `<option value="">Unable to load teams</option>`;
+                    transferCurrentTeamSelect.innerHTML =
+                        `<option value="">Unable to load clubs</option>`;
                     showTransferFormMessage(
-                        "Unable to load approved destination teams: " +
+                        "Unable to load approved clubs: " +
                         (error.message || "Unknown error"),
                         "error"
                     );
@@ -4512,510 +3237,50 @@ let transferAvailablePlayers = [];
             requestsContent.style.display =
                 "none";
 
-            try {
 
-                /*
-                ========================================
-                LOAD NORMAL SQUAD / TEAM REQUESTS
-                ========================================
-                */
+            const {
+                data,
+                error
+            } = await supabaseClient
 
-                const {
-                    data: squadRequests,
-                    error: squadError
-                } = await supabaseClient
+                .from(
+                    "squad_change_requests"
+                )
 
-                    .from("squad_change_requests")
-
-                    .select(`
+                .select(`
+                    id,
+                    competition_id,
+                    player_id,
+                    request_type,
+                    requested_full_name,
+                    requested_jersey_number,
+                    requested_position,
+                    reason,
+                    status,
+                    admin_notes,
+                    created_at,
+                    reviewed_at,
+                    competition:competitions (
                         id,
-                        competition_id,
-                        player_id,
-                        request_type,
-                        requested_full_name,
-                        requested_jersey_number,
-                        requested_position,
-                        reason,
-                        status,
-                        admin_notes,
-                        created_at,
-                        reviewed_at,
-                        competition:competitions (
-                            id,
-                            name,
-                            season
-                        )
-                    `)
+                        name,
+                        season
+                    )
+                `)
 
-                    .eq(
-                        "team_id",
-                        teamId
-                    );
+                .eq(
+                    "team_id",
+                    teamId
+                )
 
-                if (squadError) {
-                    throw squadError;
-                }
-
-
-                /*
-                ========================================
-                LOAD PLAYER MOVEMENT REQUESTS
-                Includes Release / Transfer requests.
-                ========================================
-                */
-
-                const {
-                    data: movementRequests,
-                    error: movementError
-                } = await supabaseClient.rpc(
-                    "get_team_player_movement_requests",
+                .order(
+                    "created_at",
                     {
-                        p_team_id: Number(teamId)
-                    }
-                );
-
-                if (movementError) {
-                    throw movementError;
-                }
-
-
-                /*
-                ========================================
-                COMBINE BOTH REQUEST TYPES
-                ========================================
-                */
-
-                const combinedRequests = [];
-
-                (squadRequests || []).forEach(
-                    function (request) {
-                        combinedRequests.push({
-                            source: "squad",
-                            ...request
-                        });
-                    }
-                );
-
-                (movementRequests || []).forEach(
-                    function (request) {
-                        combinedRequests.push({
-                            source: "movement",
-                            ...request
-                        });
+                        ascending: false
                     }
                 );
 
 
-                combinedRequests.sort(
-                    function (a, b) {
-                        return String(
-                            b.created_at || ""
-                        ).localeCompare(
-                            String(a.created_at || "")
-                        );
-                    }
-                );
-
-
-                requestsLoading.style.display =
-                    "none";
-
-                requestsContent.style.display =
-                    "block";
-
-                requestsList.innerHTML =
-                    "";
-
-
-                if (
-                    combinedRequests.length === 0
-                ) {
-
-                    requestsList.innerHTML =
-                        `
-                        <div class="empty">
-
-                            No squad change requests
-                            have been submitted yet.
-
-                        </div>
-                        `;
-
-                    return;
-
-                }
-
-
-                combinedRequests.forEach(
-                    function (request) {
-
-                        let statusClass =
-                            "request-pending";
-
-                        if (
-                            request.status ===
-                            "Approved"
-                        ) {
-                            statusClass =
-                                "request-approved";
-                        }
-                        else if (
-                            request.status ===
-                            "Rejected"
-                        ) {
-                            statusClass =
-                                "request-rejected";
-                        }
-
-
-                        /*
-                        ========================================
-                        REQUEST TYPE / COMPETITION / PLAYER
-                        ========================================
-                        */
-
-                        let requestType =
-                            request.request_type ||
-                            "Request";
-
-                        let competitionName =
-                            "Competition";
-
-                        let playerName =
-                            "Existing Player";
-
-                        let jersey =
-                            null;
-
-                        let position =
-                            null;
-
-
-                        if (
-                            request.source ===
-                            "movement"
-                        ) {
-
-                            if (
-                                request.request_type ===
-                                "Release"
-                            ) {
-                                requestType =
-                                    "Release Player";
-                            }
-                            else if (
-                                request.request_type ===
-                                "Free Agent Signing"
-                            ) {
-                                requestType =
-                                    "Free Agent Signing";
-                            }
-                            else if (
-                                request.request_type ===
-                                "Transfer"
-                            ) {
-                                requestType =
-                                    "Player Transfer";
-                            }
-
-                            competitionName =
-                                request.competition_name ||
-                                "Club Squad";
-
-                            playerName =
-                                request.player_name ||
-                                "Player";
-
-                            jersey =
-                                request.jersey_number ??
-                                null;
-
-                            position =
-                                request.player_position ||
-                                null;
-
-                        }
-                        else {
-
-                            competitionName =
-                                request.competition
-                                    ? request.competition.name
-                                    : "Competition";
-
-                            playerName =
-                                request.requested_full_name ||
-                                (
-                                    request.player_id
-                                        ? "Existing Player"
-                                        : "Team Information"
-                                );
-
-                            jersey =
-                                request.requested_jersey_number ??
-                                null;
-
-                            position =
-                                request.requested_position ||
-                                null;
-
-                        }
-
-
-                        const item =
-                            document.createElement(
-                                "div"
-                            );
-
-                        item.style.border =
-                            "1px solid var(--border)";
-
-                        item.style.borderRadius =
-                            "10px";
-
-                        item.style.padding =
-                            "14px";
-
-                        item.style.marginBottom =
-                            "10px";
-
-
-                        item.innerHTML =
-                            `
-                            <div
-                                style="
-                                    display:flex;
-                                    justify-content:space-between;
-                                    gap:10px;
-                                    flex-wrap:wrap;
-                                "
-                            >
-
-                                <strong
-                                    style="
-                                        color:var(--green-dark);
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        requestType
-                                    )}
-                                </strong>
-
-                                <span
-                                    class="request-status ${statusClass}"
-                                >
-                                    ${escapeHtml(
-                                        request.status ||
-                                        "Pending"
-                                    )}
-                                </span>
-
-                            </div>
-
-                            <div
-                                style="
-                                    margin-top:7px;
-                                    font-size:13px;
-                                    color:var(--gray);
-                                "
-                            >
-
-                                <strong>
-                                    Competition:
-                                </strong>
-
-                                ${escapeHtml(
-                                    competitionName
-                                )}
-
-                                <br>
-
-                                <strong>
-                                    Player:
-                                </strong>
-
-                                ${escapeHtml(
-                                    playerName
-                                )}
-
-                                ${
-                                    jersey !== null
-                                        ? `
-                                        <br>
-                                        <strong>
-                                            Jersey:
-                                        </strong>
-                                        ${escapeHtml(
-                                            jersey
-                                        )}
-                                        `
-                                        : ""
-                                }
-
-                                ${
-                                    position
-                                        ? `
-                                        <br>
-                                        <strong>
-                                            Position:
-                                        </strong>
-                                        ${escapeHtml(
-                                            position
-                                        )}
-                                        `
-                                        : ""
-                                }
-
-                                ${
-                                    request.source ===
-                                    "movement" &&
-                                    request.from_team_name
-                                        ? `
-                                        <br>
-                                        <strong>
-                                            From Team:
-                                        </strong>
-                                        ${escapeHtml(
-                                            request.from_team_name
-                                        )}
-                                        `
-                                        : ""
-                                }
-
-                                ${
-                                    request.source ===
-                                    "movement" &&
-                                    request.to_team_name
-                                        ? `
-                                        <br>
-                                        <strong>
-                                            To Team:
-                                        </strong>
-                                        ${escapeHtml(
-                                            request.to_team_name
-                                        )}
-                                        `
-                                        : ""
-                                }
-
-                                <br>
-
-                                <strong>
-                                    Submitted:
-                                </strong>
-
-                                ${formatDateTime(
-                                    request.created_at
-                                )}
-
-                                ${
-                                    request.reviewed_at
-                                        ? `
-                                        <br>
-                                        <strong>
-                                            Reviewed:
-                                        </strong>
-                                        ${formatDateTime(
-                                            request.reviewed_at
-                                        )}
-                                        `
-                                        : ""
-                                }
-
-                                ${
-                                    request.reason
-                                        ? `
-                                        <br>
-                                        <strong>
-                                            Reason:
-                                        </strong>
-                                        ${escapeHtml(
-                                            request.reason
-                                        )}
-                                        `
-                                        : ""
-                                }
-
-                                ${
-                                    request.source ===
-                                        "movement"
-                                        ? `
-                                            <br><br>
-                                            <strong>Movement Approval:</strong>
-                                            <div
-                                                style="
-                                                    margin-top:6px;
-                                                    display:flex;
-                                                    flex-direction:column;
-                                                    gap:5px;
-                                                "
-                                            >
-                                                ${
-                                                    request.request_type ===
-                                                        "Transfer"
-                                                        ? `
-                                                            <span>
-                                                                Current Team: 
-                                                                <strong>
-                                                                    ${escapeHtml(
-                                                                        request.from_team_status ||
-                                                                        "Pending"
-                                                                    )}
-                                                                </strong>
-                                                            </span>
-                                                            <span>
-                                                                Administrator: 
-                                                                <strong>
-                                                                    ${escapeHtml(
-                                                                        request.admin_status ||
-                                                                        "Pending"
-                                                                    )}
-                                                                </strong>
-                                                            </span>
-                                                        `
-                                                        : `
-                                                            <span>
-                                                                Administrator: 
-                                                                <strong>
-                                                                    ${escapeHtml(
-                                                                        request.admin_status ||
-                                                                        "Pending"
-                                                                    )}
-                                                                </strong>
-                                                            </span>
-                                                        `
-                                                }
-                                            </div>
-                                          `
-                                        : ""
-                                }
-
-                                ${
-                                    request.admin_notes
-                                        ? `
-                                        <br>
-                                        <strong>
-                                            Admin Note:
-                                        </strong>
-                                        ${escapeHtml(
-                                            request.admin_notes
-                                        )}
-                                        `
-                                        : ""
-                                }
-
-                            </div>
-                            `;
-
-
-                        requestsList.appendChild(
-                            item
-                        );
-
-                    }
-                );
-
-            }
-            catch (error) {
+            if (error) {
 
                 console.error(
                     "Request history error:",
@@ -5027,9 +3292,251 @@ let transferAvailablePlayers = [];
                     Unable to load request history.
                     `;
 
+                return;
+
             }
 
+
+            requestsLoading.style.display =
+                "none";
+
+            requestsContent.style.display =
+                "block";
+
+            requestsList.innerHTML =
+                "";
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                requestsList.innerHTML =
+                    `
+                    <div class="empty">
+
+                        No squad change requests
+                        have been submitted yet.
+
+                    </div>
+                    `;
+
+                return;
+
+            }
+
+
+            data.forEach(
+                function (request) {
+
+                    let statusClass =
+                        "request-pending";
+
+                    if (
+                        request.status ===
+                        "Approved"
+                    ) {
+
+                        statusClass =
+                            "request-approved";
+
+                    }
+                    else if (
+                        request.status ===
+                        "Rejected"
+                    ) {
+
+                        statusClass =
+                            "request-rejected";
+
+                    }
+
+
+                    const competitionName =
+                        request.competition
+                            ? request.competition.name
+                            : "Competition";
+
+
+                    const playerName =
+                        request.requested_full_name ||
+                        (
+                            request.player_id
+                                ? "Existing Player"
+                                : "Team Information"
+                        );
+
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+                    item.style.border =
+                        "1px solid var(--border)";
+
+                    item.style.borderRadius =
+                        "10px";
+
+                    item.style.padding =
+                        "14px";
+
+                    item.style.marginBottom =
+                        "10px";
+
+
+                    item.innerHTML =
+                        `
+                        <div
+                            style="
+                                display:flex;
+                                justify-content:space-between;
+                                gap:10px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <strong
+                                style="
+                                    color:var(--green-dark);
+                                "
+                            >
+                                ${escapeHtml(
+                                    request.request_type
+                                )}
+                            </strong>
+
+                            <span
+                                class="request-status ${statusClass}"
+                            >
+                                ${escapeHtml(
+                                    request.status
+                                )}
+                            </span>
+
+                        </div>
+
+                        <div
+                            style="
+                                margin-top:7px;
+                                font-size:13px;
+                                color:var(--gray);
+                            "
+                        >
+
+                            <strong>
+                                Competition:
+                            </strong>
+
+                            ${escapeHtml(
+                                competitionName
+                            )}
+
+                            <br>
+
+                            <strong>
+                                Player:
+                            </strong>
+
+                            ${escapeHtml(
+                                playerName
+                            )}
+
+                            ${
+                                request.requested_jersey_number !==
+                                null
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Jersey:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.requested_jersey_number
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                request.requested_position
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Position:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.requested_position
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            <br>
+
+                            <strong>
+                                Submitted:
+                            </strong>
+
+                            ${formatDateTime(
+                                request.created_at
+                            )}
+
+                            ${
+                                request.reviewed_at
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Reviewed:
+                                    </strong>
+                                    ${formatDateTime(
+                                        request.reviewed_at
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                request.reason
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Reason:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.reason
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                            ${
+                                request.admin_notes
+                                    ? `
+                                    <br>
+                                    <strong>
+                                        Admin Note:
+                                    </strong>
+                                    ${escapeHtml(
+                                        request.admin_notes
+                                    )}
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+                        `;
+
+
+                    requestsList.appendChild(
+                        item
+                    );
+
+                }
+            );
+
         }
+
 
         /*
         ========================================
@@ -6867,45 +5374,6 @@ editPlayerBtn.addEventListener(
 
 
                     // ========================================
-                    // UPLOAD TEAM LOGO IF CHANGED
-                    // ========================================
-
-                    try {
-
-                        if (logoFile) {
-                            submitButton.disabled = true;
-                            submitButton.textContent = "Uploading Logo...";
-
-                            logoUrl =
-                                await uploadManagementImage(
-                                    logoFile,
-                                    "team-logos",
-                                    "team-" + Number(teamId)
-                                );
-                        }
-
-                    }
-                    catch (uploadError) {
-
-                        console.error(
-                            "Team logo upload error:",
-                            uploadError
-                        );
-
-                        submitButton.disabled = false;
-                        submitButton.textContent = "Submit Team Edit Request";
-
-                        showMessage(
-                            "Unable to upload team logo: " +
-                            (uploadError.message || "Unknown error"),
-                            "error"
-                        );
-
-                        return;
-                    }
-
-
-                    // ========================================
                     // SUBMITTING
                     // ========================================
 
@@ -7912,274 +6380,6 @@ editTeamBtn.addEventListener(
 
         /*
         ========================================
-        RELEASE PLAYER
-        ========================================
-        */
-
-        function populateReleasePlayers() {
-
-            releasePlayerSelect.innerHTML =
-                `<option value="">Select player</option>`;
-
-            approvedPlayers.forEach(function (player) {
-
-                const option =
-                    document.createElement("option");
-
-                option.value = player.id;
-
-                option.textContent =
-                    player.full_name +
-                    (player.jersey_number !== null && player.jersey_number !== undefined
-                        ? " — #" + player.jersey_number
-                        : "");
-
-                releasePlayerSelect.appendChild(option);
-            });
-
-            updateReleasePlayerPreview();
-        }
-
-
-        function updateReleasePlayerPreview() {
-
-            const selectedId =
-                Number(releasePlayerSelect.value || 0);
-
-            const player =
-                approvedPlayers.find(function (item) {
-                    return Number(item.id) === selectedId;
-                });
-
-            if (!player) {
-                releasePlayerPreview.style.display = "none";
-                releasePlayerPreview.innerHTML = "";
-                return;
-            }
-
-            const photo = player.photo_url
-                ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;">`
-                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;">⚽</div>`;
-
-            releasePlayerPreview.style.display = "flex";
-
-            releasePlayerPreview.innerHTML =
-                photo +
-                `<div>
-                    <strong>${escapeHtml(player.full_name)}</strong><br>
-                    <span>${escapeHtml(player.position || "Player")} · Jersey ${escapeHtml(player.jersey_number ?? "—")}</span>
-                </div>`;
-        }
-
-
-        function openReleaseModal() {
-
-            if (!currentCompetition) {
-                showMessage(
-                    "Please select All Competitions — Club Squad or a competition first.",
-                    "error"
-                );
-                return;
-            }
-
-            if (!canRequestRelease()) {
-                showMessage(
-                    "Player releases are not currently allowed for the selected competition.",
-                    "error"
-                );
-                return;
-            }
-
-            if (!approvedPlayers.length) {
-                showMessage(
-                    "This team has no approved players available for release.",
-                    "error"
-                );
-                return;
-            }
-
-            releaseForm.reset();
-            releaseFormMessage.style.display = "none";
-            releaseFormMessage.textContent = "";
-
-            populateReleasePlayers();
-
-            releaseModal.classList.add("show");
-            releaseModal.setAttribute("aria-hidden", "false");
-            document.body.style.overflow = "hidden";
-        }
-
-
-        function closeReleaseModalWindow() {
-            releaseModal.classList.remove("show");
-            releaseModal.setAttribute("aria-hidden", "true");
-            document.body.style.overflow = "";
-        }
-
-
-        function showReleaseFormMessage(message, type) {
-            releaseFormMessage.textContent = message;
-            releaseFormMessage.className = "message " + (type || "error");
-            releaseFormMessage.style.display = "block";
-        }
-
-
-        releasePlayerBtn.addEventListener(
-            "click",
-            openReleaseModal
-        );
-
-        closeReleaseModal.addEventListener(
-            "click",
-            closeReleaseModalWindow
-        );
-
-        cancelReleaseBtn.addEventListener(
-            "click",
-            closeReleaseModalWindow
-        );
-
-        releaseModal.addEventListener(
-            "click",
-            function (event) {
-                if (event.target === releaseModal) {
-                    closeReleaseModalWindow();
-                }
-            }
-        );
-
-        releasePlayerSelect.addEventListener(
-            "change",
-            updateReleasePlayerPreview
-        );
-
-        releaseForm.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
-
-                if (!currentCompetition) {
-                    showReleaseFormMessage(
-                        "Please select Club Squad or a competition first.",
-                        "error"
-                    );
-                    return;
-                }
-
-                if (!canRequestRelease()) {
-                    showReleaseFormMessage(
-                        "Player releases are not currently allowed for the selected competition.",
-                        "error"
-                    );
-                    return;
-                }
-
-                const playerId =
-                    Number(releasePlayerSelect.value || 0);
-
-                const reason =
-                    releaseReason.value.trim() || null;
-
-                if (!playerId) {
-                    showReleaseFormMessage(
-                        "Please select a player.",
-                        "error"
-                    );
-                    return;
-                }
-
-                const player =
-                    approvedPlayers.find(function (item) {
-                        return Number(item.id) === playerId;
-                    });
-
-                if (!player) {
-                    showReleaseFormMessage(
-                        "The selected player is no longer available in this squad.",
-                        "error"
-                    );
-                    return;
-                }
-
-                submitReleaseBtn.disabled = true;
-                submitReleaseBtn.textContent = "Submitting...";
-
-                try {
-
-                    const {
-                        data,
-                        error
-                    } = await supabaseClient.rpc(
-                        "release_player_to_free_agent",
-                        {
-                            p_player_id: playerId,
-                            p_team_id: Number(teamId),
-                            p_reason: reason
-                        }
-                    );
-
-                    if (error) {
-                        throw error;
-                    }
-
-                    const response = data || {};
-
-                    if (response.success === false) {
-                        throw new Error(
-                            response.message ||
-                            "Release request could not be submitted."
-                        );
-                    }
-
-                    closeReleaseModalWindow();
-
-                    showMessage(
-                        response.message ||
-                        "Release request submitted successfully. The player will remain with the team until an administrator approves the release.",
-                        "success"
-                    );
-
-                    await loadRequests();
-
-                }
-                catch (error) {
-
-                    console.error(
-                        "Release player error:",
-                        error
-                    );
-
-                    showReleaseFormMessage(
-                        error.message ||
-                        "Unable to submit release request.",
-                        "error"
-                    );
-
-                }
-                finally {
-                    submitReleaseBtn.disabled = false;
-                    submitReleaseBtn.textContent = "Submit Release Request";
-                }
-            }
-        );
-
-
-        document.addEventListener(
-            "keydown",
-            function (event) {
-                if (
-                    event.key === "Escape" &&
-                    releaseModal.classList.contains("show")
-                ) {
-                    closeReleaseModalWindow();
-                }
-            }
-        );
-
-
-        /*
-        ========================================
         TRANSFER REQUEST
         ========================================
         */
@@ -8211,8 +6411,43 @@ editTeamBtn.addEventListener(
         document.addEventListener(
             "keydown",
             function (event) {
-                if (event.key === "Escape" && transferModal.classList.contains("show")) {
+                if (
+                    event.key === "Escape" &&
+                    transferModal.classList.contains("show")
+                ) {
                     closeTransferModalWindow();
+                }
+            }
+        );
+
+        transferCurrentTeamSelect.addEventListener(
+            "change",
+            async function () {
+
+                const currentClubId = this.value;
+
+                transferPlayerPreview.style.display = "none";
+                transferPlayerPreview.innerHTML = "";
+
+                if (!currentClubId) {
+                    transferPlayerSelect.innerHTML =
+                        `<option value="">Select current club first</option>`;
+                    transferPlayerSelect.disabled = true;
+                    transferAvailablePlayers = [];
+                    return;
+                }
+
+                try {
+                    await loadTransferPlayersFromCurrentClub(
+                        currentClubId
+                    );
+                }
+                catch (error) {
+                    showTransferFormMessage(
+                        "Unable to load players from the selected club: " +
+                        (error.message || "Unknown error"),
+                        "error"
+                    );
                 }
             }
         );
@@ -8236,9 +6471,12 @@ editTeamBtn.addEventListener(
                     return;
                 }
 
-                if (String(competitionSelect.value) !== "club" && !canRequestTransfer()) {
+                if (
+                    String(competitionSelect.value) !== "club" &&
+                    !canRequestTransfer()
+                ) {
                     showTransferFormMessage(
-                        "Player transfers are not currently allowed for this competition.",
+                        "Player transfers are not currently allowed for the selected competition.",
                         "error"
                     );
                     return;
@@ -8247,35 +6485,63 @@ editTeamBtn.addEventListener(
                 const playerId =
                     Number(transferPlayerSelect.value || 0);
 
-                const destinationTeamId =
-                    Number(transferDestinationSelect.value || 0);
+                const fromTeamId =
+                    Number(transferCurrentTeamSelect.value || 0);
+
+                const toTeamId =
+                    Number(teamId);
 
                 const reason =
                     transferReason.value.trim() || null;
 
-                if (!playerId || !destinationTeamId) {
+                if (!fromTeamId) {
                     showTransferFormMessage(
-                        "Please select both a player and a destination team.",
+                        "Please select the player's current club.",
                         "error"
                     );
                     return;
                 }
 
-                if (destinationTeamId === Number(teamId)) {
+                if (!playerId) {
                     showTransferFormMessage(
-                        "The destination team must be different from the current team.",
+                        "Please select the player you want to sign.",
                         "error"
                     );
                     return;
                 }
 
-                const player = approvedPlayers.find(function (item) {
-                    return Number(item.id) === playerId;
-                });
+                if (!toTeamId) {
+                    showTransferFormMessage(
+                        "The destination club could not be identified.",
+                        "error"
+                    );
+                    return;
+                }
+
+                if (fromTeamId === toTeamId) {
+                    showTransferFormMessage(
+                        "The player's current club must be different from the destination club.",
+                        "error"
+                    );
+                    return;
+                }
+
+                const player =
+                    transferAvailablePlayers.find(function (item) {
+                        return Number(item.id) === playerId;
+                    });
 
                 if (!player) {
                     showTransferFormMessage(
-                        "The selected player is no longer available in this squad.",
+                        "The selected player is no longer available from the selected club.",
+                        "error"
+                    );
+                    return;
+                }
+
+                if (Number(player.team_id) !== fromTeamId) {
+                    showTransferFormMessage(
+                        "The selected player's current club has changed. Please close and reopen the transfer form.",
                         "error"
                     );
                     return;
@@ -8293,8 +6559,8 @@ editTeamBtn.addEventListener(
                         "request_player_transfer",
                         {
                             p_player_id: playerId,
-                            p_from_team_id: Number(teamId),
-                            p_to_team_id: destinationTeamId,
+                            p_from_team_id: fromTeamId,
+                            p_to_team_id: toTeamId,
                             p_competition_id:
                                 String(competitionSelect.value) === "club"
                                     ? null
@@ -8319,6 +6585,7 @@ editTeamBtn.addEventListener(
                     closeTransferModalWindow();
 
                     showMessage(
+                        response.message ||
                         "Transfer request submitted successfully. The current team must approve it before final administrator approval.",
                         "success"
                     );
