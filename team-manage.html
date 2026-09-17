@@ -2944,9 +2944,20 @@ document.addEventListener(
             transferPlayerPreview.style.display = "flex";
             transferPlayerPreview.innerHTML =
                 photo +
-                `<div>
+                `<div style="flex:1;min-width:0;">
                     <strong>${escapeHtml(player.full_name)}</strong><br>
                     <span>${escapeHtml(player.position || "Player")} · Jersey ${escapeHtml(player.jersey_number ?? "—")}</span>
+                    <div style="margin-top:8px;">
+                        <a
+                            href="player-profile.html?id=${encodeURIComponent(player.id)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn btn-secondary"
+                            style="display:inline-block;text-decoration:none;padding:7px 12px;font-size:13px;"
+                        >
+                            👤 View Profile &amp; Statistics
+                        </a>
+                    </div>
                 </div>`;
         }
 
