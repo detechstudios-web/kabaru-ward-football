@@ -765,6 +765,35 @@ footer strong {
         padding: 8px 10px;
     }
 
+    .header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .logout-btn {
+        border: 1px solid rgba(255,255,255,0.28);
+        background: rgba(255,255,255,0.10);
+        color: #ffffff;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .logout-btn:hover {
+        background: rgba(255,255,255,0.18);
+    }
+
+    .logout-btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
     .page-hero {
         padding: 24px 17px;
     }
@@ -913,7 +942,7 @@ footer strong {
         <div class="brand">
 
             <div class="brand-icon">
-                ⚽
+                âš½
             </div>
 
             <div class="brand-text">
@@ -930,12 +959,25 @@ footer strong {
 
         </div>
 
-        <a
-            href="index.html"
-            class="back-btn"
-        >
-            ← Back to Website
-        </a>
+        <div class="header-actions">
+
+            <a
+                href="index.html"
+                class="back-btn"
+            >
+                â† Back to Website
+            </a>
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="logout-btn"
+                style="display:none;"
+            >
+                Logout
+            </button>
+
+        </div>
 
     </div>
 
@@ -1037,7 +1079,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            🏆 Competition
+            ðŸ† Competition
         </div>
 
         <div class="card-subtitle">
@@ -1099,11 +1141,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        ➕ Add Players
+                        âž• Add Players
                     </strong>
 
                     <span id="allowAdd">
-                        —
+                        â€”
                     </span>
 
                 </div>
@@ -1112,11 +1154,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        ➖ Remove Players
+                        âž– Remove Players
                     </strong>
 
                     <span id="allowRemove">
-                        —
+                        â€”
                     </span>
 
                 </div>
@@ -1125,11 +1167,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        ✏️ Edit Players
+                        âœï¸ Edit Players
                     </strong>
 
                     <span id="allowEditPlayer">
-                        —
+                        â€”
                     </span>
 
                 </div>
@@ -1138,11 +1180,11 @@ footer strong {
                 <div class="permission">
 
                     <strong>
-                        🏟️ Edit Team
+                        ðŸŸï¸ Edit Team
                     </strong>
 
                     <span id="allowEditTeam">
-                        —
+                        â€”
                     </span>
 
                 </div>
@@ -1161,7 +1203,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            🛠️ Team Management
+            ðŸ› ï¸ Team Management
         </div>
 
         <div class="card-subtitle">
@@ -1176,7 +1218,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    ➕
+                    âž•
                 </div>
 
                 <h3>
@@ -1202,7 +1244,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    ➖
+                    âž–
                 </div>
 
                 <h3>
@@ -1228,7 +1270,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    ✏️
+                    âœï¸
                 </div>
 
                 <h3>
@@ -1254,7 +1296,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    🏟️
+                    ðŸŸï¸
                 </div>
 
                 <h3>
@@ -1280,7 +1322,7 @@ footer strong {
             <div class="action-card">
 
                 <div class="action-icon">
-                    🔁
+                    ðŸ”
                 </div>
 
                 <h3>
@@ -1305,7 +1347,7 @@ footer strong {
         </div>
 
         <div class="movement-note">
-            <strong>🔁 Transfer rule:</strong> A transfer is only a request at this stage.
+            <strong>ðŸ” Transfer rule:</strong> A transfer is only a request at this stage.
             The current team must review it first, followed by final administrator approval.
             The player is not moved until all required approvals are completed.
         </div>
@@ -1320,7 +1362,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            👥 Current Squad
+            ðŸ‘¥ Current Squad
         </div>
 
         <div class="card-subtitle">
@@ -1393,7 +1435,7 @@ footer strong {
     <section class="card">
 
         <div class="card-title">
-            📋 Request History
+            ðŸ“‹ Request History
         </div>
 
         <div class="card-subtitle">
@@ -1446,7 +1488,7 @@ footer strong {
 
             <div>
                 <div class="kicker">PLAYER MOVEMENT</div>
-                <h3>🔁 Request Player Transfer</h3>
+                <h3>ðŸ” Request Player Transfer</h3>
             </div>
 
             <button
@@ -1455,7 +1497,7 @@ footer strong {
                 class="movement-close"
                 aria-label="Close"
             >
-                ×
+                Ã—
             </button>
 
         </div>
@@ -1733,13 +1775,8 @@ document.addEventListener(
         ========================================
         */
 
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-        const teamId =
-            params.get("id");
+        let teamId = null;
+        let currentSession = null;
 
 
         /*
@@ -1826,6 +1863,11 @@ document.addEventListener(
         const submitTransferBtn =
             document.getElementById(
                 "submitTransferBtn"
+            );
+
+        const logoutBtn =
+            document.getElementById(
+                "logoutBtn"
             );
 
 
@@ -2024,20 +2066,57 @@ document.addEventListener(
         ========================================
         */
 
+        async function initializeTeamPortal() {
+
+            const {
+                data: { session },
+                error: sessionError
+            } = await supabaseClient.auth.getSession();
+
+            if (sessionError || !session) {
+                window.location.replace("team-login.html");
+                return false;
+            }
+
+            currentSession = session;
+
+            const {
+                data: myTeamId,
+                error: teamIdError
+            } = await supabaseClient.rpc(
+                "get_my_team_id"
+            );
+
+            if (teamIdError || !myTeamId) {
+                console.error(
+                    "Team account lookup error:",
+                    teamIdError
+                );
+
+                await supabaseClient.auth.signOut();
+                window.location.replace("team-login.html");
+                return false;
+            }
+
+            teamId = Number(myTeamId);
+
+            if (!Number.isInteger(teamId) || teamId <= 0) {
+                await supabaseClient.auth.signOut();
+                window.location.replace("team-login.html");
+                return false;
+            }
+
+            if (logoutBtn) {
+                logoutBtn.style.display = "inline-flex";
+            }
+
+            return true;
+        }
+
+
         async function loadTeam() {
 
             if (!teamId) {
-
-                teamLoading.innerHTML =
-                    `
-                    <strong>
-                        No team selected.
-                    </strong>
-                    <br>
-                    Please open this page using
-                    a valid team ID.
-                    `;
-
                 return false;
             }
 
@@ -2110,8 +2189,8 @@ document.addEventListener(
 
             teamLocation.textContent =
                 data.location
-                    ? "📍 " + data.location
-                    : "📍 Location not specified";
+                    ? "ðŸ“ " + data.location
+                    : "ðŸ“ Location not specified";
 
 
             if (data.logo_url) {
@@ -2136,7 +2215,7 @@ document.addEventListener(
                     <div
                         class="team-logo-placeholder"
                     >
-                        ⚽
+                        âš½
                     </div>
                     `;
 
@@ -2227,7 +2306,7 @@ document.addEventListener(
                         competition.id;
 
                     option.textContent =
-                        `${competition.name} — ${competition.season}`;
+                        `${competition.name} â€” ${competition.season}`;
 
                     competitionSelect.appendChild(
                         option
@@ -2911,7 +2990,7 @@ document.addEventListener(
                 option.textContent =
                     player.full_name +
                     (player.jersey_number !== null && player.jersey_number !== undefined
-                        ? " — #" + player.jersey_number
+                        ? " â€” #" + player.jersey_number
                         : "");
                 transferPlayerSelect.appendChild(option);
             });
@@ -2939,14 +3018,14 @@ document.addEventListener(
 
             const photo = player.photo_url
                 ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
-                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;">⚽</div>`;
+                : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;">âš½</div>`;
 
             transferPlayerPreview.style.display = "flex";
             transferPlayerPreview.innerHTML =
                 photo +
                 `<div style="flex:1;min-width:0;">
                     <strong>${escapeHtml(player.full_name)}</strong><br>
-                    <span>${escapeHtml(player.position || "Player")} · Jersey ${escapeHtml(player.jersey_number ?? "—")}</span>
+                    <span>${escapeHtml(player.position || "Player")} Â· Jersey ${escapeHtml(player.jersey_number ?? "â€”")}</span>
                     <div style="margin-top:8px;">
                         <a
                             href="player-profile.html?id=${encodeURIComponent(player.id)}"
@@ -2955,7 +3034,7 @@ document.addEventListener(
                             class="btn btn-secondary"
                             style="display:inline-block;text-decoration:none;padding:7px 12px;font-size:13px;"
                         >
-                            👤 View Profile &amp; Statistics
+                            ðŸ‘¤ View Profile &amp; Statistics
                         </a>
                     </div>
                 </div>`;
@@ -3171,7 +3250,7 @@ document.addEventListener(
                         photoHtml =
                             `
                             <div class="jersey">
-                                ⚽
+                                âš½
                             </div>
                             `;
 
@@ -3202,7 +3281,7 @@ document.addEventListener(
                             <strong>
                                 ${escapeHtml(
                                     player.jersey_number ??
-                                    "—"
+                                    "â€”"
                                 )}
                             </strong>
                         </td>
@@ -3210,7 +3289,7 @@ document.addEventListener(
                         <td>
                             ${escapeHtml(
                                 player.position ||
-                                "—"
+                                "â€”"
                             )}
                         </td>
 
@@ -3598,7 +3677,7 @@ document.addEventListener(
                             request.from_team_status === "Approved" &&
                             request.admin_status === "Pending"
                         ) {
-                            displayStatus = "Current Club Approved · Admin Pending";
+                            displayStatus = "Current Club Approved Â· Admin Pending";
                             statusClass = "request-pending";
                         }
                         else if (
@@ -3673,7 +3752,7 @@ document.addEventListener(
                                 <strong
                                     style="color:var(--green-dark);"
                                 >
-                                    🔁 Transfer Request
+                                    ðŸ” Transfer Request
                                 </strong>
 
                                 <span
@@ -3819,7 +3898,7 @@ document.addEventListener(
                                         font-weight:700;
                                     "
                                 >
-                                    👤 View Player Profile & Statistics
+                                    ðŸ‘¤ View Player Profile & Statistics
                                 </a>
                             </div>
                         `;
@@ -4021,7 +4100,7 @@ document.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                ➕ Request to Add Player
+                âž• Request to Add Player
             </div>
 
             <div class="card-subtitle">
@@ -4696,7 +4775,7 @@ removePlayerBtn.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                ➖ Request to Remove Player
+                âž– Request to Remove Player
             </div>
 
             <div class="card-subtitle">
@@ -4734,7 +4813,7 @@ removePlayerBtn.addEventListener(
                                             #${escapeHtml(
                                                 String(
                                                     player.jersey_number ??
-                                                    "—"
+                                                    "â€”"
                                                 )
                                             )}
                                             -
@@ -5131,7 +5210,7 @@ editPlayerBtn.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                ✏️ Request to Edit Player
+                âœï¸ Request to Edit Player
             </div>
 
             <div class="card-subtitle">
@@ -5169,7 +5248,7 @@ editPlayerBtn.addEventListener(
                                             #${escapeHtml(
                                                 String(
                                                     player.jersey_number ??
-                                                    "—"
+                                                    "â€”"
                                                 )
                                             )}
                                             -
@@ -6051,7 +6130,7 @@ editTeamBtn.addEventListener(
         formCard.innerHTML = `
 
             <div class="card-title">
-                ✏️ Request to Edit Team
+                âœï¸ Request to Edit Team
             </div>
 
             <div class="card-subtitle">
@@ -7055,11 +7134,69 @@ editTeamBtn.addEventListener(
 
         /*
         ========================================
-        INITIAL LOAD
+        LOGOUT
+        ========================================
+        */
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener(
+                "click",
+                async function () {
+
+                    const confirmed =
+                        window.confirm(
+                            "Are you sure you want to log out of the Team Portal?"
+                        );
+
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    logoutBtn.disabled = true;
+                    logoutBtn.textContent = "Logging out...";
+
+                    const { error } =
+                        await supabaseClient.auth.signOut();
+
+                    if (error) {
+                        console.error(
+                            "Logout error:",
+                            error
+                        );
+
+                        logoutBtn.disabled = false;
+                        logoutBtn.textContent = "Logout";
+
+                        showMessage(
+                            "Unable to log out. Please try again.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+                    window.location.replace(
+                        "team-login.html"
+                    );
+                }
+            );
+        }
+
+
+        /*
+        ========================================
+        AUTHENTICATED TEAM PORTAL INITIAL LOAD
         ========================================
         */
 
         try {
+
+            const portalReady =
+                await initializeTeamPortal();
+
+            if (!portalReady) {
+                return;
+            }
 
             const teamLoaded =
                 await loadTeam();
