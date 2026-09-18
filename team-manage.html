@@ -1,4 +1,5 @@
-```
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -926,6 +927,94 @@ footer strong {
 }
 
 
+
+/* ========================================
+   COMPETITION SQUAD
+======================================== */
+
+.competition-squad-list {
+    display: grid;
+    gap: 10px;
+}
+
+.competition-squad-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    background: #fafcfb;
+}
+
+.competition-squad-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.competition-squad-player-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.competition-squad-player-name {
+    font-weight: bold;
+    color: var(--green-dark);
+}
+
+.competition-squad-meta {
+    color: var(--gray);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.competition-squad-status {
+    margin-top: 8px;
+}
+
+.competition-squad-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #9f1f1f;
+}
+
+.btn-secondary {
+    background: #eef3f0;
+    color: var(--green-dark);
+}
+
+.btn-secondary:hover {
+    background: #dfe9e3;
+}
+
+.competition-squad-note {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f8faf9;
+    border: 1px solid #dfe9e3;
+    color: #52615a;
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+@media (max-width: 600px) {
+    .competition-squad-actions {
+        flex-direction: column;
+    }
+
+    .competition-squad-actions .btn {
+        width: 100%;
+    }
+}
+
 /* ========================================
    REQUEST HISTORY CARDS
 ======================================== */
@@ -1459,6 +1548,48 @@ footer strong {
     </section>
 
 
+
+    <!-- ========================================
+         COMPETITION SQUAD
+    ======================================== -->
+
+    <section class="card">
+
+        <div class="card-title">
+            🏆 Competition Squad
+        </div>
+
+        <div class="card-subtitle">
+            Register or remove your club players separately for each competition.
+            A player's club and competition registration are managed independently.
+        </div>
+
+        <div class="competition-squad-note" id="competitionSquadNote">
+            Select a competition above to manage its squad.
+        </div>
+
+        <div
+            id="competitionSquadLoading"
+            class="loading"
+            style="display:none;"
+        >
+            <div class="spinner"></div>
+            Loading competition squad...
+        </div>
+
+        <div
+            id="competitionSquadContent"
+            style="display:none;"
+        >
+            <div
+                id="competitionSquadList"
+                class="competition-squad-list"
+            ></div>
+        </div>
+
+    </section>
+
+
     <!-- ========================================
          REQUEST HISTORY
     ======================================== -->
@@ -1777,6 +1908,26 @@ document.addEventListener(
         const squadBody =
             document.getElementById(
                 "squadBody"
+            );
+
+        const competitionSquadLoading =
+            document.getElementById(
+                "competitionSquadLoading"
+            );
+
+        const competitionSquadContent =
+            document.getElementById(
+                "competitionSquadContent"
+            );
+
+        const competitionSquadList =
+            document.getElementById(
+                "competitionSquadList"
+            );
+
+        const competitionSquadNote =
+            document.getElementById(
+                "competitionSquadNote"
             );
 
         const requestsLoading =
@@ -3375,6 +3526,496 @@ document.addEventListener(
                 }
             );
 
+        }
+
+
+
+        /*
+        ========================================
+        LOAD COMPETITION SQUAD
+        ========================================
+        */
+
+        async function loadCompetitionSquad() {
+
+            competitionSquadLoading.style.display = "block";
+            competitionSquadContent.style.display = "none";
+            competitionSquadList.innerHTML = "";
+
+            if (!currentCompetition || !teamId) {
+                competitionSquadLoading.style.display = "none";
+                competitionSquadNote.textContent =
+                    "Select a competition above to manage its squad.";
+                return;
+            }
+
+            competitionSquadNote.textContent =
+                "Loading registration status for " +
+                currentCompetition.name +
+                " — " +
+                currentCompetition.season +
+                ".";
+
+            try {
+
+                const [
+                    playersResponse,
+                    squadResponse
+                ] = await Promise.all([
+
+                    supabaseClient
+                        .from("players")
+                        .select(`
+                            id,
+                            full_name,
+                            jersey_number,
+                            position,
+                            photo_url,
+                            registration_status,
+                            team_id
+                        `)
+                        .eq("team_id", teamId)
+                        .eq("registration_status", "Approved")
+                        .order("jersey_number", {
+                            ascending: true,
+                            nullsFirst: false
+                        }),
+
+                    supabaseClient
+                        .from("competition_squads")
+                        .select(`
+                            player_id,
+                            status
+                        `)
+                        .eq("competition_id", currentCompetition.id)
+                        .eq("team_id", teamId)
+                ]);
+
+                if (playersResponse.error) {
+                    throw playersResponse.error;
+                }
+
+                if (squadResponse.error) {
+                    throw squadResponse.error;
+                }
+
+                const players = playersResponse.data || [];
+                const registrations = squadResponse.data || [];
+
+                const registrationMap = new Map();
+
+                registrations.forEach(function (row) {
+                    registrationMap.set(
+                        Number(row.player_id),
+                        String(row.status || "")
+                    );
+                });
+
+                if (players.length === 0) {
+
+                    competitionSquadList.innerHTML =
+                        `<div class="empty">
+                            No approved club players are currently available.
+                        </div>`;
+
+                } else {
+
+                    players.forEach(function (player) {
+
+                        const status =
+                            registrationMap.get(
+                                Number(player.id)
+                            ) || "Not Registered";
+
+                        const isActive =
+                            status === "Active";
+
+                        const isRemoved =
+                            status === "Removed";
+
+                        const photoHtml =
+                            player.photo_url
+                                ? `<img
+                                    src="${escapeHtml(player.photo_url)}"
+                                    class="player-photo"
+                                    alt="${escapeHtml(player.full_name)}"
+                                >`
+                                : `<div class="jersey">⚽</div>`;
+
+                        const card =
+                            document.createElement("div");
+
+                        card.className =
+                            "competition-squad-card";
+
+                        let statusText =
+                            "Not Registered";
+
+                        let statusClass =
+                            "request-pending";
+
+                        if (isActive) {
+                            statusText = "Registered";
+                            statusClass = "request-approved";
+                        } else if (isRemoved) {
+                            statusText = "Removed";
+                            statusClass = "request-rejected";
+                        }
+
+                        let actionHtml = "";
+
+                        if (isActive) {
+
+                            actionHtml =
+                                `<button
+                                    type="button"
+                                    class="btn btn-danger competition-remove-btn"
+                                    data-player-id="${escapeHtml(player.id)}"
+                                >
+                                    Remove from Squad
+                                </button>`;
+
+                        } else {
+
+                            actionHtml =
+                                `<button
+                                    type="button"
+                                    class="btn btn-primary competition-add-btn"
+                                    data-player-id="${escapeHtml(player.id)}"
+                                >
+                                    Add to Squad
+                                </button>`;
+
+                        }
+
+                        card.innerHTML =
+                            `<div class="competition-squad-player">
+
+                                ${photoHtml}
+
+                                <div class="competition-squad-player-info">
+
+                                    <div class="competition-squad-player-name">
+                                        ${escapeHtml(player.full_name)}
+                                    </div>
+
+                                    <div class="competition-squad-meta">
+                                        Jersey ${escapeHtml(player.jersey_number ?? "—")}
+                                        · ${escapeHtml(player.position || "Player")}
+                                    </div>
+
+                                    <div class="competition-squad-status">
+                                        <span class="request-status ${statusClass}">
+                                            ${statusText}
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="competition-squad-actions">
+
+                                <a
+                                    href="player-profile.html?id=${encodeURIComponent(player.id)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-secondary"
+                                >
+                                    👤 View Profile
+                                </a>
+
+                                ${actionHtml}
+
+                            </div>`;
+
+                        competitionSquadList.appendChild(card);
+                    });
+                }
+
+                const settings = currentSettings;
+
+                let managementMessage =
+                    "Players can be registered independently for this competition.";
+
+                if (!settings) {
+
+                    managementMessage =
+                        "Competition registration settings are not configured.";
+
+                } else if (settings.registration_locked) {
+
+                    managementMessage =
+                        "Competition registration is locked by the administrator.";
+
+                } else if (!settings.updates_allowed) {
+
+                    managementMessage =
+                        "Competition squad registration is currently closed.";
+
+                } else {
+
+                    const now = new Date();
+
+                    const start = settings.start_datetime
+                        ? new Date(settings.start_datetime)
+                        : null;
+
+                    const end = settings.end_datetime
+                        ? new Date(settings.end_datetime)
+                        : null;
+
+                    if (start && now < start) {
+
+                        managementMessage =
+                            "Competition squad registration opens on " +
+                            formatDateTime(start) +
+                            ".";
+
+                    } else if (end && now > end) {
+
+                        managementMessage =
+                            "Competition squad registration closed on " +
+                            formatDateTime(end) +
+                            ".";
+
+                    } else {
+
+                        managementMessage =
+                            "Competition squad registration is currently open.";
+
+                    }
+                }
+
+                competitionSquadNote.textContent =
+                    managementMessage;
+
+                const canManage =
+                    !!settings &&
+                    settings.updates_allowed === true &&
+                    settings.registration_locked !== true &&
+                    (!settings.start_datetime ||
+                        new Date() >= new Date(settings.start_datetime)) &&
+                    (!settings.end_datetime ||
+                        new Date() <= new Date(settings.end_datetime));
+
+                competitionSquadList
+                    .querySelectorAll(".competition-add-btn, .competition-remove-btn")
+                    .forEach(function (button) {
+
+                        button.disabled = !canManage;
+
+                        if (!canManage) {
+                            button.className = "btn btn-disabled";
+                        }
+
+                    });
+
+                competitionSquadList
+                    .querySelectorAll(".competition-add-btn")
+                    .forEach(function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            async function () {
+
+                                await changeCompetitionRegistration(
+                                    Number(button.dataset.playerId),
+                                    "add"
+                                );
+
+                            }
+                        );
+
+                    });
+
+                competitionSquadList
+                    .querySelectorAll(".competition-remove-btn")
+                    .forEach(function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            async function () {
+
+                                await changeCompetitionRegistration(
+                                    Number(button.dataset.playerId),
+                                    "remove"
+                                );
+
+                            }
+                        );
+
+                    });
+
+                competitionSquadLoading.style.display = "none";
+                competitionSquadContent.style.display = "block";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Competition squad loading error:",
+                    error
+                );
+
+                competitionSquadLoading.style.display = "none";
+                competitionSquadContent.style.display = "block";
+
+                competitionSquadNote.textContent =
+                    "Unable to load competition squad registration.";
+
+                competitionSquadList.innerHTML =
+                    `<div class="empty">
+                        ${escapeHtml(
+                            error.message ||
+                            "Unable to load competition squad."
+                        )}
+                    </div>`;
+            }
+        }
+
+
+        /*
+        ========================================
+        CHANGE COMPETITION REGISTRATION
+        ========================================
+        */
+
+        async function changeCompetitionRegistration(
+            playerId,
+            action
+        ) {
+
+            if (!currentCompetition) {
+                showMessage(
+                    "Please select a competition first.",
+                    "error"
+                );
+                return;
+            }
+
+            if (!currentSettings) {
+                showMessage(
+                    "Competition registration settings are not configured.",
+                    "error"
+                );
+                return;
+            }
+
+            const now = new Date();
+
+            const start = currentSettings.start_datetime
+                ? new Date(currentSettings.start_datetime)
+                : null;
+
+            const end = currentSettings.end_datetime
+                ? new Date(currentSettings.end_datetime)
+                : null;
+
+            const canManage =
+                currentSettings.updates_allowed === true &&
+                currentSettings.registration_locked !== true &&
+                (!start || now >= start) &&
+                (!end || now <= end);
+
+            if (!canManage) {
+                showMessage(
+                    "Competition squad registration is currently closed.",
+                    "error"
+                );
+                return;
+            }
+
+            const player =
+                approvedPlayers.find(function (item) {
+                    return Number(item.id) === Number(playerId);
+                });
+
+            if (!player) {
+                showMessage(
+                    "Player could not be found in your approved club squad.",
+                    "error"
+                );
+                return;
+            }
+
+            const confirmed =
+                window.confirm(
+                    action === "add"
+                        ? "Register " +
+                          player.full_name +
+                          " for " +
+                          currentCompetition.name +
+                          "?"
+                        : "Remove " +
+                          player.full_name +
+                          " from " +
+                          currentCompetition.name +
+                          "?"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const rpcName =
+                    action === "add"
+                        ? "register_player_for_competition"
+                        : "remove_player_from_competition";
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient.rpc(
+                    rpcName,
+                    {
+                        p_player_id: Number(playerId),
+                        p_competition_id:
+                            Number(currentCompetition.id)
+                    }
+                );
+
+                if (error) {
+                    throw error;
+                }
+
+                const response = data || {};
+
+                if (response.success === false) {
+                    throw new Error(
+                        response.message ||
+                        "Competition squad update failed."
+                    );
+                }
+
+                showMessage(
+                    response.message ||
+                    (
+                        action === "add"
+                            ? "Player added to the competition squad."
+                            : "Player removed from the competition squad."
+                    ),
+                    "success"
+                );
+
+                await loadCompetitionSquad();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Competition squad update error:",
+                    error
+                );
+
+                showMessage(
+                    error.message ||
+                    "Unable to update competition squad.",
+                    "error"
+                );
+            }
         }
 
 
@@ -7664,6 +8305,8 @@ editTeamBtn.addEventListener(
                     this.value
                 );
 
+                await loadCompetitionSquad();
+
             }
         );
 
@@ -7753,9 +8396,15 @@ editTeamBtn.addEventListener(
                 await loadMovementSettings(
                     competitionSelect.value
                 );
+
+                await loadCompetitionSquad();
             }
 
             await loadSquad();
+
+            if (competitionSelect.value) {
+                await loadCompetitionSquad();
+            }
 
             await loadRequests();
 
@@ -7783,4 +8432,4 @@ editTeamBtn.addEventListener(
 </body>
 
 </html>
-```
+
