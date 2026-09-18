@@ -1,3 +1,4 @@
+```
 <!DOCTYPE html>
 <html lang="en">
 
@@ -922,6 +923,36 @@ footer strong {
     .movement-actions .btn {
         width: 100%;
     }
+}
+
+
+/* ========================================
+   REQUEST HISTORY CARDS
+======================================== */
+
+.request-detail {
+    padding: 5px 0;
+    font-size: 13px;
+    color: #3f4d46;
+}
+
+.request-detail strong {
+    color: var(--green-dark);
+}
+
+.request-status.request-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.request-status.request-approved {
+    background: #dff6e8;
+    color: #08753f;
+}
+
+.request-status.request-rejected {
+    background: #fde5e5;
+    color: #a61b1b;
 }
 
 </style>
@@ -2729,7 +2760,19 @@ document.addEventListener(
                 editTeamBtn
             );
 
-            updateTransferButton(false);
+            /*
+            Transfer is managed independently. When there is
+            no selected competition/settings, it is disabled.
+            When movement settings are loaded, loadMovementSettings()
+            decides its state.
+            */
+            if (!currentCompetition || !movementSettings) {
+                updateTransferButton(false);
+            } else {
+                updateTransferButton(
+                    canRequestTransfer()
+                );
+            }
 
         }
 
@@ -2738,33 +2781,55 @@ document.addEventListener(
             isOpen
         ) {
 
+            /*
+            Squad/team changes and player movement are
+            controlled by DIFFERENT settings.
+
+            Add / Remove / Edit:
+            -> competition_registration_settings
+
+            Transfer:
+            -> player_movement_settings
+
+            Therefore a closed squad-change window must NOT
+            disable the Transfer button.
+            */
+
             if (!isOpen) {
 
-                disableAllButtons();
+                disableButton(addPlayerBtn);
+                disableButton(removePlayerBtn);
+                disableButton(editPlayerBtn);
+                disableButton(editTeamBtn);
 
-                return;
+            } else {
+
+                currentSettings.allow_add_players
+                    ? enableButton(addPlayerBtn)
+                    : disableButton(addPlayerBtn);
+
+
+                currentSettings.allow_remove_players
+                    ? enableButton(removePlayerBtn)
+                    : disableButton(removePlayerBtn);
+
+
+                currentSettings.allow_edit_players
+                    ? enableButton(editPlayerBtn)
+                    : disableButton(editPlayerBtn);
+
+
+                currentSettings.allow_edit_team
+                    ? enableButton(editTeamBtn)
+                    : disableButton(editTeamBtn);
 
             }
 
-
-            currentSettings.allow_add_players
-                ? enableButton(addPlayerBtn)
-                : disableButton(addPlayerBtn);
-
-
-            currentSettings.allow_remove_players
-                ? enableButton(removePlayerBtn)
-                : disableButton(removePlayerBtn);
-
-
-            currentSettings.allow_edit_players
-                ? enableButton(editPlayerBtn)
-                : disableButton(editPlayerBtn);
-
-
-            currentSettings.allow_edit_team
-                ? enableButton(editTeamBtn)
-                : disableButton(editTeamBtn);
+            /*
+            Transfer is intentionally evaluated separately.
+            It may remain available even when the squad-change
+            window is closed.
+            */
 
             updateTransferButton(
                 canRequestTransfer()
@@ -3321,607 +3386,1147 @@ document.addEventListener(
 
         async function loadRequests() {
 
-    const requestsLoading =
-        document.getElementById("requestsLoading");
+            try {
 
-    const requestsContent =
-        document.getElementById("requestsContent");
-
-    const requestsList =
-        document.getElementById("requestsList");
-
-    try {
-
-        if (requestsLoading) {
-            requestsLoading.style.display = "block";
-        }
-
-        if (requestsContent) {
-            requestsContent.style.display = "none";
-        }
-
-        if (requestsList) {
-            requestsList.innerHTML = "";
-        }
-
-        // =====================================================
-        // MAKE SURE WE HAVE AN AUTHENTICATED USER
-        // =====================================================
-
-        const {
-            data: {
-                session
-            },
-            error: sessionError
-        } = await supabaseClient.auth.getSession();
-
-        if (sessionError) {
-            throw sessionError;
-        }
-
-        if (!session || !session.user) {
-
-            window.location.replace(
-                "team-login.html"
-            );
-
-            return;
-        }
-
-        // =====================================================
-        // GET THE TEAM LINKED TO THE LOGGED-IN ACCOUNT
-        // NEVER TRUST ?id= FOR TEAM USERS
-        // =====================================================
-
-        const {
-            data: myTeamId,
-            error: teamIdError
-        } = await supabaseClient.rpc(
-            "get_my_team_id"
-        );
-
-        if (teamIdError) {
-            throw teamIdError;
-        }
-
-        if (!myTeamId) {
-
-            throw new Error(
-                "Your account is not linked to an active football team."
-            );
-        }
-
-        // =====================================================
-        // FORCE THE PAGE TO USE THE AUTHENTICATED TEAM
-        // =====================================================
-
-        teamId = Number(myTeamId);
-
-        console.log(
-            "Authenticated Team ID:",
-            teamId
-        );
-
-        // =====================================================
-        // LOAD SQUAD / TEAM CHANGE REQUESTS
-        // =====================================================
-
-        const {
-            data: squadRows,
-            error: squadError
-        } = await supabaseClient
-            .from("squad_change_requests")
-            .select(`
-                id,
-                team_id,
-                competition_id,
-                player_id,
-                request_type,
-                requested_full_name,
-                requested_jersey_number,
-                requested_position,
-                requested_photo_url,
-                reason,
-                status,
-                admin_notes,
-                created_at,
-                updated_at
-            `)
-            .eq(
-                "team_id",
-                teamId
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
+                if (requestsLoading) {
+                    requestsLoading.style.display = "block";
                 }
-            );
 
-        if (squadError) {
-            console.error(
-                "Squad request error:",
-                squadError
-            );
-        }
-
-        // =====================================================
-        // LOAD PLAYER MOVEMENT REQUESTS
-        // RLS NOW CONTROLS WHICH REQUESTS THIS TEAM CAN SEE
-        // =====================================================
-
-        const {
-            data: movementRows,
-            error: movementError
-        } = await supabaseClient
-            .from("player_movement_requests")
-            .select(`
-                id,
-                player_id,
-                request_type,
-                requesting_team_id,
-                from_team_id,
-                to_team_id,
-                competition_id,
-                from_team_status,
-                from_team_reviewed_at,
-                from_team_notes,
-                admin_status,
-                admin_notes,
-                reason,
-                status,
-                created_at,
-                updated_at
-            `)
-            .or(
-                "requesting_team_id.eq." +
-                teamId +
-                ",from_team_id.eq." +
-                teamId +
-                ",to_team_id.eq." +
-                teamId
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
+                if (requestsContent) {
+                    requestsContent.style.display = "none";
                 }
-            );
 
-        if (movementError) {
+                if (requestsList) {
+                    requestsList.innerHTML = "";
+                }
 
-            console.error(
-                "Movement request error:",
-                movementError
-            );
+                /*
+                ========================================
+                AUTHENTICATED TEAM
+                ========================================
+                */
 
-            throw movementError;
-        }
+                if (!currentSession) {
+                    const {
+                        data: {
+                            session
+                        },
+                        error: sessionError
+                    } = await supabaseClient.auth.getSession();
 
-        // =====================================================
-        // COMBINE BOTH TYPES OF REQUESTS
-        // =====================================================
-
-        const squadRequests =
-            Array.isArray(squadRows)
-                ? squadRows
-                : [];
-
-        const movementRequests =
-            Array.isArray(movementRows)
-                ? movementRows
-                : [];
-
-        const allRequests = [];
-
-        // Squad requests
-        squadRequests.forEach(
-            function (request) {
-
-                allRequests.push({
-                    ...request,
-                    request_category:
-                        "Squad / Team"
-                });
-
-            }
-        );
-
-        // Movement requests
-        movementRequests.forEach(
-            function (request) {
-
-                allRequests.push({
-                    ...request,
-                    request_category:
-                        "Player Movement"
-                });
-
-            }
-        );
-
-        // =====================================================
-        // NEWEST REQUEST FIRST
-        // =====================================================
-
-        allRequests.sort(
-            function (a, b) {
-
-                return (
-                    new Date(b.created_at) -
-                    new Date(a.created_at)
-                );
-
-            }
-        );
-
-        // =====================================================
-        // DISPLAY EMPTY STATE
-        // =====================================================
-
-        if (allRequests.length === 0) {
-
-            if (requestsList) {
-
-                requestsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📋</div>
-                        <h3>No Requests Yet</h3>
-                        <p>
-                            No squad, team, or player movement
-                            requests have been submitted yet.
-                        </p>
-                    </div>
-                `;
-
-            }
-
-        } else {
-
-            // =================================================
-            // DISPLAY REQUESTS
-            // =================================================
-
-            allRequests.forEach(
-                function (request) {
-
-                    let requestTitle =
-                        request.request_type ||
-                        "Request";
-
-                    let status =
-                        request.status ||
-                        "Pending";
-
-                    let statusClass =
-                        String(status)
-                            .toLowerCase()
-                            .replace(
-                                /\s+/g,
-                                "-"
-                            );
-
-                    let category =
-                        request.request_category ||
-                        "Request";
-
-                    let dateText = "";
-
-                    if (request.created_at) {
-
-                        const date =
-                            new Date(
-                                request.created_at
-                            );
-
-                        dateText =
-                            date.toLocaleString(
-                                "en-KE",
-                                {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                }
-                            );
+                    if (sessionError) {
+                        throw sessionError;
                     }
 
-                    let details = "";
-
-                    // =========================================
-                    // TRANSFER
-                    // =========================================
-
-                    if (
-                        request.request_type ===
-                        "Transfer"
-                    ) {
-
-                        details = `
-                            <div class="request-detail">
-                                <strong>Transfer Request</strong>
-                            </div>
-
-                            <div class="request-detail">
-                                Player ID:
-                                ${request.player_id || "—"}
-                            </div>
-
-                            <div class="request-detail">
-                                From Team:
-                                ${request.from_team_id || "—"}
-                            </div>
-
-                            <div class="request-detail">
-                                To Team:
-                                ${request.to_team_id || "—"}
-                            </div>
-
-                            <div class="request-detail">
-                                Current Team Approval:
-                                ${request.from_team_status || "—"}
-                            </div>
-
-                            <div class="request-detail">
-                                Admin Approval:
-                                ${request.admin_status || "—"}
-                            </div>
-                        `;
+                    if (!session || !session.user) {
+                        window.location.replace("team-login.html");
+                        return;
                     }
 
-                    // =========================================
-                    // RELEASE
-                    // =========================================
+                    currentSession = session;
+                }
 
-                    else if (
-                        request.request_type ===
-                        "Release"
-                    ) {
+                if (!teamId) {
+                    const {
+                        data: myTeamId,
+                        error: teamIdError
+                    } = await supabaseClient.rpc(
+                        "get_my_team_id"
+                    );
 
-                        details = `
-                            <div class="request-detail">
-                                <strong>Player Release</strong>
-                            </div>
-
-                            <div class="request-detail">
-                                Player ID:
-                                ${request.player_id || "—"}
-                            </div>
-                        `;
+                    if (teamIdError) {
+                        throw teamIdError;
                     }
 
-                    // =========================================
-                    // FREE AGENT SIGNING
-                    // =========================================
-
-                    else if (
-                        request.request_type ===
-                        "Free Agent Signing"
-                    ) {
-
-                        details = `
-                            <div class="request-detail">
-                                <strong>
-                                    Free-Agent Signing
-                                </strong>
-                            </div>
-
-                            <div class="request-detail">
-                                Player ID:
-                                ${request.player_id || "—"}
-                            </div>
-
-                            <div class="request-detail">
-                                Destination Team:
-                                ${request.to_team_id || "—"}
-                            </div>
-
-                            <div class="request-detail">
-                                Admin Approval:
-                                ${request.admin_status || "—"}
-                            </div>
-                        `;
-                    }
-
-                    // =========================================
-                    // ADD / REMOVE / EDIT
-                    // =========================================
-
-                    else {
-
-                        details = `
-                            <div class="request-detail">
-                                <strong>
-                                    ${category}
-                                </strong>
-                            </div>
-
-                            ${
-                                request.player_id
-                                    ? `
-                                        <div class="request-detail">
-                                            Player ID:
-                                            ${request.player_id}
-                                        </div>
-                                      `
-                                    : ""
-                            }
-
-                            ${
-                                request.requested_full_name
-                                    ? `
-                                        <div class="request-detail">
-                                            Name:
-                                            ${escapeHtml(
-                                                request.requested_full_name
-                                            )}
-                                        </div>
-                                      `
-                                    : ""
-                            }
-
-                            ${
-                                request.requested_jersey_number
-                                    ? `
-                                        <div class="request-detail">
-                                            Jersey Number:
-                                            ${request.requested_jersey_number}
-                                        </div>
-                                      `
-                                    : ""
-                            }
-
-                            ${
-                                request.requested_position
-                                    ? `
-                                        <div class="request-detail">
-                                            Position:
-                                            ${escapeHtml(
-                                                request.requested_position
-                                            )}
-                                        </div>
-                                      `
-                                    : ""
-                            }
-                        `;
-                    }
-
-                    // =========================================
-                    // REASON
-                    // =========================================
-
-                    if (request.reason) {
-
-                        details += `
-                            <div class="request-detail">
-                                <strong>Reason:</strong>
-                                ${escapeHtml(
-                                    request.reason
-                                )}
-                            </div>
-                        `;
-                    }
-
-                    // =========================================
-                    // ADMIN NOTES
-                    // =========================================
-
-                    if (request.admin_notes) {
-
-                        details += `
-                            <div class="request-detail">
-                                <strong>Admin Notes:</strong>
-                                ${escapeHtml(
-                                    request.admin_notes
-                                )}
-                            </div>
-                        `;
-                    }
-
-                    // =========================================
-                    // REQUEST CARD
-                    // =========================================
-
-                    if (requestsList) {
-
-                        requestsList.insertAdjacentHTML(
-                            "beforeend",
-                            `
-                            <div class="request-card">
-
-                                <div class="request-header">
-
-                                    <div>
-                                        <div class="request-title">
-                                            ${escapeHtml(
-                                                requestTitle
-                                            )}
-                                        </div>
-
-                                        <div class="request-date">
-                                            ${dateText}
-                                        </div>
-                                    </div>
-
-                                    <span class="status-badge ${statusClass}">
-                                        ${escapeHtml(
-                                            status
-                                        )}
-                                    </span>
-
-                                </div>
-
-                                ${details}
-
-                            </div>
-                            `
+                    if (!myTeamId) {
+                        throw new Error(
+                            "Your account is not linked to an active football team."
                         );
                     }
 
+                    teamId = Number(myTeamId);
                 }
-            );
+
+                /*
+                ========================================
+                LOAD SQUAD / TEAM REQUESTS
+                ========================================
+                */
+
+                const {
+                    data: squadRows,
+                    error: squadError
+                } = await supabaseClient
+                    .from("squad_change_requests")
+                    .select(`
+                        id,
+                        team_id,
+                        competition_id,
+                        player_id,
+                        request_type,
+                        requested_full_name,
+                        requested_jersey_number,
+                        requested_position,
+                        requested_photo_url,
+                        reason,
+                        status,
+                        admin_notes,
+                        created_at,
+                        updated_at
+                    `)
+                    .eq(
+                        "team_id",
+                        Number(teamId)
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+                if (squadError) {
+
+                    /*
+                    Do not discard movement history if the
+                    squad request SELECT is blocked by RLS.
+                    The error is logged clearly so it can be
+                    fixed with the team-user SELECT policy.
+                    */
+                    console.error(
+                        "Squad request history error:",
+                        squadError
+                    );
+
+                }
+
+                /*
+                ========================================
+                LOAD PLAYER MOVEMENT REQUESTS
+                ========================================
+                */
+
+                const {
+                    data: movementRows,
+                    error: movementError
+                } = await supabaseClient
+                    .from("player_movement_requests")
+                    .select(`
+                        id,
+                        player_id,
+                        request_type,
+                        requesting_team_id,
+                        from_team_id,
+                        to_team_id,
+                        competition_id,
+                        from_team_status,
+                        from_team_reviewed_at,
+                        from_team_notes,
+                        admin_status,
+                        admin_notes,
+                        reason,
+                        status,
+                        created_at,
+                        updated_at
+                    `)
+                    .or(
+                        "requesting_team_id.eq." +
+                        Number(teamId) +
+                        ",from_team_id.eq." +
+                        Number(teamId) +
+                        ",to_team_id.eq." +
+                        Number(teamId)
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+                if (movementError) {
+                    throw movementError;
+                }
+
+                /*
+                ========================================
+                LOAD NAMES FOR HISTORY
+                ========================================
+                */
+
+                const playerIds = [
+                    ...(squadRows || [])
+                        .map(function (request) {
+                            return Number(request.player_id);
+                        }),
+                    ...(movementRows || [])
+                        .map(function (request) {
+                            return Number(request.player_id);
+                        })
+                ].filter(function (id) {
+                    return Number.isInteger(id) && id > 0;
+                });
+
+                const uniquePlayerIds = [
+                    ...new Set(playerIds)
+                ];
+
+                const teamIds = [
+                    ...(movementRows || [])
+                        .flatMap(function (request) {
+                            return [
+                                Number(request.requesting_team_id),
+                                Number(request.from_team_id),
+                                Number(request.to_team_id)
+                            ];
+                        })
+                ].filter(function (id) {
+                    return Number.isInteger(id) && id > 0;
+                });
+
+                const uniqueTeamIds = [
+                    ...new Set(teamIds)
+                ];
+
+                const competitionIds = [
+                    ...(squadRows || [])
+                        .map(function (request) {
+                            return Number(request.competition_id);
+                        }),
+                    ...(movementRows || [])
+                        .map(function (request) {
+                            return Number(request.competition_id);
+                        })
+                ].filter(function (id) {
+                    return Number.isInteger(id) && id > 0;
+                });
+
+                const uniqueCompetitionIds = [
+                    ...new Set(competitionIds)
+                ];
+
+                let playerMap = {};
+                let teamMap = {};
+                let competitionMap = {};
+
+                if (uniquePlayerIds.length > 0) {
+
+                    const {
+                        data: playerRows,
+                        error: playerError
+                    } = await supabaseClient
+                        .from("players")
+                        .select(`
+                            id,
+                            full_name,
+                            jersey_number,
+                            position,
+                            photo_url
+                        `)
+                        .in(
+                            "id",
+                            uniquePlayerIds
+                        );
+
+                    if (playerError) {
+                        console.warn(
+                            "Player history lookup error:",
+                            playerError
+                        );
+                    } else {
+                        (playerRows || []).forEach(
+                            function (player) {
+                                playerMap[
+                                    Number(player.id)
+                                ] = player;
+                            }
+                        );
+                    }
+                }
+
+                if (uniqueTeamIds.length > 0) {
+
+                    const {
+                        data: teamRows,
+                        error: teamError
+                    } = await supabaseClient
+                        .from("teams")
+                        .select(`
+                            id,
+                            name,
+                            short_name,
+                            logo_url
+                        `)
+                        .in(
+                            "id",
+                            uniqueTeamIds
+                        );
+
+                    if (teamError) {
+                        console.warn(
+                            "Team history lookup error:",
+                            teamError
+                        );
+                    } else {
+                        (teamRows || []).forEach(
+                            function (team) {
+                                teamMap[
+                                    Number(team.id)
+                                ] = team;
+                            }
+                        );
+                    }
+                }
+
+                if (uniqueCompetitionIds.length > 0) {
+
+                    const {
+                        data: competitionRows,
+                        error: competitionError
+                    } = await supabaseClient
+                        .from("competitions")
+                        .select(`
+                            id,
+                            name,
+                            season
+                        `)
+                        .in(
+                            "id",
+                            uniqueCompetitionIds
+                        );
+
+                    if (competitionError) {
+                        console.warn(
+                            "Competition history lookup error:",
+                            competitionError
+                        );
+                    } else {
+                        (competitionRows || []).forEach(
+                            function (competition) {
+                                competitionMap[
+                                    Number(competition.id)
+                                ] = competition;
+                            }
+                        );
+                    }
+                }
+
+                /*
+                ========================================
+                COMBINE
+                ========================================
+                */
+
+                const allRequests = [];
+
+                (squadRows || []).forEach(
+                    function (request) {
+
+                        allRequests.push({
+                            ...request,
+                            request_category:
+                                "Squad / Team"
+                        });
+
+                    }
+                );
+
+                (movementRows || []).forEach(
+                    function (request) {
+
+                        allRequests.push({
+                            ...request,
+                            request_category:
+                                "Player Movement"
+                        });
+
+                    }
+                );
+
+                allRequests.sort(
+                    function (a, b) {
+                        return (
+                            new Date(b.created_at) -
+                            new Date(a.created_at)
+                        );
+                    }
+                );
+
+                /*
+                ========================================
+                EMPTY STATE
+                ========================================
+                */
+
+                if (allRequests.length === 0) {
+
+                    requestsList.innerHTML = `
+                        <div class="empty">
+                            <div style="font-size:32px;">📋</div>
+                            <h3>No Requests Yet</h3>
+                            <p>
+                                No squad, team, or player movement
+                                requests have been submitted yet.
+                            </p>
+                        </div>
+                    `;
+
+                } else {
+
+                    allRequests.forEach(
+                        function (request) {
+
+                            const status =
+                                request.status ||
+                                "Pending";
+
+                            const statusLower =
+                                String(status)
+                                    .toLowerCase();
+
+                            let statusClass =
+                                "request-pending";
+
+                            if (
+                                statusLower ===
+                                "approved"
+                            ) {
+                                statusClass =
+                                    "request-approved";
+                            } else if (
+                                statusLower ===
+                                "rejected"
+                            ) {
+                                statusClass =
+                                    "request-rejected";
+                            }
+
+                            const requestTitle =
+                                request.request_type ||
+                                "Request";
+
+                            const dateText =
+                                request.created_at
+                                    ? new Date(
+                                        request.created_at
+                                    ).toLocaleString(
+                                        "en-KE",
+                                        {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit"
+                                        }
+                                    )
+                                    : "Not specified";
+
+                            const player =
+                                playerMap[
+                                    Number(
+                                        request.player_id
+                                    )
+                                ];
+
+                            const fromTeam =
+                                teamMap[
+                                    Number(
+                                        request.from_team_id
+                                    )
+                                ];
+
+                            const toTeam =
+                                teamMap[
+                                    Number(
+                                        request.to_team_id
+                                    )
+                                ];
+
+                            const requestingTeam =
+                                teamMap[
+                                    Number(
+                                        request.requesting_team_id
+                                    )
+                                ];
+
+                            const competition =
+                                competitionMap[
+                                    Number(
+                                        request.competition_id
+                                    )
+                                ];
+
+                            let details = "";
+
+                            /*
+                            ========================================
+                            TRANSFER
+                            ========================================
+                            */
+
+                            if (
+                                request.request_type ===
+                                "Transfer"
+                            ) {
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>🔁 Transfer Request</strong>
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Player:</strong>
+                                        ${
+                                            player
+                                                ? escapeHtml(
+                                                    player.full_name
+                                                ) +
+                                                (
+                                                    player.jersey_number
+                                                        ? " #" +
+                                                          escapeHtml(
+                                                              player.jersey_number
+                                                          )
+                                                        : ""
+                                                )
+                                                : "Player #" +
+                                                  escapeHtml(
+                                                      request.player_id
+                                                  )
+                                        }
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>From:</strong>
+                                        ${
+                                            fromTeam
+                                                ? escapeHtml(
+                                                    fromTeam.name
+                                                )
+                                                : "Team #" +
+                                                  escapeHtml(
+                                                      request.from_team_id
+                                                  )
+                                        }
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>To:</strong>
+                                        ${
+                                            toTeam
+                                                ? escapeHtml(
+                                                    toTeam.name
+                                                )
+                                                : "Team #" +
+                                                  escapeHtml(
+                                                      request.to_team_id
+                                                  )
+                                        }
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Current Team Approval:</strong>
+                                        ${escapeHtml(
+                                            request.from_team_status ||
+                                            "Pending"
+                                        )}
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Admin Approval:</strong>
+                                        ${escapeHtml(
+                                            request.admin_status ||
+                                            "Pending"
+                                        )}
+                                    </div>
+
+                                    ${
+                                        competition
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Competition:</strong>
+                                                    ${escapeHtml(
+                                                        competition.name
+                                                    )} — ${escapeHtml(
+                                                        competition.season
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            RELEASE
+                            ========================================
+                            */
+
+                            else if (
+                                request.request_type ===
+                                "Release"
+                            ) {
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>↗️ Player Release</strong>
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Player:</strong>
+                                        ${
+                                            player
+                                                ? escapeHtml(
+                                                    player.full_name
+                                                )
+                                                : "Player #" +
+                                                  escapeHtml(
+                                                      request.player_id
+                                                  )
+                                        }
+                                    </div>
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            FREE AGENT SIGNING
+                            ========================================
+                            */
+
+                            else if (
+                                request.request_type ===
+                                "Free Agent Signing"
+                            ) {
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>📝 Free-Agent Signing</strong>
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Player:</strong>
+                                        ${
+                                            player
+                                                ? escapeHtml(
+                                                    player.full_name
+                                                )
+                                                : "Player #" +
+                                                  escapeHtml(
+                                                      request.player_id
+                                                  )
+                                        }
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Destination:</strong>
+                                        ${
+                                            toTeam
+                                                ? escapeHtml(
+                                                    toTeam.name
+                                                )
+                                                : "Team #" +
+                                                  escapeHtml(
+                                                      request.to_team_id
+                                                  )
+                                        }
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Admin Approval:</strong>
+                                        ${escapeHtml(
+                                            request.admin_status ||
+                                            "Pending"
+                                        )}
+                                    </div>
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            ADD PLAYER
+                            ========================================
+                            */
+
+                            else if (
+                                request.request_type ===
+                                "Add Player"
+                            ) {
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>➕ Add Player</strong>
+                                    </div>
+
+                                    ${
+                                        request.requested_full_name
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Name:</strong>
+                                                    ${escapeHtml(
+                                                        request.requested_full_name
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        request.requested_jersey_number
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Jersey:</strong>
+                                                    ${escapeHtml(
+                                                        request.requested_jersey_number
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        request.requested_position
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Position:</strong>
+                                                    ${escapeHtml(
+                                                        request.requested_position
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            REMOVE PLAYER
+                            ========================================
+                            */
+
+                            else if (
+                                request.request_type ===
+                                "Remove Player"
+                            ) {
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>➖ Remove Player</strong>
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Player:</strong>
+                                        ${
+                                            player
+                                                ? escapeHtml(
+                                                    player.full_name
+                                                )
+                                                : "Player #" +
+                                                  escapeHtml(
+                                                      request.player_id
+                                                  )
+                                        }
+                                    </div>
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            EDIT PLAYER
+                            ========================================
+                            */
+
+                            else if (
+                                request.request_type ===
+                                "Edit Player"
+                            ) {
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>✏️ Edit Player</strong>
+                                    </div>
+
+                                    <div class="request-detail">
+                                        <strong>Player:</strong>
+                                        ${
+                                            player
+                                                ? escapeHtml(
+                                                    player.full_name
+                                                )
+                                                : "Player #" +
+                                                  escapeHtml(
+                                                      request.player_id
+                                                  )
+                                        }
+                                    </div>
+
+                                    ${
+                                        request.requested_full_name
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Requested Name:</strong>
+                                                    ${escapeHtml(
+                                                        request.requested_full_name
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        request.requested_jersey_number
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Requested Jersey:</strong>
+                                                    ${escapeHtml(
+                                                        request.requested_jersey_number
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        request.requested_position
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Requested Position:</strong>
+                                                    ${escapeHtml(
+                                                        request.requested_position
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            EDIT TEAM
+                            ========================================
+                            */
+
+                            else if (
+                                request.request_type ===
+                                "Edit Team"
+                            ) {
+
+                                let editTeamReason =
+                                    request.reason || "";
+
+                                let editTeamData = null;
+
+                                try {
+                                    editTeamData =
+                                        JSON.parse(
+                                            editTeamReason
+                                        );
+                                } catch (parseError) {
+                                    editTeamData = null;
+                                }
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>🏟️ Edit Team</strong>
+                                    </div>
+
+                                    ${
+                                        editTeamData &&
+                                        editTeamData.short_name
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Short Name:</strong>
+                                                    ${escapeHtml(
+                                                        editTeamData.short_name
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        editTeamData &&
+                                        editTeamData.location
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Location:</strong>
+                                                    ${escapeHtml(
+                                                        editTeamData.location
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        editTeamData &&
+                                        editTeamData.coach_name
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Coach:</strong>
+                                                    ${escapeHtml(
+                                                        editTeamData.coach_name
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        editTeamData &&
+                                        editTeamData.captain_name
+                                            ? `
+                                                <div class="request-detail">
+                                                    <strong>Captain:</strong>
+                                                    ${escapeHtml(
+                                                        editTeamData.captain_name
+                                                    )}
+                                                </div>
+                                              `
+                                            : ""
+                                    }
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            OTHER
+                            ========================================
+                            */
+
+                            else {
+
+                                details = `
+                                    <div class="request-detail">
+                                        <strong>
+                                            ${escapeHtml(
+                                                request.request_category ||
+                                                "Request"
+                                            )}
+                                        </strong>
+                                    </div>
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            REASON
+                            ========================================
+                            */
+
+                            if (
+                                request.reason &&
+                                request.request_type !==
+                                    "Edit Team"
+                            ) {
+
+                                details += `
+                                    <div class="request-detail">
+                                        <strong>Reason:</strong>
+                                        ${escapeHtml(
+                                            request.reason
+                                        )}
+                                    </div>
+                                `;
+
+                            } else if (
+                                request.request_type ===
+                                "Edit Team"
+                            ) {
+
+                                let parsedReason = null;
+
+                                try {
+                                    parsedReason =
+                                        JSON.parse(
+                                            request.reason || ""
+                                        );
+                                } catch (parseError) {
+                                    parsedReason = null;
+                                }
+
+                                if (
+                                    parsedReason &&
+                                    parsedReason.reason
+                                ) {
+
+                                    details += `
+                                        <div class="request-detail">
+                                            <strong>Reason:</strong>
+                                            ${escapeHtml(
+                                                parsedReason.reason
+                                            )}
+                                        </div>
+                                    `;
+
+                                }
+
+                            }
+
+                            /*
+                            ========================================
+                            ADMIN NOTES
+                            ========================================
+                            */
+
+                            if (request.admin_notes) {
+
+                                details += `
+                                    <div class="request-detail">
+                                        <strong>Admin Notes:</strong>
+                                        ${escapeHtml(
+                                            request.admin_notes
+                                        )}
+                                    </div>
+                                `;
+
+                            }
+
+                            /*
+                            ========================================
+                            REQUEST CARD
+                            ========================================
+                            */
+
+                            requestsList.insertAdjacentHTML(
+                                "beforeend",
+                                `
+                                <div class="request-card"
+                                     style="
+                                         border:1px solid var(--border);
+                                         border-radius:12px;
+                                         padding:15px;
+                                         margin-bottom:12px;
+                                         background:#ffffff;
+                                     ">
+
+                                    <div
+                                        class="request-header"
+                                        style="
+                                            display:flex;
+                                            justify-content:space-between;
+                                            align-items:flex-start;
+                                            gap:12px;
+                                            margin-bottom:10px;
+                                        "
+                                    >
+
+                                        <div>
+                                            <div
+                                                class="request-title"
+                                                style="
+                                                    font-weight:800;
+                                                    color:var(--green-dark);
+                                                "
+                                            >
+                                                ${escapeHtml(
+                                                    requestTitle
+                                                )}
+                                            </div>
+
+                                            <div
+                                                class="request-date"
+                                                style="
+                                                    color:var(--gray);
+                                                    font-size:12px;
+                                                    margin-top:2px;
+                                                "
+                                            >
+                                                ${dateText}
+                                            </div>
+                                        </div>
+
+                                        <span
+                                            class="request-status ${statusClass}"
+                                        >
+                                            ${escapeHtml(
+                                                status
+                                            )}
+                                        </span>
+
+                                    </div>
+
+                                    ${details}
+
+                                </div>
+                                `
+                            );
+
+                        }
+                    );
+
+                }
+
+                if (requestsLoading) {
+                    requestsLoading.style.display = "none";
+                }
+
+                if (requestsContent) {
+                    requestsContent.style.display = "block";
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Failed to load request history:",
+                    error
+                );
+
+                if (requestsLoading) {
+                    requestsLoading.style.display = "none";
+                }
+
+                if (requestsContent) {
+                    requestsContent.style.display = "block";
+                }
+
+                if (requestsList) {
+
+                    requestsList.innerHTML = `
+                        <div class="message error"
+                             style="display:block;">
+
+                            <strong>
+                                Unable to Load Requests
+                            </strong>
+
+                            <p style="margin-top:6px;">
+                                We could not load your request
+                                history. Please refresh the page
+                                and try again.
+                            </p>
+
+                            <p style="
+                                font-size:12px;
+                                opacity:.75;
+                                margin-top:8px;
+                            ">
+                                ${escapeHtml(
+                                    error.message ||
+                                    "Unknown error"
+                                )}
+                            </p>
+
+                        </div>
+                    `;
+
+                }
+
+            }
+
         }
-
-        if (requestsLoading) {
-            requestsLoading.style.display = "none";
-        }
-
-        if (requestsContent) {
-            requestsContent.style.display = "block";
-        }
-
-    }
-    catch (error) {
-
-        console.error(
-            "Failed to load request history:",
-            error
-        );
-
-        if (requestsLoading) {
-            requestsLoading.style.display = "none";
-        }
-
-        if (requestsContent) {
-            requestsContent.style.display = "block";
-        }
-
-        if (requestsList) {
-
-            requestsList.innerHTML = `
-                <div class="error-state">
-
-                    <div class="empty-icon">
-                        ⚠️
-                    </div>
-
-                    <h3>
-                        Unable to Load Requests
-                    </h3>
-
-                    <p>
-                        We could not load your request
-                        history. Please refresh the page
-                        and try again.
-                    </p>
-
-                    <p style="
-                        font-size:12px;
-                        opacity:.7;
-                        margin-top:8px;
-                    ">
-                        ${escapeHtml(
-                            error.message ||
-                            "Unknown error"
-                        )}
-                    </p>
-
-                </div>
-            `;
-        }
-    }
-}
 
 /*
 ========================================
@@ -6568,6 +7173,45 @@ editTeamBtn.addEventListener(
 
                     let logoUrl = null;
 
+                    // ========================================
+                    // UPLOAD TEAM LOGO IF CHANGED
+                    // ========================================
+
+                    if (logoFile) {
+
+                        try {
+
+                            submitButton.disabled = true;
+                            submitButton.textContent = "Uploading Logo...";
+
+                            logoUrl =
+                                await uploadManagementImage(
+                                    logoFile,
+                                    "team-logos",
+                                    "team-" + Number(teamId)
+                                );
+
+                        }
+                        catch (uploadError) {
+
+                            console.error(
+                                "Edit team logo upload error:",
+                                uploadError
+                            );
+
+                            submitButton.disabled = false;
+                            submitButton.textContent = "Submit Team Edit Request";
+
+                            showMessage(
+                                "Unable to upload team logo: " +
+                                (uploadError.message || "Unknown error"),
+                                "error"
+                            );
+
+                            return;
+                        }
+                    }
+
 
                     const reason =
                         document
@@ -7139,3 +7783,4 @@ editTeamBtn.addEventListener(
 </body>
 
 </html>
+```
