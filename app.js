@@ -532,9 +532,18 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
+        // ========================================
+        // LOAD ALL FIXTURES FIRST
+        // ========================================
+        //
+        // We do NOT depend only on fixture.status.
+        // A fixture is considered played when a
+        // corresponding result actually exists.
+        // ========================================
+
         const {
-            data: fixtures,
-            error
+            data: allFixtures,
+            error: fixtureError
         } =
             await supabaseClient
                 .from("fixtures")
@@ -567,11 +576,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     "competition_id",
                     competitionIds
                 )
-                .not(
-                    "status",
-                    "in",
-                    "(Completed,Cancelled)"
-                )
                 .order(
                     "match_date",
                     {
@@ -586,11 +590,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
 
 
-        if (error) {
+        if (fixtureError) {
 
             console.error(
                 "FIXTURES ERROR:",
-                error
+                fixtureError
             );
 
             fixturesContainer.innerHTML = `
@@ -611,6 +615,159 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
+        // ========================================
+        // LOAD RESULTS FOR THESE FIXTURES
+        // ========================================
+
+        const upcomingFixtureIds =
+            (allFixtures || []).map(
+                function (fixture) {
+                    return fixture.id;
+                }
+            );
+
+
+        let fixtureResults = [];
+
+
+        if (
+            upcomingFixtureIds.length > 0
+        ) {
+
+            const {
+                data: resultRows,
+                error: resultError
+            } =
+                await supabaseClient
+                    .from("results")
+                    .select(`
+                        id,
+                        fixture_id,
+                        home_score,
+                        away_score
+                    `)
+                    .in(
+                        "fixture_id",
+                        upcomingFixtureIds
+                    );
+
+
+            if (resultError) {
+
+                console.error(
+                    "FIXTURE RESULTS ERROR:",
+                    resultError
+                );
+
+                fixturesContainer.innerHTML = `
+                    <div
+                        class="card"
+                        style="text-align:center;"
+                    >
+                        <h3>
+                            ⚠️ Unable to Load Fixtures
+                        </h3>
+
+                        <p>
+                            Please try again later.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            fixtureResults =
+                resultRows || [];
+        }
+
+
+        const resultFixtureIds =
+            new Set(
+                fixtureResults.map(
+                    function (result) {
+                        return Number(
+                            result.fixture_id
+                        );
+                    }
+                )
+            );
+
+
+        // ========================================
+        // TODAY
+        // ========================================
+
+        const today =
+            new Date();
+
+        today.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+
+        // ========================================
+        // FILTER UPCOMING FIXTURES
+        // ========================================
+
+        const fixtures =
+            (allFixtures || [])
+                .filter(
+                    function (fixture) {
+
+                        const status =
+                            String(
+                                fixture.status || ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        const alreadyPlayed =
+                            resultFixtureIds.has(
+                                Number(fixture.id)
+                            ) ||
+                            status === "completed" ||
+                            status === "cancelled";
+
+
+                        if (alreadyPlayed) {
+                            return false;
+                        }
+
+
+                        if (!fixture.match_date) {
+                            return true;
+                        }
+
+
+                        const matchDate =
+                            new Date(
+                                String(
+                                    fixture.match_date
+                                ) +
+                                "T00:00:00"
+                            );
+
+
+                        return (
+                            !Number.isNaN(
+                                matchDate.getTime()
+                            ) &&
+                            matchDate >= today
+                        );
+                    }
+                );
+
+
+        // ========================================
+        // NO UPCOMING FIXTURES
+        // ========================================
 
         if (
             !fixtures ||
@@ -637,8 +794,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        fixturesContainer.innerHTML = "";
+        fixturesContainer.innerHTML =
+            "";
 
+
+        // ========================================
+        // DISPLAY FIXTURES
+        // ========================================
 
         fixtures.forEach(
             function (fixture) {
@@ -656,7 +818,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 const card =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
 
                 card.className =
                     "fixture-card";
@@ -842,6 +1006,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Friendly
     //
     // Newest match first.
+    //
+    // Goal scorers are loaded directly from
+    // goal_scorers using result_id.
     // ========================================
 
     async function loadResults(
@@ -919,62 +1086,52 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
+        // ========================================
+        // LOAD RESULT FIXTURES FIRST
+        // ========================================
+
         const {
-            data: results,
-            error
+            data: resultFixtures,
+            error: fixtureError
         } =
             await supabaseClient
-                .from("results")
+                .from("fixtures")
                 .select(`
                     id,
-                    fixture_id,
-                    home_score,
-                    away_score,
-                    match_report,
-                    created_at,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    venue,
+                    matchday,
+                    status,
 
-                    fixture:fixtures (
+                    home_team:teams!fixtures_home_team_id_fkey (
                         id,
-                        competition_id,
-                        home_team_id,
-                        away_team_id,
-                        match_date,
-                        kick_off,
-                        venue,
-                        matchday,
+                        name,
+                        short_name,
+                        logo_url
+                    ),
 
-                        home_team:teams!fixtures_home_team_id_fkey (
-                            id,
-                            name,
-                            short_name,
-                            logo_url
-                        ),
-
-                        away_team:teams!fixtures_away_team_id_fkey (
-                            id,
-                            name,
-                            short_name,
-                            logo_url
-                        )
+                    away_team:teams!fixtures_away_team_id_fkey (
+                        id,
+                        name,
+                        short_name,
+                        logo_url
                     )
                 `)
                 .in(
-                    "fixture.competition_id",
+                    "competition_id",
                     competitionIds
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
                 );
 
 
-        if (error) {
+        if (fixtureError) {
 
             console.error(
-                "RESULTS ERROR:",
-                error
+                "RESULT FIXTURES ERROR:",
+                fixtureError
             );
 
             resultsContainer.innerHTML = `
@@ -995,6 +1152,120 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+
+        const fixtureIds =
+            (resultFixtures || []).map(
+                function (fixture) {
+                    return fixture.id;
+                }
+            );
+
+
+        let results = [];
+
+
+        // ========================================
+        // LOAD RESULTS SEPARATELY
+        // ========================================
+
+        if (
+            fixtureIds.length > 0
+        ) {
+
+            const {
+                data: resultRows,
+                error: resultError
+            } =
+                await supabaseClient
+                    .from("results")
+                    .select(`
+                        id,
+                        fixture_id,
+                        home_score,
+                        away_score,
+                        match_report,
+                        created_at
+                    `)
+                    .in(
+                        "fixture_id",
+                        fixtureIds
+                    );
+
+
+            if (resultError) {
+
+                console.error(
+                    "RESULTS ERROR:",
+                    resultError
+                );
+
+                resultsContainer.innerHTML = `
+                    <div
+                        class="card"
+                        style="text-align:center;"
+                    >
+                        <h3>
+                            ⚠️ Unable to Load Results
+                        </h3>
+
+                        <p>
+                            Please try again later.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            // ========================================
+            // CREATE FIXTURE MAP
+            // ========================================
+
+            const fixtureMap = {};
+
+
+            (resultFixtures || []).forEach(
+                function (fixture) {
+
+                    fixtureMap[
+                        fixture.id
+                    ] = fixture;
+                }
+            );
+
+
+            // ========================================
+            // COMBINE RESULTS + FIXTURES
+            // ========================================
+
+            results =
+                (resultRows || [])
+                    .map(
+                        function (result) {
+
+                            return {
+                                ...result,
+
+                                fixture:
+                                    fixtureMap[
+                                        result.fixture_id
+                                    ] || null
+                            };
+                        }
+                    )
+                    .filter(
+                        function (result) {
+
+                            return !!result.fixture;
+                        }
+                    );
+        }
+
+
+        // ========================================
+        // NO RESULTS
+        // ========================================
 
         if (
             !results ||
@@ -1020,7 +1291,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        resultsContainer.innerHTML = "";
+        // ========================================
+        // CLEAR RESULTS CONTAINER
+        // ========================================
+
+        resultsContainer.innerHTML =
+            "";
 
 
         // ========================================
@@ -1076,6 +1352,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
 
 
+        // ========================================
+        // DISPLAY EACH RESULT
+        // ========================================
+
         for (
             const result of validResults
         ) {
@@ -1089,6 +1369,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     fixture.competition_id
                 ] || null;
 
+
+            // ========================================
+            // LOAD GOAL SCORERS
+            // ========================================
 
             const {
                 data: goals,
@@ -1130,6 +1414,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
+            // ========================================
+            // GROUP GOALS BY PLAYER
+            // ========================================
+
             const groupedGoals = {};
 
 
@@ -1138,6 +1426,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     const player =
                         goal.players;
+
 
                     if (!player) {
                         return;
@@ -1181,13 +1470,20 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         groupedGoals[key]
                             .minutes
-                            .push(minuteText);
+                            .push(
+                                minuteText
+                            );
                     }
                 }
             );
 
 
-            let goalHtml = "";
+            // ========================================
+            // CREATE GOAL HTML
+            // ========================================
+
+            let goalHtml =
+                "";
 
 
             Object.values(
@@ -1196,7 +1492,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 function (player) {
 
                     const minutes =
-                        player.minutes.join(", ");
+                        player.minutes.join(
+                            ", "
+                        );
 
 
                     goalHtml += `
@@ -1247,8 +1545,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
+            // ========================================
+            // CREATE RESULT CARD
+            // ========================================
+
             const resultCard =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             resultCard.className =
@@ -1505,15 +1809,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     // LOAD LEAGUE TABLE
     // ========================================
     //
-    // VERY IMPORTANT:
-    //
     // ONLY League competition fixtures enter
     // the league table.
     //
     // Cup and Friendly matches are excluded.
-    //
-    // BUT Form is calculated separately from
-    // ALL competitions.
     // ========================================
 
     async function loadLeagueTable(
@@ -1595,7 +1894,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const {
             data: fixtures,
-            error
+            error: fixtureError
         } =
             await supabaseClient
                 .from("fixtures")
@@ -1618,29 +1917,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                         id,
                         name,
                         short_name
-                    ),
-
-                    results (
-                        id,
-                        home_score,
-                        away_score
                     )
                 `)
                 .in(
                     "competition_id",
                     leagueCompetitionIds
-                )
-                .eq(
-                    "status",
-                    "Completed"
                 );
 
 
-        if (error) {
+        if (fixtureError) {
 
             console.error(
                 "TABLE FIXTURES ERROR:",
-                error
+                fixtureError
             );
 
             leagueTableBody.innerHTML = `
@@ -1659,13 +1948,126 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // ========================================
+        // LOAD TABLE RESULTS SEPARATELY
+        // ========================================
+
+        const tableFixtureIds =
+            (fixtures || []).map(
+                function (fixture) {
+                    return fixture.id;
+                }
+            );
+
+
+        let tableResults = [];
+
+
+        if (
+            tableFixtureIds.length > 0
+        ) {
+
+            const {
+                data: resultRows,
+                error: resultError
+            } =
+                await supabaseClient
+                    .from("results")
+                    .select(`
+                        id,
+                        fixture_id,
+                        home_score,
+                        away_score
+                    `)
+                    .in(
+                        "fixture_id",
+                        tableFixtureIds
+                    );
+
+
+            if (resultError) {
+
+                console.error(
+                    "TABLE RESULTS ERROR:",
+                    resultError
+                );
+
+                leagueTableBody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="11"
+                            style="text-align:center;"
+                        >
+                            Unable to load table results.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            tableResults =
+                resultRows || [];
+        }
+
+
+        const tableResultsByFixture =
+            {};
+
+
+        tableResults.forEach(
+            function (result) {
+
+                tableResultsByFixture[
+                    result.fixture_id
+                ] = result;
+            }
+        );
+
+
+        (fixtures || []).forEach(
+            function (fixture) {
+
+                const result =
+                    tableResultsByFixture[
+                        fixture.id
+                    ] || null;
+
+                fixture.results =
+                    result
+                        ? [result]
+                        : [];
+            }
+        );
+
+
+        // ========================================
+        // A FIXTURE IS COMPLETED WHEN A RESULT
+        // EXISTS.
+        // ========================================
+
+        const completedFixtures =
+            (fixtures || [])
+                .filter(
+                    function (fixture) {
+
+                        return !!(
+                            tableResultsByFixture[
+                                fixture.id
+                            ]
+                        );
+                    }
+                );
+
+
+        // ========================================
         // BUILD LEAGUE TABLE TEAMS
         // ========================================
 
         const teams = {};
 
 
-        (fixtures || []).forEach(
+        completedFixtures.forEach(
             function (fixture) {
 
                 const home =
@@ -1879,285 +2281,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     team.ga;
             }
         );
-
-
-         // ========================================
-// LOAD FORM FROM ALL COMPETITIONS
-// ========================================
-//
-// League + Cup + Friendly
-//
-// ONLY completed matches from the
-// CURRENT SEASON are considered.
-//
-// The league table itself remains
-// League-only.
-//
-// Form is calculated independently
-// from the league statistics.
-// ========================================
-
-const {
-    data: allCompletedFixtures,
-    error: formError
-} =
-    await supabaseClient
-        .from("fixtures")
-        .select(`
-            id,
-            competition_id,
-            home_team_id,
-            away_team_id,
-            match_date,
-            kick_off,
-            status,
-
-            home_team:teams!fixtures_home_team_id_fkey (
-                id,
-                name
-            ),
-
-            away_team:teams!fixtures_away_team_id_fkey (
-                id,
-                name
-            ),
-
-            competition:competitions (
-                id,
-                name,
-                competition_type,
-                season
-            ),
-
-            results (
-                id,
-                home_score,
-                away_score
-            )
-        `)
-        .eq(
-            "status",
-            "Completed"
-        );
-
-if (formError) {
-
-    console.error(
-        "FORM FIXTURES ERROR:",
-        formError
-    );
-
-} else {
-
-    const currentSeason =
-        String(
-            competition.season ?? ""
-        ).trim();
-
-    (allCompletedFixtures || [])
-        .forEach(
-            function (fixture) {
-
-                const fixtureCompetition =
-                    fixture.competition;
-
-                if (!fixtureCompetition) {
-                    return;
-                }
-
-                const fixtureSeason =
-                    String(
-                        fixtureCompetition.season ?? ""
-                    ).trim();
-
-                if (
-                    fixtureSeason !==
-                    currentSeason
-                ) {
-                    return;
-                }
-
-                const competitionType =
-                    String(
-                        fixtureCompetition.competition_type ||
-                        ""
-                    )
-                        .trim()
-                        .toLowerCase();
-
-                if (
-                    ![
-                        "league",
-                        "cup",
-                        "friendly"
-                    ].includes(
-                        competitionType
-                    )
-                ) {
-                    return;
-                }
-
-                const home =
-                    fixture.home_team;
-
-                const away =
-                    fixture.away_team;
-
-                if (
-                    !home ||
-                    !away
-                ) {
-                    return;
-                }
-
-                const result =
-                    Array.isArray(
-                        fixture.results
-                    )
-                        ? fixture.results[0]
-                        : fixture.results;
-
-                if (!result) {
-                    return;
-                }
-
-                const homeScore =
-                    Number(
-                        result.home_score ?? 0
-                    );
-
-                const awayScore =
-                    Number(
-                        result.away_score ?? 0
-                    );
-
-                function addFormResult(
-                    teamId,
-                    resultLetter
-                ) {
-
-                    if (
-                        !teams[teamId]
-                    ) {
-                        return;
-                    }
-
-                    teams[teamId]
-                        .form
-                        .push({
-                            result:
-                                resultLetter,
-                            date:
-                                fixture.match_date,
-                            time:
-                                fixture.kick_off,
-                            competition:
-                                fixtureCompetition.name ||
-                                "Competition",
-                            competitionType:
-                                fixtureCompetition
-                                    .competition_type ||
-                                ""
-                        });
-                }
-
-                if (
-                    homeScore >
-                    awayScore
-                ) {
-
-                    addFormResult(
-                        home.id,
-                        "W"
-                    );
-
-                    addFormResult(
-                        away.id,
-                        "L"
-                    );
-
-                } else if (
-                    homeScore <
-                    awayScore
-                ) {
-
-                    addFormResult(
-                        home.id,
-                        "L"
-                    );
-
-                    addFormResult(
-                        away.id,
-                        "W"
-                    );
-
-                } else {
-
-                    addFormResult(
-                        home.id,
-                        "D"
-                    );
-
-                    addFormResult(
-                        away.id,
-                        "D"
-                    );
-                }
-            }
-        );
-}
-// ========================================
-// SORT + LIMIT FORM TO LAST FIVE
-// ========================================
-
-Object.values(
-    teams
-).forEach(
-    function (team) {
-
-        team.form =
-            team.form
-                .sort(
-                    function (a, b) {
-
-                        const dateCompare =
-                            String(
-                                b.date || ""
-                            ).localeCompare(
-                                String(
-                                    a.date || ""
-                                )
-                            );
-
-                        if (
-                            dateCompare !== 0
-                        ) {
-                            return dateCompare;
-                        }
-
-                        return String(
-                            b.time || ""
-                        ).localeCompare(
-                            String(
-                                a.time || ""
-                            )
-                        );
-                    }
-                )
-                .slice(
-                    0,
-                    5
-                );
-    }
-);
-
-        // ========================================
-        // SORT LEAGUE TABLE
-        // ========================================
-
-        const sortedTeams =
-            Object.values(teams)
-                .sort(
+                        .sort(
                     function (a, b) {
 
                         // 1. POINTS
@@ -2308,41 +2432,41 @@ Object.values(
 
 
                                     let title =
-    "Win";
+                                        "Win";
 
 
-if (
-    item.result ===
-    "D"
-) {
+                                    if (
+                                        item.result ===
+                                        "D"
+                                    ) {
 
-    title =
-        "Draw";
-}
-
-
-if (
-    item.result ===
-    "L"
-) {
-
-    title =
-        "Loss";
-}
+                                        title =
+                                            "Draw";
+                                    }
 
 
-if (
-    item.competition
-) {
+                                    if (
+                                        item.result ===
+                                        "L"
+                                    ) {
 
-    title +=
-        " — " +
-        item.competition +
-        " — " +
-        formatDate(
-            item.date
-        );
-}
+                                        title =
+                                            "Loss";
+                                    }
+
+
+                                    if (
+                                        item.competition
+                                    ) {
+
+                                        title +=
+                                            " — " +
+                                            item.competition +
+                                            " — " +
+                                            formatDate(
+                                                item.date
+                                            );
+                                    }
 
 
                                     return `
@@ -3527,54 +3651,45 @@ if (
                         .get("teamName")
                         ?.trim();
 
-
                 const shortName =
                     formData
                         .get("shortName")
                         ?.trim();
-
 
                 const teamLocation =
                     formData
                         .get("teamLocation")
                         ?.trim();
 
-
                 const coachName =
                     formData
                         .get("coachName")
                         ?.trim();
-
 
                 const captainName =
                     formData
                         .get("captainName")
                         ?.trim();
 
-
                 const viceCaptainName =
                     formData
                         .get("viceCaptainName")
                         ?.trim();
-
 
                 const disciplineMasterName =
                     formData
                         .get("disciplineMasterName")
                         ?.trim();
 
-
                 const teamPhone =
                     formData
                         .get("teamPhone")
                         ?.trim();
 
-
                 const teamEmail =
                     formData
                         .get("teamEmail")
                         ?.trim();
-
 
                 const teamLogoFile =
                     teamLogoInput?.files?.[0] ||
