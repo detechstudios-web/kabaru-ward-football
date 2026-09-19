@@ -384,60 +384,46 @@ document.addEventListener("DOMContentLoaded", async function () {
     // LOAD ALL CURRENT-SEASON COMPETITIONS
     // ========================================
 
-    async function loadAllCompetitions(
-        season
-    ) {
+    async function loadAllCompetitions(season) {
+    try {
+        let query = supabaseClient
+            .from("competitions")
+            .select(`
+                id,
+                name,
+                competition_type,
+                season,
+                status,
+                created_at
+            `)
+            .order("created_at", {
+                ascending: false
+            });
 
-        let query =
-            supabaseClient
-                .from("competitions")
-                .select(`
-                    id,
-                    name,
-                    competition_type,
-                    season,
-                    status
-                `);
-
-        if (
-            season !== null &&
-            season !== undefined &&
-            season !== ""
-        ) {
-
-            query =
-                query.eq(
-                    "season",
-                    season
-                );
+        if (season !== undefined && season !== null && season !== "") {
+            query = query.eq("season", season);
         }
 
         const {
             data,
             error
-        } =
-            await query.order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
+        } = await query;
 
         if (error) {
-
-            console.error(
-                "ALL COMPETITIONS ERROR:",
-                error
-            );
-
-            return [];
+            throw error;
         }
 
-
         return data || [];
-    }
 
+    } catch (error) {
+        console.error(
+            "LOAD ALL COMPETITIONS ERROR:",
+            error
+        );
+
+        return [];
+    }
+}
 
     // ========================================
     // LOAD UPCOMING FIXTURES
