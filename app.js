@@ -3052,139 +3052,358 @@ document.addEventListener("DOMContentLoaded", async function () {
     // one competition.
     // ========================================
 
-    async function loadPlayerLeaders() {
+    // ========================================
+// LOAD PLAYER LEADERS
+// ========================================
+
+async function loadPlayerLeaders() {
+
+    if (
+        !topScorersEl &&
+        !topAssistsEl &&
+        !topAppearancesEl &&
+        !yellowCardsEl &&
+        !redCardsEl
+    ) {
+        return;
+    }
+
+    try {
+
+        // ========================================
+        // DETERMINE CURRENT SEASON
+        // ========================================
+
+        const season =
+            currentCompetition &&
+            currentCompetition.season !== undefined &&
+            currentCompetition.season !== null
+                ? currentCompetition.season
+                : new Date().getFullYear();
+
+
+        // ========================================
+        // LOAD COMPETITIONS FOR CURRENT SEASON
+        // ========================================
+
+        const {
+            data: competitions,
+            error: competitionsError
+        } = await supabaseClient
+            .from("competitions")
+            .select(`
+                id,
+                name,
+                competition_type,
+                season,
+                status
+            `)
+            .eq(
+                "season",
+                season
+            );
+
+        if (competitionsError) {
+            throw competitionsError;
+        }
+
+        const competitionRows =
+            competitions || [];
+
+
+        // ========================================
+        // GET COMPETITION IDS
+        // ========================================
+
+        const competitionIds =
+            competitionRows
+                .map(function (competition) {
+                    return competition.id;
+                })
+                .filter(function (id) {
+                    return (
+                        id !== null &&
+                        id !== undefined
+                    );
+                });
+
 
         if (
-            !scorerContainer &&
-            !assistContainer &&
-            !appearanceContainer &&
-            !yellowContainer &&
-            !redContainer
+            competitionIds.length === 0
         ) {
+
+            if (topScorersEl) {
+                topScorersEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (topAssistsEl) {
+                topAssistsEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (topAppearancesEl) {
+                topAppearancesEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (yellowCardsEl) {
+                yellowCardsEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (redCardsEl) {
+                redCardsEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
             return;
         }
 
+
+        // ========================================
+        // LOAD CURRENT-SEASON FIXTURES
+        // ========================================
+
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                status
+            `)
+            .in(
+                "competition_id",
+                competitionIds
+            );
+
+        if (fixturesError) {
+            throw fixturesError;
+        }
+
+        const fixtureRows =
+            fixtures || [];
+
+
+        const fixtureIds =
+            fixtureRows
+                .map(function (fixture) {
+                    return fixture.id;
+                })
+                .filter(function (id) {
+                    return (
+                        id !== null &&
+                        id !== undefined
+                    );
+                });
+
+
+        if (
+            fixtureIds.length === 0
+        ) {
+
+            if (topScorersEl) {
+                topScorersEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (topAssistsEl) {
+                topAssistsEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (topAppearancesEl) {
+                topAppearancesEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (yellowCardsEl) {
+                yellowCardsEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            if (redCardsEl) {
+                redCardsEl.innerHTML =
+                    `<div class="empty-message">
+                        No player statistics available.
+                    </div>`;
+            }
+
+            return;
+        }
+
+
+        // ========================================
+        // LOAD PLAYER MATCH STATISTICS
+        // ========================================
 
         const {
             data: stats,
-            error
-        } =
-            await supabaseClient
-                .from("player_match_stats")
-                .select(`
-                    player_id,
-                    appearances,
-                    goals,
-                    assists,
-                    yellow_cards,
-                    red_cards,
-
-                    players (
-                        id,
-                        full_name,
-                        jersey_number,
-                        team_id,
-
-                        teams (
-                            id,
-                            name
-                        )
-                    )
-                `);
-
-
-        if (error) {
-
-            console.error(
-                "PLAYER STATS ERROR:",
-                error
+            error: statsError
+        } = await supabaseClient
+            .from("player_match_stats")
+            .select(`
+                id,
+                fixture_id,
+                player_id,
+                appearances,
+                goals,
+                assists,
+                yellow_cards,
+                red_cards
+            `)
+            .in(
+                "fixture_id",
+                fixtureIds
             );
+
+        if (statsError) {
+            throw statsError;
+        }
+
+        const statRows =
+            stats || [];
+
+
+        // ========================================
+        // NO STATISTICS
+        // ========================================
+
+        if (
+            statRows.length === 0
+        ) {
+
+            const emptyMessage = `
+                <div class="empty-message">
+                    No player statistics available yet.
+                </div>
+            `;
+
+            if (topScorersEl) {
+                topScorersEl.innerHTML =
+                    emptyMessage;
+            }
+
+            if (topAssistsEl) {
+                topAssistsEl.innerHTML =
+                    emptyMessage;
+            }
+
+            if (topAppearancesEl) {
+                topAppearancesEl.innerHTML =
+                    emptyMessage;
+            }
+
+            if (yellowCardsEl) {
+                yellowCardsEl.innerHTML =
+                    emptyMessage;
+            }
+
+            if (redCardsEl) {
+                redCardsEl.innerHTML =
+                    emptyMessage;
+            }
 
             return;
         }
 
 
-        const players = {};
+        // ========================================
+        // AGGREGATE PLAYER STATISTICS
+        // ========================================
+
+        const playerStats = {};
 
 
-        (stats || []).forEach(
+        statRows.forEach(
             function (stat) {
 
-                const player =
-                    stat.players;
-
-                if (!player) {
+                if (
+                    stat.player_id === null ||
+                    stat.player_id === undefined
+                ) {
                     return;
                 }
 
+                const playerId =
+                    String(
+                        stat.player_id
+                    );
+
 
                 if (
-                    !players[player.id]
+                    !playerStats[playerId]
                 ) {
 
-                    players[player.id] = {
+                    playerStats[playerId] = {
 
-                        id:
-                            player.id,
+                        player_id:
+                            stat.player_id,
 
-                        name:
-                            player.full_name,
+                        appearances: 0,
 
-                        jersey:
-                            player.jersey_number,
+                        goals: 0,
 
-                        team:
-                            player.teams?.name ||
-                            "Unknown Team",
+                        assists: 0,
 
-                        appearances:
-                            0,
+                        yellow_cards: 0,
 
-                        goals:
-                            0,
-
-                        assists:
-                            0,
-
-                        yellow:
-                            0,
-
-                        red:
-                            0
+                        red_cards: 0
                     };
                 }
 
 
-                players[player.id]
+                playerStats[playerId]
                     .appearances +=
                     Number(
                         stat.appearances || 0
                     );
 
 
-                players[player.id]
+                playerStats[playerId]
                     .goals +=
                     Number(
                         stat.goals || 0
                     );
 
 
-                players[player.id]
+                playerStats[playerId]
                     .assists +=
                     Number(
                         stat.assists || 0
                     );
 
 
-                players[player.id]
-                    .yellow +=
+                playerStats[playerId]
+                    .yellow_cards +=
                     Number(
                         stat.yellow_cards || 0
                     );
 
 
-                players[player.id]
-                    .red +=
+                playerStats[playerId]
+                    .red_cards +=
                     Number(
                         stat.red_cards || 0
                     );
@@ -3192,341 +3411,661 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-        const playerList =
-            Object.values(players);
+        // ========================================
+        // LOAD PLAYER INFORMATION
+        // ========================================
+
+        const playerIds =
+            Object.values(
+                playerStats
+            )
+                .map(function (item) {
+                    return item.player_id;
+                })
+                .filter(function (id) {
+                    return (
+                        id !== null &&
+                        id !== undefined
+                    );
+                });
+
+
+        if (
+            playerIds.length === 0
+        ) {
+            return;
+        }
+
+
+        const {
+            data: players,
+            error: playersError
+        } = await supabaseClient
+            .from("players")
+            .select(`
+                id,
+                full_name,
+                photo_url,
+                team_id,
+                teams:team_id (
+                    id,
+                    name,
+                    short_name,
+                    logo_url
+                )
+            `)
+            .in(
+                "id",
+                playerIds
+            );
+
+        if (playersError) {
+            throw playersError;
+        }
+
+
+        const playerRows =
+            players || [];
+
+
+        const playerMap = {};
+
+
+        playerRows.forEach(
+            function (player) {
+
+                playerMap[
+                    String(player.id)
+                ] = player;
+            }
+        );
 
 
         // ========================================
-        // RENDER LEADER LIST
+        // COMBINE PLAYER + STATISTICS
         // ========================================
 
-        function renderLeaderList(
-            container,
-            list,
-            valueKey,
-            emptyText
+        const leaders =
+            Object.values(
+                playerStats
+            )
+                .map(function (statsItem) {
+
+                    const player =
+                        playerMap[
+                            String(
+                                statsItem.player_id
+                            )
+                        ];
+
+                    if (!player) {
+                        return null;
+                    }
+
+                    return {
+
+                        ...statsItem,
+
+                        id:
+                            player.id,
+
+                        full_name:
+                            player.full_name ||
+                            "Unknown Player",
+
+                        photo_url:
+                            player.photo_url ||
+                            "",
+
+                        team_id:
+                            player.team_id,
+
+                        team:
+                            player.teams ||
+                            null
+                    };
+                })
+                .filter(function (player) {
+                    return player !== null;
+                });
+
+
+        // ========================================
+        // SORT LEADERS
+        // ========================================
+
+        const topScorers =
+            [...leaders]
+                .sort(function (a, b) {
+
+                    if (
+                        b.goals !==
+                        a.goals
+                    ) {
+                        return (
+                            b.goals -
+                            a.goals
+                        );
+                    }
+
+                    return (
+                        b.appearances -
+                        a.appearances
+                    );
+                });
+
+
+        const topAssists =
+            [...leaders]
+                .sort(function (a, b) {
+
+                    if (
+                        b.assists !==
+                        a.assists
+                    ) {
+                        return (
+                            b.assists -
+                            a.assists
+                        );
+                    }
+
+                    return (
+                        b.appearances -
+                        a.appearances
+                    );
+                });
+
+
+        const topAppearances =
+            [...leaders]
+                .sort(function (a, b) {
+
+                    if (
+                        b.appearances !==
+                        a.appearances
+                    ) {
+                        return (
+                            b.appearances -
+                            a.appearances
+                        );
+                    }
+
+                    return (
+                        b.goals -
+                        a.goals
+                    );
+                });
+
+
+        const topYellowCards =
+            [...leaders]
+                .sort(function (a, b) {
+
+                    if (
+                        b.yellow_cards !==
+                        a.yellow_cards
+                    ) {
+                        return (
+                            b.yellow_cards -
+                            a.yellow_cards
+                        );
+                    }
+
+                    return (
+                        b.appearances -
+                        a.appearances
+                    );
+                });
+
+
+        const topRedCards =
+            [...leaders]
+                .sort(function (a, b) {
+
+                    if (
+                        b.red_cards !==
+                        a.red_cards
+                    ) {
+                        return (
+                            b.red_cards -
+                            a.red_cards
+                        );
+                    }
+
+                    return (
+                        b.appearances -
+                        a.appearances
+                    );
+                });
+
+
+        // ========================================
+        // RENDER PLAYER LEADER
+        // ========================================
+
+        function renderLeader(
+            player,
+            value,
+            label
         ) {
 
-            if (!container) {
-                return;
-            }
+            const photo =
+                player.photo_url
+                    ? `
+                        <img
+                            src="${escapeHtml(
+                                player.photo_url
+                            )}"
+                            alt="${escapeHtml(
+                                player.full_name
+                            )}"
+                            style="
+                                width:42px;
+                                height:42px;
+                                border-radius:50%;
+                                object-fit:cover;
+                                margin-right:10px;
+                            "
+                        >
+                    `
+                    : `
+                        <div
+                            style="
+                                width:42px;
+                                height:42px;
+                                border-radius:50%;
+                                margin-right:10px;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                background:#e8e8e8;
+                                font-size:20px;
+                            "
+                        >
+                            ⚽
+                        </div>
+                    `;
 
 
-            if (
-                list.length === 0 ||
-                list[0][valueKey] <= 0
-            ) {
+            const teamName =
+                player.team &&
+                player.team.name
+                    ? player.team.name
+                    : "";
 
-                container.innerHTML = `
+
+            return `
+                <div
+                    class="leader-player"
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between;
+                        gap:10px;
+                        padding:10px 0;
+                        border-bottom:1px solid #eee;
+                        cursor:pointer;
+                    "
+                    onclick="
+                        window.location.href=
+                        'player-profile.html?id=${encodeURIComponent(
+                            player.id
+                        )}'
+                    "
+                >
+
+                    <div
+                        style="
+                            display:flex;
+                            align-items:center;
+                            min-width:0;
+                            flex:1;
+                        "
+                    >
+
+                        ${photo}
+
+                        <div
+                            style="
+                                min-width:0;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    font-weight:700;
+                                    white-space:nowrap;
+                                    overflow:hidden;
+                                    text-overflow:ellipsis;
+                                "
+                            >
+                                ${escapeHtml(
+                                    player.full_name
+                                )}
+                            </div>
+
+                            ${
+                                teamName
+                                    ? `
+                                        <div
+                                            style="
+                                                font-size:12px;
+                                                color:#777;
+                                                margin-top:2px;
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                teamName
+                                            )}
+                                        </div>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
+                    </div>
+
+
                     <div
                         style="
                             text-align:center;
-                            color:#777;
-                            padding:15px;
+                            min-width:48px;
                         "
                     >
-                        ${emptyText}
+
+                        <strong
+                            style="
+                                display:block;
+                                font-size:20px;
+                            "
+                        >
+                            ${value}
+                        </strong>
+
+                        <span
+                            style="
+                                font-size:10px;
+                                color:#777;
+                            "
+                        >
+                            ${label}
+                        </span>
+
                     </div>
-                `;
 
-                return;
-            }
-
-
-            container.innerHTML = "";
-
-
-            list.slice(0, 10)
-                .forEach(
-                    function (
-                        player,
-                        index
-                    ) {
-
-                        const item =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        item.style.cssText = `
-                            display:flex;
-                            justify-content:space-between;
-                            align-items:center;
-                            gap:10px;
-                            padding:10px 0;
-                            border-bottom:1px solid #eee;
-                        `;
-
-
-                        item.innerHTML = `
-
-                            <div>
-
-                                <strong>
-                                    ${index + 1}.
-                                    ${escapeHtml(
-                                        player.name
-                                    )}
-                                </strong>
-
-                                <div
-                                    style="
-                                        font-size:12px;
-                                        color:#777;
-                                        margin-top:3px;
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        player.team
-                                    )}
-                                </div>
-
-                            </div>
-
-
-                            <strong
-                                style="
-                                    color:#075b35;
-                                    font-size:18px;
-                                "
-                            >
-                                ${player[valueKey]}
-                            </strong>
-
-                        `;
-
-
-                        item.style.cursor =
-                            "pointer";
-
-
-                        item.onclick =
-                            function () {
-
-                                window.location.href =
-                                    "player-profile.html?id=" +
-                                    encodeURIComponent(
-                                        player.id
-                                    );
-                            };
-
-
-                        container.appendChild(
-                            item
-                        );
-                    }
-                );
+                </div>
+            `;
         }
 
 
         // ========================================
-        // SORT SCORERS
+        // RENDER TOP SCORERS
         // ========================================
 
-        const scorers =
-            [...playerList]
-                .sort(
-                    function (a, b) {
+        if (topScorersEl) {
 
-                        if (
-                            b.goals !==
-                            a.goals
-                        ) {
-
-                            return (
-                                b.goals -
-                                a.goals
-                            );
-                        }
-
-
-                        if (
-                            b.assists !==
-                            a.assists
-                        ) {
-
-                            return (
-                                b.assists -
-                                a.assists
-                            );
-                        }
-
-
-                        return a.name.localeCompare(
-                            b.name
+            const scorers =
+                topScorers
+                    .filter(function (player) {
+                        return (
+                            player.goals > 0
                         );
-                    }
-                );
+                    })
+                    .slice(0, 5);
+
+
+            if (
+                scorers.length === 0
+            ) {
+
+                topScorersEl.innerHTML = `
+                    <div class="empty-message">
+                        No goals recorded yet.
+                    </div>
+                `;
+
+            }
+            else {
+
+                topScorersEl.innerHTML =
+                    scorers
+                        .map(
+                            function (player) {
+                                return renderLeader(
+                                    player,
+                                    player.goals,
+                                    "Goals"
+                                );
+                            }
+                        )
+                        .join("");
+            }
+        }
 
 
         // ========================================
-        // SORT ASSISTS
+        // RENDER TOP ASSISTS
         // ========================================
 
-        const assists =
-            [...playerList]
-                .sort(
-                    function (a, b) {
+        if (topAssistsEl) {
 
-                        if (
-                            b.assists !==
-                            a.assists
-                        ) {
-
-                            return (
-                                b.assists -
-                                a.assists
-                            );
-                        }
-
-
-                        if (
-                            b.goals !==
-                            a.goals
-                        ) {
-
-                            return (
-                                b.goals -
-                                a.goals
-                            );
-                        }
-
-
-                        return a.name.localeCompare(
-                            b.name
+            const assists =
+                topAssists
+                    .filter(function (player) {
+                        return (
+                            player.assists > 0
                         );
-                    }
-                );
+                    })
+                    .slice(0, 5);
+
+
+            if (
+                assists.length === 0
+            ) {
+
+                topAssistsEl.innerHTML = `
+                    <div class="empty-message">
+                        No assists recorded yet.
+                    </div>
+                `;
+
+            }
+            else {
+
+                topAssistsEl.innerHTML =
+                    assists
+                        .map(
+                            function (player) {
+                                return renderLeader(
+                                    player,
+                                    player.assists,
+                                    "Assists"
+                                );
+                            }
+                        )
+                        .join("");
+            }
+        }
 
 
         // ========================================
-        // SORT APPEARANCES
+        // RENDER APPEARANCES
         // ========================================
 
-        const appearances =
-            [...playerList]
-                .sort(
-                    function (a, b) {
+        if (topAppearancesEl) {
 
-                        if (
-                            b.appearances !==
-                            a.appearances
-                        ) {
-
-                            return (
-                                b.appearances -
-                                a.appearances
-                            );
-                        }
-
-
-                        return a.name.localeCompare(
-                            b.name
+            const appearances =
+                topAppearances
+                    .filter(function (player) {
+                        return (
+                            player.appearances > 0
                         );
-                    }
-                );
+                    })
+                    .slice(0, 5);
+
+
+            if (
+                appearances.length === 0
+            ) {
+
+                topAppearancesEl.innerHTML = `
+                    <div class="empty-message">
+                        No appearances recorded yet.
+                    </div>
+                `;
+
+            }
+            else {
+
+                topAppearancesEl.innerHTML =
+                    appearances
+                        .map(
+                            function (player) {
+                                return renderLeader(
+                                    player,
+                                    player.appearances,
+                                    "Apps"
+                                );
+                            }
+                        )
+                        .join("");
+            }
+        }
 
 
         // ========================================
-        // SORT YELLOW CARDS
+        // RENDER YELLOW CARDS
         // ========================================
 
-        const yellow =
-            [...playerList]
-                .sort(
-                    function (a, b) {
+        if (yellowCardsEl) {
 
-                        if (
-                            b.yellow !==
-                            a.yellow
-                        ) {
-
-                            return (
-                                b.yellow -
-                                a.yellow
-                            );
-                        }
-
-
-                        return a.name.localeCompare(
-                            b.name
+            const yellowCards =
+                topYellowCards
+                    .filter(function (player) {
+                        return (
+                            player.yellow_cards > 0
                         );
-                    }
-                );
+                    })
+                    .slice(0, 5);
+
+
+            if (
+                yellowCards.length === 0
+            ) {
+
+                yellowCardsEl.innerHTML = `
+                    <div class="empty-message">
+                        No yellow cards recorded yet.
+                    </div>
+                `;
+
+            }
+            else {
+
+                yellowCardsEl.innerHTML =
+                    yellowCards
+                        .map(
+                            function (player) {
+                                return renderLeader(
+                                    player,
+                                    player.yellow_cards,
+                                    "Yellow"
+                                );
+                            }
+                        )
+                        .join("");
+            }
+        }
 
 
         // ========================================
-        // SORT RED CARDS
+        // RENDER RED CARDS
         // ========================================
 
-        const red =
-            [...playerList]
-                .sort(
-                    function (a, b) {
+        if (redCardsEl) {
 
-                        if (
-                            b.red !==
-                            a.red
-                        ) {
-
-                            return (
-                                b.red -
-                                a.red
-                            );
-                        }
-
-
-                        return a.name.localeCompare(
-                            b.name
+            const redCards =
+                topRedCards
+                    .filter(function (player) {
+                        return (
+                            player.red_cards > 0
                         );
-                    }
-                );
+                    })
+                    .slice(0, 5);
 
 
-        // ========================================
-        // DISPLAY LEADERS
-        // ========================================
+            if (
+                redCards.length === 0
+            ) {
 
-        renderLeaderList(
-            scorerContainer,
-            scorers,
-            "goals",
-            "No goals recorded yet."
+                redCardsEl.innerHTML = `
+                    <div class="empty-message">
+                        No red cards recorded yet.
+                    </div>
+                `;
+
+            }
+            else {
+
+                redCardsEl.innerHTML =
+                    redCards
+                        .map(
+                            function (player) {
+                                return renderLeader(
+                                    player,
+                                    player.red_cards,
+                                    "Red"
+                                );
+                            }
+                        )
+                        .join("");
+            }
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "LOAD PLAYER LEADERS ERROR:",
+            error
         );
 
 
-        renderLeaderList(
-            assistContainer,
-            assists,
-            "assists",
-            "No assists recorded yet."
-        );
+        const errorMessage = `
+            <div class="empty-message">
+                Unable to load player statistics.
+            </div>
+        `;
 
 
-        renderLeaderList(
-            appearanceContainer,
-            appearances,
-            "appearances",
-            "No appearances recorded yet."
-        );
+        if (topScorersEl) {
+            topScorersEl.innerHTML =
+                errorMessage;
+        }
 
+        if (topAssistsEl) {
+            topAssistsEl.innerHTML =
+                errorMessage;
+        }
 
-        renderLeaderList(
-            yellowContainer,
-            yellow,
-            "yellow",
-            "No yellow cards yet."
-        );
+        if (topAppearancesEl) {
+            topAppearancesEl.innerHTML =
+                errorMessage;
+        }
 
+        if (yellowCardsEl) {
+            yellowCardsEl.innerHTML =
+                errorMessage;
+        }
 
-        renderLeaderList(
-            redContainer,
-            red,
-            "red",
-            "No red cards yet."
-        );
+        if (redCardsEl) {
+            redCardsEl.innerHTML =
+                errorMessage;
+        }
     }
+}
+
 
 
     // ========================================
