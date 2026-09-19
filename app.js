@@ -437,386 +437,515 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Friendly
     // ========================================
 
-    async function loadFixtures(
-        competition
-    ) {
+    async function loadFixtures(competition) {
+    if (!upcomingFixturesEl) {
+        return;
+    }
 
-        if (!fixturesContainer) {
-            return;
+    upcomingFixturesEl.innerHTML = `
+        <div class="loading">
+            Loading fixtures...
+        </div>
+    `;
+
+    try {
+        // ========================================
+        // GET CURRENT SEASON
+        // ========================================
+
+        const season =
+            competition &&
+            competition.season !== undefined &&
+            competition.season !== null
+                ? competition.season
+                : new Date().getFullYear();
+
+        // ========================================
+        // LOAD ALL COMPETITIONS FOR THIS SEASON
+        // ========================================
+
+        const {
+            data: competitions,
+            error: competitionsError
+        } = await supabaseClient
+            .from("competitions")
+            .select(`
+                id,
+                name,
+                competition_type,
+                season,
+                status,
+                created_at
+            `)
+            .eq("season", season)
+            .order("created_at", {
+                ascending: false
+            });
+
+        if (competitionsError) {
+            throw competitionsError;
         }
 
-
-        if (!competition) {
-
-            fixturesContainer.innerHTML = `
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-                    <h3>
-                        ⚽ No Upcoming Fixtures
-                    </h3>
-
-                    <p>
-                        Fixtures will appear here once
-                        they are published.
-                    </p>
-                </div>
-            `;
-
-            return;
-        }
-
-
-        const competitions =
-            await loadAllCompetitions(
-                competition.season
-            );
-
+        const competitionRows =
+            competitions || [];
 
         const competitionIds =
-            competitions.map(
-                function (item) {
+            competitionRows
+                .map(function (item) {
                     return item.id;
-                }
-            );
+                })
+                .filter(function (id) {
+                    return id !== null &&
+                           id !== undefined;
+                });
 
+        // ========================================
+        // NO COMPETITIONS
+        // ========================================
 
-        if (
-            competitionIds.length === 0
-        ) {
-
-            fixturesContainer.innerHTML = `
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-                    <h3>
-                        ⚽ No Upcoming Fixtures
-                    </h3>
-
-                    <p>
-                        There are currently no upcoming
-                        fixtures.
-                    </p>
+        if (competitionIds.length === 0) {
+            upcomingFixturesEl.innerHTML = `
+                <div class="empty-message">
+                    No upcoming fixtures available.
                 </div>
             `;
-
             return;
         }
 
-
-        const competitionMap = {};
-
-
-        competitions.forEach(
-            function (item) {
-
-                competitionMap[item.id] =
-                    item;
-            }
-        );
-
+        // ========================================
+        // LOAD FIXTURES
+        // ========================================
 
         const {
             data: fixtures,
-            error
-        } =
-            await supabaseClient
-                .from("fixtures")
-                .select(`
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                venue,
+                matchday,
+                status,
+                home_team:home_team_id (
                     id,
-                    competition_id,
-                    home_team_id,
-                    away_team_id,
-                    match_date,
-                    kick_off,
-                    venue,
-                    matchday,
-                    status,
-
-                    home_team:teams!fixtures_home_team_id_fkey (
-                        id,
-                        name,
-                        short_name,
-                        logo_url
-                    ),
-
-                    away_team:teams!fixtures_away_team_id_fkey (
-                        id,
-                        name,
-                        short_name,
-                        logo_url
-                    )
-                `)
-                .in(
-                    "competition_id",
-                    competitionIds
+                    name,
+                    short_name,
+                    logo_url
+                ),
+                away_team:away_team_id (
+                    id,
+                    name,
+                    short_name,
+                    logo_url
                 )
-                .not(
-                    "status",
-                    "in",
-                    "(Completed,Cancelled)"
-                )
-                .order(
-                    "match_date",
-                    {
-                        ascending: true
-                    }
-                )
-                .order(
-                    "kick_off",
-                    {
-                        ascending: true
-                    }
-                );
-
-
-        if (error) {
-
-            console.error(
-                "FIXTURES ERROR:",
-                error
+            `)
+            .in(
+                "competition_id",
+                competitionIds
+            )
+            .not(
+                "status",
+                "in",
+                "(Completed,Cancelled)"
+            )
+            .order(
+                "match_date",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "kick_off",
+                {
+                    ascending: true
+                }
             );
 
-            fixturesContainer.innerHTML = `
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
-                    <h3>
-                        ⚠️ Unable to Load Fixtures
-                    </h3>
-
-                    <p>
-                        Please try again later.
-                    </p>
-                </div>
-            `;
-
-            return;
+        if (fixturesError) {
+            throw fixturesError;
         }
 
+        const upcomingFixtures =
+            fixtures || [];
+
+        // ========================================
+        // NO UPCOMING FIXTURES
+        // ========================================
 
         if (
-            !fixtures ||
-            fixtures.length === 0
+            upcomingFixtures.length === 0
         ) {
-
-            fixturesContainer.innerHTML = `
-                <div
-                    class="card"
-                    style="text-align:center;"
-                >
+            upcomingFixturesEl.innerHTML = `
+                <div class="empty-message">
+                    <div
+                        style="
+                            font-size:42px;
+                            margin-bottom:10px;
+                        "
+                    >
+                        📅
+                    </div>
                     <h3>
-                        ⚽ No Upcoming Fixtures
+                        No Upcoming Fixtures
                     </h3>
-
                     <p>
                         There are currently no upcoming
-                        fixtures for Kabaru Ward.
+                        matches scheduled.
                     </p>
                 </div>
             `;
-
             return;
         }
 
+        // ========================================
+        // COMPETITION LOOKUP
+        // ========================================
 
-        fixturesContainer.innerHTML = "";
+        const competitionMap = {};
 
+        competitionRows.forEach(
+            function (item) {
+                competitionMap[
+                    String(item.id)
+                ] = item;
+            }
+        );
 
-        fixtures.forEach(
+        // ========================================
+        // RENDER FIXTURES
+        // ========================================
+
+        upcomingFixturesEl.innerHTML = "";
+
+        upcomingFixtures.forEach(
             function (fixture) {
 
-                const home =
-                    fixture.home_team;
+                const homeTeam =
+                    fixture.home_team ||
+                    {};
 
-                const away =
-                    fixture.away_team;
+                const awayTeam =
+                    fixture.away_team ||
+                    {};
 
                 const fixtureCompetition =
                     competitionMap[
-                        fixture.competition_id
-                    ] || null;
+                        String(
+                            fixture.competition_id
+                        )
+                    ] || {};
 
+                const competitionType =
+                    getCompetitionType(
+                        fixtureCompetition
+                    );
+
+                const competitionLabel =
+                    getCompetitionLabel(
+                        fixtureCompetition
+                    );
+
+                const matchDate =
+                    formatDate(
+                        fixture.match_date
+                    );
+
+                const kickOff =
+                    formatTime(
+                        fixture.kick_off
+                    );
+
+                const venue =
+                    fixture.venue ||
+                    "Venue TBC";
+
+                const matchday =
+                    fixture.matchday !== null &&
+                    fixture.matchday !== undefined &&
+                    fixture.matchday !== ""
+                        ? `
+                            <div
+                                style="
+                                    font-size:13px;
+                                    color:#666;
+                                    margin-top:4px;
+                                "
+                            >
+                                Matchday
+                                ${escapeHtml(
+                                    fixture.matchday
+                                )}
+                            </div>
+                        `
+                        : "";
+
+                const homeLogo =
+                    homeTeam.logo_url
+                        ? `
+                            <img
+                                src="${escapeHtml(
+                                    homeTeam.logo_url
+                                )}"
+                                alt="${escapeHtml(
+                                    homeTeam.name ||
+                                    "Home Team"
+                                )} logo"
+                                style="
+                                    width:60px;
+                                    height:60px;
+                                    object-fit:contain;
+                                "
+                            >
+                        `
+                        : `
+                            <div
+                                style="
+                                    width:60px;
+                                    height:60px;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    font-size:34px;
+                                "
+                            >
+                                ⚽
+                            </div>
+                        `;
+
+                const awayLogo =
+                    awayTeam.logo_url
+                        ? `
+                            <img
+                                src="${escapeHtml(
+                                    awayTeam.logo_url
+                                )}"
+                                alt="${escapeHtml(
+                                    awayTeam.name ||
+                                    "Away Team"
+                                )} logo"
+                                style="
+                                    width:60px;
+                                    height:60px;
+                                    object-fit:contain;
+                                "
+                            >
+                        `
+                        : `
+                            <div
+                                style="
+                                    width:60px;
+                                    height:60px;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    font-size:34px;
+                                "
+                            >
+                                ⚽
+                            </div>
+                        `;
 
                 const card =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
 
                 card.className =
                     "fixture-card";
 
-
                 card.innerHTML = `
-
-                    <div class="fixture-top">
-
-                        <span>
+                    <div
+                        style="
+                            text-align:center;
+                            margin-bottom:15px;
+                        "
+                    >
+                        <div
+                            style="
+                                display:inline-block;
+                                padding:5px 12px;
+                                border-radius:20px;
+                                background:#e8f5e9;
+                                color:#075b35;
+                                font-size:12px;
+                                font-weight:700;
+                            "
+                        >
                             ${escapeHtml(
-                                fixture.matchday ||
-                                "Match"
+                                competitionLabel
                             )}
-                        </span>
+                        </div>
 
-                        <span>
-                            ${escapeHtml(
-                                fixture.status ||
-                                "Scheduled"
-                            )}
-                        </span>
-
+                        ${
+                            competitionType
+                                ? `
+                                    <div
+                                        style="
+                                            font-size:12px;
+                                            color:#777;
+                                            margin-top:4px;
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            competitionType
+                                        )}
+                                    </div>
+                                `
+                                : ""
+                        }
                     </div>
-
 
                     <div
                         style="
                             text-align:center;
-                            margin-top:8px;
-                            font-size:13px;
-                            font-weight:800;
-                            color:#075b35;
+                            margin-bottom:15px;
                         "
                     >
-                        ${escapeHtml(
-                            getCompetitionLabel(
-                                fixtureCompetition
-                            )
-                        )}
-                    </div>
-
-
-                    <div class="fixture-date">
-
-                        📅 ${formatDate(
-                            fixture.match_date
-                        )}
-
-                        &nbsp; • &nbsp;
-
-                        🕐 ${formatTime(
-                            fixture.kick_off
-                        )}
-
-                    </div>
-
-
-                    <div class="fixture-teams">
-
-                        <div class="fixture-team">
-
-                            ${
-                                home?.logo_url
-                                ? `
-                                    <img
-                                        src="${escapeHtml(
-                                            home.logo_url
-                                        )}"
-                                        alt="${escapeHtml(
-                                            getTeamName(home)
-                                        )}"
-                                        style="
-                                            width:55px;
-                                            height:55px;
-                                            object-fit:contain;
-                                            display:block;
-                                            margin:0 auto 8px;
-                                        "
-                                    >
-                                `
-                                : `
-                                    <div
-                                        style="
-                                            font-size:42px;
-                                            margin-bottom:8px;
-                                        "
-                                    >
-                                        ⚽
-                                    </div>
-                                `
-                            }
-
-                            <strong>
-                                ${escapeHtml(
-                                    getTeamName(home)
-                                )}
-                            </strong>
-
+                        <div
+                            style="
+                                font-weight:700;
+                                font-size:16px;
+                            "
+                        >
+                            ${escapeHtml(
+                                matchDate
+                            )}
                         </div>
 
+                        <div
+                            style="
+                                font-size:14px;
+                                color:#666;
+                                margin-top:4px;
+                            "
+                        >
+                            ${escapeHtml(
+                                kickOff
+                            )}
+                        </div>
 
-                        <div class="fixture-vs">
+                        <div
+                            style="
+                                font-size:13px;
+                                color:#777;
+                                margin-top:4px;
+                            "
+                        >
+                            📍 ${escapeHtml(
+                                venue
+                            )}
+                        </div>
+
+                        ${matchday}
+                    </div>
+
+                    <div
+                        style="
+                            display:grid;
+                            grid-template-columns:1fr auto 1fr;
+                            align-items:center;
+                            gap:12px;
+                        "
+                    >
+
+                        <div
+                            style="
+                                text-align:center;
+                            "
+                        >
+                            ${homeLogo}
+
+                            <div
+                                style="
+                                    font-weight:700;
+                                    margin-top:7px;
+                                "
+                            >
+                                ${escapeHtml(
+                                    getTeamName(
+                                        homeTeam
+                                    )
+                                )}
+                            </div>
+                        </div>
+
+                        <div
+                            style="
+                                font-weight:800;
+                                font-size:18px;
+                                color:#075b35;
+                            "
+                        >
                             VS
                         </div>
 
+                        <div
+                            style="
+                                text-align:center;
+                            "
+                        >
+                            ${awayLogo}
 
-                        <div class="fixture-team">
-
-                            ${
-                                away?.logo_url
-                                ? `
-                                    <img
-                                        src="${escapeHtml(
-                                            away.logo_url
-                                        )}"
-                                        alt="${escapeHtml(
-                                            getTeamName(away)
-                                        )}"
-                                        style="
-                                            width:55px;
-                                            height:55px;
-                                            object-fit:contain;
-                                            display:block;
-                                            margin:0 auto 8px;
-                                        "
-                                    >
-                                `
-                                : `
-                                    <div
-                                        style="
-                                            font-size:42px;
-                                            margin-bottom:8px;
-                                        "
-                                    >
-                                        ⚽
-                                    </div>
-                                `
-                            }
-
-                            <strong>
+                            <div
+                                style="
+                                    font-weight:700;
+                                    margin-top:7px;
+                                "
+                            >
                                 ${escapeHtml(
-                                    getTeamName(away)
+                                    getTeamName(
+                                        awayTeam
+                                    )
                                 )}
-                            </strong>
-
+                            </div>
                         </div>
 
                     </div>
-
-
-                    <div
-                        style="
-                            text-align:center;
-                            margin-top:12px;
-                            color:#666;
-                        "
-                    >
-                        📍 ${escapeHtml(
-                            fixture.venue ||
-                            "Venue TBC"
-                        )}
-                    </div>
                 `;
 
-
-                fixturesContainer.appendChild(
+                upcomingFixturesEl.appendChild(
                     card
                 );
             }
         );
+
+    } catch (error) {
+
+        console.error(
+            "LOAD FIXTURES ERROR:",
+            error
+        );
+
+        upcomingFixturesEl.innerHTML = `
+            <div class="empty-message">
+                <div
+                    style="
+                        font-size:40px;
+                        margin-bottom:10px;
+                    "
+                >
+                    ❌
+                </div>
+
+                <h3>
+                    Unable to Load Fixtures
+                </h3>
+
+                <p>
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </p>
+            </div>
+        `;
     }
-
-
+}
     // ========================================
     // LOAD RESULTS
     // ========================================
