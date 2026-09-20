@@ -41,7 +41,33 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const redContainer =
         document.getElementById("redCardsList");
+// ========================================
+// ELEMENT VARIABLE ALIASES
+// ========================================
 
+const upcomingFixturesEl =
+    fixturesContainer;
+
+const resultsEl =
+    resultsContainer;
+
+const leagueTableEl =
+    leagueTableBody;
+
+const topScorersEl =
+    scorerContainer;
+
+const topAssistsEl =
+    assistContainer;
+
+const topAppearancesEl =
+    appearanceContainer;
+
+const yellowCardsEl =
+    yellowContainer;
+
+const redCardsEl =
+    redContainer;
 
     // ========================================
     // HELPER: ESCAPE HTML
