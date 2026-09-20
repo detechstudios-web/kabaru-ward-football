@@ -1963,7 +1963,7 @@ const redCardsEl =
             </div>
         `;
     }
-}                                    </div>
+}                                    
                                 
 
 
