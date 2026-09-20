@@ -3082,7 +3082,7 @@ const redCardsEl =
 // LOAD PLAYER LEADERS
 // ========================================
 
-async function loadPlayerLeaders() {
+async function loadPlayerLeaders(competition) {
 
     if (
         !topScorersEl &&
@@ -5310,7 +5310,7 @@ async function loadPlayerLeaders() {
                 competition
             ),
 
-            loadPlayerLeaders()
+            loadPlayerLeaders(competition)
         ]);
 
     } catch (error) {
