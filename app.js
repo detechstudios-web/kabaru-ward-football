@@ -186,15 +186,15 @@ const redCardsEl =
             );
 
         if (type === "Friendly") {
-            return "ðŸ¤ Friendly";
+            return "\u00F0\u0178\u00A4\u009D Friendly";
         }
 
         if (type === "Cup") {
-            return "ðŸ† Cup";
+            return "\u00F0\u0178\u008F\u2020 Cup";
         }
 
         if (type === "League") {
-            return "âš½ League";
+            return "\u00E2\u0161\u00BD League";
         }
 
         return (
@@ -632,7 +632,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        ðŸ“…
+                        \u00F0\u0178\u201C\u2026
                     </div>
                     <h3>
                         No Upcoming Fixtures
@@ -757,7 +757,7 @@ const redCardsEl =
                                     font-size:34px;
                                 "
                             >
-                                âš½
+                                \u00E2\u0161\u00BD
                             </div>
                         `;
 
@@ -790,7 +790,7 @@ const redCardsEl =
                                     font-size:34px;
                                 "
                             >
-                                âš½
+                                \u00E2\u0161\u00BD
                             </div>
                         `;
 
@@ -880,7 +880,7 @@ const redCardsEl =
                                 margin-top:4px;
                             "
                         >
-                            ðŸ“ ${escapeHtml(
+                            \u00F0\u0178\u201C\u008D ${escapeHtml(
                                 venue
                             )}
                         </div>
@@ -973,7 +973,7 @@ const redCardsEl =
                         margin-bottom:10px;
                     "
                 >
-                    âŒ
+                    \u00E2\u009D\u0152
                 </div>
 
                 <h3>
@@ -1076,7 +1076,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        ðŸ“Š
+                        \u00F0\u0178\u201C\u0160
                     </div>
                     <h3>
                         No Results
@@ -1153,7 +1153,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        ðŸ“Š
+                        \u00F0\u0178\u201C\u0160
                     </div>
                     <h3>
                         No Completed Results
@@ -1309,7 +1309,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        ðŸ“Š
+                        \u00F0\u0178\u201C\u0160
                     </div>
                     <h3>
                         No Completed Results
@@ -1476,7 +1476,7 @@ const redCardsEl =
                         ) +
                         (
                             goal.is_penalty
-                                ? " âš½ Pen."
+                                ? " \u00E2\u0161\u00BD Pen."
                                 : ""
                         );
 
@@ -1554,7 +1554,7 @@ const redCardsEl =
                                 font-size:34px;
                             "
                         >
-                            âš½
+                            \u00E2\u0161\u00BD
                         </div>
                     `;
 
@@ -1587,7 +1587,7 @@ const redCardsEl =
                                 font-size:34px;
                             "
                         >
-                            âš½
+                            \u00E2\u0161\u00BD
                         </div>
                     `;
 
@@ -1612,7 +1612,7 @@ const redCardsEl =
                                     ) {
                                         return `
                                             <div>
-                                                âš½
+                                                \u00E2\u0161\u00BD
                                                 ${escapeHtml(
                                                     goal
                                                 )}
@@ -1642,7 +1642,7 @@ const redCardsEl =
                                     ) {
                                         return `
                                             <div>
-                                                âš½
+                                                \u00E2\u0161\u00BD
                                                 ${escapeHtml(
                                                     goal
                                                 )}
@@ -1786,7 +1786,7 @@ const redCardsEl =
                                         margin-top:4px;
                                     "
                                 >
-                                    ðŸ“
+                                    \u00F0\u0178\u201C\u008D
                                     ${escapeHtml(
                                         fixture.venue
                                     )}
@@ -1937,7 +1937,7 @@ const redCardsEl =
                         font-weight:700;
                     "
                 >
-                    ðŸ‘ï¸ View Match Details
+                    \u00F0\u0178\u2018\u0081\u00EF\u00B8\u008F View Match Details
                 </div>
             `;
 
@@ -1961,7 +1961,7 @@ const redCardsEl =
                         margin-bottom:10px;
                     "
                 >
-                    âŒ
+                    \u00E2\u009D\u0152
                 </div>
 
                 <h3>
@@ -2909,7 +2909,7 @@ const redCardsEl =
                                                         font-size:12px;
                                                     "
                                                 >
-                                                    â€”
+                                                    \u00E2\u20AC\u201D
                                                 </span>
                                             `;
 
@@ -3648,7 +3648,7 @@ async function loadPlayerLeaders(competition) {
                                 font-size:20px;
                             "
                         >
-                            âš½
+                            \u00E2\u0161\u00BD
                         </div>
                     `;
 
@@ -4105,7 +4105,7 @@ async function loadPlayerLeaders(competition) {
                         margin-bottom:7px;
                     "
                 >
-                    ðŸ›¡ï¸ Team Logo
+                    \u00F0\u0178\u203A\u00A1\u00EF\u00B8\u008F Team Logo
 
                     <span
                         style="
@@ -4322,7 +4322,7 @@ async function loadPlayerLeaders(competition) {
                             margin-bottom:5px;
                         "
                     >
-                        ðŸ“· Player Photo
+                        \u00F0\u0178\u201C\u00B7 Player Photo
 
                         <span
                             style="
@@ -5136,7 +5136,7 @@ async function loadPlayerLeaders(competition) {
                         registrationMessage.innerHTML =
                             `
                             <strong>
-                                âœ… Registration submitted successfully!
+                                \u00E2\u0153\u2026 Registration submitted successfully!
                             </strong>
 
                             <br>
@@ -5194,7 +5194,7 @@ async function loadPlayerLeaders(competition) {
                         registrationMessage.innerHTML =
                             `
                             <strong>
-                                âŒ Registration failed.
+                                \u00E2\u009D\u0152 Registration failed.
                             </strong>
 
                             <br>
