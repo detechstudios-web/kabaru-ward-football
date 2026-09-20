@@ -186,21 +186,39 @@ const redCardsEl =
             );
 
         if (type === "Friendly") {
-            return "🤝 Friendly";
+            return "ðŸ¤ Friendly";
         }
 
         if (type === "Cup") {
-            return "🏆 Cup";
+            return "ðŸ† Cup";
         }
 
         if (type === "League") {
-            return "⚽ League";
+            return "âš½ League";
         }
 
         return (
             competition?.name ||
             "Competition"
         );
+    }
+
+
+    // ========================================
+    // HELPER: NORMALIZE FIXTURE STATUS
+    // ========================================
+
+    function normalizeStatus(status) {
+        return String(status || "").trim().toLowerCase();
+    }
+
+    function isCompletedStatus(status) {
+        return normalizeStatus(status) === "completed";
+    }
+
+    function isCancelledStatus(status) {
+        const normalized = normalizeStatus(status);
+        return normalized === "cancelled" || normalized === "canceled";
     }
 
 
@@ -574,11 +592,6 @@ const redCardsEl =
                 "competition_id",
                 competitionIds
             )
-            .not(
-                "status",
-                "in",
-                "(Completed,Cancelled)"
-            )
             .order(
                 "match_date",
                 {
@@ -597,7 +610,12 @@ const redCardsEl =
         }
 
         const upcomingFixtures =
-            fixtures || [];
+            (fixtures || []).filter(
+                function (fixture) {
+                    return !isCompletedStatus(fixture.status) &&
+                           !isCancelledStatus(fixture.status);
+                }
+            );
 
         // ========================================
         // NO UPCOMING FIXTURES
@@ -614,7 +632,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        📅
+                        ðŸ“…
                     </div>
                     <h3>
                         No Upcoming Fixtures
@@ -739,7 +757,7 @@ const redCardsEl =
                                     font-size:34px;
                                 "
                             >
-                                ⚽
+                                âš½
                             </div>
                         `;
 
@@ -772,7 +790,7 @@ const redCardsEl =
                                     font-size:34px;
                                 "
                             >
-                                ⚽
+                                âš½
                             </div>
                         `;
 
@@ -862,7 +880,7 @@ const redCardsEl =
                                 margin-top:4px;
                             "
                         >
-                            📍 ${escapeHtml(
+                            ðŸ“ ${escapeHtml(
                                 venue
                             )}
                         </div>
@@ -955,7 +973,7 @@ const redCardsEl =
                         margin-bottom:10px;
                     "
                 >
-                    ❌
+                    âŒ
                 </div>
 
                 <h3>
@@ -1058,7 +1076,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        📊
+                        ðŸ“Š
                     </div>
                     <h3>
                         No Results
@@ -1116,10 +1134,6 @@ const redCardsEl =
                 "competition_id",
                 competitionIds
             )
-            .eq(
-                "status",
-                "Completed"
-            );
 
         if (fixturesError) {
             throw fixturesError;
@@ -1139,7 +1153,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        📊
+                        ðŸ“Š
                     </div>
                     <h3>
                         No Completed Results
@@ -1295,7 +1309,7 @@ const redCardsEl =
                             margin-bottom:10px;
                         "
                     >
-                        📊
+                        ðŸ“Š
                     </div>
                     <h3>
                         No Completed Results
@@ -1462,7 +1476,7 @@ const redCardsEl =
                         ) +
                         (
                             goal.is_penalty
-                                ? " ⚽ Pen."
+                                ? " âš½ Pen."
                                 : ""
                         );
 
@@ -1540,7 +1554,7 @@ const redCardsEl =
                                 font-size:34px;
                             "
                         >
-                            ⚽
+                            âš½
                         </div>
                     `;
 
@@ -1573,7 +1587,7 @@ const redCardsEl =
                                 font-size:34px;
                             "
                         >
-                            ⚽
+                            âš½
                         </div>
                     `;
 
@@ -1598,7 +1612,7 @@ const redCardsEl =
                                     ) {
                                         return `
                                             <div>
-                                                ⚽
+                                                âš½
                                                 ${escapeHtml(
                                                     goal
                                                 )}
@@ -1628,7 +1642,7 @@ const redCardsEl =
                                     ) {
                                         return `
                                             <div>
-                                                ⚽
+                                                âš½
                                                 ${escapeHtml(
                                                     goal
                                                 )}
@@ -1772,7 +1786,7 @@ const redCardsEl =
                                         margin-top:4px;
                                     "
                                 >
-                                    📍
+                                    ðŸ“
                                     ${escapeHtml(
                                         fixture.venue
                                     )}
@@ -1923,7 +1937,7 @@ const redCardsEl =
                         font-weight:700;
                     "
                 >
-                    👁️ View Match Details
+                    ðŸ‘ï¸ View Match Details
                 </div>
             `;
 
@@ -1947,7 +1961,7 @@ const redCardsEl =
                         margin-bottom:10px;
                     "
                 >
-                    ❌
+                    âŒ
                 </div>
 
                 <h3>
@@ -1993,9 +2007,11 @@ const redCardsEl =
     }
 
     leagueTableEl.innerHTML = `
-        <div class="loading">
-            Loading league table...
-        </div>
+        <tr>
+            <td colspan="11" class="loading">
+                Loading league table...
+            </td>
+        </tr>
     `;
 
     try {
@@ -2076,25 +2092,11 @@ const redCardsEl =
 
         if (!leagueCompetition) {
             leagueTableEl.innerHTML = `
-                <div class="empty-message">
-                    <div
-                        style="
-                            font-size:42px;
-                            margin-bottom:10px;
-                        "
-                    >
-                        🏆
-                    </div>
-
-                    <h3>
-                        No Active League
-                    </h3>
-
-                    <p>
-                        There is currently no league
-                        competition for this season.
-                    </p>
-                </div>
+                <tr>
+                    <td colspan="11" class="empty-message">
+                        No active league is available for this season.
+                    </td>
+                </tr>
             `;
 
             return;
@@ -2809,23 +2811,11 @@ const redCardsEl =
             tableRows.length === 0
         ) {
             leagueTableEl.innerHTML = `
-                <div class="empty-message">
-                    <div
-                        style="
-                            font-size:42px;
-                            margin-bottom:10px;
-                        "
-                    >
-                        🏆
-                    </div>
-                    <h3>
-                        No League Teams
-                    </h3>
-                    <p>
-                        No approved teams are currently
-                        available for the league.
-                    </p>
-                </div>
+                <tr>
+                    <td colspan="11" class="empty-message">
+                        No approved teams are currently available for the league.
+                    </td>
+                </tr>
             `;
             return;
         }
@@ -2835,38 +2825,7 @@ const redCardsEl =
         // ========================================
 
         leagueTableEl.innerHTML = `
-            <div
-                style="
-                    overflow-x:auto;
-                    width:100%;
-                "
-            >
-                <table
-                    class="league-table"
-                    style="
-                        width:100%;
-                        border-collapse:collapse;
-                        min-width:850px;
-                    "
-                >
-                    <thead>
-                        <tr>
-                            <th>Pos</th>
-                            <th>Team</th>
-                            <th>P</th>
-                            <th>W</th>
-                            <th>D</th>
-                            <th>L</th>
-                            <th>GF</th>
-                            <th>GA</th>
-                            <th>GD</th>
-                            <th>Pts</th>
-                            <th>Form</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        ${tableRows
+            ${tableRows
                             .map(
                                 function (
                                     team,
@@ -2950,7 +2909,7 @@ const redCardsEl =
                                                         font-size:12px;
                                                     "
                                                 >
-                                                    —
+                                                    â€”
                                                 </span>
                                             `;
 
@@ -3030,9 +2989,6 @@ const redCardsEl =
                                 }
                             )
                             .join("")}
-                    </tbody>
-                </table>
-            </div>
         `;
 
     } catch (error) {
@@ -3043,27 +2999,11 @@ const redCardsEl =
         );
 
         leagueTableEl.innerHTML = `
-            <div class="empty-message">
-                <div
-                    style="
-                        font-size:40px;
-                        margin-bottom:10px;
-                    "
-                >
-                    ❌
-                </div>
-
-                <h3>
-                    Unable to Load League Table
-                </h3>
-
-                <p>
-                    ${escapeHtml(
-                        error.message ||
-                        "Unknown error"
-                    )}
-                </p>
-            </div>
+            <tr>
+                <td colspan="11" class="empty-message">
+                    Unable to load the league table.
+                </td>
+            </tr>
         `;
     }
 }              
@@ -3101,10 +3041,10 @@ async function loadPlayerLeaders(competition) {
         // ========================================
 
         const season =
-            currentCompetition &&
-            currentCompetition.season !== undefined &&
-            currentCompetition.season !== null
-                ? currentCompetition.season
+            competition &&
+            competition.season !== undefined &&
+            competition.season !== null
+                ? competition.season
                 : new Date().getFullYear();
 
 
@@ -3708,7 +3648,7 @@ async function loadPlayerLeaders(competition) {
                                 font-size:20px;
                             "
                         >
-                            ⚽
+                            âš½
                         </div>
                     `;
 
@@ -4165,7 +4105,7 @@ async function loadPlayerLeaders(competition) {
                         margin-bottom:7px;
                     "
                 >
-                    🛡️ Team Logo
+                    ðŸ›¡ï¸ Team Logo
 
                     <span
                         style="
@@ -4382,7 +4322,7 @@ async function loadPlayerLeaders(competition) {
                             margin-bottom:5px;
                         "
                     >
-                        📷 Player Photo
+                        ðŸ“· Player Photo
 
                         <span
                             style="
@@ -5196,7 +5136,7 @@ async function loadPlayerLeaders(competition) {
                         registrationMessage.innerHTML =
                             `
                             <strong>
-                                ✅ Registration submitted successfully!
+                                âœ… Registration submitted successfully!
                             </strong>
 
                             <br>
@@ -5254,7 +5194,7 @@ async function loadPlayerLeaders(competition) {
                         registrationMessage.innerHTML =
                             `
                             <strong>
-                                ❌ Registration failed.
+                                âŒ Registration failed.
                             </strong>
 
                             <br>
