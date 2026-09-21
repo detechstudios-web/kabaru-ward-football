@@ -3097,197 +3097,288 @@ let redCardEntries = [];
     }
 
 
+// ========================================
+// ADD GOAL ROW
+// ========================================
+
+function addGoalRow(
+    container,
+    players,
+    teamLabel
+) {
+
+    if (!container) {
+        return;
+    }
+
+
+    const row =
+        document.createElement("div");
+
+
+    row.className =
+        "goal-row";
+
+
+    row.style.cssText = `
+        display:grid;
+        grid-template-columns:1fr 90px 1fr 80px 45px;
+        gap:8px;
+        margin-bottom:10px;
+        align-items:center;
+    `;
+
+
     // ========================================
-    // ADD GOAL ROW
+    // SCORER
     // ========================================
 
-    function addGoalRow(
-        container,
-        players,
-        teamLabel
-    ) {
-
-        if (!container) {
-            return;
-        }
+    const playerSelect =
+        document.createElement(
+            "select"
+        );
 
 
-        const row =
-            document.createElement("div");
+    playerSelect.className =
+        "form-control";
 
 
-        row.className =
-            "goal-row";
+    playerSelect.innerHTML =
+        "<option value=''>Select scorer</option>";
 
 
-        row.style.cssText = `
-            display:grid;
-            grid-template-columns:1fr 100px 100px 70px;
-            gap:10px;
-            margin-bottom:10px;
-            align-items:center;
-        `;
+    players.forEach(
+        function (player) {
 
-
-        const playerSelect =
-            document.createElement(
-                "select"
-            );
-
-
-        playerSelect.className =
-            "form-control";
-
-
-        playerSelect.innerHTML =
-            "<option value=''>Select scorer</option>";
-
-
-        players.forEach(
-            function (player) {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    player.id;
-
-
-                option.textContent =
-                    (
-                        player.jersey_number
-                            ? "#" +
-                              player.jersey_number +
-                              " "
-                            : ""
-                    ) +
-                    player.full_name;
-
-
-                playerSelect.appendChild(
-                    option
+            const option =
+                document.createElement(
+                    "option"
                 );
 
-            }
-        );
+
+            option.value =
+                player.id;
 
 
-        const minuteInput =
-            document.createElement(
-                "input"
+            option.textContent =
+                (
+                    player.jersey_number
+                        ? "#" +
+                          player.jersey_number +
+                          " "
+                        : ""
+                ) +
+                player.full_name;
+
+
+            playerSelect.appendChild(
+                option
             );
 
-
-        minuteInput.type =
-            "number";
-
-        minuteInput.min =
-            "1";
-
-        minuteInput.max =
-            "130";
-
-        minuteInput.placeholder =
-            "Minute";
-
-        minuteInput.className =
-            "form-control";
+        }
+    );
 
 
-        const penaltyLabel =
-            document.createElement(
-                "label"
+    // ========================================
+    // GOAL MINUTE
+    // ========================================
+
+    const minuteInput =
+        document.createElement(
+            "input"
+        );
+
+
+    minuteInput.type =
+        "number";
+
+    minuteInput.min =
+        "1";
+
+    minuteInput.max =
+        "130";
+
+    minuteInput.placeholder =
+        "Minute";
+
+    minuteInput.className =
+        "form-control";
+
+
+    // ========================================
+    // ASSIST PROVIDER
+    // ========================================
+
+    const assistSelect =
+        document.createElement(
+            "select"
+        );
+
+
+    assistSelect.className =
+        "form-control";
+
+
+    assistSelect.innerHTML =
+        "<option value=''>No assist</option>";
+
+
+    players.forEach(
+        function (player) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                player.id;
+
+
+            option.textContent =
+                (
+                    player.jersey_number
+                        ? "#" +
+                          player.jersey_number +
+                          " "
+                        : ""
+                ) +
+                player.full_name;
+
+
+            assistSelect.appendChild(
+                option
             );
 
-
-        penaltyLabel.style.cssText = `
-            display:flex;
-            align-items:center;
-            gap:5px;
-            font-size:13px;
-            white-space:nowrap;
-        `;
+        }
+    );
 
 
-        const penaltyCheckbox =
-            document.createElement(
-                "input"
-            );
+    // ========================================
+    // PENALTY
+    // ========================================
 
-
-        penaltyCheckbox.type =
-            "checkbox";
-
-
-        penaltyLabel.appendChild(
-            penaltyCheckbox
+    const penaltyLabel =
+        document.createElement(
+            "label"
         );
 
 
-        penaltyLabel.appendChild(
-            document.createTextNode(
-                "Penalty"
-            )
+    penaltyLabel.style.cssText = `
+        display:flex;
+        align-items:center;
+        gap:5px;
+        font-size:13px;
+        white-space:nowrap;
+    `;
+
+
+    const penaltyCheckbox =
+        document.createElement(
+            "input"
         );
 
 
-        const removeButton =
-            document.createElement(
-                "button"
-            );
+    penaltyCheckbox.type =
+        "checkbox";
 
 
-        removeButton.type =
-            "button";
+    penaltyLabel.appendChild(
+        penaltyCheckbox
+    );
 
 
-        removeButton.className =
-            "btn btn-danger";
+    penaltyLabel.appendChild(
+        document.createTextNode(
+            "Penalty"
+        )
+    );
 
 
-        removeButton.textContent =
-            "✖️";
+    // ========================================
+    // REMOVE BUTTON
+    // ========================================
 
-
-        removeButton.addEventListener(
-            "click",
-            function () {
-
-                row.remove();
-
-                updateGoalWarnings();
-
-            }
+    const removeButton =
+        document.createElement(
+            "button"
         );
 
 
-        row.appendChild(
-            playerSelect
-        );
-
-        row.appendChild(
-            minuteInput
-        );
-
-        row.appendChild(
-            penaltyLabel
-        );
-
-        row.appendChild(
-            removeButton
-        );
+    removeButton.type =
+        "button";
 
 
-        container.appendChild(
-            row
-        );
+    removeButton.className =
+        "btn btn-danger";
 
 
-        updateGoalWarnings();
-    }
+    removeButton.textContent =
+        "✖️";
+
+
+    removeButton.addEventListener(
+        "click",
+        function () {
+
+            row.remove();
+
+            updateGoalWarnings();
+
+        }
+    );
+
+
+    // ========================================
+    // STORE DATA ON ROW
+    // ========================================
+
+    row._goalPlayerSelect =
+        playerSelect;
+
+    row._goalMinuteInput =
+        minuteInput;
+
+    row._goalAssistSelect =
+        assistSelect;
+
+    row._goalPenaltyCheckbox =
+        penaltyCheckbox;
+
+
+    // ========================================
+    // ADD ELEMENTS TO ROW
+    // ========================================
+
+    row.appendChild(
+        playerSelect
+    );
+
+    row.appendChild(
+        minuteInput
+    );
+
+    row.appendChild(
+        assistSelect
+    );
+
+    row.appendChild(
+        penaltyLabel
+    );
+
+    row.appendChild(
+        removeButton
+    );
+
+
+    container.appendChild(
+        row
+    );
+
+
+    updateGoalWarnings();
+}
 
 
     // ========================================
