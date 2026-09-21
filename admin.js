@@ -3131,7 +3131,11 @@ if (redCardsContainer) {
                         "none";
                 }
 
+// ========================================
+// INITIALIZE MATCH EVENT CONTROLS
+// ========================================
 
+initializeResultEventControls();
                 if (resultScoreSection) {
                     resultScoreSection.style.display =
                         "block";
