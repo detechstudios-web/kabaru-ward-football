@@ -114,7 +114,34 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const saveResultBtn =
         document.getElementById("saveResultBtn");
+    // ========================================
+    // MATCH EVENT ELEMENTS
+    // ========================================
 
+    const appearancePlayersContainer =
+        document.getElementById(
+            "appearancePlayersContainer"
+        );
+
+    const yellowCardsContainer =
+        document.getElementById(
+            "yellowCardsContainer"
+        );
+
+    const redCardsContainer =
+        document.getElementById(
+            "redCardsContainer"
+        );
+
+    const addYellowCardBtn =
+        document.getElementById(
+            "addYellowCardBtn"
+        );
+
+    const addRedCardBtn =
+        document.getElementById(
+            "addRedCardBtn"
+        );
 
     // ========================================
     // COMPETITION MANAGER ELEMENTS
