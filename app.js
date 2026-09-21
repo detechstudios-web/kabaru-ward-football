@@ -2573,23 +2573,21 @@ if (playerStatsError) {
                     ];
 
                 const {
-                    data: players,
-                    error: playersError
-                } = await supabaseClient
-                    .from("players")
-                    .select(`
-                        id,
-                        first_name,
-                        last_name,
-                        name,
-                        position,
-                        photo_url,
-                        team_id
-                    `)
-                    .in(
-                        "id",
-                        uniquePlayerIds
-                    );
+    data: players,
+    error: playersError
+} = await supabaseClient
+    .from("players")
+    .select(`
+        id,
+        full_name,
+        position,
+        photo_url,
+        team_id
+    `)
+    .in(
+        "id",
+        uniquePlayerIds
+    );
 
                 if (playersError) {
                     throw playersError;
