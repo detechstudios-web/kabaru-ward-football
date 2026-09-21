@@ -3079,6 +3079,11 @@ let redCardEntries = [];
                     away.id,
                     "away"
                 );
+// ========================================
+// LOAD MATCH EVENT PLAYER CONTROLS
+// ========================================
+
+loadAppearancePlayers();
 
 
                 if (homeGoalsContainer) {
