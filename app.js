@@ -3683,8 +3683,8 @@ if (playerStatsError) {
                                     disciplineMasterName,
                                 logo_url:
                                     logoUrl,
-                                status:
-                                    "Pending"
+                                registration_status:
+    "Pending"
                             }
                         ])
                         .select()
