@@ -2451,20 +2451,74 @@ resultRows.forEach(
                 return;
             }
 
-            // ========================================
-            // LOAD PLAYER MATCH STATISTICS
-            // ========================================
+            
+// LOAD RESULTS FOR COMPLETED FIXTURES
+// ========================================
+const {
+    data: resultRows,
+    error: resultsError
+} = await supabaseClient
+    .from("results")
+    .select(`
+        id,
+        fixture_id
+    `)
+    .in(
+        "fixture_id",
+        completedFixtureIds
+    );
 
-            const {
-                data: playerStatistics,
-                error: playerStatsError
-            } = await supabaseClient
-                .from("player_match_stats")
-                .select("*")
-                .in(
-                    "fixture_id",
-                    completedFixtureIds
-                );
+if (resultsError) {
+    throw resultsError;
+}
+
+const results =
+    resultRows || [];
+
+const resultIds =
+    results
+        .map(function (result) {
+            return result.id;
+        })
+        .filter(function (id) {
+            return id !== null &&
+                   id !== undefined;
+        });
+
+// ========================================
+// NO RESULTS
+// ========================================
+if (resultIds.length === 0) {
+    renderEmptyStatistics();
+    return;
+}
+
+// ========================================
+// LOAD PLAYER MATCH STATISTICS
+// ========================================
+const {
+    data: playerStatistics,
+    error: playerStatsError
+} = await supabaseClient
+    .from("player_match_stats")
+    .select(`
+        id,
+        result_id,
+        player_id,
+        appearances,
+        goals,
+        assists,
+        yellow_cards,
+        red_cards
+    `)
+    .in(
+        "result_id",
+        resultIds
+    );
+
+if (playerStatsError) {
+    throw playerStatsError;
+}
 
             if (playerStatsError) {
                 throw playerStatsError;
