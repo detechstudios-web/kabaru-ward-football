@@ -3083,7 +3083,7 @@ let redCardEntries = [];
 // LOAD MATCH EVENT PLAYER CONTROLS
 // ========================================
 
-loadAppearancePlayers();
+
 
 
                 if (homeGoalsContainer) {
@@ -3108,6 +3108,7 @@ if (yellowCardsContainer) {
 if (redCardsContainer) {
     redCardsContainer.innerHTML =
         "";
+    loadAppearancePlayers();
 }
 
                 if (homeScore) {
@@ -3135,7 +3136,7 @@ if (redCardsContainer) {
 // INITIALIZE MATCH EVENT CONTROLS
 // ========================================
 
-initializeResultEventControls();
+
                 if (resultScoreSection) {
                     resultScoreSection.style.display =
                         "block";
