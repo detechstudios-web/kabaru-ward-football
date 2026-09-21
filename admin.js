@@ -3491,7 +3491,447 @@ function addGoalRow(
             }
         }
     }
+// ========================================
+// CREATE PLAYER OPTION HTML
+// ========================================
 
+function buildPlayerOptions(
+    players,
+    placeholder
+) {
+
+    let html =
+        `<option value="">${placeholder}</option>`;
+
+    (players || []).forEach(
+        function (player) {
+
+            html +=
+                `<option value="${player.id}">` +
+                (
+                    player.jersey_number
+                        ? "#" +
+                          player.jersey_number +
+                          " "
+                        : ""
+                ) +
+                player.full_name +
+                `</option>`;
+        }
+    );
+
+    return html;
+}
+
+
+// ========================================
+// GET ALL RESULT PLAYERS
+// ========================================
+
+function getAllResultPlayers() {
+
+    const players = [];
+
+    (homePlayers || []).forEach(
+        function (player) {
+
+            players.push(player);
+
+        }
+    );
+
+    (awayPlayers || []).forEach(
+        function (player) {
+
+            players.push(player);
+
+        }
+    );
+
+    return players;
+}
+
+
+// ========================================
+// CREATE APPEARANCE PLAYER CHECKBOX
+// ========================================
+
+function createAppearancePlayer(
+    player
+) {
+
+    if (
+        !appearancePlayersContainer ||
+        !player
+    ) {
+        return;
+    }
+
+
+    const label =
+        document.createElement("label");
+
+
+    label.className =
+        "appearance-player";
+
+
+    label.style.cssText = `
+        display:flex;
+        align-items:center;
+        gap:8px;
+        padding:8px 10px;
+        margin-bottom:6px;
+        border:1px solid #ddd;
+        border-radius:6px;
+        cursor:pointer;
+    `;
+
+
+    const checkbox =
+        document.createElement("input");
+
+
+    checkbox.type =
+        "checkbox";
+
+
+    checkbox.value =
+        player.id;
+
+
+    checkbox.dataset.playerId =
+        player.id;
+
+
+    const playerName =
+        document.createElement("span");
+
+
+    playerName.textContent =
+        (
+            player.jersey_number
+                ? "#" +
+                  player.jersey_number +
+                  " "
+                : ""
+        ) +
+        player.full_name;
+
+
+    label.appendChild(
+        checkbox
+    );
+
+    label.appendChild(
+        playerName
+    );
+
+
+    appearancePlayersContainer.appendChild(
+        label
+    );
+}
+
+
+// ========================================
+// LOAD APPEARANCE PLAYERS
+// ========================================
+
+function loadAppearancePlayers() {
+
+    if (
+        !appearancePlayersContainer
+    ) {
+        return;
+    }
+
+
+    appearancePlayersContainer.innerHTML =
+        "";
+
+
+    const allPlayers =
+        getAllResultPlayers();
+
+
+    if (
+        allPlayers.length === 0
+    ) {
+
+        appearancePlayersContainer.innerHTML =
+            "<p>No approved players available.</p>";
+
+        return;
+    }
+
+
+    allPlayers.forEach(
+        function (player) {
+
+            createAppearancePlayer(
+                player
+            );
+
+        }
+    );
+}
+
+
+// ========================================
+// CREATE CARD ENTRY
+// ========================================
+
+function addCardRow(
+    container,
+    players,
+    cardType
+) {
+
+    if (
+        !container
+    ) {
+        return;
+    }
+
+
+    const row =
+        document.createElement("div");
+
+
+    row.className =
+        "card-event-row";
+
+
+    row.style.cssText = `
+        display:grid;
+        grid-template-columns:1fr 90px 45px;
+        gap:8px;
+        margin-bottom:10px;
+        align-items:center;
+    `;
+
+
+    // PLAYER
+
+    const playerSelect =
+        document.createElement("select");
+
+
+    playerSelect.className =
+        "form-control";
+
+
+    playerSelect.innerHTML =
+        buildPlayerOptions(
+            players,
+            "Select player"
+        );
+
+
+    // MINUTE
+
+    const minuteInput =
+        document.createElement("input");
+
+
+    minuteInput.type =
+        "number";
+
+    minuteInput.min =
+        "1";
+
+    minuteInput.max =
+        "130";
+
+    minuteInput.placeholder =
+        "Minute";
+
+    minuteInput.className =
+        "form-control";
+
+
+    // REMOVE
+
+    const removeButton =
+        document.createElement("button");
+
+
+    removeButton.type =
+        "button";
+
+
+    removeButton.className =
+        "btn btn-danger";
+
+
+    removeButton.textContent =
+        "✖️";
+
+
+    removeButton.addEventListener(
+        "click",
+        function () {
+
+            row.remove();
+
+        }
+    );
+
+
+    row.appendChild(
+        playerSelect
+    );
+
+    row.appendChild(
+        minuteInput
+    );
+
+    row.appendChild(
+        removeButton
+    );
+
+
+    // Store references for SAVE RESULT
+
+    row._cardPlayerSelect =
+        playerSelect;
+
+    row._cardMinuteInput =
+        minuteInput;
+
+    row._cardType =
+        cardType;
+
+
+    container.appendChild(
+        row
+    );
+}
+
+
+// ========================================
+// GET CARD DATA
+// ========================================
+
+function getCardData(
+    container,
+    cardType
+) {
+
+    const cards = [];
+
+
+    if (!container) {
+        return cards;
+    }
+
+
+    const rows =
+        container.querySelectorAll(
+            ".card-event-row"
+        );
+
+
+    rows.forEach(
+        function (row) {
+
+            const playerId =
+                row._cardPlayerSelect
+                    ? row._cardPlayerSelect.value
+                    : "";
+
+            const minute =
+                row._cardMinuteInput
+                    ? Number(
+                        row._cardMinuteInput.value
+                    )
+                    : 0;
+
+
+            if (
+                playerId
+            ) {
+
+                cards.push({
+
+                    player_id:
+                        Number(
+                            playerId
+                        ),
+
+                    minute:
+                        minute > 0
+                            ? minute
+                            : null,
+
+                    card_type:
+                        cardType
+
+                });
+
+            }
+
+        }
+    );
+
+
+    return cards;
+}
+
+
+// ========================================
+// LOAD EVENT CONTROLS
+// ========================================
+
+function initializeResultEventControls() {
+
+    if (
+        typeof appearancePlayersContainer ===
+        "undefined"
+    ) {
+        return;
+    }
+
+
+    loadAppearancePlayers();
+
+
+    if (
+        addYellowCardBtn
+    ) {
+
+        addYellowCardBtn.onclick =
+            function () {
+
+                addCardRow(
+                    yellowCardsContainer,
+                    getAllResultPlayers(),
+                    "yellow"
+                );
+
+            };
+
+    }
+
+
+    if (
+        addRedCardBtn
+    ) {
+
+        addRedCardBtn.onclick =
+            function () {
+
+                addCardRow(
+                    redCardsContainer,
+                    getAllResultPlayers(),
+                    "red"
+                );
+
+            };
+
+    }
+}
 
     // ========================================
     // ADD HOME GOAL
