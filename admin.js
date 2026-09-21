@@ -145,7 +145,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     let homePlayers = [];
 
     let awayPlayers = [];
+// ========================================
+// MATCH EVENT STATE
+// ========================================
 
+let yellowCardEntries = [];
+let redCardEntries = [];
 
     // ========================================
     // MESSAGE HELPERS
