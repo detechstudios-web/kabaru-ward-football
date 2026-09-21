@@ -1176,55 +1176,55 @@ const redCardsEl =
                     }
                 );
 
-            // ========================================
-            // LOAD RESULTS
-            // ========================================
+// ========================================
+// LOAD RESULTS
+// ========================================
 
-            const fixtureIds =
-                completedFixtures
-                    .map(function (fixture) {
-                        return fixture.id;
-                    })
-                    .filter(function (id) {
-                        return id !== null &&
-                               id !== undefined;
-                    });
+const fixtureIds =
+    completedFixtures
+        .map(function (fixture) {
+            return fixture.id;
+        })
+        .filter(function (id) {
+            return id !== null &&
+                   id !== undefined;
+        });
 
-            let resultRows = [];
+let resultRows = [];
 
-            if (fixtureIds.length > 0) {
+if (fixtureIds.length > 0) {
 
-                const {
-                    data: results,
-                    error: resultsError
-                } = await supabaseClient
-                    .from("match_results")
-                    .select("*")
-                    .in(
-                        "fixture_id",
-                        fixtureIds
-                    );
+    const {
+        data: results,
+        error: resultsError
+    } = await supabaseClient
+        .from("results")
+        .select("*")
+        .in(
+            "fixture_id",
+            fixtureIds
+        );
 
-                if (resultsError) {
-                    throw resultsError;
-                }
+    if (resultsError) {
+        throw resultsError;
+    }
 
-                resultRows =
-                    results || [];
-            }
+    resultRows =
+        results || [];
+}
 
-            const resultMap = {};
+const resultMap = {};
 
-            resultRows.forEach(
-                function (result) {
+resultRows.forEach(
+    function (result) {
 
-                    resultMap[
-                        String(
-                            result.fixture_id
-                        )
-                    ] = result;
-                }
-            );
+        resultMap[
+            String(
+                result.fixture_id
+            )
+        ] = result;
+    }
+);
 
             // ========================================
             // KEEP ONLY FIXTURES WITH RESULTS
@@ -1818,45 +1818,45 @@ if (teamsError) {
                         }
                     );
 
-            // ========================================
-            // LOAD RESULTS
-            // ========================================
+// ========================================
+// LOAD RESULTS
+// ========================================
 
-            let resultRows = [];
+let resultRows = [];
 
-            if (fixtureIds.length > 0) {
+if (fixtureIds.length > 0) {
 
-                const {
-                    data: results,
-                    error: resultError
-                } = await supabaseClient
-                    .from("match_results")
-                    .select("*")
-                    .in(
-                        "fixture_id",
-                        fixtureIds
-                    );
+    const {
+        data: results,
+        error: resultError
+    } = await supabaseClient
+        .from("results")
+        .select("*")
+        .in(
+            "fixture_id",
+            fixtureIds
+        );
 
-                if (resultError) {
-                    throw resultError;
-                }
+    if (resultError) {
+        throw resultError;
+    }
 
-                resultRows =
-                    results || [];
-            }
+    resultRows =
+        results || [];
+}
 
-            const resultMap = {};
+const resultMap = {};
 
-            resultRows.forEach(
-                function (result) {
+resultRows.forEach(
+    function (result) {
 
-                    resultMap[
-                        String(
-                            result.fixture_id
-                        )
-                    ] = result;
-                }
-            );
+        resultMap[
+            String(
+                result.fixture_id
+            )
+        ] = result;
+    }
+);
 
             // ========================================
             // PROCESS COMPLETED LEAGUE MATCHES
