@@ -1706,35 +1706,35 @@ const redCardsEl =
             }
 
             // ========================================
-            // LOAD APPROVED TEAMS
-            // ========================================
+// LOAD APPROVED TEAMS
+// ========================================
 
-            const {
-                data: approvedTeams,
-                error: teamsError
-            } = await supabaseClient
-                .from("teams")
-                .select(`
-                    id,
-                    name,
-                    short_name,
-                    logo_url,
-                    status
-                `)
-                .eq(
-                    "status",
-                    "Approved"
-                )
-                .order(
-                    "name",
-                    {
-                        ascending: true
-                    }
-                );
+const {
+    data: approvedTeams,
+    error: teamsError
+} = await supabaseClient
+    .from("teams")
+    .select(`
+        id,
+        name,
+        short_name,
+        logo_url,
+        registration_status
+    `)
+    .eq(
+        "registration_status",
+        "Approved"
+    )
+    .order(
+        "name",
+        {
+            ascending: true
+        }
+    );
 
-            if (teamsError) {
-                throw teamsError;
-            }
+if (teamsError) {
+    throw teamsError;
+}
 
             // ========================================
             // CREATE TABLE DATA FOR ALL TEAMS
