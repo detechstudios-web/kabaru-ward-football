@@ -3937,7 +3937,8 @@ function initializeResultEventControls() {
         };
     }
 }
-
+// Initialize match event buttons once
+initializeResultEventControls();
     // ========================================
     // ADD HOME GOAL
     // ========================================
