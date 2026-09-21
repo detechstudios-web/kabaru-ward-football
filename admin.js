@@ -3903,55 +3903,37 @@ function getCardData(
 
 
 // ========================================
-// LOAD EVENT CONTROLS
+// INITIALIZE MATCH EVENT CONTROLS
 // ========================================
 
 function initializeResultEventControls() {
 
-    if (
-        typeof appearancePlayersContainer ===
-        "undefined"
-    ) {
+    if (!appearancePlayersContainer) {
         return;
     }
 
+    if (addYellowCardBtn) {
+        addYellowCardBtn.onclick = function () {
 
-    loadAppearancePlayers();
+            addCardRow(
+                yellowCardsContainer,
+                getAllResultPlayers(),
+                "yellow"
+            );
 
-
-    if (
-        addYellowCardBtn
-    ) {
-
-        addYellowCardBtn.onclick =
-            function () {
-
-                addCardRow(
-                    yellowCardsContainer,
-                    getAllResultPlayers(),
-                    "yellow"
-                );
-
-            };
-
+        };
     }
 
+    if (addRedCardBtn) {
+        addRedCardBtn.onclick = function () {
 
-    if (
-        addRedCardBtn
-    ) {
+            addCardRow(
+                redCardsContainer,
+                getAllResultPlayers(),
+                "red"
+            );
 
-        addRedCardBtn.onclick =
-            function () {
-
-                addCardRow(
-                    redCardsContainer,
-                    getAllResultPlayers(),
-                    "red"
-                );
-
-            };
-
+        };
     }
 }
 
