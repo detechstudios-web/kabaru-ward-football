@@ -3941,9 +3941,9 @@ if (playerStatsError) {
                     function (player) {
                         return (
                             String(
-                                player.status ||
-                                ""
-                            ).toLowerCase() !==
+    player.registration_status ||
+    ""
+).toLowerCase() !==
                             "inactive"
                         );
                     }
