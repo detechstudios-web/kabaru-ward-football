@@ -3314,18 +3314,18 @@ if (playerStatsError) {
                 error
             } = await supabaseClient
                 .from("teams")
-                .select(`
-                    id,
-                    name,
-                    short_name,
-                    logo_url,
-                    status,
-                    created_at
-                `)
-                .eq(
-                    "status",
-                    "Approved"
-                )
+.select(`
+    id,
+    name,
+    short_name,
+    logo_url,
+    registration_status,
+    created_at
+`)
+.eq(
+    "registration_status",
+    "Approved"
+)
                 .order(
                     "name",
                     {
@@ -3815,7 +3815,7 @@ if (playerStatsError) {
                         position,
                         jersey_number,
                         photo_url,
-                        status
+                        registration_status
                     )
                 `)
                 .eq(
@@ -3823,7 +3823,7 @@ if (playerStatsError) {
                     teamId
                 )
                 .eq(
-                    "status",
+                    "registration_status",
                     "Approved"
                 )
                 .maybeSingle();
