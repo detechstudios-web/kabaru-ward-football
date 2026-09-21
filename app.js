@@ -2930,32 +2930,15 @@ if (playerStatsError) {
         }
 
         if (
-            player.name &&
-            String(player.name).trim()
-        ) {
-            return String(
-                player.name
-            ).trim();
-        }
+    player.full_name &&
+    String(player.full_name).trim()
+) {
+    return String(
+        player.full_name
+    ).trim();
+}
 
-        const fullName =
-            [
-                player.first_name,
-                player.last_name
-            ]
-                .filter(
-                    function (value) {
-                        return value &&
-                               String(value).trim();
-                    }
-                )
-                .join(" ")
-                .trim();
-
-        return (
-            fullName ||
-            "Unknown Player"
-        );
+return "Unknown Player";
     }
 
 
