@@ -3095,7 +3095,20 @@ loadAppearancePlayers();
                     awayGoalsContainer.innerHTML =
                         "";
                 }
+if (appearancePlayersContainer) {
+    appearancePlayersContainer.innerHTML =
+        "";
+}
 
+if (yellowCardsContainer) {
+    yellowCardsContainer.innerHTML =
+        "";
+}
+
+if (redCardsContainer) {
+    redCardsContainer.innerHTML =
+        "";
+}
 
                 if (homeScore) {
                     homeScore.value =
