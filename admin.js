@@ -4408,475 +4408,786 @@ function initializeResultEventControls() {
     }
 
 
-    // ========================================
-    // SAVE RESULT
-    // ========================================
+// ========================================
+// SAVE RESULT
+// ========================================
 
-    if (saveResultBtn) {
+if (saveResultBtn) {
 
-        saveResultBtn.addEventListener(
-            "click",
-            async function () {
+    saveResultBtn.addEventListener(
+        "click",
+        async function () {
 
-                if (!currentFixture) {
+            // ========================================
+            // CHECK FIXTURE
+            // ========================================
 
-                    showResultMessage(
-                        "Please select a fixture first.",
-                        "error"
-                    );
+            if (!currentFixture) {
 
-                    return;
-                }
+                showResultMessage(
+                    "Please select a fixture first.",
+                    "error"
+                );
 
-
-                const homeFinalScore =
-                    Number(
-                        homeScore
-                            ? homeScore.value
-                            : 0
-                    );
+                return;
+            }
 
 
-                const awayFinalScore =
-                    Number(
-                        awayScore
-                            ? awayScore.value
-                            : 0
-                    );
+            // ========================================
+            // GET SCORES
+            // ========================================
+
+            const homeFinalScore =
+                Number(
+                    homeScore
+                        ? homeScore.value
+                        : 0
+                );
 
 
-                // ========================================
-                // VALIDATE SCORES
-                // ========================================
-
-                if (
-                    !Number.isInteger(
-                        homeFinalScore
-                    ) ||
-                    homeFinalScore < 0 ||
-                    homeFinalScore > 99
-                ) {
-
-                    showResultMessage(
-                        "Home score must be a whole number between 0 and 99.",
-                        "error"
-                    );
-
-                    return;
-                }
+            const awayFinalScore =
+                Number(
+                    awayScore
+                        ? awayScore.value
+                        : 0
+                );
 
 
-                if (
-                    !Number.isInteger(
-                        awayFinalScore
-                    ) ||
-                    awayFinalScore < 0 ||
-                    awayFinalScore > 99
-                ) {
+            // ========================================
+            // VALIDATE SCORES
+            // ========================================
 
-                    showResultMessage(
-                        "Away score must be a whole number between 0 and 99.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                // ========================================
-                // VALIDATE GOAL MINUTES
-                // ========================================
-
-                const homeValidation =
-                    validateGoalMinutes(
-                        homeGoalsContainer,
-                        "home"
-                    );
-
-
-                if (!homeValidation.valid) {
-
-                    showResultMessage(
-                        "❌ " +
-                        homeValidation.message,
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                const awayValidation =
-                    validateGoalMinutes(
-                        awayGoalsContainer,
-                        "away"
-                    );
-
-
-                if (!awayValidation.valid) {
-
-                    showResultMessage(
-                        "❌ " +
-                        awayValidation.message,
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                // ========================================
-                // GET GOAL DATA
-                // ========================================
-
-                const homeScorers =
-                    getScorerData(
-                        homeGoalsContainer
-                    );
-
-
-                const awayScorers =
-                    getScorerData(
-                        awayGoalsContainer
-                    );
-
-
-                // ========================================
-                // CHECK GOAL COUNTS
-                // ========================================
-
-                if (
-                    homeScorers.length !==
+            if (
+                !Number.isInteger(
                     homeFinalScore
-                ) {
+                ) ||
+                homeFinalScore < 0 ||
+                homeFinalScore > 99
+            ) {
 
-                    showResultMessage(
-                        "❌ Home score is " +
-                        homeFinalScore +
-                        " but you entered " +
-                        homeScorers.length +
-                        " home goal(s).",
-                        "error"
-                    );
+                showResultMessage(
+                    "Home score must be a whole number between 0 and 99.",
+                    "error"
+                );
 
-                    return;
-                }
+                return;
+            }
 
 
-                if (
-                    awayScorers.length !==
+            if (
+                !Number.isInteger(
                     awayFinalScore
+                ) ||
+                awayFinalScore < 0 ||
+                awayFinalScore > 99
+            ) {
+
+                showResultMessage(
+                    "Away score must be a whole number between 0 and 99.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // ========================================
+            // GET GOAL ROWS
+            // ========================================
+
+            const homeGoalRows =
+                homeGoalsContainer
+                    ? Array.from(
+                        homeGoalsContainer.querySelectorAll(
+                            ".goal-row"
+                        )
+                    )
+                    : [];
+
+
+            const awayGoalRows =
+                awayGoalsContainer
+                    ? Array.from(
+                        awayGoalsContainer.querySelectorAll(
+                            ".goal-row"
+                        )
+                    )
+                    : [];
+
+
+            // ========================================
+            // CHECK GOAL COUNTS
+            // ========================================
+
+            if (
+                homeGoalRows.length !==
+                homeFinalScore
+            ) {
+
+                showResultMessage(
+                    "❌ Home score is " +
+                    homeFinalScore +
+                    " but you entered " +
+                    homeGoalRows.length +
+                    " home goal(s).",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                awayGoalRows.length !==
+                awayFinalScore
+            ) {
+
+                showResultMessage(
+                    "❌ Away score is " +
+                    awayFinalScore +
+                    " but you entered " +
+                    awayGoalRows.length +
+                    " away goal(s).",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // ========================================
+            // READ GOAL DATA
+            // ========================================
+
+            function readGoalRows(
+                rows
+            ) {
+
+                const goals = [];
+
+
+                for (
+                    let i = 0;
+                    i < rows.length;
+                    i++
                 ) {
 
-                    showResultMessage(
-                        "❌ Away score is " +
-                        awayFinalScore +
-                        " but you entered " +
-                        awayScorers.length +
-                        " away goal(s).",
-                        "error"
-                    );
-
-                    return;
-                }
+                    const row =
+                        rows[i];
 
 
-                // ========================================
-                // GET APPEARANCES
-                // ========================================
-
-                const appearanceValidation =
-                    validateAppearances();
-
-
-                if (
-                    !appearanceValidation.valid
-                ) {
-
-                    showResultMessage(
-                        "❌ " +
-                        appearanceValidation.message,
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                const appearancePlayers =
-                    getAppearancePlayers();
-
-
-                // ========================================
-                // GET ALL GOALS
-                // ========================================
-
-                const allGoals =
-                    [
-                        ...homeScorers,
-                        ...awayScorers
-                    ];
-
-
-                // ========================================
-                // SCORERS MUST HAVE APPEARED
-                // ========================================
-
-                const scorerAppearanceValidation =
-                    validateScorersAreAppearances(
-                        allGoals,
-                        appearancePlayers
-                    );
-
-
-                if (
-                    !scorerAppearanceValidation.valid
-                ) {
-
-                    showResultMessage(
-                        "❌ " +
-                        scorerAppearanceValidation.message,
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                // ========================================
-                // ASSISTS MUST BE VALID
-                // ========================================
-
-                const assistValidation =
-                    validateAssistProviders(
-                        allGoals,
-                        appearancePlayers
-                    );
-
-
-                if (
-                    !assistValidation.valid
-                ) {
-
-                    showResultMessage(
-                        "❌ " +
-                        assistValidation.message,
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                try {
-
-                    saveResultBtn.disabled =
-                        true;
-
-
-                    saveResultBtn.textContent =
-                        "Saving Result...";
-
-
-                    showResultMessage(
-                        "Saving match result...",
-                        ""
-                    );
-
-
-                    // ========================================
-                    // CHECK EXISTING RESULT
-                    // ========================================
-
-                    const {
-                        data: existingResult,
-                        error: existingError
-                    } =
-                        await supabaseClient
-                            .from("results")
-                            .select(
-                                "id"
-                            )
-                            .eq(
-                                "fixture_id",
-                                currentFixture.id
-                            )
-                            .maybeSingle();
-
-
-                    if (existingError) {
-                        throw existingError;
-                    }
-
-
-                    if (existingResult) {
-
-                        throw new Error(
-                            "This fixture already has a result."
+                    const scorerSelect =
+                        row._goalPlayerSelect ||
+                        row.querySelector(
+                            "select"
                         );
+
+
+                    const minuteInput =
+                        row._goalMinuteInput ||
+                        row.querySelector(
+                            "input[type='number']"
+                        );
+
+
+                    const assistSelect =
+                        row._goalAssistSelect ||
+                        (
+                            row.querySelectorAll(
+                                "select"
+                            )[1] ||
+                            null
+                        );
+
+
+                    const penaltyCheckbox =
+                        row._goalPenaltyCheckbox ||
+                        row.querySelector(
+                            "input[type='checkbox']"
+                        );
+
+
+                    const playerId =
+                        scorerSelect
+                            ? scorerSelect.value
+                            : "";
+
+
+                    const minuteValue =
+                        minuteInput
+                            ? minuteInput.value
+                            : "";
+
+
+                    const assistPlayerId =
+                        assistSelect
+                            ? assistSelect.value
+                            : "";
+
+
+                    const isPenalty =
+                        penaltyCheckbox
+                            ? penaltyCheckbox.checked
+                            : false;
+
+
+                    if (!playerId) {
+
+                        return {
+                            valid: false,
+                            message:
+                                "Every goal must have a scorer selected."
+                        };
                     }
 
 
-                    // ========================================
-                    // INSERT RESULT
-                    // ========================================
+                    const minute =
+                        Number(
+                            minuteValue
+                        );
 
-                    const {
-                        data: result,
-                        error: resultError
-                    } =
-                        await supabaseClient
-                            .from("results")
-                            .insert({
-
-                                fixture_id:
-                                    currentFixture.id,
-
-                                home_score:
-                                    homeFinalScore,
-
-                                away_score:
-                                    awayFinalScore,
-
-                                match_report:
-                                    matchReport
-                                        ? matchReport.value.trim() ||
-                                          null
-                                        : null
-
-                            })
-                            .select(
-                                "id"
-                            )
-                            .single();
-
-
-                    if (resultError) {
-                        throw resultError;
-                    }
-
-
-                    // ========================================
-                    // INSERT GOAL SCORERS
-                    // ========================================
 
                     if (
-                        allGoals.length > 0
+                        !Number.isInteger(
+                            minute
+                        ) ||
+                        minute < 1 ||
+                        minute > 130
                     ) {
 
-                        const goalRows =
-                            allGoals.map(
-                                function (goal) {
+                        return {
+                            valid: false,
+                            message:
+                                "Every goal must have a valid minute between 1 and 130."
+                        };
+                    }
 
-                                    return {
 
-                                        result_id:
-                                            result.id,
+                    // A player should not assist his own goal.
 
-                                        player_id:
-                                            goal.player_id,
+                    if (
+                        assistPlayerId &&
+                        String(
+                            assistPlayerId
+                        ) === String(
+                            playerId
+                        )
+                    ) {
 
-                                        minute:
-                                            goal.minute,
+                        return {
+                            valid: false,
+                            message:
+                                "A goal scorer cannot be recorded as the assister for the same goal."
+                        };
+                    }
 
-                                        assist_player_id:
-                                            goal.assist_player_id,
 
-                                        is_penalty:
-                                            goal.is_penalty
+                    goals.push({
 
-                                    };
-                                }
+                        player_id:
+                            Number(
+                                playerId
+                            ),
+
+                        minute:
+                            minute,
+
+                        assist_player_id:
+                            assistPlayerId
+                                ? Number(
+                                    assistPlayerId
+                                )
+                                : null,
+
+                        is_penalty:
+                            isPenalty
+
+                    });
+                }
+
+
+                return {
+                    valid: true,
+                    goals: goals
+                };
+            }
+
+
+            const homeGoalData =
+                readGoalRows(
+                    homeGoalRows
+                );
+
+
+            if (!homeGoalData.valid) {
+
+                showResultMessage(
+                    "❌ " +
+                    homeGoalData.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const awayGoalData =
+                readGoalRows(
+                    awayGoalRows
+                );
+
+
+            if (!awayGoalData.valid) {
+
+                showResultMessage(
+                    "❌ " +
+                    awayGoalData.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const homeScorers =
+                homeGoalData.goals;
+
+
+            const awayScorers =
+                awayGoalData.goals;
+
+
+            const allGoals =
+                [
+                    ...homeScorers,
+                    ...awayScorers
+                ];
+
+
+            // ========================================
+            // GET APPEARANCES
+            // ========================================
+
+            const appearanceCheckboxes =
+                appearancePlayersContainer
+                    ? Array.from(
+                        appearancePlayersContainer.querySelectorAll(
+                            "input[type='checkbox']:checked"
+                        )
+                    )
+                    : [];
+
+
+            const appearancePlayers =
+                appearanceCheckboxes
+                    .map(
+                        function (checkbox) {
+
+                            return Number(
+                                checkbox.value
+                            );
+
+                        }
+                    )
+                    .filter(
+                        function (playerId) {
+
+                            return Number.isInteger(
+                                playerId
+                            ) &&
+                            playerId > 0;
+
+                        }
+                    );
+
+
+            // ========================================
+            // APPEARANCES REQUIRED
+            // ========================================
+
+            if (
+                appearancePlayers.length === 0
+            ) {
+
+                showResultMessage(
+                    "❌ Please select the players who appeared in the match.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const appearanceSet =
+                new Set(
+                    appearancePlayers.map(
+                        function (playerId) {
+                            return String(
+                                playerId
+                            );
+                        }
+                    )
+                );
+
+
+            // ========================================
+            // SCORERS MUST HAVE APPEARED
+            // ========================================
+
+            for (
+                let i = 0;
+                i < allGoals.length;
+                i++
+            ) {
+
+                if (
+                    !appearanceSet.has(
+                        String(
+                            allGoals[i].player_id
+                        )
+                    )
+                ) {
+
+                    showResultMessage(
+                        "❌ Every goal scorer must also be selected under Player Appearances.",
+                        "error"
+                    );
+
+                    return;
+                }
+            }
+
+
+            // ========================================
+            // ASSIST PROVIDERS MUST HAVE APPEARED
+            // ========================================
+
+            for (
+                let i = 0;
+                i < allGoals.length;
+                i++
+            ) {
+
+                const assistId =
+                    allGoals[i]
+                        .assist_player_id;
+
+
+                if (
+                    assistId &&
+                    !appearanceSet.has(
+                        String(
+                            assistId
+                        )
+                    )
+                ) {
+
+                    showResultMessage(
+                        "❌ Every assist provider must also be selected under Player Appearances.",
+                        "error"
+                    );
+
+                    return;
+                }
+            }
+
+
+            // ========================================
+            // GET YELLOW CARDS
+            // ========================================
+
+            const yellowCards =
+                getCardData(
+                    yellowCardsContainer,
+                    "yellow"
+                );
+
+
+            // ========================================
+            // GET RED CARDS
+            // ========================================
+
+            const redCards =
+                getCardData(
+                    redCardsContainer,
+                    "red"
+                );
+
+
+            const allCards =
+                [
+                    ...yellowCards,
+                    ...redCards
+                ];
+
+
+            // ========================================
+            // VALIDATE CARD PLAYERS
+            // ========================================
+
+            for (
+                let i = 0;
+                i < allCards.length;
+                i++
+            ) {
+
+                const card =
+                    allCards[i];
+
+
+                if (
+                    !appearanceSet.has(
+                        String(
+                            card.player_id
+                        )
+                    )
+                ) {
+
+                    showResultMessage(
+                        "❌ Every player receiving a card must also be selected under Player Appearances.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    !card.minute ||
+                    card.minute < 1 ||
+                    card.minute > 130
+                ) {
+
+                    showResultMessage(
+                        "❌ Every yellow/red card must have a valid minute between 1 and 130.",
+                        "error"
+                    );
+
+                    return;
+                }
+            }
+
+
+            // ========================================
+            // CALCULATE GOALS
+            // ========================================
+
+            const goalCounts =
+                {};
+
+
+            allGoals.forEach(
+                function (goal) {
+
+                    const key =
+                        String(
+                            goal.player_id
+                        );
+
+
+                    goalCounts[key] =
+                        (
+                            goalCounts[key] ||
+                            0
+                        ) + 1;
+
+                }
+            );
+
+
+            // ========================================
+            // CALCULATE ASSISTS
+            // ========================================
+
+            const assistCounts =
+                {};
+
+
+            allGoals.forEach(
+                function (goal) {
+
+                    if (
+                        goal.assist_player_id
+                    ) {
+
+                        const key =
+                            String(
+                                goal.assist_player_id
                             );
 
 
-                        const {
-                            error: goalError
-                        } =
-                            await supabaseClient
-                                .from(
-                                    "goal_scorers"
-                                )
-                                .insert(
-                                    goalRows
-                                );
-
-
-                        if (goalError) {
-
-                            await supabaseClient
-                                .from(
-                                    "results"
-                                )
-                                .delete()
-                                .eq(
-                                    "id",
-                                    result.id
-                                );
-
-                            throw goalError;
-                        }
+                        assistCounts[key] =
+                            (
+                                assistCounts[key] ||
+                                0
+                            ) + 1;
                     }
 
-
-                    // ========================================
-                    // CALCULATE PLAYER GOALS
-                    // ========================================
-
-                    const goalCounts = {};
+                }
+            );
 
 
-                    allGoals.forEach(
-                        function (goal) {
+            // ========================================
+            // CALCULATE YELLOW CARDS
+            // ========================================
 
-                            goalCounts[
-                                goal.player_id
-                            ] =
-                                (
-                                    goalCounts[
-                                        goal.player_id
-                                    ] || 0
-                                ) + 1;
+            const yellowCardCounts =
+                {};
 
-                        }
+
+            yellowCards.forEach(
+                function (card) {
+
+                    const key =
+                        String(
+                            card.player_id
+                        );
+
+
+                    yellowCardCounts[key] =
+                        (
+                            yellowCardCounts[key] ||
+                            0
+                        ) + 1;
+
+                }
+            );
+
+
+            // ========================================
+            // CALCULATE RED CARDS
+            // ========================================
+
+            const redCardCounts =
+                {};
+
+
+            redCards.forEach(
+                function (card) {
+
+                    const key =
+                        String(
+                            card.player_id
+                        );
+
+
+                    redCardCounts[key] =
+                        (
+                            redCardCounts[key] ||
+                            0
+                        ) + 1;
+
+                }
+            );
+
+
+            // ========================================
+            // MATCH REPORT
+            // ========================================
+
+            const report =
+                matchReport
+                    ? matchReport.value.trim()
+                    : "";
+
+
+            // ========================================
+            // DISABLE BUTTON
+            // ========================================
+
+            saveResultBtn.disabled =
+                true;
+
+
+            saveResultBtn.textContent =
+                "Saving Result...";
+
+
+            try {
+
+                showResultMessage(
+                    "Saving match result...",
+                    ""
+                );
+
+
+                // ========================================
+                // CHECK EXISTING RESULT
+                // ========================================
+
+                const {
+                    data: existingResult,
+                    error: existingError
+                } =
+                    await supabaseClient
+                        .from("results")
+                        .select("id")
+                        .eq(
+                            "fixture_id",
+                            currentFixture.id
+                        )
+                        .maybeSingle();
+
+
+                if (existingError) {
+                    throw existingError;
+                }
+
+
+                if (existingResult) {
+
+                    throw new Error(
+                        "This fixture already has a result."
                     );
+                }
 
 
-                    // ========================================
-                    // CALCULATE PLAYER ASSISTS
-                    // ========================================
+                // ========================================
+                // INSERT RESULT
+                // ========================================
 
-                    const assistCounts = {};
+                const {
+                    data: result,
+                    error: resultError
+                } =
+                    await supabaseClient
+                        .from("results")
+                        .insert({
+
+                            fixture_id:
+                                currentFixture.id,
+
+                            home_score:
+                                homeFinalScore,
+
+                            away_score:
+                                awayFinalScore,
+
+                            match_report:
+                                report ||
+                                null
+
+                        })
+                        .select("id")
+                        .single();
 
 
-                    allGoals.forEach(
-                        function (goal) {
-
-                            if (
-                                goal.assist_player_id
-                            ) {
-
-                                assistCounts[
-                                    goal.assist_player_id
-                                ] =
-                                    (
-                                        assistCounts[
-                                            goal.assist_player_id
-                                        ] || 0
-                                    ) + 1;
-                            }
-
-                        }
-                    );
+                if (resultError) {
+                    throw resultError;
+                }
 
 
-                    // ========================================
-                    // CREATE PLAYER MATCH STATS
-                    // ========================================
+                // ========================================
+                // INSERT GOAL SCORERS
+                // ========================================
 
-                    const playerStats =
-                        appearancePlayers.map(
-                            function (playerId) {
+                if (
+                    allGoals.length > 0
+                ) {
+
+                    const goalRows =
+                        allGoals.map(
+                            function (goal) {
 
                                 return {
 
@@ -4884,241 +5195,316 @@ function initializeResultEventControls() {
                                         result.id,
 
                                     player_id:
-                                        playerId,
+                                        goal.player_id,
 
-                                    appearances:
-                                        1,
+                                    minute:
+                                        goal.minute,
 
-                                    goals:
-                                        goalCounts[
-                                            playerId
-                                        ] || 0,
+                                    assist_player_id:
+                                        goal.assist_player_id,
 
-                                    assists:
-                                        assistCounts[
-                                            playerId
-                                        ] || 0,
-
-                                    yellow_cards:
-                                        0,
-
-                                    red_cards:
-                                        0
+                                    is_penalty:
+                                        goal.is_penalty
 
                                 };
+
                             }
                         );
 
 
-                    // ========================================
-                    // INSERT PLAYER MATCH STATS
-                    // ========================================
-
-                    if (
-                        playerStats.length > 0
-                    ) {
-
-                        const {
-                            error: statsError
-                        } =
-                            await supabaseClient
-                                .from(
-                                    "player_match_stats"
-                                )
-                                .insert(
-                                    playerStats
-                                );
-
-
-                        if (statsError) {
-
-                            await supabaseClient
-                                .from(
-                                    "goal_scorers"
-                                )
-                                .delete()
-                                .eq(
-                                    "result_id",
-                                    result.id
-                                );
-
-
-                            await supabaseClient
-                                .from(
-                                    "results"
-                                )
-                                .delete()
-                                .eq(
-                                    "id",
-                                    result.id
-                                );
-
-                            throw statsError;
-                        }
-                    }
-
-
-                    // ========================================
-                    // MARK FIXTURE COMPLETED
-                    // ========================================
-
                     const {
-                        error: fixtureUpdateError
+                        error: goalError
                     } =
                         await supabaseClient
-                            .from("fixtures")
-                            .update({
-
-                                status:
-                                    "Completed"
-
-                            })
-                            .eq(
-                                "id",
-                                currentFixture.id
+                            .from(
+                                "goal_scorers"
+                            )
+                            .insert(
+                                goalRows
                             );
 
 
-                    if (
-                        fixtureUpdateError
-                    ) {
+                    if (goalError) {
 
-                        console.error(
-                            "Fixture status update error:",
-                            fixtureUpdateError
-                        );
+                        await supabaseClient
+                            .from("results")
+                            .delete()
+                            .eq(
+                                "id",
+                                result.id
+                            );
 
-
-                        throw new Error(
-                            "Result was saved, but the fixture could not be marked Completed. " +
-                            fixtureUpdateError.message
-                        );
+                        throw goalError;
                     }
-
-
-                    // ========================================
-                    // SUCCESS
-                    // ========================================
-
-                    showResultMessage(
-                        "✅ Match result saved successfully!",
-                        "success"
-                    );
-
-
-                    alert(
-                        "✅ Match result saved successfully!"
-                    );
-
-
-                    if (homeGoalsContainer) {
-
-                        homeGoalsContainer.innerHTML =
-                            "";
-                    }
-
-
-                    if (awayGoalsContainer) {
-
-                        awayGoalsContainer.innerHTML =
-                            "";
-                    }
-
-
-                    const appearanceSection =
-                        document.getElementById(
-                            "appearanceSection"
-                        );
-
-
-                    if (appearanceSection) {
-                        appearanceSection.remove();
-                    }
-
-
-                    if (homeScore) {
-
-                        homeScore.value =
-                            0;
-                    }
-
-
-                    if (awayScore) {
-
-                        awayScore.value =
-                            0;
-                    }
-
-
-                    if (matchReport) {
-
-                        matchReport.value =
-                            "";
-                    }
-
-
-                    if (resultScoreSection) {
-
-                        resultScoreSection.style.display =
-                            "none";
-                    }
-
-
-                    if (selectedFixtureInfo) {
-
-                        selectedFixtureInfo.style.display =
-                            "none";
-                    }
-
-
-                    currentFixture =
-                        null;
-
-
-                    await loadFixtures();
-
-                    await loadResultFixtures();
-
-
-                    if (resultFixtureSelect) {
-
-                        resultFixtureSelect.value =
-                            "";
-                    }
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Save result error:",
-                        error
-                    );
-
-
-                    showResultMessage(
-                        "❌ Unable to save result: " +
-                        (
-                            error.message ||
-                            "Unknown error"
-                        ),
-                        "error"
-                    );
-
-
-                } finally {
-
-                    saveResultBtn.disabled =
-                        false;
-
-
-                    saveResultBtn.textContent =
-                        "💾 SAVE RESULT";
                 }
 
-            }
-        );
-    }
 
+                // ========================================
+                // CREATE PLAYER MATCH STATS
+                // ========================================
+
+                const playerStats =
+                    appearancePlayers.map(
+                        function (playerId) {
+
+                            const key =
+                                String(
+                                    playerId
+                                );
+
+
+                            return {
+
+                                result_id:
+                                    result.id,
+
+                                player_id:
+                                    playerId,
+
+                                appearances:
+                                    1,
+
+                                goals:
+                                    goalCounts[key] ||
+                                    0,
+
+                                assists:
+                                    assistCounts[key] ||
+                                    0,
+
+                                yellow_cards:
+                                    yellowCardCounts[key] ||
+                                    0,
+
+                                red_cards:
+                                    redCardCounts[key] ||
+                                    0
+
+                            };
+
+                        }
+                    );
+
+
+                // ========================================
+                // INSERT PLAYER MATCH STATS
+                // ========================================
+
+                if (
+                    playerStats.length > 0
+                ) {
+
+                    const {
+                        error: statsError
+                    } =
+                        await supabaseClient
+                            .from(
+                                "player_match_stats"
+                            )
+                            .insert(
+                                playerStats
+                            );
+
+
+                    if (statsError) {
+
+                        await supabaseClient
+                            .from(
+                                "goal_scorers"
+                            )
+                            .delete()
+                            .eq(
+                                "result_id",
+                                result.id
+                            );
+
+
+                        await supabaseClient
+                            .from("results")
+                            .delete()
+                            .eq(
+                                "id",
+                                result.id
+                            );
+
+
+                        throw statsError;
+                    }
+                }
+
+
+                // ========================================
+                // MARK FIXTURE COMPLETED
+                // ========================================
+
+                const {
+                    error: fixtureUpdateError
+                } =
+                    await supabaseClient
+                        .from("fixtures")
+                        .update({
+
+                            status:
+                                "Completed"
+
+                        })
+                        .eq(
+                            "id",
+                            currentFixture.id
+                        );
+
+
+                if (
+                    fixtureUpdateError
+                ) {
+
+                    throw new Error(
+                        "Result was saved, but the fixture could not be marked Completed. " +
+                        fixtureUpdateError.message
+                    );
+                }
+
+
+                // ========================================
+                // SUCCESS
+                // ========================================
+
+                showResultMessage(
+                    "✅ Match result saved successfully!",
+                    "success"
+                );
+
+
+                alert(
+                    "✅ Match result saved successfully!"
+                );
+
+
+                // ========================================
+                // CLEAR FORM
+                // ========================================
+
+                if (homeGoalsContainer) {
+
+                    homeGoalsContainer.innerHTML =
+                        "";
+                }
+
+
+                if (awayGoalsContainer) {
+
+                    awayGoalsContainer.innerHTML =
+                        "";
+                }
+
+
+                if (appearancePlayersContainer) {
+
+                    appearancePlayersContainer.innerHTML =
+                        "";
+                }
+
+
+                if (yellowCardsContainer) {
+
+                    yellowCardsContainer.innerHTML =
+                        "";
+                }
+
+
+                if (redCardsContainer) {
+
+                    redCardsContainer.innerHTML =
+                        "";
+                }
+
+
+                if (homeScore) {
+
+                    homeScore.value =
+                        "";
+                }
+
+
+                if (awayScore) {
+
+                    awayScore.value =
+                        "";
+                }
+
+
+                if (matchReport) {
+
+                    matchReport.value =
+                        "";
+                }
+
+
+                if (resultScoreSection) {
+
+                    resultScoreSection.style.display =
+                        "none";
+                }
+
+
+                if (selectedFixtureInfo) {
+
+                    selectedFixtureInfo.style.display =
+                        "none";
+                }
+
+
+                currentFixture =
+                    null;
+
+
+                // ========================================
+                // REFRESH DASHBOARD
+                // ========================================
+
+                await loadFixtures();
+
+                await loadResultFixtures();
+
+
+                if (resultFixtureSelect) {
+
+                    resultFixtureSelect.value =
+                        "";
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "SAVE RESULT ERROR:",
+                    error
+                );
+
+
+                showResultMessage(
+                    "❌ Unable to save result: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+
+            } finally {
+
+                saveResultBtn.disabled =
+                    false;
+
+
+                saveResultBtn.textContent =
+                    "💾 SAVE RESULT";
+            }
+
+        }
+    );
+}
 
     // ========================================
     // LOAD PENDING TEAMS
