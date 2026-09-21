@@ -1415,6 +1415,18 @@ resultRows.forEach(
 
                 resultCard.className =
                     "result-card";
+                resultCard.style.cursor = "pointer";
+
+resultCard.addEventListener(
+    "click",
+    function () {
+        window.location.href =
+            "match-details.html?id=" +
+            encodeURIComponent(
+                matchResult.id
+            );
+    }
+);
 
                 resultCard.innerHTML = `
                     <div
