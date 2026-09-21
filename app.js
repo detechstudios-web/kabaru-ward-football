@@ -2644,12 +2644,9 @@ if (playerStatsError) {
                         );
 
                     aggregate[playerId].appearances +=
-                        Number(
-                            stat.appearances ||
-                            stat.minutes_played > 0
-                                ? 1
-                                : 0
-                        );
+    Number(
+        stat.appearances || 0
+    );
 
                     aggregate[playerId].yellow_cards +=
                         Number(
