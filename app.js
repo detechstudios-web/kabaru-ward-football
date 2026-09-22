@@ -2471,13 +2471,29 @@ if (seasonCompetitionIds.length > 0) {
                         </td>
 
                         <td
-                            style="
-                                font-weight:800;
-                            "
-                        >
-                            ${team.points}
-                        </td>
-                    `;
+    style="
+        font-weight:800;
+    "
+>
+    ${team.points}
+</td>
+
+<td>
+    ${
+        formHtml ||
+        `
+            <span
+                style="
+                    color:#999;
+                    font-size:12px;
+                "
+            >
+                —
+            </span>
+        `
+    }
+</td>
+`;
 
                     leagueTableEl.appendChild(
                         row
