@@ -2496,7 +2496,73 @@ function renderCreatedFixtures() {
     if (!fixturesList) {
         return;
     }
+    // ========================================
+    // UPDATE FIXTURE FILTER COUNTS
+    // ========================================
 
+    const allCount =
+        adminFixtures.length;
+
+    const scheduledCount =
+        adminFixtures.filter(
+            function (fixture) {
+                return String(
+                    fixture.status ||
+                    "Scheduled"
+                ).toLowerCase() ===
+                "scheduled";
+            }
+        ).length;
+
+    const publishedCount =
+        adminFixtures.filter(
+            function (fixture) {
+                return String(
+                    fixture.status ||
+                    "Scheduled"
+                ).toLowerCase() ===
+                "published";
+            }
+        ).length;
+
+    const completedCount =
+        adminFixtures.filter(
+            function (fixture) {
+                return String(
+                    fixture.status ||
+                    "Scheduled"
+                ).toLowerCase() ===
+                "completed";
+            }
+        ).length;
+
+    const filterSelect =
+        document.getElementById(
+            "createdFixtureStatusFilter"
+        );
+
+    if (filterSelect) {
+
+        filterSelect.options[0].textContent =
+            "📋 All Fixtures (" +
+            allCount +
+            ")";
+
+        filterSelect.options[1].textContent =
+            "📅 Scheduled (" +
+            scheduledCount +
+            ")";
+
+        filterSelect.options[2].textContent =
+            "📢 Published (" +
+            publishedCount +
+            ")";
+
+        filterSelect.options[3].textContent =
+            "✅ Completed (" +
+            completedCount +
+            ")";
+    }
     const filteredFixtures =
         adminFixtures.filter(
             function (fixture) {
