@@ -1996,250 +1996,361 @@ resultRows.forEach(
                     }
                 }
             );
-// ========================================
-// BUILD FORM FROM ALL COMPETITIONS
-// IN THE CURRENT SEASON
-// ========================================
-//
-// IMPORTANT:
-// - League statistics remain League-only.
-// - Form uses the latest 5 completed
-//   matches from ALL competitions.
-// - Newest match comes first.
-// - Cup/Friendly matches are included.
-// ========================================
-
-const {
-    data: seasonCompetitions,
-    error: seasonCompetitionsError
-} = await supabaseClient
-    .from("competitions")
-    .select(`
-        id,
-        season
-    `)
-    .eq(
-        "season",
-        season
-    );
-
-if (seasonCompetitionsError) {
-    throw seasonCompetitionsError;
-}
-
-const seasonCompetitionIds =
-    (seasonCompetitions || [])
-        .map(function (competition) {
-            return competition.id;
-        })
-        .filter(function (id) {
-            return id !== null &&
-                   id !== undefined;
-        });
-
-if (seasonCompetitionIds.length > 0) {
-
-    const {
-        data: allSeasonFixtures,
-        error: allSeasonFixturesError
-    } = await supabaseClient
-        .from("fixtures")
-        .select(`
-            id,
-            competition_id,
-            home_team_id,
-            away_team_id,
-            match_date,
-            kick_off,
-            status
-        `)
-        .in(
-            "competition_id",
-            seasonCompetitionIds
-        )
-        .eq(
-            "status",
-            "Completed"
-        )
-        .order(
-    "match_date",
-    {
-        ascending: true
-    }
-)
-.order(
-    "kick_off",
-    {
-        ascending: true
-    }
-);
-
-    if (allSeasonFixturesError) {
-        throw allSeasonFixturesError;
-    }
-
-    const completedSeasonFixtures =
-        allSeasonFixtures || [];
-
-    const allSeasonFixtureIds =
-        completedSeasonFixtures
-            .map(function (fixture) {
-                return fixture.id;
-            })
-            .filter(function (id) {
-                return id !== null &&
-                       id !== undefined;
-            });
-
-    let allSeasonResults = [];
-
-    if (allSeasonFixtureIds.length > 0) {
+        
+        // ========================================
+        // FORM FROM ALL CURRENT-SEASON
+        // COMPETITIONS
+        // ========================================
+        //
+        // IMPORTANT:
+        //
+        // League table statistics remain based
+        // ONLY on League matches.
+        //
+        // Form is based on ALL completed matches
+        // in ALL competitions for the current
+        // season.
+        //
+        // The five MOST RECENT matches are used.
+        //
+        // Display order:
+        // OLDEST of the five -> NEWEST of the five
+        //
+        // Therefore the newest result is always
+        // displayed at the FAR RIGHT.
+        // ========================================
 
         const {
-            data: seasonResults,
-            error: seasonResultsError
+            data: currentSeasonCompetitions,
+            error: seasonCompetitionsError
         } = await supabaseClient
-            .from("results")
+            .from("competitions")
             .select(`
                 id,
-                fixture_id,
-                home_score,
-                away_score
+                name,
+                competition_type,
+                season
             `)
-            .in(
-                "fixture_id",
-                allSeasonFixtureIds
+            .eq(
+                "season",
+                season
             );
 
-        if (seasonResultsError) {
-            throw seasonResultsError;
+        if (
+            seasonCompetitionsError
+        ) {
+            throw seasonCompetitionsError;
         }
 
-        allSeasonResults =
-            seasonResults || [];
-    }
+        const seasonCompetitionRows =
+            currentSeasonCompetitions ||
+            [];
 
-    const allSeasonResultMap = {};
+        const seasonCompetitionIds =
+            seasonCompetitionRows
+                .map(function (item) {
+                    return item.id;
+                })
+                .filter(function (id) {
+                    return id !== null &&
+                           id !== undefined;
+                });
 
-    allSeasonResults.forEach(
-        function (result) {
+        if (
+            seasonCompetitionIds.length > 0
+        ) {
 
-            allSeasonResultMap[
-                String(result.fixture_id)
-            ] = result;
-
-        }
-    );
-
-    // Clear any League-only form
-    // before rebuilding the correct
-    // all-competition form.
-    Object.keys(table).forEach(
-        function (teamId) {
-
-            table[teamId].form = [];
-
-        }
-    );
-
-    completedSeasonFixtures.forEach(
-        function (fixture) {
-
-            const result =
-                allSeasonResultMap[
-                    String(fixture.id)
-                ];
-
-            if (!result) {
-                return;
-            }
-
-            const homeId =
-                String(
-                    fixture.home_team_id
-                );
-
-            const awayId =
-                String(
-                    fixture.away_team_id
-                );
-
-            const homeTeam =
-                table[homeId];
-
-            const awayTeam =
-                table[awayId];
-
-            const homeScore =
-                Number(
-                    result.home_score
-                );
-
-            const awayScore =
-                Number(
-                    result.away_score
+            const {
+                data: allSeasonFixtures,
+                error: allSeasonFixturesError
+            } = await supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    status
+                `)
+                .in(
+                    "competition_id",
+                    seasonCompetitionIds
+                )
+                .eq(
+                    "status",
+                    "Completed"
+                )
+                .order(
+                    "match_date",
+                    {
+                        ascending: false
+                    }
+                )
+                .order(
+                    "kick_off",
+                    {
+                        ascending: false
+                    }
                 );
 
             if (
-                !Number.isFinite(homeScore) ||
-                !Number.isFinite(awayScore)
+                allSeasonFixturesError
             ) {
-                return;
+                throw allSeasonFixturesError;
             }
 
-            // Home team
+            const allSeasonFixtureRows =
+                allSeasonFixtures ||
+                [];
+
+            const allSeasonFixtureIds =
+                allSeasonFixtureRows
+                    .map(function (fixture) {
+                        return fixture.id;
+                    })
+                    .filter(function (id) {
+                        return id !== null &&
+                               id !== undefined;
+                    });
+
+            let allSeasonResults =
+                [];
+
             if (
-                homeTeam &&
-                homeTeam.form.length < 5
+                allSeasonFixtureIds.length > 0
             ) {
 
-                if (homeScore > awayScore) {
+                const {
+                    data: seasonResults,
+                    error: seasonResultsError
+                } = await supabaseClient
+                    .from("results")
+                    .select(`
+                        id,
+                        fixture_id,
+                        home_score,
+                        away_score
+                    `)
+                    .in(
+                        "fixture_id",
+                        allSeasonFixtureIds
+                    );
 
-                    homeTeam.form.push("W");
-
-                }
-                else if (
-                    homeScore < awayScore
+                if (
+                    seasonResultsError
                 ) {
-
-                    homeTeam.form.push("L");
-
+                    throw seasonResultsError;
                 }
-                else {
 
-                    homeTeam.form.push("D");
-
-                }
+                allSeasonResults =
+                    seasonResults ||
+                    [];
             }
 
-            // Away team
-            if (
-                awayTeam &&
-                awayTeam.form.length < 5
-            ) {
+            // ========================================
+            // CREATE RESULT LOOKUP
+            // ========================================
 
-                if (awayScore > homeScore) {
+            const allSeasonResultMap =
+                {};
 
-                    awayTeam.form.push("W");
+            allSeasonResults.forEach(
+                function (result) {
 
+                    allSeasonResultMap[
+                        String(
+                            result.fixture_id
+                        )
+                    ] = result;
                 }
-                else if (
-                    awayScore < homeScore
-                ) {
+            );
 
-                    awayTeam.form.push("L");
+            // ========================================
+            // RESET FORM
+            // ========================================
 
+            Object.keys(table).forEach(
+                function (teamId) {
+
+                    table[teamId].form = [];
                 }
-                else {
+            );
 
-                    awayTeam.form.push("D");
+            // ========================================
+            // BUILD COMPLETE FORM HISTORY
+            // ========================================
+            //
+            // Fixtures are currently loaded
+            // NEWEST -> OLDEST.
+            //
+            // We therefore collect ALL results
+            // first, then select the latest five,
+            // then reverse those five so they are
+            // displayed OLDEST -> NEWEST.
+            // ========================================
 
+            allSeasonFixtureRows.forEach(
+                function (fixture) {
+
+                    const result =
+                        allSeasonResultMap[
+                            String(
+                                fixture.id
+                            )
+                        ];
+
+                    if (!result) {
+                        return;
+                    }
+
+                    const homeId =
+                        String(
+                            fixture.home_team_id
+                        );
+
+                    const awayId =
+                        String(
+                            fixture.away_team_id
+                        );
+
+                    const home =
+                        table[homeId];
+
+                    const away =
+                        table[awayId];
+
+                    if (
+                        !home &&
+                        !away
+                    ) {
+                        return;
+                    }
+
+                    const homeScore =
+                        Number(
+                            result.home_score
+                        );
+
+                    const awayScore =
+                        Number(
+                            result.away_score
+                        );
+
+                    if (
+                        !Number.isFinite(
+                            homeScore
+                        ) ||
+                        !Number.isFinite(
+                            awayScore
+                        )
+                    ) {
+                        return;
+                    }
+
+                    // ========================================
+                    // HOME TEAM RESULT
+                    // ========================================
+
+                    if (home) {
+
+                        if (
+                            homeScore >
+                            awayScore
+                        ) {
+
+                            home.form.push(
+                                "W"
+                            );
+
+                        }
+                        else if (
+                            homeScore <
+                            awayScore
+                        ) {
+
+                            home.form.push(
+                                "L"
+                            );
+
+                        }
+                        else {
+
+                            home.form.push(
+                                "D"
+                            );
+                        }
+                    }
+
+                    // ========================================
+                    // AWAY TEAM RESULT
+                    // ========================================
+
+                    if (away) {
+
+                        if (
+                            awayScore >
+                            homeScore
+                        ) {
+
+                            away.form.push(
+                                "W"
+                            );
+
+                        }
+                        else if (
+                            awayScore <
+                            homeScore
+                        ) {
+
+                            away.form.push(
+                                "L"
+                            );
+
+                        }
+                        else {
+
+                            away.form.push(
+                                "D"
+                            );
+                        }
+                    }
                 }
-            }
+            );
 
+            // ========================================
+            // KEEP ONLY THE LATEST FIVE
+            // AND DISPLAY OLDEST -> NEWEST
+            // ========================================
+
+            Object.keys(table).forEach(
+                function (teamId) {
+
+                    const form =
+                        table[teamId].form || [];
+
+                    // Because the fixture list is
+                    // NEWEST -> OLDEST:
+                    //
+                    // slice(0, 5) gives the latest
+                    // five results in reverse order.
+                    //
+                    // reverse() changes them to:
+                    // OLDEST -> NEWEST.
+                    //
+                    // This guarantees that the newest
+                    // result appears at the FAR RIGHT.
+
+                    table[teamId].form =
+                        form
+                            .slice(0, 5)
+                            .reverse();
+                }
+            );
         }
-    );
-}
+
+
             // ========================================
             // SORT TABLE
             // ========================================
