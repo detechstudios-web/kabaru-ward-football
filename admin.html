@@ -1872,7 +1872,719 @@
 
 </div>
 
+<!-- ========================================
+     COMPETITION SUPPORT MANAGER
+========================================= -->
 
+<h2
+    id="supporters"
+    class="section-heading section-anchor">
+
+    🤝 Competition Support
+
+</h2>
+
+
+<div class="admin-card">
+
+    <div class="section-heading">
+
+        <h2>
+            ➕ Add Competition Supporter
+        </h2>
+
+        <p>
+            Add individuals, companies, cooperatives,
+            organisations, football partners and other
+            supporters connected with competitions.
+        </p>
+
+    </div>
+
+
+    <!-- ========================================
+         SUPPORTER BASIC INFORMATION
+    ========================================= -->
+
+    <form id="supporterForm">
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label for="supporterName">
+                    Supporter Name
+                </label>
+
+                <input
+                    type="text"
+                    id="supporterName"
+                    placeholder="e.g. John Kamau / ABC Company"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterType">
+                    Supporter Type
+                </label>
+
+                <select
+                    id="supporterType"
+                    required>
+
+                    <option value="">
+                        Select supporter type
+                    </option>
+
+                    <option value="Individual">
+                        👤 Individual
+                    </option>
+
+                    <option value="Company/Business">
+                        🏢 Company / Business
+                    </option>
+
+                    <option value="Cooperative/SACCO">
+                        🤝 Cooperative / SACCO
+                    </option>
+
+                    <option value="Organisation/Institution">
+                        🏛️ Organisation / Institution
+                    </option>
+
+                    <option value="Football Partner">
+                        ⚽ Football Partner
+                    </option>
+
+                    <option value="Community Supporter">
+                        🌍 Community Supporter
+                    </option>
+
+                    <option value="Other">
+                        📌 Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterPhone">
+                    Phone
+                </label>
+
+                <input
+                    type="tel"
+                    id="supporterPhone"
+                    placeholder="e.g. 0712345678"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="supporterEmail"
+                    placeholder="example@email.com"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterWebsite">
+                    Website
+                </label>
+
+                <input
+                    type="url"
+                    id="supporterWebsite"
+                    placeholder="https://example.com"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterFacebook">
+                    Facebook
+                </label>
+
+                <input
+                    type="url"
+                    id="supporterFacebook"
+                    placeholder="Facebook profile/page link"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterInstagram">
+                    Instagram
+                </label>
+
+                <input
+                    type="url"
+                    id="supporterInstagram"
+                    placeholder="Instagram profile link"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterX">
+                    X / Twitter
+                </label>
+
+                <input
+                    type="url"
+                    id="supporterX"
+                    placeholder="X profile link"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="supporterYoutube">
+                    YouTube
+                </label>
+
+                <input
+                    type="url"
+                    id="supporterYoutube"
+                    placeholder="YouTube channel link"
+                >
+
+            </div>
+
+
+            <!-- ========================================
+                 PHOTO
+            ========================================= -->
+
+            <div
+                class="form-group"
+                id="supporterPhotoGroup">
+
+                <label for="supporterPhoto">
+                    📷 Supporter Photo
+                </label>
+
+                <input
+                    type="file"
+                    id="supporterPhoto"
+                    accept="image/*"
+                >
+
+                <small
+                    style="
+                        margin-top:6px;
+                        color:var(--muted);
+                    ">
+
+                    Use for an individual supporter.
+                    The image will be uploaded automatically.
+
+                </small>
+
+                <div
+                    id="supporterPhotoPreview"
+                    style="
+                        margin-top:10px;
+                        display:none;
+                    ">
+                </div>
+
+            </div>
+
+
+            <!-- ========================================
+                 LOGO
+            ========================================= -->
+
+            <div
+                class="form-group"
+                id="supporterLogoGroup">
+
+                <label for="supporterLogo">
+                    🏢 Supporter Logo
+                </label>
+
+                <input
+                    type="file"
+                    id="supporterLogo"
+                    accept="image/*"
+                >
+
+                <small
+                    style="
+                        margin-top:6px;
+                        color:var(--muted);
+                    ">
+
+                    Use for companies, cooperatives,
+                    organisations and football partners.
+                    The image will be uploaded automatically.
+
+                </small>
+
+                <div
+                    id="supporterLogoPreview"
+                    style="
+                        margin-top:10px;
+                        display:none;
+                    ">
+                </div>
+
+            </div>
+
+
+            <!-- ========================================
+                 STATUS
+            ========================================= -->
+
+            <div class="form-group">
+
+                <label for="supporterActive">
+                    Status
+                </label>
+
+                <select id="supporterActive">
+
+                    <option value="true">
+                        🟢 Active
+                    </option>
+
+                    <option value="false">
+                        ⚪ Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ========================================
+             DESCRIPTION
+        ========================================= -->
+
+        <div
+            class="form-group"
+            style="margin-top:16px;">
+
+            <label for="supporterDescription">
+                Supporter Description
+            </label>
+
+            <textarea
+                id="supporterDescription"
+                rows="4"
+                placeholder="Enter a short description about the supporter..."
+            ></textarea>
+
+        </div>
+
+
+        <!-- ========================================
+             FORM MESSAGE
+        ========================================= -->
+
+        <div
+            id="supporterFormMessage"
+            class="status-message">
+        </div>
+
+
+        <!-- ========================================
+             SAVE BUTTON
+        ========================================= -->
+
+        <button
+            type="submit"
+            id="saveSupporterButton"
+            class="admin-btn create-fixture-btn">
+
+            🤝 ADD SUPPORTER
+
+        </button>
+
+
+        <button
+            type="button"
+            id="cancelSupporterEditButton"
+            class="admin-btn"
+            style="
+                display:none;
+                background:#777;
+                color:#fff;
+            ">
+
+            ✖ CANCEL EDIT
+
+        </button>
+
+
+    </form>
+
+</div>
+
+
+<!-- ========================================
+     COMPETITION SUPPORT RECORD
+========================================= -->
+
+<div class="admin-card">
+
+    <h2>
+        🏆 Link Supporter to Competition
+    </h2>
+
+    <p>
+        Select a supporter and the competition they
+        are supporting. A single supporter can be linked
+        to more than one competition.
+    </p>
+
+
+    <form id="competitionSupportForm">
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label for="competitionSupporterSelect">
+                    🤝 Supporter
+                </label>
+
+                <select
+                    id="competitionSupporterSelect"
+                    required>
+
+                    <option value="">
+                        Loading supporters...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportCompetitionSelect">
+                    🏆 Competition
+                </label>
+
+                <select
+                    id="competitionSupportCompetitionSelect"
+                    required>
+
+                    <option value="">
+                        Loading competitions...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportType">
+                    Support Type
+                </label>
+
+                <select
+                    id="competitionSupportType"
+                    required>
+
+                    <option value="External Sponsor">
+                        External Sponsor
+                    </option>
+
+                    <option value="Individual Supporter">
+                        Individual Supporter
+                    </option>
+
+                    <option value="Company/Business">
+                        Company / Business
+                    </option>
+
+                    <option value="Cooperative/SACCO">
+                        Cooperative / SACCO
+                    </option>
+
+                    <option value="Organisation/Institution">
+                        Organisation / Institution
+                    </option>
+
+                    <option value="Football Partner">
+                        Football Partner
+                    </option>
+
+                    <option value="Community Support">
+                        Community Support
+                    </option>
+
+                    <option value="Team Contribution">
+                        Team Contribution
+                    </option>
+
+                    <option value="In-kind Support">
+                        In-kind Support
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportTitle">
+                    Support Title
+                </label>
+
+                <input
+                    type="text"
+                    id="competitionSupportTitle"
+                    placeholder="e.g. Main Competition Supporter"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportAmount">
+                    Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="competitionSupportAmount"
+                    min="0"
+                    step="0.01"
+                    placeholder="Optional"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportAmountPublic">
+                    Display Amount Publicly?
+                </label>
+
+                <select
+                    id="competitionSupportAmountPublic">
+
+                    <option value="false">
+                        No
+                    </option>
+
+                    <option value="true">
+                        Yes
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportFeatured">
+                    Featured Supporter?
+                </label>
+
+                <select
+                    id="competitionSupportFeatured">
+
+                    <option value="false">
+                        No
+                    </option>
+
+                    <option value="true">
+                        Yes
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportDisplayOrder">
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    id="competitionSupportDisplayOrder"
+                    min="0"
+                    value="0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="competitionSupportStatus">
+                    Support Status
+                </label>
+
+                <select
+                    id="competitionSupportStatus">
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Expired">
+                        Expired
+                    </option>
+
+                    <option value="Inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+        <div
+            class="form-group"
+            style="margin-top:16px;">
+
+            <label for="competitionSupportDescription">
+                Support Description
+            </label>
+
+            <textarea
+                id="competitionSupportDescription"
+                rows="4"
+                placeholder="Describe the support provided for this competition..."
+            ></textarea>
+
+        </div>
+
+
+        <div
+            id="competitionSupportFormMessage"
+            class="status-message">
+        </div>
+
+
+        <button
+            type="submit"
+            id="saveCompetitionSupportButton"
+            class="admin-btn create-fixture-btn">
+
+            🏆 LINK SUPPORT TO COMPETITION
+
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ========================================
+     EXISTING SUPPORTERS
+========================================= -->
+
+<div class="admin-card">
+
+    <h2>
+        📋 Existing Competition Supporters
+    </h2>
+
+    <p>
+        Manage supporters already registered in the
+        system. You will be able to edit, activate,
+        deactivate and delete them.
+    </p>
+
+    <div
+        id="supportersList"
+        class="fixtures-wrapper">
+
+        <div class="empty-message">
+            Loading supporters...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     COMPETITION SUPPORT RECORDS
+========================================= -->
+
+<div class="admin-card">
+
+    <h2>
+        🏆 Competition Support Records
+    </h2>
+
+    <p>
+        View and manage the competitions linked to
+        each supporter.
+    </p>
+
+    <div
+        id="competitionSupportList"
+        class="fixtures-wrapper">
+
+        <div class="empty-message">
+            Loading competition support records...
+        </div>
+
+    </div>
+
+</div>
 <!-- ========================================
      DASHBOARD COUNTER SCRIPT
 ========================================= -->
