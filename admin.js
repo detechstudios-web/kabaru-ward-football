@@ -5160,7 +5160,69 @@ if (saveResultBtn) {
                     throw resultError;
                 }
 
+// ========================================
+// INSERT MATCH CARD EVENTS
+// ========================================
 
+if (
+    allCards.length > 0
+) {
+
+    const cardRows =
+        allCards.map(
+            function (card) {
+
+                return {
+
+                    result_id:
+                        result.id,
+
+                    player_id:
+                        card.player_id,
+
+                    card_type:
+                        card.card_type,
+
+                    minute:
+                        card.minute
+
+                };
+
+            }
+        );
+
+
+    const {
+        error: cardError
+    } =
+        await supabaseClient
+            .from("match_cards")
+            .insert(
+                cardRows
+            );
+
+
+    if (cardError) {
+
+        await supabaseClient
+            .from("results")
+            .delete()
+            .eq(
+                "id",
+                result.id
+            );
+
+        throw new Error(
+            "Failed to save match card events: " +
+            cardError.message
+        );
+    }
+}
+
+
+// ========================================
+// INSERT GOAL SCORERS
+// ========================================
                 // ========================================
                 // INSERT GOAL SCORERS
                 // ========================================
