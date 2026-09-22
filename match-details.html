@@ -2394,186 +2394,320 @@ async function loadMatchDetails() {
 
         }
 
+/* =================================================
+   MATCH CARD EVENTS
+================================================= */
 
-        /* =================================================
-           CARDS
-        ================================================= */
+const cardsResponse =
+    await supabaseClient
 
-        const cards =
-            stats.filter(
-                row =>
-                    Number(
-                        row.yellow_cards ||
-                        0
-                    ) > 0 ||
-                    Number(
-                        row.red_cards ||
-                        0
-                    ) > 0
+        .from("match_cards")
+
+        .select(`
+            id,
+            result_id,
+            player_id,
+            card_type,
+            minute
+        `)
+
+        .eq(
+            "result_id",
+            result.id
+        )
+
+        .order(
+            "minute",
+            {
+                ascending: true,
+                nullsFirst: false
+            }
+        );
+
+
+if (cardsResponse.error) {
+    throw cardsResponse.error;
+}
+
+
+const matchCards =
+    cardsResponse.data || [];
+
+
+/* =================================================
+   LOAD PLAYERS FOR CARD EVENTS
+================================================= */
+
+const cardPlayerIds = [];
+
+
+matchCards.forEach(
+    card => {
+
+        if (
+            card.player_id &&
+            !cardPlayerIds.includes(
+                card.player_id
+            )
+        ) {
+
+            cardPlayerIds.push(
+                card.player_id
+            );
+
+        }
+
+    }
+);
+
+
+let cardPlayers = [];
+
+
+if (cardPlayerIds.length) {
+
+    const cardPlayersResponse =
+        await supabaseClient
+
+            .from("players")
+
+            .select(`
+                id,
+                full_name,
+                jersey_number,
+                team_id
+            `)
+
+            .in(
+                "id",
+                cardPlayerIds
             );
 
 
-        const cardsContainer =
-            document.getElementById(
-                "cardsList"
-            );
+    if (cardPlayersResponse.error) {
+        throw cardPlayersResponse.error;
+    }
 
 
-        if (!cards.length) {
+    cardPlayers =
+        cardPlayersResponse.data || [];
 
-            cardsContainer.innerHTML = `
+}
 
-                <div class="no-events">
-                    No yellow or red cards recorded.
+
+const cardPlayerMap = {};
+
+
+cardPlayers.forEach(
+    player => {
+
+        cardPlayerMap[
+            player.id
+        ] =
+            player;
+
+    }
+);
+
+
+/* =================================================
+   RENDER CARD EVENTS
+================================================= */
+
+const cardsContainer =
+    document.getElementById(
+        "cardsList"
+    );
+
+
+if (!matchCards.length) {
+
+    cardsContainer.innerHTML = `
+
+        <div class="no-events">
+            No yellow or red cards recorded.
+        </div>
+
+    `;
+
+}
+
+else {
+
+    let cardsHtml = "";
+
+
+    matchCards.forEach(
+        card => {
+
+            const player =
+                cardPlayerMap[
+                    card.player_id
+                ];
+
+
+            if (!player) {
+                return;
+            }
+
+
+            let teamName =
+                "Team";
+
+
+            if (
+                String(
+                    player.team_id
+                ) ===
+                String(
+                    home?.id
+                )
+            ) {
+
+                teamName =
+                    home?.name ||
+                    "Home Team";
+
+            }
+
+            else if (
+                String(
+                    player.team_id
+                ) ===
+                String(
+                    away?.id
+                )
+            ) {
+
+                teamName =
+                    away?.name ||
+                    "Away Team";
+
+            }
+
+
+            const playerUrl =
+                "player-profile.html?id=" +
+                encodeURIComponent(
+                    player.id
+                );
+
+
+            const isYellow =
+                card.card_type ===
+                "yellow";
+
+
+            const cardClass =
+                isYellow
+                    ? "yellow"
+                    : "red";
+
+
+            const cardIcon =
+                isYellow
+                    ? "🟨"
+                    : "🟥";
+
+
+            const cardLabel =
+                isYellow
+                    ? "Yellow Card"
+                    : "Red Card";
+
+
+            const minuteText =
+                card.minute !== null &&
+                card.minute !== undefined &&
+                card.minute !== ""
+                    ? escapeHtml(
+                        card.minute
+                    ) + "'"
+                    : "—";
+
+
+            cardsHtml += `
+
+                <div
+                    class="card-event"
+                    style="
+                        align-items:flex-start;
+                    "
+                >
+
+                    <span
+                        class="card-icon ${cardClass}"
+                    ></span>
+
+
+                    <div
+                        style="
+                            flex:1;
+                            min-width:0;
+                        "
+                    >
+
+                        <a
+                            class="card-player"
+                            href="${playerUrl}"
+                        >
+                            ${escapeHtml(
+                                player.full_name
+                            )}
+                        </a>
+
+
+                        <div
+                            class="card-team"
+                            style="
+                                margin-left:0;
+                                margin-top:3px;
+                            "
+                        >
+                            ${escapeHtml(
+                                teamName
+                            )}
+                        </div>
+
+
+                        <div
+                            style="
+                                margin-top:5px;
+                                font-size:12px;
+                                font-weight:800;
+                                color:${
+                                    isYellow
+                                        ? "var(--yellow)"
+                                        : "var(--red)"
+                                };
+                            "
+                        >
+                            ${cardIcon}
+                            ${cardLabel}
+                            ${
+                                card.minute !== null &&
+                                card.minute !== undefined &&
+                                card.minute !== ""
+                                    ? " • " +
+                                      minuteText
+                                    : ""
+                            }
+                        </div>
+
+                    </div>
+
                 </div>
 
             `;
 
         }
-
-        else {
-
-            let cardsHtml = "";
+    );
 
 
-            cards.forEach(
-                row => {
+    cardsContainer.innerHTML =
+        cardsHtml;
 
-                    const player =
-                        statsPlayerMap[
-                            row.player_id
-                        ];
-
-
-                    if (!player) {
-                        return;
-                    }
-
-
-                    let teamName =
-                        "Team";
-
-
-                    if (
-                        String(
-                            player.team_id
-                        ) ===
-                        String(
-                            home?.id
-                        )
-                    ) {
-
-                        teamName =
-                            home?.name ||
-                            "Home Team";
-
-                    }
-
-                    else if (
-                        String(
-                            player.team_id
-                        ) ===
-                        String(
-                            away?.id
-                        )
-                    ) {
-
-                        teamName =
-                            away?.name ||
-                            "Away Team";
-
-                    }
-
-
-                    const playerUrl =
-                        "player-profile.html?id=" +
-                        encodeURIComponent(
-                            player.id
-                        );
-
-
-                    if (
-                        Number(
-                            row.yellow_cards ||
-                            0
-                        ) > 0
-                    ) {
-
-                        cardsHtml += `
-
-                            <div class="card-event">
-
-                                <span
-                                    class="card-icon yellow"
-                                ></span>
-
-                                <a
-                                    class="card-player"
-                                    href="${playerUrl}"
-                                >
-                                    ${escapeHtml(
-                                        player.full_name
-                                    )}
-                                </a>
-
-                                <span class="card-team">
-                                    ${escapeHtml(
-                                        teamName
-                                    )}
-                                </span>
-
-                            </div>
-
-                        `;
-
-                    }
-
-
-                    if (
-                        Number(
-                            row.red_cards ||
-                            0
-                        ) > 0
-                    ) {
-
-                        cardsHtml += `
-
-                            <div class="card-event">
-
-                                <span
-                                    class="card-icon red"
-                                ></span>
-
-                                <a
-                                    class="card-player"
-                                    href="${playerUrl}"
-                                >
-                                    ${escapeHtml(
-                                        player.full_name
-                                    )}
-                                </a>
-
-                                <span class="card-team">
-                                    ${escapeHtml(
-                                        teamName
-                                    )}
-                                </span>
-
-                            </div>
-
-                        `;
-
-                    }
-
-                }
-            );
-
-
-            cardsContainer.innerHTML =
-                cardsHtml;
-
-        }
-
+}
 
         /* =================================================
            SUMMARY
