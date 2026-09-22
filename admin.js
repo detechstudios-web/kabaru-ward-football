@@ -2373,249 +2373,465 @@ let redCardEntries = [];
     }
 
 
-    // ========================================
-    // LOAD FIXTURES
-    // ========================================
+// ========================================
+// CREATED FIXTURES FILTER
+// ========================================
 
-    async function loadFixtures() {
+let adminFixtures = [];
+let createdFixtureStatusFilter = "All";
 
-        if (!fixturesList) {
-            return;
+function ensureCreatedFixturesFilter() {
+
+    if (!fixturesList) {
+        return;
+    }
+
+    let filterBox =
+        document.getElementById(
+            "createdFixturesFilterBox"
+        );
+
+    if (!filterBox) {
+
+        filterBox =
+            document.createElement("div");
+
+        filterBox.id =
+            "createdFixturesFilterBox";
+
+        filterBox.className =
+            "form-card";
+
+        filterBox.style.marginTop =
+            "15px";
+
+        filterBox.innerHTML = `
+            <div
+                class="form-group"
+                style="margin-bottom:0;"
+            >
+
+                <label
+                    for="createdFixtureStatusFilter"
+                >
+                    <strong>
+                        Filter Created Fixtures
+                    </strong>
+                </label>
+
+                <select
+                    id="createdFixtureStatusFilter"
+                    class="form-control"
+                >
+
+                    <option value="All">
+                        📋 All Fixtures
+                    </option>
+
+                    <option value="Scheduled">
+                        📅 Scheduled
+                    </option>
+
+                    <option value="Published">
+                        📢 Published
+                    </option>
+
+                    <option value="Completed">
+                        ✅ Completed
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div
+                id="createdFixturesCount"
+                style="
+                    margin-top:10px;
+                    font-weight:600;
+                "
+            >
+            </div>
+        `;
+
+        if (fixturesList.parentNode) {
+
+            fixturesList.parentNode.insertBefore(
+                filterBox,
+                fixturesList
+            );
         }
 
+        const filterSelect =
+            document.getElementById(
+                "createdFixtureStatusFilter"
+            );
+
+        if (filterSelect) {
+
+            filterSelect.value =
+                createdFixtureStatusFilter;
+
+            filterSelect.addEventListener(
+                "change",
+                function () {
+
+                    createdFixtureStatusFilter =
+                        this.value;
+
+                    renderCreatedFixtures();
+                }
+            );
+        }
+    }
+}
+
+
+// ========================================
+// RENDER CREATED FIXTURES
+// ========================================
+
+function renderCreatedFixtures() {
+
+    if (!fixturesList) {
+        return;
+    }
+
+    const filteredFixtures =
+        adminFixtures.filter(
+            function (fixture) {
+
+                const status =
+                    fixture.status ||
+                    "Scheduled";
+
+                if (
+                    createdFixtureStatusFilter ===
+                    "All"
+                ) {
+                    return true;
+                }
+
+                return (
+                    String(status).toLowerCase() ===
+                    String(
+                        createdFixtureStatusFilter
+                    ).toLowerCase()
+                );
+            }
+        );
+
+    const countEl =
+        document.getElementById(
+            "createdFixturesCount"
+        );
+
+    if (countEl) {
+
+        countEl.textContent =
+            "Showing " +
+            filteredFixtures.length +
+            " of " +
+            adminFixtures.length +
+            " fixtures";
+    }
+
+    if (
+        !filteredFixtures ||
+        filteredFixtures.length === 0
+    ) {
+
+        let message =
+            "No fixtures found.";
+
+        if (
+            createdFixtureStatusFilter !==
+            "All"
+        ) {
+
+            message =
+                "No " +
+                createdFixtureStatusFilter.toLowerCase() +
+                " fixtures found.";
+        }
 
         fixturesList.innerHTML =
             '<div class="empty-message">' +
-            'Loading fixtures...' +
+            escapeHtml(message) +
             '</div>';
 
+        return;
+    }
 
-        try {
+    let html = "";
 
-            const {
-                data,
-                error
-            } =
-                await supabaseClient
-                    .from("fixtures")
-                    .select(`
-                        id,
-                        competition_id,
-                        home_team_id,
-                        away_team_id,
-                        match_date,
-                        kick_off,
-                        venue,
-                        matchday,
-                        status,
-                        created_at,
-                        competition:competitions (
-                            id,
-                            name,
-                            season
-                        ),
-                        home_team:teams!fixtures_home_team_id_fkey (
-                            id,
-                            name,
-                            short_name,
-                            logo_url
-                        ),
-                        away_team:teams!fixtures_away_team_id_fkey (
-                            id,
-                            name,
-                            short_name,
-                            logo_url
-                        )
-                    `)
-                    .order(
-                        "match_date",
-                        {
-                            ascending: false
-                        }
-                    );
+    filteredFixtures.forEach(
+        function (fixture) {
 
+            const competition =
+                fixture.competition ||
+                {};
 
-            if (error) {
-                throw error;
-            }
+            const home =
+                fixture.home_team ||
+                {};
 
+            const away =
+                fixture.away_team ||
+                {};
 
-            if (
-                !data ||
-                data.length === 0
-            ) {
+            const fixtureStatusValue =
+                fixture.status ||
+                "Scheduled";
 
-                fixturesList.innerHTML =
-                    '<div class="empty-message">' +
-                    'No fixtures found.' +
-                    '</div>';
+            html += `
+                <div
+                    class="admin-card"
+                    style="
+                        margin-top:15px;
+                        border-left:5px solid #16803c;
+                    "
+                >
 
-                return;
-            }
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:flex-start;
+                            gap:15px;
+                            flex-wrap:wrap;
+                        "
+                    >
 
+                        <div style="flex:1;">
 
-            let html = "";
+                            <h3>
+                                ⚽
+                                ${escapeHtml(
+                                    home.name ||
+                                    "Home Team"
+                                )}
+                                vs
+                                ${escapeHtml(
+                                    away.name ||
+                                    "Away Team"
+                                )}
+                            </h3>
 
+                            <p>
+                                <strong>
+                                    Competition:
+                                </strong>
+                                ${escapeHtml(
+                                    competition.name ||
+                                    "Competition"
+                                )}
+                            </p>
 
-            data.forEach(
-                function (fixture) {
+                            <p>
+                                <strong>
+                                    Season:
+                                </strong>
+                                ${escapeHtml(
+                                    competition.season ||
+                                    "-"
+                                )}
+                            </p>
 
-                    const competition =
-                        fixture.competition ||
-                        {};
+                            <p>
+                                <strong>
+                                    Date:
+                                </strong>
+                                ${formatDate(
+                                    fixture.match_date
+                                )}
+                            </p>
 
-                    const home =
-                        fixture.home_team ||
-                        {};
+                            <p>
+                                <strong>
+                                    Kick-off:
+                                </strong>
+                                ${escapeHtml(
+                                    fixture.kick_off ||
+                                    "-"
+                                )}
+                            </p>
 
-                    const away =
-                        fixture.away_team ||
-                        {};
+                            <p>
+                                <strong>
+                                    Venue:
+                                </strong>
+                                ${escapeHtml(
+                                    fixture.venue ||
+                                    "-"
+                                )}
+                            </p>
 
-                    const fixtureStatusValue =
-                        fixture.status ||
-                        "Scheduled";
+                            <p>
+                                <strong>
+                                    Matchday:
+                                </strong>
+                                ${escapeHtml(
+                                    fixture.matchday ||
+                                    "-"
+                                )}
+                            </p>
 
-
-                    html += `
-
-                        <div
-                            class="admin-card"
-                            style="
-                                margin-top:15px;
-                                border-left:5px solid #16803c;
-                            "
-                        >
-
-                            <div style="
-                                display:flex;
-                                justify-content:space-between;
-                                align-items:flex-start;
-                                gap:15px;
-                                flex-wrap:wrap;
-                            ">
-
-                                <div style="flex:1;">
-
-                                    <h3>
-                                        ⚽
-                                        ${escapeHtml(
-                                            home.name ||
-                                            "Home Team"
-                                        )}
-                                        vs
-                                        ${escapeHtml(
-                                            away.name ||
-                                            "Away Team"
-                                        )}
-                                    </h3>
-
-                                    <p>
-                                        <strong>Competition:</strong>
-                                        ${escapeHtml(
-                                            competition.name ||
-                                            "Competition"
-                                        )}
-                                    </p>
-
-                                    <p>
-                                        <strong>Season:</strong>
-                                        ${escapeHtml(
-                                            competition.season ||
-                                            "-"
-                                        )}
-                                    </p>
-
-                                    <p>
-                                        <strong>Date:</strong>
-                                        ${formatDate(
-                                            fixture.match_date
-                                        )}
-                                    </p>
-
-                                    <p>
-                                        <strong>Kick-off:</strong>
-                                        ${escapeHtml(
-                                            fixture.kick_off ||
-                                            "-"
-                                        )}
-                                    </p>
-
-                                    <p>
-                                        <strong>Venue:</strong>
-                                        ${escapeHtml(
-                                            fixture.venue ||
-                                            "-"
-                                        )}
-                                    </p>
-
-                                    <p>
-                                        <strong>Matchday:</strong>
-                                        ${escapeHtml(
-                                            fixture.matchday ||
-                                            "-"
-                                        )}
-                                    </p>
-
-                                    <p>
-                                        <strong>Status:</strong>
-                                        ${escapeHtml(
-                                            fixtureStatusValue
-                                        )}
-                                    </p>
-
-                                </div>
-
-
-                                <div style="
-                                    display:flex;
-                                    gap:8px;
-                                    flex-wrap:wrap;
-                                ">
-
-                                    <button
-                                        type="button"
-                                        class="btn btn-danger"
-                                        onclick="deleteFixture(${Number(
-                                            fixture.id
-                                        )})"
-                                    >
-                                        🗑️ Delete Fixture
-                                    </button>
-
-                                </div>
-
-                            </div>
+                            <p>
+                                <strong>
+                                    Status:
+                                </strong>
+                                ${escapeHtml(
+                                    fixtureStatusValue
+                                )}
+                            </p>
 
                         </div>
 
-                    `;
-                }
-            );
+                        <div
+                            style="
+                                display:flex;
+                                gap:8px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <button
+                                type="button"
+                                class="btn btn-danger"
+                                onclick="deleteFixture(${Number(
+                                    fixture.id
+                                )})"
+                            >
+                                🗑️ Delete Fixture
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+        }
+    );
+
+    fixturesList.innerHTML =
+        html;
+}
 
 
-            fixturesList.innerHTML =
-                html;
+// ========================================
+// LOAD CREATED FIXTURES
+// ========================================
 
+async function loadFixtures() {
 
-        } catch (error) {
+    if (!fixturesList) {
+        return;
+    }
 
-            console.error(
-                "LOAD FIXTURES ERROR:",
-                error
-            );
+    ensureCreatedFixturesFilter();
 
+    fixturesList.innerHTML =
+        '<div class="empty-message">' +
+        'Loading fixtures...' +
+        '</div>';
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    venue,
+                    matchday,
+                    status,
+                    created_at,
+
+                    competition:competitions (
+                        id,
+                        name,
+                        season
+                    ),
+
+                    home_team:teams!fixtures_home_team_id_fkey (
+                        id,
+                        name,
+                        short_name,
+                        logo_url
+                    ),
+
+                    away_team:teams!fixtures_away_team_id_fkey (
+                        id,
+                        name,
+                        short_name,
+                        logo_url
+                    )
+                `)
+                .order(
+                    "match_date",
+                    {
+                        ascending: false
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        adminFixtures =
+            data || [];
+
+        if (
+            adminFixtures.length === 0
+        ) {
+
+            const countEl =
+                document.getElementById(
+                    "createdFixturesCount"
+                );
+
+            if (countEl) {
+                countEl.textContent =
+                    "Showing 0 fixtures";
+            }
 
             fixturesList.innerHTML =
                 '<div class="empty-message">' +
-                '❌ Unable to load fixtures: ' +
-                escapeHtml(
-                    error.message ||
-                    "Unknown error"
-                ) +
+                'No fixtures found.' +
                 '</div>';
+
+            return;
         }
+
+        renderCreatedFixtures();
+
+    } catch (error) {
+
+        console.error(
+            "LOAD FIXTURES ERROR:",
+            error
+        );
+
+        fixturesList.innerHTML =
+            '<div class="empty-message">' +
+            '❌ Unable to load fixtures: ' +
+            escapeHtml(
+                error.message ||
+                "Unknown error"
+            ) +
+            '</div>';
     }
+}
 
 
     // ========================================
