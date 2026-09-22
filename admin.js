@@ -10338,7 +10338,2781 @@ window.approveSquadChangeRequest =
 window.rejectSquadChangeRequest =
     rejectSquadChangeRequest;
 
+// ========================================
+// COMPETITION SUPPORT MANAGER
+// ========================================
 
+let currentSupporterId = null;
+let currentSupporterPhotoUrl = null;
+let currentSupporterLogoUrl = null;
+
+
+// ========================================
+// SUPPORTER FORM ELEMENTS
+// ========================================
+
+const supporterForm =
+    document.getElementById(
+        "supporterForm"
+    );
+
+const supporterName =
+    document.getElementById(
+        "supporterName"
+    );
+
+const supporterType =
+    document.getElementById(
+        "supporterType"
+    );
+
+const supporterPhone =
+    document.getElementById(
+        "supporterPhone"
+    );
+
+const supporterEmail =
+    document.getElementById(
+        "supporterEmail"
+    );
+
+const supporterWebsite =
+    document.getElementById(
+        "supporterWebsite"
+    );
+
+const supporterFacebook =
+    document.getElementById(
+        "supporterFacebook"
+    );
+
+const supporterInstagram =
+    document.getElementById(
+        "supporterInstagram"
+    );
+
+const supporterX =
+    document.getElementById(
+        "supporterX"
+    );
+
+const supporterYoutube =
+    document.getElementById(
+        "supporterYoutube"
+    );
+
+const supporterPhoto =
+    document.getElementById(
+        "supporterPhoto"
+    );
+
+const supporterLogo =
+    document.getElementById(
+        "supporterLogo"
+    );
+
+const supporterPhotoPreview =
+    document.getElementById(
+        "supporterPhotoPreview"
+    );
+
+const supporterLogoPreview =
+    document.getElementById(
+        "supporterLogoPreview"
+    );
+
+const supporterActive =
+    document.getElementById(
+        "supporterActive"
+    );
+
+const supporterDescription =
+    document.getElementById(
+        "supporterDescription"
+    );
+
+const supporterFormMessage =
+    document.getElementById(
+        "supporterFormMessage"
+    );
+
+const saveSupporterButton =
+    document.getElementById(
+        "saveSupporterButton"
+    );
+
+const cancelSupporterEditButton =
+    document.getElementById(
+        "cancelSupporterEditButton"
+    );
+
+
+// ========================================
+// COMPETITION SUPPORT FORM ELEMENTS
+// ========================================
+
+const competitionSupportForm =
+    document.getElementById(
+        "competitionSupportForm"
+    );
+
+const competitionSupporterSelect =
+    document.getElementById(
+        "competitionSupporterSelect"
+    );
+
+const competitionSupportCompetitionSelect =
+    document.getElementById(
+        "competitionSupportCompetitionSelect"
+    );
+
+const competitionSupportType =
+    document.getElementById(
+        "competitionSupportType"
+    );
+
+const competitionSupportTitle =
+    document.getElementById(
+        "competitionSupportTitle"
+    );
+
+const competitionSupportAmount =
+    document.getElementById(
+        "competitionSupportAmount"
+    );
+
+const competitionSupportAmountPublic =
+    document.getElementById(
+        "competitionSupportAmountPublic"
+    );
+
+const competitionSupportFeatured =
+    document.getElementById(
+        "competitionSupportFeatured"
+    );
+
+const competitionSupportDisplayOrder =
+    document.getElementById(
+        "competitionSupportDisplayOrder"
+    );
+
+const competitionSupportStatus =
+    document.getElementById(
+        "competitionSupportStatus"
+    );
+
+const competitionSupportDescription =
+    document.getElementById(
+        "competitionSupportDescription"
+    );
+
+const competitionSupportFormMessage =
+    document.getElementById(
+        "competitionSupportFormMessage"
+    );
+
+const saveCompetitionSupportButton =
+    document.getElementById(
+        "saveCompetitionSupportButton"
+    );
+
+const supportersList =
+    document.getElementById(
+        "supportersList"
+    );
+
+const competitionSupportList =
+    document.getElementById(
+        "competitionSupportList"
+    );
+
+
+// ========================================
+// SUPPORTER MESSAGE HELPER
+// ========================================
+
+function showSupporterMessage(
+    message,
+    type = "info"
+) {
+
+    if (!supporterFormMessage) {
+        return;
+    }
+
+    supporterFormMessage.style.display =
+        "block";
+
+    supporterFormMessage.textContent =
+        message;
+
+    if (type === "success") {
+
+        supporterFormMessage.style.background =
+            "#d4edda";
+
+        supporterFormMessage.style.color =
+            "#155724";
+
+    } else if (type === "error") {
+
+        supporterFormMessage.style.background =
+            "#fdecec";
+
+        supporterFormMessage.style.color =
+            "#b00020";
+
+    } else {
+
+        supporterFormMessage.style.background =
+            "#f5f5f5";
+
+        supporterFormMessage.style.color =
+            "#333";
+    }
+}
+
+
+function showCompetitionSupportMessage(
+    message,
+    type = "info"
+) {
+
+    if (!competitionSupportFormMessage) {
+        return;
+    }
+
+    competitionSupportFormMessage.style.display =
+        "block";
+
+    competitionSupportFormMessage.textContent =
+        message;
+
+    if (type === "success") {
+
+        competitionSupportFormMessage.style.background =
+            "#d4edda";
+
+        competitionSupportFormMessage.style.color =
+            "#155724";
+
+    } else if (type === "error") {
+
+        competitionSupportFormMessage.style.background =
+            "#fdecec";
+
+        competitionSupportFormMessage.style.color =
+            "#b00020";
+
+    } else {
+
+        competitionSupportFormMessage.style.background =
+            "#f5f5f5";
+
+        competitionSupportFormMessage.style.color =
+            "#333";
+    }
+}
+
+
+// ========================================
+// FILE NAME HELPER
+// ========================================
+
+function supporterSafeFileName(
+    file
+) {
+
+    const originalName =
+        file && file.name
+            ? file.name
+            : "image";
+
+    const extension =
+        originalName.includes(".")
+            ? originalName
+                .split(".")
+                .pop()
+                .toLowerCase()
+            : "jpg";
+
+    return (
+        Date.now() +
+        "_" +
+        Math.random()
+            .toString(36)
+            .substring(2, 10) +
+        "." +
+        extension
+    );
+}
+
+
+// ========================================
+// UPLOAD SUPPORTER IMAGE
+// ========================================
+
+async function uploadSupporterImage(
+    file,
+    bucketName,
+    folderName
+) {
+
+    if (!file) {
+        return null;
+    }
+
+    if (
+        !file.type ||
+        !file.type.startsWith("image/")
+    ) {
+
+        throw new Error(
+            "Please select a valid image file."
+        );
+    }
+
+    if (
+        file.size >
+        5 * 1024 * 1024
+    ) {
+
+        throw new Error(
+            "Image size must not exceed 5 MB."
+        );
+    }
+
+    const fileName =
+        supporterSafeFileName(file);
+
+    const filePath =
+        folderName +
+        "/" +
+        fileName;
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from(bucketName)
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl:
+                        "3600",
+
+                    upsert:
+                        false,
+
+                    contentType:
+                        file.type
+                }
+            );
+
+    if (error) {
+        throw error;
+    }
+
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from(bucketName)
+            .getPublicUrl(
+                filePath
+            );
+
+    return (
+        data &&
+        data.publicUrl
+            ? data.publicUrl
+            : null
+    );
+}
+
+
+// ========================================
+// IMAGE PREVIEW HELPER
+// ========================================
+
+function showSupporterImagePreview(
+    file,
+    previewElement
+) {
+
+    if (
+        !file ||
+        !previewElement
+    ) {
+        return;
+    }
+
+    if (
+        !file.type ||
+        !file.type.startsWith("image/")
+    ) {
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload =
+        function (event) {
+
+            previewElement.innerHTML = `
+                <img
+                    src="${event.target.result}"
+                    alt="Image Preview"
+                    style="
+                        width:120px;
+                        height:120px;
+                        object-fit:cover;
+                        border-radius:10px;
+                        border:1px solid #ddd;
+                        display:block;
+                    "
+                >
+            `;
+
+            previewElement.style.display =
+                "block";
+        };
+
+    reader.readAsDataURL(file);
+}
+
+
+// ========================================
+// PHOTO PREVIEW
+// ========================================
+
+if (supporterPhoto) {
+
+    supporterPhoto.addEventListener(
+        "change",
+        function () {
+
+            const file =
+                this.files &&
+                this.files[0];
+
+            showSupporterImagePreview(
+                file,
+                supporterPhotoPreview
+            );
+        }
+    );
+}
+
+
+// ========================================
+// LOGO PREVIEW
+// ========================================
+
+if (supporterLogo) {
+
+    supporterLogo.addEventListener(
+        "change",
+        function () {
+
+            const file =
+                this.files &&
+                this.files[0];
+
+            showSupporterImagePreview(
+                file,
+                supporterLogoPreview
+            );
+        }
+    );
+}
+
+
+// ========================================
+// LOAD SUPPORTER COMPETITIONS
+// ========================================
+
+async function loadSupporterCompetitions() {
+
+    if (
+        !competitionSupportCompetitionSelect
+    ) {
+        return;
+    }
+
+    competitionSupportCompetitionSelect.innerHTML =
+        `
+            <option value="">
+                Loading competitions...
+            </option>
+        `;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("competitions")
+                .select(
+                    `
+                        id,
+                        name,
+                        competition_type,
+                        season,
+                        status
+                    `
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        competitionSupportCompetitionSelect.innerHTML =
+            `
+                <option value="">
+                    Select competition
+                </option>
+            `;
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            competitionSupportCompetitionSelect.innerHTML =
+                `
+                    <option value="">
+                        No competitions available
+                    </option>
+                `;
+
+            return;
+        }
+
+        data.forEach(
+            function (competition) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    competition.id;
+
+                option.textContent =
+                    (
+                        competition.name ||
+                        "Competition"
+                    ) +
+                    (
+                        competition.season
+                            ? " — " +
+                              competition.season
+                            : ""
+                    );
+
+                competitionSupportCompetitionSelect
+                    .appendChild(option);
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LOAD SUPPORTER COMPETITIONS ERROR:",
+            error
+        );
+
+        competitionSupportCompetitionSelect.innerHTML =
+            `
+                <option value="">
+                    Unable to load competitions
+                </option>
+            `;
+    }
+}
+
+
+// ========================================
+// LOAD SUPPORTERS INTO SELECT
+// ========================================
+
+async function loadSupporterSelect() {
+
+    if (
+        !competitionSupporterSelect
+    ) {
+        return;
+    }
+
+    competitionSupporterSelect.innerHTML =
+        `
+            <option value="">
+                Loading supporters...
+            </option>
+        `;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("supporters")
+                .select(
+                    `
+                        id,
+                        name,
+                        supporter_type,
+                        is_active
+                    `
+                )
+                .order(
+                    "name",
+                    {
+                        ascending:true
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        competitionSupporterSelect.innerHTML =
+            `
+                <option value="">
+                    Select supporter
+                </option>
+            `;
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            competitionSupporterSelect.innerHTML =
+                `
+                    <option value="">
+                        No supporters available
+                    </option>
+                `;
+
+            return;
+        }
+
+        data.forEach(
+            function (supporter) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    supporter.id;
+
+                option.textContent =
+                    supporter.name +
+                    " — " +
+                    supporter.supporter_type +
+                    (
+                        supporter.is_active
+                            ? ""
+                            : " (Inactive)"
+                    );
+
+                competitionSupporterSelect
+                    .appendChild(option);
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LOAD SUPPORTER SELECT ERROR:",
+            error
+        );
+
+        competitionSupporterSelect.innerHTML =
+            `
+                <option value="">
+                    Unable to load supporters
+                </option>
+            `;
+    }
+}
+
+
+// ========================================
+// RENDER EXISTING SUPPORTERS
+// ========================================
+
+async function loadSupporters() {
+
+    if (!supportersList) {
+        return;
+    }
+
+    supportersList.innerHTML =
+        `
+            <div class="empty-message">
+                Loading supporters...
+            </div>
+        `;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("supporters")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            supportersList.innerHTML =
+                `
+                    <div class="empty-message">
+                        No supporters have been added yet.
+                    </div>
+                `;
+
+            return;
+        }
+
+        let html = "";
+
+        data.forEach(
+            function (supporter) {
+
+                const imageUrl =
+                    supporter.photo_url ||
+                    supporter.logo_url;
+
+                const image =
+                    imageUrl
+                        ? `
+                            <img
+                                src="${escapeHtml(
+                                    imageUrl
+                                )}"
+                                alt="${escapeHtml(
+                                    supporter.name
+                                )}"
+                                style="
+                                    width:90px;
+                                    height:90px;
+                                    object-fit:cover;
+                                    border-radius:10px;
+                                    border:1px solid #ddd;
+                                "
+                            >
+                          `
+                        : `
+                            <div
+                                style="
+                                    width:90px;
+                                    height:90px;
+                                    border-radius:10px;
+                                    background:#eee;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    font-size:32px;
+                                "
+                            >
+                                ${
+                                    supporter.supporter_type ===
+                                    "Individual"
+                                        ? "👤"
+                                        : "🏢"
+                                }
+                            </div>
+                          `;
+
+                html += `
+                    <div
+                        class="admin-card"
+                        style="
+                            margin-top:15px;
+                            border-left:5px solid #16803c;
+                        "
+                    >
+
+                        <div
+                            style="
+                                display:flex;
+                                justify-content:space-between;
+                                gap:18px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    display:flex;
+                                    gap:14px;
+                                    align-items:center;
+                                    flex:1;
+                                    min-width:260px;
+                                "
+                            >
+
+                                ${image}
+
+                                <div>
+
+                                    <h3>
+                                        🤝
+                                        ${escapeHtml(
+                                            supporter.name ||
+                                            "Unnamed Supporter"
+                                        )}
+                                    </h3>
+
+                                    <p>
+                                        <strong>
+                                            Type:
+                                        </strong>
+                                        ${escapeHtml(
+                                            supporter.supporter_type ||
+                                            "Other"
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Status:
+                                        </strong>
+                                        ${
+                                            supporter.is_active
+                                                ? "🟢 Active"
+                                                : "⚪ Inactive"
+                                        }
+                                    </p>
+
+                                    ${
+                                        supporter.phone
+                                            ? `
+                                                <p>
+                                                    <strong>
+                                                        Phone:
+                                                    </strong>
+                                                    ${escapeHtml(
+                                                        supporter.phone
+                                                    )}
+                                                </p>
+                                              `
+                                            : ""
+                                    }
+
+                                    ${
+                                        supporter.email
+                                            ? `
+                                                <p>
+                                                    <strong>
+                                                        Email:
+                                                    </strong>
+                                                    ${escapeHtml(
+                                                        supporter.email
+                                                    )}
+                                                </p>
+                                              `
+                                            : ""
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    display:flex;
+                                    gap:8px;
+                                    flex-wrap:wrap;
+                                    align-items:flex-start;
+                                "
+                            >
+
+                                <button
+                                    type="button"
+                                    class="admin-btn"
+                                    onclick="editSupporter(${Number(
+                                        supporter.id
+                                    )})"
+                                >
+                                    ✏️ Edit
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="admin-btn"
+                                    style="
+                                        background:${
+                                            supporter.is_active
+                                                ? "#777"
+                                                : "#16803c"
+                                        };
+                                        color:#fff;
+                                    "
+                                    onclick="toggleSupporterStatus(
+                                        ${Number(
+                                            supporter.id
+                                        )},
+                                        ${
+                                            supporter.is_active
+                                                ? "false"
+                                                : "true"
+                                        }
+                                    )"
+                                >
+                                    ${
+                                        supporter.is_active
+                                            ? "⚪ Deactivate"
+                                            : "🟢 Activate"
+                                    }
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="admin-btn"
+                                    style="
+                                        background:#b00020;
+                                        color:#fff;
+                                    "
+                                    onclick="deleteSupporter(${Number(
+                                        supporter.id
+                                    )})"
+                                >
+                                    🗑️ Delete
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        ${
+                            supporter.description
+                                ? `
+                                    <p
+                                        style="
+                                            margin-top:14px;
+                                        "
+                                    >
+                                        ${escapeHtml(
+                                            supporter.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                        }
+
+                        ${
+                            supporter.website_url ||
+                            supporter.facebook_url ||
+                            supporter.instagram_url ||
+                            supporter.x_url ||
+                            supporter.youtube_url
+                                ? `
+                                    <div
+                                        style="
+                                            margin-top:12px;
+                                            display:flex;
+                                            gap:8px;
+                                            flex-wrap:wrap;
+                                        "
+                                    >
+
+                                        ${
+                                            supporter.website_url
+                                                ? `
+                                                    <a
+                                                        href="${escapeHtml(
+                                                            supporter.website_url
+                                                        )}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="admin-btn"
+                                                        style="
+                                                            text-decoration:none;
+                                                        "
+                                                    >
+                                                        🌐 Website
+                                                    </a>
+                                                  `
+                                                : ""
+                                        }
+
+                                        ${
+                                            supporter.facebook_url
+                                                ? `
+                                                    <a
+                                                        href="${escapeHtml(
+                                                            supporter.facebook_url
+                                                        )}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="admin-btn"
+                                                        style="
+                                                            text-decoration:none;
+                                                        "
+                                                    >
+                                                        📘 Facebook
+                                                    </a>
+                                                  `
+                                                : ""
+                                        }
+
+                                        ${
+                                            supporter.instagram_url
+                                                ? `
+                                                    <a
+                                                        href="${escapeHtml(
+                                                            supporter.instagram_url
+                                                        )}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="admin-btn"
+                                                        style="
+                                                            text-decoration:none;
+                                                        "
+                                                    >
+                                                        📸 Instagram
+                                                    </a>
+                                                  `
+                                                : ""
+                                        }
+
+                                        ${
+                                            supporter.x_url
+                                                ? `
+                                                    <a
+                                                        href="${escapeHtml(
+                                                            supporter.x_url
+                                                        )}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="admin-btn"
+                                                        style="
+                                                            text-decoration:none;
+                                                        "
+                                                    >
+                                                        𝕏 X
+                                                    </a>
+                                                  `
+                                                : ""
+                                        }
+
+                                        ${
+                                            supporter.youtube_url
+                                                ? `
+                                                    <a
+                                                        href="${escapeHtml(
+                                                            supporter.youtube_url
+                                                        )}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="admin-btn"
+                                                        style="
+                                                            text-decoration:none;
+                                                        "
+                                                    >
+                                                        ▶️ YouTube
+                                                    </a>
+                                                  `
+                                                : ""
+                                        }
+
+                                    </div>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+                `;
+            }
+        );
+
+        supportersList.innerHTML =
+            html;
+
+    } catch (error) {
+
+        console.error(
+            "LOAD SUPPORTERS ERROR:",
+            error
+        );
+
+        supportersList.innerHTML =
+            `
+                <div class="empty-message">
+                    ❌ Unable to load supporters:
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </div>
+            `;
+    }
+}
+
+
+// ========================================
+// ADD / UPDATE SUPPORTER
+// ========================================
+
+if (supporterForm) {
+
+    supporterForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+            const name =
+                supporterName
+                    ? supporterName.value.trim()
+                    : "";
+
+            const type =
+                supporterType
+                    ? supporterType.value
+                    : "";
+
+            if (!name) {
+
+                showSupporterMessage(
+                    "❌ Please enter the supporter name.",
+                    "error"
+                );
+
+                return;
+            }
+
+            if (!type) {
+
+                showSupporterMessage(
+                    "❌ Please select the supporter type.",
+                    "error"
+                );
+
+                return;
+            }
+
+            if (saveSupporterButton) {
+                saveSupporterButton.disabled =
+                    true;
+            }
+
+            showSupporterMessage(
+                currentSupporterId
+                    ? "Saving supporter changes..."
+                    : "Adding supporter..."
+            );
+
+            try {
+
+                let photoUrl =
+                    currentSupporterPhotoUrl;
+
+                let logoUrl =
+                    currentSupporterLogoUrl;
+
+
+                // ----------------------------------------
+                // PHOTO UPLOAD
+                // ----------------------------------------
+
+                if (
+                    supporterPhoto &&
+                    supporterPhoto.files &&
+                    supporterPhoto.files[0]
+                ) {
+
+                    photoUrl =
+                        await uploadSupporterImage(
+                            supporterPhoto.files[0],
+                            "supporter-photos",
+                            "supporters"
+                        );
+                }
+
+
+                // ----------------------------------------
+                // LOGO UPLOAD
+                // ----------------------------------------
+
+                if (
+                    supporterLogo &&
+                    supporterLogo.files &&
+                    supporterLogo.files[0]
+                ) {
+
+                    logoUrl =
+                        await uploadSupporterImage(
+                            supporterLogo.files[0],
+                            "supporter-logos",
+                            "supporters"
+                        );
+                }
+
+
+                const supporterData = {
+
+                    name:
+                        name,
+
+                    supporter_type:
+                        type,
+
+                    phone:
+                        supporterPhone
+                            ? supporterPhone.value.trim() ||
+                              null
+                            : null,
+
+                    email:
+                        supporterEmail
+                            ? supporterEmail.value.trim() ||
+                              null
+                            : null,
+
+                    website_url:
+                        supporterWebsite
+                            ? supporterWebsite.value.trim() ||
+                              null
+                            : null,
+
+                    facebook_url:
+                        supporterFacebook
+                            ? supporterFacebook.value.trim() ||
+                              null
+                            : null,
+
+                    instagram_url:
+                        supporterInstagram
+                            ? supporterInstagram.value.trim() ||
+                              null
+                            : null,
+
+                    x_url:
+                        supporterX
+                            ? supporterX.value.trim() ||
+                              null
+                            : null,
+
+                    youtube_url:
+                        supporterYoutube
+                            ? supporterYoutube.value.trim() ||
+                              null
+                            : null,
+
+                    photo_url:
+                        photoUrl ||
+                        null,
+
+                    logo_url:
+                        logoUrl ||
+                        null,
+
+                    is_active:
+                        supporterActive
+                            ? supporterActive.value ===
+                              "true"
+                            : true,
+
+                    description:
+                        supporterDescription
+                            ? supporterDescription.value.trim() ||
+                              null
+                            : null,
+
+                    updated_at:
+                        new Date().toISOString()
+                };
+
+
+                let result;
+
+
+                if (currentSupporterId) {
+
+                    result =
+                        await supabaseClient
+                            .from("supporters")
+                            .update(
+                                supporterData
+                            )
+                            .eq(
+                                "id",
+                                currentSupporterId
+                            );
+
+                } else {
+
+                    result =
+                        await supabaseClient
+                            .from("supporters")
+                            .insert(
+                                supporterData
+                            );
+                }
+
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+
+                showSupporterMessage(
+                    currentSupporterId
+                        ? "✅ Supporter updated successfully!"
+                        : "✅ Supporter added successfully!",
+                    "success"
+                );
+
+
+                resetSupporterForm();
+
+
+                await loadSupporters();
+
+                await loadSupporterSelect();
+
+
+            } catch (error) {
+
+                console.error(
+                    "SAVE SUPPORTER ERROR:",
+                    error
+                );
+
+                showSupporterMessage(
+                    "❌ Unable to save supporter: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            } finally {
+
+                if (saveSupporterButton) {
+
+                    saveSupporterButton.disabled =
+                        false;
+                }
+            }
+        }
+    );
+}
+
+
+// ========================================
+// RESET SUPPORTER FORM
+// ========================================
+
+function resetSupporterForm() {
+
+    currentSupporterId =
+        null;
+
+    currentSupporterPhotoUrl =
+        null;
+
+    currentSupporterLogoUrl =
+        null;
+
+
+    if (supporterForm) {
+        supporterForm.reset();
+    }
+
+
+    if (supporterActive) {
+
+        supporterActive.value =
+            "true";
+    }
+
+
+    if (supporterPhotoPreview) {
+
+        supporterPhotoPreview.innerHTML =
+            "";
+
+        supporterPhotoPreview.style.display =
+            "none";
+    }
+
+
+    if (supporterLogoPreview) {
+
+        supporterLogoPreview.innerHTML =
+            "";
+
+        supporterLogoPreview.style.display =
+            "none";
+    }
+
+
+    if (saveSupporterButton) {
+
+        saveSupporterButton.textContent =
+            "🤝 ADD SUPPORTER";
+    }
+
+
+    if (cancelSupporterEditButton) {
+
+        cancelSupporterEditButton.style.display =
+            "none";
+    }
+}
+
+
+// ========================================
+// EDIT SUPPORTER
+// ========================================
+
+window.editSupporter =
+    async function (supporterId) {
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("supporters")
+                    .select("*")
+                    .eq(
+                        "id",
+                        supporterId
+                    )
+                    .single();
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data) {
+                throw new Error(
+                    "Supporter could not be found."
+                );
+            }
+
+
+            currentSupporterId =
+                data.id;
+
+            currentSupporterPhotoUrl =
+                data.photo_url ||
+                null;
+
+            currentSupporterLogoUrl =
+                data.logo_url ||
+                null;
+
+
+            if (supporterName)
+                supporterName.value =
+                    data.name || "";
+
+            if (supporterType)
+                supporterType.value =
+                    data.supporter_type || "";
+
+            if (supporterPhone)
+                supporterPhone.value =
+                    data.phone || "";
+
+            if (supporterEmail)
+                supporterEmail.value =
+                    data.email || "";
+
+            if (supporterWebsite)
+                supporterWebsite.value =
+                    data.website_url || "";
+
+            if (supporterFacebook)
+                supporterFacebook.value =
+                    data.facebook_url || "";
+
+            if (supporterInstagram)
+                supporterInstagram.value =
+                    data.instagram_url || "";
+
+            if (supporterX)
+                supporterX.value =
+                    data.x_url || "";
+
+            if (supporterYoutube)
+                supporterYoutube.value =
+                    data.youtube_url || "";
+
+            if (supporterActive)
+                supporterActive.value =
+                    data.is_active
+                        ? "true"
+                        : "false";
+
+            if (supporterDescription)
+                supporterDescription.value =
+                    data.description || "";
+
+
+            if (
+                supporterPhotoPreview
+            ) {
+
+                if (data.photo_url) {
+
+                    supporterPhotoPreview.innerHTML =
+                        `
+                            <img
+                                src="${escapeHtml(
+                                    data.photo_url
+                                )}"
+                                alt="Current supporter photo"
+                                style="
+                                    width:120px;
+                                    height:120px;
+                                    object-fit:cover;
+                                    border-radius:10px;
+                                    border:1px solid #ddd;
+                                "
+                            >
+                            <div
+                                style="
+                                    margin-top:6px;
+                                    font-size:13px;
+                                    color:#666;
+                                "
+                            >
+                                Current photo
+                            </div>
+                        `;
+
+                    supporterPhotoPreview.style.display =
+                        "block";
+
+                } else {
+
+                    supporterPhotoPreview.innerHTML =
+                        "";
+
+                    supporterPhotoPreview.style.display =
+                        "none";
+                }
+            }
+
+
+            if (
+                supporterLogoPreview
+            ) {
+
+                if (data.logo_url) {
+
+                    supporterLogoPreview.innerHTML =
+                        `
+                            <img
+                                src="${escapeHtml(
+                                    data.logo_url
+                                )}"
+                                alt="Current supporter logo"
+                                style="
+                                    width:120px;
+                                    height:120px;
+                                    object-fit:contain;
+                                    border-radius:10px;
+                                    border:1px solid #ddd;
+                                    background:#fff;
+                                "
+                            >
+                            <div
+                                style="
+                                    margin-top:6px;
+                                    font-size:13px;
+                                    color:#666;
+                                "
+                            >
+                                Current logo
+                            </div>
+                        `;
+
+                    supporterLogoPreview.style.display =
+                        "block";
+
+                } else {
+
+                    supporterLogoPreview.innerHTML =
+                        "";
+
+                    supporterLogoPreview.style.display =
+                        "none";
+                }
+            }
+
+
+            if (saveSupporterButton) {
+
+                saveSupporterButton.textContent =
+                    "💾 UPDATE SUPPORTER";
+            }
+
+
+            if (cancelSupporterEditButton) {
+
+                cancelSupporterEditButton.style.display =
+                    "inline-block";
+            }
+
+
+            showSupporterMessage(
+                "✏️ Editing " +
+                data.name +
+                ". Make your changes and save."
+            );
+
+
+            const supportersSection =
+                document.getElementById(
+                    "supporters"
+                );
+
+            if (supportersSection) {
+
+                supportersSection.scrollIntoView({
+                    behavior:"smooth",
+                    block:"start"
+                });
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                "EDIT SUPPORTER ERROR:",
+                error
+            );
+
+            alert(
+                "Unable to load supporter: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+        }
+    };
+
+
+// ========================================
+// CANCEL SUPPORTER EDIT
+// ========================================
+
+if (
+    cancelSupporterEditButton
+) {
+
+    cancelSupporterEditButton.addEventListener(
+        "click",
+        function () {
+
+            resetSupporterForm();
+
+            if (supporterFormMessage) {
+
+                supporterFormMessage.style.display =
+                    "none";
+
+                supporterFormMessage.textContent =
+                    "";
+            }
+        }
+    );
+}
+
+
+// ========================================
+// TOGGLE SUPPORTER STATUS
+// ========================================
+
+window.toggleSupporterStatus =
+    async function (
+        supporterId,
+        newStatus
+    ) {
+
+        try {
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("supporters")
+                    .update({
+                        is_active:
+                            newStatus ===
+                            true ||
+                            newStatus ===
+                            "true",
+
+                        updated_at:
+                            new Date().toISOString()
+                    })
+                    .eq(
+                        "id",
+                        supporterId
+                    );
+
+            if (error) {
+                throw error;
+            }
+
+            await loadSupporters();
+
+            await loadSupporterSelect();
+
+        } catch (error) {
+
+            console.error(
+                "TOGGLE SUPPORTER STATUS ERROR:",
+                error
+            );
+
+            alert(
+                "Unable to change supporter status: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+        }
+    };
+
+
+// ========================================
+// DELETE SUPPORTER
+// ========================================
+
+window.deleteSupporter =
+    async function (supporterId) {
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to delete this supporter?\n\n" +
+                "Any competition support records linked to this supporter will also be removed."
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("supporters")
+                    .delete()
+                    .eq(
+                        "id",
+                        supporterId
+                    );
+
+            if (error) {
+                throw error;
+            }
+
+            await loadSupporters();
+
+            await loadSupporterSelect();
+
+            await loadCompetitionSupportRecords();
+
+        } catch (error) {
+
+            console.error(
+                "DELETE SUPPORTER ERROR:",
+                error
+            );
+
+            alert(
+                "Unable to delete supporter: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+        }
+    };
+
+
+// ========================================
+// ADD COMPETITION SUPPORT RECORD
+// ========================================
+
+if (
+    competitionSupportForm
+) {
+
+    competitionSupportForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+            const supporterId =
+                competitionSupporterSelect
+                    ? competitionSupporterSelect.value
+                    : "";
+
+            const competitionId =
+                competitionSupportCompetitionSelect
+                    ? competitionSupportCompetitionSelect.value
+                    : "";
+
+            if (!supporterId) {
+
+                showCompetitionSupportMessage(
+                    "❌ Please select a supporter.",
+                    "error"
+                );
+
+                return;
+            }
+
+            if (!competitionId) {
+
+                showCompetitionSupportMessage(
+                    "❌ Please select a competition.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                saveCompetitionSupportButton
+            ) {
+
+                saveCompetitionSupportButton.disabled =
+                    true;
+            }
+
+
+            showCompetitionSupportMessage(
+                "Saving competition support record..."
+            );
+
+
+            try {
+
+                const amountValue =
+                    competitionSupportAmount &&
+                    competitionSupportAmount.value.trim()
+                        ? Number(
+                            competitionSupportAmount.value
+                        )
+                        : null;
+
+
+                if (
+                    amountValue !== null &&
+                    (
+                        !Number.isFinite(
+                            amountValue
+                        ) ||
+                        amountValue < 0
+                    )
+                ) {
+
+                    throw new Error(
+                        "Please enter a valid support amount."
+                    );
+                }
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "competition_support"
+                        )
+                        .insert({
+
+                            competition_id:
+                                Number(
+                                    competitionId
+                                ),
+
+                            supporter_id:
+                                Number(
+                                    supporterId
+                                ),
+
+                            support_type:
+                                competitionSupportType
+                                    ? competitionSupportType.value
+                                    : "External Sponsor",
+
+                            title:
+                                competitionSupportTitle
+                                    ? competitionSupportTitle.value.trim() ||
+                                      null
+                                    : null,
+
+                            description:
+                                competitionSupportDescription
+                                    ? competitionSupportDescription.value.trim() ||
+                                      null
+                                    : null,
+
+                            amount:
+                                amountValue,
+
+                            is_amount_public:
+                                competitionSupportAmountPublic
+                                    ? competitionSupportAmountPublic.value ===
+                                      "true"
+                                    : false,
+
+                            featured:
+                                competitionSupportFeatured
+                                    ? competitionSupportFeatured.value ===
+                                      "true"
+                                    : false,
+
+                            display_order:
+                                competitionSupportDisplayOrder
+                                    ? Number(
+                                        competitionSupportDisplayOrder.value
+                                    ) || 0
+                                    : 0,
+
+                            status:
+                                competitionSupportStatus
+                                    ? competitionSupportStatus.value
+                                    : "Active",
+
+                            updated_at:
+                                new Date().toISOString()
+                        });
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                showCompetitionSupportMessage(
+                    "✅ Supporter successfully linked to the competition.",
+                    "success"
+                );
+
+
+                competitionSupportForm.reset();
+
+
+                if (
+                    competitionSupportDisplayOrder
+                ) {
+
+                    competitionSupportDisplayOrder.value =
+                        "0";
+                }
+
+
+                if (
+                    competitionSupportStatus
+                ) {
+
+                    competitionSupportStatus.value =
+                        "Active";
+                }
+
+
+                if (
+                    competitionSupportAmountPublic
+                ) {
+
+                    competitionSupportAmountPublic.value =
+                        "false";
+                }
+
+
+                if (
+                    competitionSupportFeatured
+                ) {
+
+                    competitionSupportFeatured.value =
+                        "false";
+                }
+
+
+                await loadCompetitionSupportRecords();
+
+
+            } catch (error) {
+
+                console.error(
+                    "SAVE COMPETITION SUPPORT ERROR:",
+                    error
+                );
+
+                showCompetitionSupportMessage(
+                    "❌ Unable to save competition support: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            } finally {
+
+                if (
+                    saveCompetitionSupportButton
+                ) {
+
+                    saveCompetitionSupportButton.disabled =
+                        false;
+                }
+            }
+        }
+    );
+}
+
+
+// ========================================
+// LOAD COMPETITION SUPPORT RECORDS
+// ========================================
+
+async function loadCompetitionSupportRecords() {
+
+    if (
+        !competitionSupportList
+    ) {
+        return;
+    }
+
+    competitionSupportList.innerHTML =
+        `
+            <div class="empty-message">
+                Loading competition support records...
+            </div>
+        `;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "competition_support"
+                )
+                .select(
+                    `
+                        id,
+                        competition_id,
+                        supporter_id,
+                        support_type,
+                        title,
+                        description,
+                        amount,
+                        is_amount_public,
+                        featured,
+                        display_order,
+                        status,
+                        created_at,
+
+                        supporter:supporters (
+                            id,
+                            name,
+                            supporter_type,
+                            photo_url,
+                            logo_url
+                        ),
+
+                        competition:competitions (
+                            id,
+                            name,
+                            competition_type,
+                            season
+                        )
+                    `
+                )
+                .order(
+                    "display_order",
+                    {
+                        ascending:true
+                    }
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            competitionSupportList.innerHTML =
+                `
+                    <div class="empty-message">
+                        No competition support records have been created yet.
+                    </div>
+                `;
+
+            return;
+        }
+
+        let html = "";
+
+        data.forEach(
+            function (record) {
+
+                const supporter =
+                    record.supporter ||
+                    {};
+
+                const competition =
+                    record.competition ||
+                    {};
+
+                const imageUrl =
+                    supporter.photo_url ||
+                    supporter.logo_url;
+
+                const image =
+                    imageUrl
+                        ? `
+                            <img
+                                src="${escapeHtml(
+                                    imageUrl
+                                )}"
+                                alt="${escapeHtml(
+                                    supporter.name ||
+                                    "Supporter"
+                                )}"
+                                style="
+                                    width:70px;
+                                    height:70px;
+                                    object-fit:cover;
+                                    border-radius:10px;
+                                    border:1px solid #ddd;
+                                "
+                            >
+                          `
+                        : `
+                            <div
+                                style="
+                                    width:70px;
+                                    height:70px;
+                                    border-radius:10px;
+                                    background:#eee;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    font-size:26px;
+                                "
+                            >
+                                🤝
+                            </div>
+                          `;
+
+
+                html += `
+                    <div
+                        class="admin-card"
+                        style="
+                            margin-top:15px;
+                            border-left:5px solid ${
+                                record.status ===
+                                "Active"
+                                    ? "#16803c"
+                                    : "#777"
+                            };
+                        "
+                    >
+
+                        <div
+                            style="
+                                display:flex;
+                                justify-content:space-between;
+                                gap:18px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    display:flex;
+                                    gap:14px;
+                                    align-items:center;
+                                    flex:1;
+                                    min-width:260px;
+                                "
+                            >
+
+                                ${image}
+
+                                <div>
+
+                                    <h3>
+                                        🤝
+                                        ${escapeHtml(
+                                            supporter.name ||
+                                            "Unknown Supporter"
+                                        )}
+                                    </h3>
+
+                                    <p>
+                                        <strong>
+                                            Competition:
+                                        </strong>
+                                        ${escapeHtml(
+                                            competition.name ||
+                                            "Unknown Competition"
+                                        )}
+                                        ${
+                                            competition.season
+                                                ? " — " +
+                                                  escapeHtml(
+                                                      competition.season
+                                                  )
+                                                : ""
+                                        }
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Support Type:
+                                        </strong>
+                                        ${escapeHtml(
+                                            record.support_type ||
+                                            "Other"
+                                        )}
+                                    </p>
+
+                                    <p>
+                                        <strong>
+                                            Status:
+                                        </strong>
+                                        ${escapeHtml(
+                                            record.status ||
+                                            "Active"
+                                        )}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    display:flex;
+                                    gap:8px;
+                                    flex-wrap:wrap;
+                                    align-items:flex-start;
+                                "
+                            >
+
+                                <button
+                                    type="button"
+                                    class="admin-btn"
+                                    onclick="editCompetitionSupport(${Number(
+                                        record.id
+                                    )})"
+                                >
+                                    ✏️ Edit
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="admin-btn"
+                                    style="
+                                        background:#b00020;
+                                        color:#fff;
+                                    "
+                                    onclick="deleteCompetitionSupport(${Number(
+                                        record.id
+                                    )})"
+                                >
+                                    🗑️ Delete
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        ${
+                            record.title
+                                ? `
+                                    <p
+                                        style="
+                                            margin-top:12px;
+                                        "
+                                    >
+                                        <strong>
+                                            Title:
+                                        </strong>
+                                        ${escapeHtml(
+                                            record.title
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                        }
+
+
+                        ${
+                            record.description
+                                ? `
+                                    <p>
+                                        ${escapeHtml(
+                                            record.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                        }
+
+
+                        <div
+                            style="
+                                margin-top:10px;
+                                display:flex;
+                                gap:8px;
+                                flex-wrap:wrap;
+                            "
+                        >
+
+                            <span
+                                style="
+                                    padding:6px 10px;
+                                    border-radius:20px;
+                                    background:#f1f1f1;
+                                "
+                            >
+                                🔢 Order:
+                                ${Number(
+                                    record.display_order || 0
+                                )}
+                            </span>
+
+                            <span
+                                style="
+                                    padding:6px 10px;
+                                    border-radius:20px;
+                                    background:${
+                                        record.featured
+                                            ? "#fff3cd"
+                                            : "#f1f1f1"
+                                    };
+                                "
+                            >
+                                ${
+                                    record.featured
+                                        ? "⭐ Featured"
+                                        : "Not Featured"
+                                }
+                            </span>
+
+                            ${
+                                record.amount !==
+                                    null &&
+                                record.amount !==
+                                    undefined
+                                    ? `
+                                        <span
+                                            style="
+                                                padding:6px 10px;
+                                                border-radius:20px;
+                                                background:#f1f1f1;
+                                            "
+                                        >
+                                            💰 Amount:
+                                            ${
+                                                record.is_amount_public
+                                                    ? "KSh " +
+                                                      Number(
+                                                          record.amount
+                                                      ).toLocaleString()
+                                                    : "Private"
+                                            }
+                                        </span>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                    </div>
+                `;
+            }
+        );
+
+        competitionSupportList.innerHTML =
+            html;
+
+    } catch (error) {
+
+        console.error(
+            "LOAD COMPETITION SUPPORT ERROR:",
+            error
+        );
+
+        competitionSupportList.innerHTML =
+            `
+                <div class="empty-message">
+                    ❌ Unable to load competition support records:
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </div>
+            `;
+    }
+}
+
+
+// ========================================
+// EDIT COMPETITION SUPPORT
+// ========================================
+
+window.editCompetitionSupport =
+    async function (recordId) {
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_support"
+                    )
+                    .select("*")
+                    .eq(
+                        "id",
+                        recordId
+                    )
+                    .single();
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data) {
+                throw new Error(
+                    "Support record could not be found."
+                );
+            }
+
+
+            if (
+                competitionSupporterSelect
+            ) {
+
+                competitionSupporterSelect.value =
+                    String(
+                        data.supporter_id
+                    );
+            }
+
+
+            if (
+                competitionSupportCompetitionSelect
+            ) {
+
+                competitionSupportCompetitionSelect.value =
+                    String(
+                        data.competition_id
+                    );
+            }
+
+
+            if (
+                competitionSupportType
+            ) {
+
+                competitionSupportType.value =
+                    data.support_type ||
+                    "External Sponsor";
+            }
+
+
+            if (
+                competitionSupportTitle
+            ) {
+
+                competitionSupportTitle.value =
+                    data.title ||
+                    "";
+            }
+
+
+            if (
+                competitionSupportAmount
+            ) {
+
+                competitionSupportAmount.value =
+                    data.amount ??
+                    "";
+            }
+
+
+            if (
+                competitionSupportAmountPublic
+            ) {
+
+                competitionSupportAmountPublic.value =
+                    data.is_amount_public
+                        ? "true"
+                        : "false";
+            }
+
+
+            if (
+                competitionSupportFeatured
+            ) {
+
+                competitionSupportFeatured.value =
+                    data.featured
+                        ? "true"
+                        : "false";
+            }
+
+
+            if (
+                competitionSupportDisplayOrder
+            ) {
+
+                competitionSupportDisplayOrder.value =
+                    data.display_order ??
+                    0;
+            }
+
+
+            if (
+                competitionSupportStatus
+            ) {
+
+                competitionSupportStatus.value =
+                    data.status ||
+                    "Active";
+            }
+
+
+            if (
+                competitionSupportDescription
+            ) {
+
+                competitionSupportDescription.value =
+                    data.description ||
+                    "";
+            }
+
+
+            // ----------------------------------------
+            // Change submit button to UPDATE
+            // ----------------------------------------
+
+            if (
+                saveCompetitionSupportButton
+            ) {
+
+                saveCompetitionSupportButton.textContent =
+                    "💾 UPDATE SUPPORT RECORD";
+
+                saveCompetitionSupportButton.dataset.editId =
+                    String(recordId);
+            }
+
+
+            showCompetitionSupportMessage(
+                "✏️ Support record loaded. Make your changes and save."
+            );
+
+
+            const supportersSection =
+                document.getElementById(
+                    "supporters"
+                );
+
+            if (supportersSection) {
+
+                supportersSection.scrollIntoView({
+                    behavior:"smooth",
+                    block:"start"
+                });
+            }
+
+        } catch (error) {
+
+            console.error(
+                "EDIT COMPETITION SUPPORT ERROR:",
+                error
+            );
+
+            alert(
+                "Unable to load support record: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+        }
+    };
+
+
+// ========================================
+// REPLACE SUBMIT HANDLER FOR EDIT SUPPORT
+// ========================================
+
+if (
+    competitionSupportForm
+) {
+
+    competitionSupportForm.addEventListener(
+        "submit",
+        async function () {
+
+            const editId =
+                saveCompetitionSupportButton &&
+                saveCompetitionSupportButton.dataset
+                    ? saveCompetitionSupportButton
+                        .dataset
+                        .editId
+                    : null;
+
+            if (!editId) {
+                return;
+            }
+
+            event.preventDefault();
+
+        }
+    );
+}
+
+
+// ========================================
+// DELETE COMPETITION SUPPORT
+// ========================================
+
+window.deleteCompetitionSupport =
+    async function (recordId) {
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to delete this competition support record?"
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_support"
+                    )
+                    .delete()
+                    .eq(
+                        "id",
+                        recordId
+                    );
+
+            if (error) {
+                throw error;
+            }
+
+            await loadCompetitionSupportRecords();
+
+        } catch (error) {
+
+            console.error(
+                "DELETE COMPETITION SUPPORT ERROR:",
+                error
+            );
+
+            alert(
+                "Unable to delete support record: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+        }
+    };
+
+
+// ========================================
+// INITIAL SUPPORTER DATA LOAD
+// ========================================
+
+await loadSupporterCompetitions();
+
+await loadSupporterSelect();
+
+await loadSupporters();
+
+await loadCompetitionSupportRecords();
 // ========================================
 // START DASHBOARD
 // ========================================
