@@ -4782,7 +4782,699 @@ return "Unknown Player";
         );
     }
 
+// ========================================
+// LOAD COMPETITION SUPPORT / SPONSORS
+// ========================================
+async function loadCompetitionSupport(
+    competition
+) {
+    const supportContainer =
+        document.getElementById(
+            "competitionSupportList"
+        );
 
+    if (!supportContainer) {
+        return;
+    }
+
+    supportContainer.innerHTML = `
+        <div
+            class="sponsor-box"
+            style="
+                grid-column:1/-1;
+                min-height:120px;
+                flex-direction:column;
+            "
+        >
+            <div
+                style="
+                    font-size:32px;
+                    margin-bottom:8px;
+                "
+            >
+                🤝
+            </div>
+
+            <div>
+                Loading sponsors and partners...
+            </div>
+        </div>
+    `;
+
+    try {
+        if (!competition || !competition.id) {
+            supportContainer.innerHTML = `
+                <div
+                    class="sponsor-box"
+                    style="
+                        grid-column:1/-1;
+                        min-height:120px;
+                        flex-direction:column;
+                    "
+                >
+                    <div
+                        style="
+                            font-size:32px;
+                            margin-bottom:8px;
+                        "
+                    >
+                        🤝
+                    </div>
+
+                    <div>
+                        No sponsors or partners
+                        listed yet.
+                    </div>
+                </div>
+            `;
+
+            return;
+        }
+
+        // ========================================
+        // LOAD ACTIVE SUPPORT RECORDS
+        // ========================================
+        const {
+            data: supportRows,
+            error: supportError
+        } = await supabaseClient
+            .from("competition_support")
+            .select(`
+                id,
+                competition_id,
+                support_type,
+                title,
+                description,
+                amount,
+                is_amount_public,
+                featured,
+                display_order,
+                status,
+                created_at,
+                supporter:supporters (
+                    id,
+                    name,
+                    supporter_type,
+                    website_url,
+                    facebook_url,
+                    instagram_url,
+                    x_url,
+                    youtube_url,
+                    photo_url,
+                    logo_url,
+                    is_active
+                )
+            `)
+            .eq(
+                "competition_id",
+                competition.id
+            )
+            .eq(
+                "status",
+                "Active"
+            )
+            .order(
+                "featured",
+                {
+                    ascending:false
+                }
+            )
+            .order(
+                "display_order",
+                {
+                    ascending:true
+                }
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+        if (supportError) {
+            throw supportError;
+        }
+
+        // ========================================
+        // ONLY SHOW ACTIVE SUPPORTERS
+        // ========================================
+        const activeSupport =
+            (supportRows || [])
+                .filter(
+                    function (record) {
+                        return (
+                            record.supporter &&
+                            record.supporter.is_active === true
+                        );
+                    }
+                );
+
+        // ========================================
+        // NOTHING TO DISPLAY
+        // ========================================
+        if (
+            activeSupport.length === 0
+        ) {
+            supportContainer.innerHTML = `
+                <div
+                    class="sponsor-box"
+                    style="
+                        grid-column:1/-1;
+                        min-height:120px;
+                        flex-direction:column;
+                    "
+                >
+                    <div
+                        style="
+                            font-size:32px;
+                            margin-bottom:8px;
+                        "
+                    >
+                        🤝
+                    </div>
+
+                    <div>
+                        No sponsors or partners
+                        listed yet.
+                    </div>
+                </div>
+            `;
+
+            return;
+        }
+
+        // ========================================
+        // SAFE URL HELPER
+        // ========================================
+        function getSafeUrl(
+            value
+        ) {
+            if (
+                !value ||
+                typeof value !== "string"
+            ) {
+                return "";
+            }
+
+            const url =
+                value.trim();
+
+            if (
+                url.startsWith(
+                    "https://"
+                ) ||
+                url.startsWith(
+                    "http://"
+                )
+            ) {
+                return url;
+            }
+
+            return "";
+        }
+
+        // ========================================
+        // RENDER SUPPORTERS
+        // ========================================
+        supportContainer.innerHTML = "";
+
+        activeSupport.forEach(
+            function (record) {
+                const supporter =
+                    record.supporter || {};
+
+                const supporterName =
+                    supporter.name ||
+                    "Kabaru Football Supporter";
+
+                const supportTitle =
+                    record.title ||
+                    "";
+
+                const supportType =
+                    record.support_type ||
+                    supporter.supporter_type ||
+                    "";
+
+                const description =
+                    record.description ||
+                    "";
+
+                // ========================================
+                // LOGO / PHOTO
+                // ========================================
+                let visual = "";
+
+                if (
+                    supporter.logo_url
+                ) {
+                    visual = `
+                        <img
+                            src="${escapeHtml(
+                                supporter.logo_url
+                            )}"
+                            alt="${escapeHtml(
+                                supporterName
+                            )} logo"
+                            style="
+                                width:90px;
+                                height:90px;
+                                object-fit:contain;
+                                border-radius:12px;
+                                background:#fff;
+                                padding:8px;
+                                margin-bottom:12px;
+                            "
+                        >
+                    `;
+                } else if (
+                    supporter.photo_url
+                ) {
+                    visual = `
+                        <img
+                            src="${escapeHtml(
+                                supporter.photo_url
+                            )}"
+                            alt="${escapeHtml(
+                                supporterName
+                            )}"
+                            style="
+                                width:90px;
+                                height:90px;
+                                object-fit:cover;
+                                border-radius:12px;
+                                margin-bottom:12px;
+                            "
+                        >
+                    `;
+                } else {
+                    visual = `
+                        <div
+                            style="
+                                width:90px;
+                                height:90px;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                border-radius:12px;
+                                background:rgba(
+                                    255,
+                                    255,
+                                    255,
+                                    .12
+                                );
+                                font-size:42px;
+                                margin-bottom:12px;
+                            "
+                        >
+                            🤝
+                        </div>
+                    `;
+                }
+
+                // ========================================
+                // FEATURED BADGE
+                // ========================================
+                const featuredBadge =
+                    record.featured === true
+                        ? `
+                            <div
+                                style="
+                                    display:inline-block;
+                                    padding:4px 9px;
+                                    border-radius:20px;
+                                    background:#f5c542;
+                                    color:#17351f;
+                                    font-size:10px;
+                                    font-weight:900;
+                                    margin-bottom:8px;
+                                    text-transform:uppercase;
+                                "
+                            >
+                                ⭐ Featured Supporter
+                            </div>
+                        `
+                        : "";
+
+                // ========================================
+                // SUPPORT TYPE
+                // ========================================
+                const typeHtml =
+                    supportType
+                        ? `
+                            <div
+                                style="
+                                    font-size:12px;
+                                    font-weight:800;
+                                    color:#f5c542;
+                                    margin-bottom:7px;
+                                    text-transform:uppercase;
+                                    letter-spacing:.4px;
+                                "
+                            >
+                                ${escapeHtml(
+                                    supportType
+                                )}
+                            </div>
+                        `
+                        : "";
+
+                // ========================================
+                // SUPPORT TITLE
+                // ========================================
+                const titleHtml =
+                    supportTitle
+                        ? `
+                            <div
+                                style="
+                                    font-size:15px;
+                                    font-weight:800;
+                                    margin-bottom:8px;
+                                "
+                            >
+                                ${escapeHtml(
+                                    supportTitle
+                                )}
+                            </div>
+                        `
+                        : "";
+
+                // ========================================
+                // DESCRIPTION
+                // ========================================
+                const descriptionHtml =
+                    description
+                        ? `
+                            <div
+                                style="
+                                    font-size:13px;
+                                    line-height:1.5;
+                                    color:rgba(
+                                        255,
+                                        255,
+                                        255,
+                                        .75
+                                    );
+                                    margin-bottom:10px;
+                                "
+                            >
+                                ${escapeHtml(
+                                    description
+                                )}
+                            </div>
+                        `
+                        : "";
+
+                // ========================================
+                // PUBLIC AMOUNT
+                // ========================================
+                const amountValue =
+                    Number(
+                        record.amount
+                    );
+
+                const showAmount =
+                    record.is_amount_public === true &&
+                    record.amount !== null &&
+                    record.amount !== undefined &&
+                    record.amount !== "" &&
+                    Number.isFinite(
+                        amountValue
+                    );
+
+                const amountHtml =
+                    showAmount
+                        ? `
+                            <div
+                                style="
+                                    font-size:13px;
+                                    font-weight:800;
+                                    margin-bottom:10px;
+                                "
+                            >
+                                Support Amount:
+                                KSh ${amountValue.toLocaleString(
+                                    "en-KE"
+                                )}
+                            </div>
+                        `
+                        : "";
+
+                // ========================================
+                // SOCIAL / WEBSITE LINKS
+                // ========================================
+                const links = [];
+
+                const website =
+                    getSafeUrl(
+                        supporter.website_url
+                    );
+
+                const facebook =
+                    getSafeUrl(
+                        supporter.facebook_url
+                    );
+
+                const instagram =
+                    getSafeUrl(
+                        supporter.instagram_url
+                    );
+
+                const xUrl =
+                    getSafeUrl(
+                        supporter.x_url
+                    );
+
+                const youtube =
+                    getSafeUrl(
+                        supporter.youtube_url
+                    );
+
+                if (website) {
+                    links.push(`
+                        <a
+                            href="${escapeHtml(
+                                website
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                                color:#fff;
+                                text-decoration:none;
+                                font-size:12px;
+                                font-weight:800;
+                            "
+                        >
+                            🌐 Website
+                        </a>
+                    `);
+                }
+
+                if (facebook) {
+                    links.push(`
+                        <a
+                            href="${escapeHtml(
+                                facebook
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                                color:#fff;
+                                text-decoration:none;
+                                font-size:12px;
+                                font-weight:800;
+                            "
+                        >
+                            📘 Facebook
+                        </a>
+                    `);
+                }
+
+                if (instagram) {
+                    links.push(`
+                        <a
+                            href="${escapeHtml(
+                                instagram
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                                color:#fff;
+                                text-decoration:none;
+                                font-size:12px;
+                                font-weight:800;
+                            "
+                        >
+                            📷 Instagram
+                        </a>
+                    `);
+                }
+
+                if (xUrl) {
+                    links.push(`
+                        <a
+                            href="${escapeHtml(
+                                xUrl
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                                color:#fff;
+                                text-decoration:none;
+                                font-size:12px;
+                                font-weight:800;
+                            "
+                        >
+                            𝕏 X
+                        </a>
+                    `);
+                }
+
+                if (youtube) {
+                    links.push(`
+                        <a
+                            href="${escapeHtml(
+                                youtube
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                                color:#fff;
+                                text-decoration:none;
+                                font-size:12px;
+                                font-weight:800;
+                            "
+                        >
+                            ▶ YouTube
+                        </a>
+                    `);
+                }
+
+                const linksHtml =
+                    links.length > 0
+                        ? `
+                            <div
+                                style="
+                                    display:flex;
+                                    flex-wrap:wrap;
+                                    justify-content:center;
+                                    gap:8px 12px;
+                                    margin-top:8px;
+                                "
+                            >
+                                ${links.join("")}
+                            </div>
+                        `
+                        : "";
+
+                // ========================================
+                // CARD
+                // ========================================
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "sponsor-box";
+
+                card.style.cssText = `
+                    min-height:240px;
+                    flex-direction:column;
+                    justify-content:flex-start;
+                    align-items:center;
+                    text-align:center;
+                `;
+
+                card.innerHTML = `
+                    ${visual}
+
+                    ${featuredBadge}
+
+                    <div
+                        style="
+                            font-size:18px;
+                            font-weight:900;
+                            margin-bottom:6px;
+                        "
+                    >
+                        ${escapeHtml(
+                            supporterName
+                        )}
+                    </div>
+
+                    ${typeHtml}
+
+                    ${titleHtml}
+
+                    ${descriptionHtml}
+
+                    ${amountHtml}
+
+                    ${linksHtml}
+                `;
+
+                supportContainer.appendChild(
+                    card
+                );
+            }
+        );
+
+    } catch (error) {
+        console.error(
+            "LOAD COMPETITION SUPPORT ERROR:",
+            error
+        );
+
+        supportContainer.innerHTML = `
+            <div
+                class="sponsor-box"
+                style="
+                    grid-column:1/-1;
+                    min-height:120px;
+                    flex-direction:column;
+                "
+            >
+                <div
+                    style="
+                        font-size:32px;
+                        margin-bottom:8px;
+                    "
+                >
+                    ❌
+                </div>
+
+                <div
+                    style="
+                        font-weight:800;
+                    "
+                >
+                    Unable to load sponsors
+                    and partners.
+                </div>
+
+                <div
+                    style="
+                        margin-top:7px;
+                        font-size:12px;
+                        color:rgba(
+                            255,
+                            255,
+                            255,
+                            .65
+                        );
+                    "
+                >
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </div>
+            </div>
+        `;
+    }
+}
     // ========================================
     // INITIAL LOAD
     // ========================================
@@ -4801,20 +5493,23 @@ return "Unknown Player";
         // ========================================
 
         await Promise.all([
-            loadFixtures(
-                competition
-            ),
-            loadResults(
-                competition
-            ),
-            loadLeagueTable(
-                competition
-            ),
-            loadPlayerStatistics(
-                competition
-            ),
-            loadTeams()
-        ]);
+    loadFixtures(
+        competition
+    ),
+    loadResults(
+        competition
+    ),
+    loadLeagueTable(
+        competition
+    ),
+    loadPlayerStatistics(
+        competition
+    ),
+    loadTeams(),
+    loadCompetitionSupport(
+        competition
+    )
+]);
 
         // ========================================
         // SETUP INTERACTIONS
