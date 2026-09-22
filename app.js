@@ -1637,7 +1637,7 @@ resultCard.addEventListener(
         leagueTableEl.innerHTML = `
             <tr>
                 <td
-                    colspan="10"
+                    colspan="11"
                     style="
                         text-align:center;
                         padding:30px;
@@ -1703,7 +1703,7 @@ resultCard.addEventListener(
                 leagueTableEl.innerHTML = `
                     <tr>
                         <td
-                            colspan="10"
+                            colspan="11"
                             style="
                                 text-align:center;
                                 padding:30px;
@@ -2511,7 +2511,7 @@ if (seasonCompetitionIds.length > 0) {
             leagueTableEl.innerHTML = `
                 <tr>
                     <td
-                        colspan="10"
+                        colspan="11"
                         style="
                             text-align:center;
                             padding:30px;
