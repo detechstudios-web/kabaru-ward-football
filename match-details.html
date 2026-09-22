@@ -2389,7 +2389,7 @@ async function loadMatchDetails() {
 
         }
 
-/* =================================================
+        /* =================================================
    MATCH CARD EVENTS
 ================================================= */
 
@@ -2437,7 +2437,7 @@ const cardPlayerIds = [];
 
 
 matchCards.forEach(
-    card => {
+    function (card) {
 
         if (
             card.player_id &&
@@ -2494,7 +2494,7 @@ const cardPlayerMap = {};
 
 
 cardPlayers.forEach(
-    player => {
+    function (player) {
 
         cardPlayerMap[
             player.id
@@ -2506,7 +2506,186 @@ cardPlayers.forEach(
 
 
 /* =================================================
-   RENDER CARD EVENTS
+   SEPARATE YELLOW AND RED CARDS
+================================================= */
+
+const yellowCards =
+    matchCards.filter(
+        function (card) {
+            return card.card_type === "yellow";
+        }
+    );
+
+
+const redCards =
+    matchCards.filter(
+        function (card) {
+            return card.card_type === "red";
+        }
+    );
+
+
+/* =================================================
+   RENDER ONE CARD EVENT
+================================================= */
+
+function renderCardEvent(card) {
+
+    const player =
+        cardPlayerMap[
+            card.player_id
+        ];
+
+
+    if (!player) {
+        return "";
+    }
+
+
+    let teamName =
+        "Team";
+
+
+    if (
+        String(player.team_id) ===
+        String(home?.id)
+    ) {
+
+        teamName =
+            home?.name ||
+            "Home Team";
+
+    }
+
+    else if (
+        String(player.team_id) ===
+        String(away?.id)
+    ) {
+
+        teamName =
+            away?.name ||
+            "Away Team";
+
+    }
+
+
+    const playerUrl =
+        "player-profile.html?id=" +
+        encodeURIComponent(
+            player.id
+        );
+
+
+    const isYellow =
+        card.card_type === "yellow";
+
+
+    const cardClass =
+        isYellow
+            ? "yellow"
+            : "red";
+
+
+    const cardIcon =
+        isYellow
+            ? "🟨"
+            : "🟥";
+
+
+    const cardLabel =
+        isYellow
+            ? "Yellow Card"
+            : "Red Card";
+
+
+    const minuteText =
+        card.minute !== null &&
+        card.minute !== undefined &&
+        card.minute !== ""
+            ? escapeHtml(
+                card.minute
+            ) + "'"
+            : "—";
+
+
+    return `
+
+        <div
+            class="card-event"
+            style="
+                align-items:flex-start;
+            "
+        >
+
+            <span
+                class="card-icon ${cardClass}"
+            ></span>
+
+
+            <div
+                style="
+                    flex:1;
+                    min-width:0;
+                "
+            >
+
+                <a
+                    class="card-player"
+                    href="${playerUrl}"
+                >
+                    ${escapeHtml(
+                        player.full_name
+                    )}
+                </a>
+
+
+                <div
+                    class="card-team"
+                    style="
+                        margin-left:0;
+                        margin-top:3px;
+                    "
+                >
+                    ${escapeHtml(
+                        teamName
+                    )}
+                </div>
+
+
+                <div
+                    style="
+                        margin-top:5px;
+                        font-size:12px;
+                        font-weight:800;
+                        color:${
+                            isYellow
+                                ? "var(--yellow)"
+                                : "var(--red)"
+                        };
+                    "
+                >
+                    ${cardIcon}
+                    ${cardLabel}
+                    ${
+                        card.minute !== null &&
+                        card.minute !== undefined &&
+                        card.minute !== ""
+                            ? " • " +
+                              minuteText
+                            : ""
+                    }
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+
+/* =================================================
+   RENDER CARDS SECTION
 ================================================= */
 
 const cardsContainer =
@@ -2532,178 +2711,98 @@ else {
     let cardsHtml = "";
 
 
-    matchCards.forEach(
-        card => {
+    /* ============================================
+       YELLOW CARDS
+    ============================================ */
 
-            const player =
-                cardPlayerMap[
-                    card.player_id
-                ];
+    if (yellowCards.length) {
 
+        cardsHtml += `
 
-            if (!player) {
-                return;
-            }
-
-
-            let teamName =
-                "Team";
-
-
-            if (
-                String(
-                    player.team_id
-                ) ===
-                String(
-                    home?.id
-                )
-            ) {
-
-                teamName =
-                    home?.name ||
-                    "Home Team";
-
-            }
-
-            else if (
-                String(
-                    player.team_id
-                ) ===
-                String(
-                    away?.id
-                )
-            ) {
-
-                teamName =
-                    away?.name ||
-                    "Away Team";
-
-            }
-
-
-            const playerUrl =
-                "player-profile.html?id=" +
-                encodeURIComponent(
-                    player.id
-                );
-
-
-            const isYellow =
-                card.card_type ===
-                "yellow";
-
-
-            const cardClass =
-                isYellow
-                    ? "yellow"
-                    : "red";
-
-
-            const cardIcon =
-                isYellow
-                    ? "🟨"
-                    : "🟥";
-
-
-            const cardLabel =
-                isYellow
-                    ? "Yellow Card"
-                    : "Red Card";
-
-
-            const minuteText =
-                card.minute !== null &&
-                card.minute !== undefined &&
-                card.minute !== ""
-                    ? escapeHtml(
-                        card.minute
-                    ) + "'"
-                    : "—";
-
-
-            cardsHtml += `
+            <div
+                style="
+                    margin-bottom:18px;
+                "
+            >
 
                 <div
-                    class="card-event"
                     style="
-                        align-items:flex-start;
+                        font-size:14px;
+                        font-weight:900;
+                        margin-bottom:10px;
+                        color:var(--yellow);
                     "
                 >
+                    🟨 Yellow Cards
+                </div>
 
-                    <span
-                        class="card-icon ${cardClass}"
-                    ></span>
+                <div
+                    class="card-events"
+                >
 
-
-                    <div
-                        style="
-                            flex:1;
-                            min-width:0;
-                        "
-                    >
-
-                        <a
-                            class="card-player"
-                            href="${playerUrl}"
-                        >
-                            ${escapeHtml(
-                                player.full_name
-                            )}
-                        </a>
-
-
-                        <div
-                            class="card-team"
-                            style="
-                                margin-left:0;
-                                margin-top:3px;
-                            "
-                        >
-                            ${escapeHtml(
-                                teamName
-                            )}
-                        </div>
-
-
-                        <div
-                            style="
-                                margin-top:5px;
-                                font-size:12px;
-                                font-weight:800;
-                                color:${
-                                    isYellow
-                                        ? "var(--yellow)"
-                                        : "var(--red)"
-                                };
-                            "
-                        >
-                            ${cardIcon}
-                            ${cardLabel}
-                            ${
-                                card.minute !== null &&
-                                card.minute !== undefined &&
-                                card.minute !== ""
-                                    ? " • " +
-                                      minuteText
-                                    : ""
-                            }
-                        </div>
-
-                    </div>
+                    ${
+                        yellowCards
+                            .map(
+                                renderCardEvent
+                            )
+                            .join("")
+                    }
 
                 </div>
 
-            `;
+            </div>
 
-        }
-    );
+        `;
+
+    }
+
+
+    /* ============================================
+       RED CARDS
+    ============================================ */
+
+    if (redCards.length) {
+
+        cardsHtml += `
+
+            <div>
+
+                <div
+                    style="
+                        font-size:14px;
+                        font-weight:900;
+                        margin-bottom:10px;
+                        color:var(--red);
+                    "
+                >
+                    🟥 Red Cards
+                </div>
+
+                <div
+                    class="card-events"
+                >
+
+                    ${
+                        redCards
+                            .map(
+                                renderCardEvent
+                            )
+                            .join("")
+                    }
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
 
 
     cardsContainer.innerHTML =
         cardsHtml;
 
 }
-
         /* =================================================
            SUMMARY
         ================================================= */
