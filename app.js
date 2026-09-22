@@ -1996,7 +1996,250 @@ resultRows.forEach(
                     }
                 }
             );
+// ========================================
+// BUILD FORM FROM ALL COMPETITIONS
+// IN THE CURRENT SEASON
+// ========================================
+//
+// IMPORTANT:
+// - League statistics remain League-only.
+// - Form uses the latest 5 completed
+//   matches from ALL competitions.
+// - Newest match comes first.
+// - Cup/Friendly matches are included.
+// ========================================
 
+const {
+    data: seasonCompetitions,
+    error: seasonCompetitionsError
+} = await supabaseClient
+    .from("competitions")
+    .select(`
+        id,
+        season
+    `)
+    .eq(
+        "season",
+        season
+    );
+
+if (seasonCompetitionsError) {
+    throw seasonCompetitionsError;
+}
+
+const seasonCompetitionIds =
+    (seasonCompetitions || [])
+        .map(function (competition) {
+            return competition.id;
+        })
+        .filter(function (id) {
+            return id !== null &&
+                   id !== undefined;
+        });
+
+if (seasonCompetitionIds.length > 0) {
+
+    const {
+        data: allSeasonFixtures,
+        error: allSeasonFixturesError
+    } = await supabaseClient
+        .from("fixtures")
+        .select(`
+            id,
+            competition_id,
+            home_team_id,
+            away_team_id,
+            match_date,
+            kick_off,
+            status
+        `)
+        .in(
+            "competition_id",
+            seasonCompetitionIds
+        )
+        .eq(
+            "status",
+            "Completed"
+        )
+        .order(
+    "match_date",
+    {
+        ascending: true
+    }
+)
+.order(
+    "kick_off",
+    {
+        ascending: true
+    }
+);
+
+    if (allSeasonFixturesError) {
+        throw allSeasonFixturesError;
+    }
+
+    const completedSeasonFixtures =
+        allSeasonFixtures || [];
+
+    const allSeasonFixtureIds =
+        completedSeasonFixtures
+            .map(function (fixture) {
+                return fixture.id;
+            })
+            .filter(function (id) {
+                return id !== null &&
+                       id !== undefined;
+            });
+
+    let allSeasonResults = [];
+
+    if (allSeasonFixtureIds.length > 0) {
+
+        const {
+            data: seasonResults,
+            error: seasonResultsError
+        } = await supabaseClient
+            .from("results")
+            .select(`
+                id,
+                fixture_id,
+                home_score,
+                away_score
+            `)
+            .in(
+                "fixture_id",
+                allSeasonFixtureIds
+            );
+
+        if (seasonResultsError) {
+            throw seasonResultsError;
+        }
+
+        allSeasonResults =
+            seasonResults || [];
+    }
+
+    const allSeasonResultMap = {};
+
+    allSeasonResults.forEach(
+        function (result) {
+
+            allSeasonResultMap[
+                String(result.fixture_id)
+            ] = result;
+
+        }
+    );
+
+    // Clear any League-only form
+    // before rebuilding the correct
+    // all-competition form.
+    Object.keys(table).forEach(
+        function (teamId) {
+
+            table[teamId].form = [];
+
+        }
+    );
+
+    completedSeasonFixtures.forEach(
+        function (fixture) {
+
+            const result =
+                allSeasonResultMap[
+                    String(fixture.id)
+                ];
+
+            if (!result) {
+                return;
+            }
+
+            const homeId =
+                String(
+                    fixture.home_team_id
+                );
+
+            const awayId =
+                String(
+                    fixture.away_team_id
+                );
+
+            const homeTeam =
+                table[homeId];
+
+            const awayTeam =
+                table[awayId];
+
+            const homeScore =
+                Number(
+                    result.home_score
+                );
+
+            const awayScore =
+                Number(
+                    result.away_score
+                );
+
+            if (
+                !Number.isFinite(homeScore) ||
+                !Number.isFinite(awayScore)
+            ) {
+                return;
+            }
+
+            // Home team
+            if (
+                homeTeam &&
+                homeTeam.form.length < 5
+            ) {
+
+                if (homeScore > awayScore) {
+
+                    homeTeam.form.push("W");
+
+                }
+                else if (
+                    homeScore < awayScore
+                ) {
+
+                    homeTeam.form.push("L");
+
+                }
+                else {
+
+                    homeTeam.form.push("D");
+
+                }
+            }
+
+            // Away team
+            if (
+                awayTeam &&
+                awayTeam.form.length < 5
+            ) {
+
+                if (awayScore > homeScore) {
+
+                    awayTeam.form.push("W");
+
+                }
+                else if (
+                    awayScore < homeScore
+                ) {
+
+                    awayTeam.form.push("L");
+
+                }
+                else {
+
+                    awayTeam.form.push("D");
+
+                }
+            }
+
+        }
+    );
+}
             // ========================================
             // SORT TABLE
             // ========================================
