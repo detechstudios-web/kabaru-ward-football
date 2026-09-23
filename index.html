@@ -2247,9 +2247,53 @@ footer strong {
 
     .sponsor-grid {
 
-        grid-template-columns:
-            1fr 1fr;
-    }
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap:
+        12px;
+}
+
+
+.sponsor-box {
+
+    min-height:
+        220px;
+
+    padding:
+        18px 12px;
+}
+
+
+.sponsor-box:has(
+    div[style*="Featured Supporter"]
+) {
+
+    grid-column:
+        1 / -1;
+
+    min-height:
+        255px;
+}
+
+
+.sponsor-box:has(
+    div[style*="Featured Supporter"]
+) img {
+
+    width:
+        100px;
+
+    height:
+        100px;
+}
+
+
+.sponsors-more a {
+
+    width:
+        100%;
+}
 
 
     .fixture-teams {
