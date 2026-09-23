@@ -1424,16 +1424,68 @@ textarea {
 
 
 /* ========================================
-   SPONSORS
+   SPONSORS & PARTNERS
 ======================================== */
 
 .sponsors {
 
     background:
-        var(--green-dark);
+        linear-gradient(
+            135deg,
+            #04351f,
+            #075b35
+        );
 
     color:
         white;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+}
+
+
+.sponsors::before {
+
+    content:
+        "🤝";
+
+    position:
+        absolute;
+
+    right:
+        -20px;
+
+    top:
+        20px;
+
+    font-size:
+        180px;
+
+    opacity:
+        .035;
+
+    pointer-events:
+        none;
+}
+
+
+.sponsors .container {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+}
+
+
+.sponsors .section-title {
+
+    margin-bottom:
+        32px;
 }
 
 
@@ -1441,15 +1493,30 @@ textarea {
 
     color:
         white;
+
+    font-size:
+        32px;
 }
 
 
 .sponsors .section-title p {
 
     color:
-        rgba(255,255,255,.72);
+        rgba(
+            255,
+            255,
+            255,
+            .72
+        );
+
+    max-width:
+        650px;
 }
 
+
+/* ========================================
+   SPONSOR GRID
+======================================== */
 
 .sponsor-grid {
 
@@ -1460,23 +1527,40 @@ textarea {
         repeat(4, 1fr);
 
     gap:
-        15px;
+        16px;
+
+    align-items:
+        stretch;
 }
 
+
+/* ========================================
+   SPONSOR CARD
+======================================== */
 
 .sponsor-box {
 
     min-height:
-        100px;
+        245px;
 
     background:
-        rgba(255,255,255,.08);
+        rgba(
+            255,
+            255,
+            255,
+            .08
+        );
 
     border:
-        1px solid rgba(255,255,255,.12);
+        1px solid rgba(
+            255,
+            255,
+            255,
+            .13
+        );
 
     border-radius:
-        15px;
+        18px;
 
     display:
         flex;
@@ -1485,19 +1569,498 @@ textarea {
         center;
 
     justify-content:
-        center;
+        flex-start;
+
+    flex-direction:
+        column;
 
     text-align:
         center;
 
     padding:
-        15px;
+        22px 16px;
 
     color:
-        rgba(255,255,255,.85);
+        white;
 
     font-weight:
         800;
+
+    transition:
+        .25s ease;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+}
+
+
+.sponsor-box:hover {
+
+    transform:
+        translateY(-4px);
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .12
+        );
+
+    border-color:
+        rgba(
+            245,
+            197,
+            66,
+            .5
+        );
+
+    box-shadow:
+        0 14px 30px rgba(
+            0,
+            0,
+            0,
+            .14
+        );
+}
+
+
+/* ========================================
+   SPONSOR VISUAL
+======================================== */
+
+.sponsor-box img {
+
+    width:
+        90px;
+
+    height:
+        90px;
+
+    object-fit:
+        contain;
+
+    border-radius:
+        14px;
+
+    background:
+        white;
+
+    padding:
+        8px;
+
+    margin-bottom:
+        12px;
+}
+
+
+.sponsor-box > div[style*="font-size:42px"] {
+
+    width:
+        90px;
+
+    height:
+        90px;
+
+    margin-bottom:
+        12px;
+
+    border-radius:
+        14px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .10
+        ) !important;
+}
+
+
+/* ========================================
+   SPONSOR NAME
+======================================== */
+
+.sponsor-box > div[style*="font-size:18px"] {
+
+    color:
+        white;
+
+    font-size:
+        17px !important;
+
+    line-height:
+        1.25;
+
+    margin-bottom:
+        6px !important;
+}
+
+
+/* ========================================
+   FEATURED SUPPORTER
+======================================== */
+
+.sponsor-box:has(
+    div[style*="Featured Supporter"]
+) {
+
+    grid-column:
+        1 / -1;
+
+    min-height:
+        280px;
+
+    padding:
+        28px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(
+                245,
+                197,
+                66,
+                .16
+            ),
+            rgba(
+                255,
+                255,
+                255,
+                .09
+            )
+        );
+
+    border:
+        1px solid rgba(
+            245,
+            197,
+            66,
+            .45
+        );
+
+    box-shadow:
+        0 14px 35px rgba(
+            0,
+            0,
+            0,
+            .12
+        );
+}
+
+
+.sponsor-box:has(
+    div[style*="Featured Supporter"]
+) img {
+
+    width:
+        115px;
+
+    height:
+        115px;
+
+    border-radius:
+        16px;
+}
+
+
+.sponsor-box:has(
+    div[style*="Featured Supporter"]
+) > div[style*="font-size:18px"] {
+
+    font-size:
+        22px !important;
+}
+
+
+/* ========================================
+   FEATURED BADGE
+======================================== */
+
+.sponsor-box div[style*="Featured Supporter"] {
+
+    order:
+        0;
+
+    background:
+        var(--gold) !important;
+
+    color:
+        var(--green-dark) !important;
+
+    border-radius:
+        30px !important;
+
+    padding:
+        5px 11px !important;
+
+    font-size:
+        10px !important;
+
+    font-weight:
+        900 !important;
+
+    letter-spacing:
+        .5px;
+}
+
+
+/* ========================================
+   SUPPORT TYPE
+======================================== */
+
+.sponsor-box div[style*="text-transform:uppercase"] {
+
+    color:
+        var(--gold) !important;
+
+    font-size:
+        11px !important;
+
+    font-weight:
+        900 !important;
+
+    letter-spacing:
+        .8px;
+}
+
+
+/* ========================================
+   SOCIAL / WEBSITE LINKS
+======================================== */
+
+.sponsor-box a {
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    border:
+        1px solid rgba(
+            255,
+            255,
+            255,
+            .18
+        );
+
+    border-radius:
+        50%;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    color:
+        white !important;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .07
+        );
+
+    transition:
+        .2s ease;
+
+    font-size:
+        0 !important;
+
+    text-decoration:
+        none !important;
+}
+
+
+.sponsor-box a:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        var(--gold);
+
+    color:
+        var(--green-dark) !important;
+}
+
+
+/* Website */
+
+.sponsor-box a[href*="http"]:not(
+    [href*="facebook"],
+    [href*="instagram"],
+    [href*="youtube"],
+    [href*="twitter"],
+    [href*="x.com"]
+)::after {
+
+    content:
+        "🌐";
+
+    font-size:
+        15px;
+}
+
+
+/* Facebook */
+
+.sponsor-box a[href*="facebook"]::after {
+
+    content:
+        "f";
+
+    font-size:
+        18px;
+
+    font-weight:
+        900;
+}
+
+
+/* Instagram */
+
+.sponsor-box a[href*="instagram"]::after {
+
+    content:
+        "◎";
+
+    font-size:
+        21px;
+
+    font-weight:
+        900;
+}
+
+
+/* X */
+
+.sponsor-box a[href*="x.com"]::after,
+.sponsor-box a[href*="twitter"]::after {
+
+    content:
+        "𝕏";
+
+    font-size:
+        15px;
+
+    font-weight:
+        900;
+}
+
+
+/* YouTube */
+
+.sponsor-box a[href*="youtube"]::after {
+
+    content:
+        "▶";
+
+    font-size:
+        12px;
+}
+
+
+/* ========================================
+   SPONSOR ACTION AREA
+======================================== */
+
+.sponsor-box > div:last-child {
+
+    max-width:
+        100%;
+
+}
+
+
+/* ========================================
+   SPONSOR EMPTY / LOADING STATE
+======================================== */
+
+.sponsor-box[style*="grid-column:1/-1"] {
+
+    min-height:
+        130px;
+
+    justify-content:
+        center;
+}
+
+
+/* ========================================
+   VIEW ALL BUTTON
+======================================== */
+
+.sponsors-more {
+
+    text-align:
+        center;
+
+    margin-top:
+        28px;
+}
+
+
+.sponsors-more a {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        7px;
+
+    background:
+        var(--gold);
+
+    color:
+        var(--green-dark);
+
+    padding:
+        12px 20px;
+
+    border-radius:
+        10px;
+
+    font-size:
+        14px;
+
+    font-weight:
+        900;
+
+    transition:
+        .2s ease;
+}
+
+
+.sponsors-more a:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(
+            0,
+            0,
+            0,
+            .15
+        );
 }
 
 
