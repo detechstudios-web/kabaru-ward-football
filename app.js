@@ -41,6 +41,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const redContainer =
         document.getElementById("redCardsList");
+    const playerCompetitionFilter =
+    document.getElementById("playerCompetitionFilter");
 // ========================================
 // ELEMENT VARIABLE ALIASES
 // ========================================
