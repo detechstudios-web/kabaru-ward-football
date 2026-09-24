@@ -2756,7 +2756,56 @@ resultRows.forEach(
             if (competitionsError) {
                 throw competitionsError;
             }
+/* ========================================
+   PLAYER LEADERS COMPETITION FILTER
+======================================== */
 
+if (
+    playerCompetitionFilter &&
+    competitionRows &&
+    competitionRows.length > 0
+) {
+
+    const currentValue =
+        playerCompetitionFilter.value || "all";
+
+    playerCompetitionFilter.innerHTML = `
+        <option value="all">
+            All Competitions
+        </option>
+    `;
+
+    competitionRows.forEach(function (comp) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = comp.id;
+
+        option.textContent =
+            comp.name ||
+            getCompetitionLabel(comp);
+
+        playerCompetitionFilter.appendChild(
+            option
+        );
+
+    });
+
+    const valueStillExists =
+        Array.from(
+            playerCompetitionFilter.options
+        ).some(function (option) {
+
+            return option.value === currentValue;
+
+        });
+
+    playerCompetitionFilter.value =
+        valueStillExists
+            ? currentValue
+            : "all";
+}
             const competitions =
                 competitionRows || [];
 
