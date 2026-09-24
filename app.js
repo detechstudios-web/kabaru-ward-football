@@ -4,7 +4,7 @@
 // ========================================
 
 document.addEventListener("DOMContentLoaded", async function () {
-
+let currentMainCompetition = null;
     // ========================================
     // MAIN ELEMENTS
     // ========================================
