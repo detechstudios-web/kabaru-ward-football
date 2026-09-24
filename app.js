@@ -2807,24 +2807,51 @@ if (
             : "all";
 }
             const competitions =
-                competitionRows || [];
+    competitionRows || [];
 
-            const competitionIds =
-                competitions
-                    .map(function (item) {
-                        return item.id;
-                    })
-                    .filter(function (id) {
-                        return id !== null &&
-                               id !== undefined;
-                    });
 
-            if (
-                competitionIds.length === 0
-            ) {
-                renderEmptyStatistics();
-                return;
-            }
+/* ========================================
+   SELECTED PLAYER LEADERS COMPETITION
+======================================== */
+
+const selectedCompetitionId =
+    playerCompetitionFilter
+        ? playerCompetitionFilter.value
+        : "all";
+
+
+let competitionIds;
+
+
+if (
+    selectedCompetitionId &&
+    selectedCompetitionId !== "all"
+) {
+
+    competitionIds = [
+        selectedCompetitionId
+    ];
+
+} else {
+
+    competitionIds =
+        competitions
+            .map(function (item) {
+                return item.id;
+            })
+            .filter(function (id) {
+                return id !== null &&
+                       id !== undefined;
+            });
+}
+
+
+if (
+    competitionIds.length === 0
+) {
+    renderEmptyStatistics();
+    return;
+}
 
             // ========================================
             // LOAD FIXTURES
