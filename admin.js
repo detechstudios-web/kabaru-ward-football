@@ -149,7 +149,111 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const competitionForm =
         document.getElementById("competitionForm");
+// ========================================
+// COMPETITION FORMAT CONFIGURATION UI
+// ========================================
 
+const competitionTypeEl =
+    document.getElementById("competitionType");
+
+const competitionFormatConfiguration =
+    document.getElementById(
+        "competitionFormatConfiguration"
+    );
+
+const knockoutConfiguration =
+    document.getElementById(
+        "knockoutConfiguration"
+    );
+
+const groupConfiguration =
+    document.getElementById(
+        "groupConfiguration"
+    );
+
+function updateCompetitionFormatConfiguration() {
+
+    if (
+        !competitionTypeEl ||
+        !competitionFormatConfiguration ||
+        !knockoutConfiguration ||
+        !groupConfiguration
+    ) {
+        return;
+    }
+
+    const competitionType =
+        competitionTypeEl.value;
+
+    // Hide everything first
+    competitionFormatConfiguration.style.display =
+        "none";
+
+    knockoutConfiguration.style.display =
+        "none";
+
+    groupConfiguration.style.display =
+        "none";
+
+    // ----------------------------------------
+    // KNOCKOUT
+    // ----------------------------------------
+
+    if (
+        competitionType === "Knockout"
+    ) {
+
+        competitionFormatConfiguration.style.display =
+            "block";
+
+        knockoutConfiguration.style.display =
+            "block";
+
+        return;
+    }
+
+    // ----------------------------------------
+    // GROUP + KNOCKOUT
+    // ----------------------------------------
+
+    if (
+        competitionType === "Group + Knockout"
+    ) {
+
+        competitionFormatConfiguration.style.display =
+            "block";
+
+        knockoutConfiguration.style.display =
+            "block";
+
+        groupConfiguration.style.display =
+            "block";
+
+        return;
+    }
+
+    // ----------------------------------------
+    // LEAGUE / FRIENDLY
+    // ----------------------------------------
+
+    competitionFormatConfiguration.style.display =
+        "none";
+}
+
+
+// Update when administrator changes type
+if (competitionTypeEl) {
+
+    competitionTypeEl.addEventListener(
+        "change",
+        updateCompetitionFormatConfiguration
+    );
+
+}
+
+
+// Set correct state when page loads
+updateCompetitionFormatConfiguration();
     const createCompetitionButton =
         document.getElementById(
             "createCompetitionButton"
