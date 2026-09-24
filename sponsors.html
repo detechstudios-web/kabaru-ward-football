@@ -1665,15 +1665,43 @@ document.addEventListener(
                     );
 
 
-                supportersEl.innerHTML = `
+                if (cards.length === 0) {
 
-                    <div class="supporters-grid">
+    supportersEl.innerHTML = `
 
-                        ${cards.join("")}
+        <div class="empty-state">
 
-                    </div>
+            <div class="empty-icon">
+                🤝
+            </div>
 
-                `;
+            <h3>
+                More Sponsors & Partners Coming Soon
+            </h3>
+
+            <p>
+                We look forward to welcoming more
+                individuals, businesses and organizations
+                supporting football development in Kabaru Ward.
+            </p>
+
+        </div>
+
+    `;
+
+} else {
+
+    supportersEl.innerHTML = `
+
+        <div class="supporters-grid">
+
+            ${cards.join("")}
+
+        </div>
+
+    `;
+
+}
 
             }
 
