@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -128,14 +129,14 @@
             background:
                 linear-gradient(
                     135deg,
-                    #0b6623 0%,
-                    #11833a 55%,
+                    #084d1b 0%,
+                    #0b6623 42%,
                     #159447 100%
                 );
 
             color: white;
 
-            padding: 58px 20px 78px;
+            padding: 62px 20px 88px;
 
             text-align: center;
 
@@ -149,15 +150,16 @@
 
             position: absolute;
 
-            width: 260px;
-            height: 260px;
+            width: 310px;
+            height: 310px;
 
             border-radius: 50%;
 
-            background: rgba(255, 255, 255, 0.06);
+            background:
+                rgba(255, 255, 255, 0.055);
 
-            right: -80px;
-            top: -90px;
+            right: -105px;
+            top: -125px;
         }
 
         .hero::before {
@@ -165,15 +167,16 @@
 
             position: absolute;
 
-            width: 190px;
-            height: 190px;
+            width: 220px;
+            height: 220px;
 
             border-radius: 50%;
 
-            background: rgba(255, 255, 255, 0.045);
+            background:
+                rgba(255, 255, 255, 0.045);
 
-            left: -70px;
-            bottom: -80px;
+            left: -85px;
+            bottom: -100px;
         }
 
         .hero-content {
@@ -185,10 +188,10 @@
         }
 
         .hero-icon {
-            width: 76px;
-            height: 76px;
+            width: 82px;
+            height: 82px;
 
-            margin: 0 auto 15px;
+            margin: 0 auto 17px;
 
             border-radius: 50%;
 
@@ -196,24 +199,28 @@
             align-items: center;
             justify-content: center;
 
-            background: rgba(255, 255, 255, 0.13);
+            background:
+                rgba(255, 255, 255, 0.13);
 
-            border: 1px solid rgba(255, 255, 255, 0.20);
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.22);
 
-            font-size: 39px;
+            font-size: 41px;
 
             box-shadow:
-                0 7px 20px rgba(0, 0, 0, 0.10);
+                0 9px 25px rgba(0, 0, 0, 0.12);
         }
 
         .hero h1 {
-            font-size: clamp(30px, 5vw, 48px);
+            font-size:
+                clamp(31px, 5vw, 50px);
 
             margin-bottom: 13px;
 
             font-weight: 800;
 
-            letter-spacing: -0.5px;
+            letter-spacing: -0.6px;
         }
 
         .hero p {
@@ -240,11 +247,11 @@
         ======================================== */
 
         .section {
-            padding: 48px 0;
+            padding: 50px 0;
         }
 
         .featured-section {
-            margin-top: -38px;
+            margin-top: -43px;
 
             position: relative;
 
@@ -256,11 +263,11 @@
         .section-heading {
             text-align: center;
 
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
 
         .section-heading h2 {
-            font-size: 29px;
+            font-size: 30px;
 
             color: #0b6623;
 
@@ -310,7 +317,8 @@
 
             border-radius: 50%;
 
-            animation: spin 0.8s linear infinite;
+            animation:
+                spin 0.8s linear infinite;
 
             margin: 0 auto 15px;
         }
@@ -328,24 +336,31 @@
         ======================================== */
 
         .featured-card {
-            background: white;
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #fbfcfc
+                );
 
-            border-radius: 20px;
+            border-radius: 22px;
 
-            padding: 30px;
+            padding: 34px;
 
             box-shadow:
-                0 12px 35px rgba(0, 0, 0, 0.11);
+                0 15px 42px
+                rgba(0, 0, 0, 0.12);
 
-            border: 1px solid #e2e7ea;
+            border:
+                1px solid #dfe6e2;
 
             display: grid;
 
             grid-template-columns:
-                minmax(200px, 280px)
+                minmax(210px, 300px)
                 1fr;
 
-            gap: 34px;
+            gap: 38px;
 
             align-items: center;
 
@@ -363,9 +378,30 @@
             top: 0;
             bottom: 0;
 
-            width: 6px;
+            width: 7px;
 
-            background: #0b6623;
+            background:
+                linear-gradient(
+                    180deg,
+                    #0b6623,
+                    #159447
+                );
+        }
+
+        .featured-card::after {
+            content: "★";
+
+            position: absolute;
+
+            right: 25px;
+            top: 17px;
+
+            font-size: 58px;
+
+            color:
+                rgba(11, 102, 35, 0.045);
+
+            line-height: 1;
         }
 
         .featured-media {
@@ -374,54 +410,67 @@
             justify-content: center;
             align-items: center;
 
-            min-height: 190px;
+            min-height: 205px;
 
-            padding: 10px;
+            padding: 8px;
+
+            position: relative;
+            z-index: 2;
         }
 
         .featured-media img {
-            width: 230px;
-            height: 185px;
+            width: 245px;
+            height: 195px;
 
             object-fit: contain;
 
-            border-radius: 15px;
+            border-radius: 16px;
 
-            background: #f6f8f9;
+            background: #f7f9f8;
 
-            padding: 16px;
+            padding: 17px;
 
-            border: 1px solid #e4e9ec;
+            border:
+                1px solid #e1e8e4;
 
             box-shadow:
-                0 4px 14px rgba(0, 0, 0, 0.05);
+                0 6px 18px
+                rgba(0, 0, 0, 0.06);
         }
 
         .featured-placeholder {
-            width: 230px;
-            height: 185px;
+            width: 245px;
+            height: 195px;
 
-            border-radius: 15px;
+            border-radius: 16px;
 
             background:
                 linear-gradient(
                     135deg,
-                    #f0f4f2,
-                    #e7eeea
+                    #eff5f1,
+                    #e5eee8
                 );
 
-            border: 1px solid #dce5df;
+            border:
+                1px solid #d9e4dc;
 
             display: flex;
 
             align-items: center;
             justify-content: center;
 
-            font-size: 58px;
+            font-size: 62px;
+
+            box-shadow:
+                0 6px 18px
+                rgba(0, 0, 0, 0.05);
         }
 
         .featured-content {
             min-width: 0;
+
+            position: relative;
+            z-index: 2;
         }
 
         .featured-badge {
@@ -432,7 +481,7 @@
             background: #fff4d6;
             color: #795b00;
 
-            padding: 6px 12px;
+            padding: 7px 13px;
 
             border-radius: 20px;
 
@@ -440,9 +489,14 @@
 
             font-weight: 800;
 
-            margin-bottom: 12px;
+            margin-bottom: 13px;
 
-            border: 1px solid #f0df9f;
+            border:
+                1px solid #f0df9f;
+
+            box-shadow:
+                0 2px 5px
+                rgba(121, 91, 0, 0.05);
         }
 
         .supporter-type {
@@ -454,15 +508,15 @@
 
             text-transform: uppercase;
 
-            letter-spacing: 0.8px;
+            letter-spacing: 0.9px;
 
-            margin-bottom: 6px;
+            margin-bottom: 7px;
         }
 
         .featured-card h3 {
-            font-size: 30px;
+            font-size: 32px;
 
-            line-height: 1.2;
+            line-height: 1.18;
 
             margin-bottom: 10px;
 
@@ -476,13 +530,13 @@
 
             color: #344047;
 
-            margin-bottom: 9px;
+            margin-bottom: 10px;
         }
 
         .featured-description {
             color: #5f6b76;
 
-            margin-bottom: 18px;
+            margin-bottom: 19px;
 
             max-width: 700px;
         }
@@ -515,7 +569,8 @@
 
             color: #263238;
 
-            border: 1px solid #e0e5e8;
+            border:
+                1px solid #e0e5e8;
 
             font-size: 12px;
 
@@ -530,10 +585,11 @@
         .social-link:hover {
             background: #e3e9ec;
 
-            transform: translateY(-1px);
+            transform: translateY(-2px);
 
             box-shadow:
-                0 3px 8px rgba(0, 0, 0, 0.08);
+                0 4px 9px
+                rgba(0, 0, 0, 0.08);
         }
 
         .website-link {
@@ -561,7 +617,8 @@
 
             color: #0b6623;
 
-            border: 1px solid #d5ead9;
+            border:
+                1px solid #d5ead9;
 
             padding: 7px 11px;
 
@@ -584,20 +641,22 @@
             grid-template-columns:
                 repeat(3, minmax(0, 1fr));
 
-            gap: 24px;
+            gap: 25px;
         }
 
         .supporter-card {
             background: white;
 
-            border-radius: 16px;
+            border-radius: 17px;
 
-            border: 1px solid #e2e7ea;
+            border:
+                1px solid #e0e6e3;
 
             overflow: hidden;
 
             box-shadow:
-                0 4px 15px rgba(0, 0, 0, 0.06);
+                0 5px 17px
+                rgba(0, 0, 0, 0.065);
 
             display: flex;
 
@@ -605,29 +664,54 @@
 
             min-height: 100%;
 
+            position: relative;
+
             transition:
                 transform 0.22s ease,
                 box-shadow 0.22s ease,
                 border-color 0.22s ease;
         }
 
+        .supporter-card::after {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            height: 3px;
+
+            background: #0b6623;
+
+            opacity: 0;
+
+            transition: opacity 0.22s ease;
+        }
+
         .supporter-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
 
             box-shadow:
-                0 12px 27px rgba(0, 0, 0, 0.10);
+                0 14px 30px
+                rgba(0, 0, 0, 0.11);
 
-            border-color: #d4ddd7;
+            border-color: #d2ddd6;
+        }
+
+        .supporter-card:hover::after {
+            opacity: 1;
         }
 
         .supporter-media {
-            height: 205px;
+            height: 215px;
 
             background:
                 linear-gradient(
                     135deg,
-                    #f5f7f8,
-                    #edf1f3
+                    #f6f8f8,
+                    #edf2f0
                 );
 
             display: flex;
@@ -635,9 +719,27 @@
             align-items: center;
             justify-content: center;
 
-            padding: 20px;
+            padding: 22px;
 
-            border-bottom: 1px solid #e7ebed;
+            border-bottom:
+                1px solid #e7ebed;
+
+            position: relative;
+        }
+
+        .supporter-media::after {
+            content: "";
+
+            position: absolute;
+
+            width: 90px;
+            height: 90px;
+
+            border-radius: 50%;
+
+            border:
+                1px solid
+                rgba(11, 102, 35, 0.055);
         }
 
         .supporter-media img {
@@ -646,12 +748,15 @@
 
             object-fit: contain;
 
-            border-radius: 10px;
+            border-radius: 12px;
+
+            position: relative;
+            z-index: 2;
         }
 
         .supporter-placeholder {
-            width: 80px;
-            height: 80px;
+            width: 82px;
+            height: 82px;
 
             border-radius: 50%;
 
@@ -663,10 +768,13 @@
             justify-content: center;
 
             font-size: 42px;
+
+            position: relative;
+            z-index: 2;
         }
 
         .supporter-content {
-            padding: 22px;
+            padding: 23px;
 
             display: flex;
 
@@ -704,7 +812,7 @@
 
             margin-top: 12px;
 
-            margin-bottom: 17px;
+            margin-bottom: 18px;
         }
 
         .featured-small-badge {
@@ -724,7 +832,8 @@
 
             margin-bottom: 9px;
 
-            border: 1px solid #f0df9f;
+            border:
+                1px solid #f0df9f;
         }
 
         .card-footer {
@@ -738,25 +847,27 @@
         .empty-state {
             background: white;
 
-            border: 1px dashed #cbd5d9;
+            border:
+                1px dashed #cbd5d9;
 
-            border-radius: 16px;
+            border-radius: 17px;
 
-            padding: 55px 25px;
+            padding: 58px 25px;
 
             text-align: center;
 
             color: #68727d;
 
             box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.04);
+                0 4px 13px
+                rgba(0, 0, 0, 0.04);
         }
 
         .empty-icon {
-            width: 72px;
-            height: 72px;
+            width: 76px;
+            height: 76px;
 
-            margin: 0 auto 15px;
+            margin: 0 auto 16px;
 
             border-radius: 50%;
 
@@ -767,7 +878,7 @@
 
             background: #edf3ef;
 
-            font-size: 38px;
+            font-size: 39px;
         }
 
         .empty-state h3 {
@@ -793,7 +904,8 @@
         .error-state {
             background: #fff5f5;
 
-            border: 1px solid #f1c4c4;
+            border:
+                1px solid #f1c4c4;
 
             border-radius: 14px;
 
@@ -817,7 +929,7 @@
 
             color: white;
 
-            padding: 32px 20px;
+            padding: 34px 20px;
 
             text-align: center;
 
@@ -854,9 +966,9 @@
 
                 text-align: center;
 
-                gap: 20px;
+                gap: 21px;
 
-                padding: 27px 22px;
+                padding: 28px 23px;
             }
 
             .featured-card::before {
@@ -911,14 +1023,14 @@
             }
 
             .hero {
-                padding: 42px 18px 60px;
+                padding: 44px 18px 65px;
             }
 
             .hero-icon {
-                width: 66px;
-                height: 66px;
+                width: 68px;
+                height: 68px;
 
-                font-size: 34px;
+                font-size: 35px;
             }
 
             .hero h1 {
@@ -930,19 +1042,19 @@
             }
 
             .section {
-                padding: 38px 0;
+                padding: 39px 0;
             }
 
             .featured-section {
-                margin-top: -30px;
+                margin-top: -31px;
             }
 
             .section-heading {
-                margin-bottom: 24px;
+                margin-bottom: 25px;
             }
 
             .section-heading h2 {
-                font-size: 24px;
+                font-size: 25px;
             }
 
             .section-heading p {
@@ -952,23 +1064,23 @@
             .supporters-grid {
                 grid-template-columns: 1fr;
 
-                gap: 18px;
+                gap: 19px;
             }
 
             .featured-card {
-                border-radius: 16px;
+                border-radius: 17px;
 
-                padding: 25px 17px;
+                padding: 26px 18px;
             }
 
             .featured-media img,
             .featured-placeholder {
-                width: 175px;
-                height: 145px;
+                width: 180px;
+                height: 148px;
             }
 
             .featured-card h3 {
-                font-size: 24px;
+                font-size: 25px;
             }
 
             .featured-description {
@@ -976,11 +1088,11 @@
             }
 
             .supporter-media {
-                height: 185px;
+                height: 190px;
             }
 
             .supporter-content {
-                padding: 19px;
+                padding: 20px;
             }
 
             .social-link {
@@ -992,7 +1104,7 @@
             }
 
             .empty-state {
-                padding: 45px 18px;
+                padding: 46px 18px;
             }
 
         }
@@ -2193,3 +2305,4 @@ document.addEventListener(
 </body>
 
 </html>
+```
