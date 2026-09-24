@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sponsors & Partners | Kabaru Ward Football</title>
+
+    <meta
+        name="description"
+        content="Sponsors and partners supporting Kabaru Ward Football."
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f7fa;
+            color: #17202a;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ========================================
+           HEADER
+        ======================================== */
+
+        .site-header {
+            background: #0b6623;
+            color: white;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+
+        .back-button {
+            background: white;
+            color: #0b6623;
+
+            padding: 9px 15px;
+            border-radius: 7px;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            transition: 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        /* ========================================
+           HERO
+        ======================================== */
+
+        .hero {
+            background:
+                linear-gradient(
+                    135deg,
+                    #0b6623,
+                    #159447
+                );
+
+            color: white;
+
+            padding: 55px 20px 65px;
+
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .hero-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .hero h1 {
+            font-size: clamp(30px, 5vw, 48px);
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 17px;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+
+        /* ========================================
+           MAIN CONTAINER
+        ======================================== */
+
+        .container {
+            width: min(1200px, 92%);
+            margin: 0 auto;
+        }
+
+        /* ========================================
+           SECTION
+        ======================================== */
+
+        .section {
+            padding: 45px 0;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .section-heading h2 {
+            font-size: 28px;
+            color: #0b6623;
+            margin-bottom: 7px;
+        }
+
+        .section-heading p {
+            color: #68727d;
+            font-size: 15px;
+        }
+
+        /* ========================================
+           LOADING
+        ======================================== */
+
+        .loading-box {
+            background: white;
+            border-radius: 12px;
+            padding: 35px 20px;
+            text-align: center;
+            color: #68727d;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .loading-spinner {
+            width: 35px;
+            height: 35px;
+
+            border: 4px solid #e1e6ea;
+            border-top-color: #0b6623;
+
+            border-radius: 50%;
+
+            animation: spin 0.8s linear infinite;
+
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ========================================
+           FEATURED SUPPORTER
+        ======================================== */
+
+        .featured-section {
+            margin-top: -35px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .featured-card {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 8px 30px rgba(0,0,0,0.10);
+
+            border: 1px solid #e5e9ed;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(180px, 250px)
+                1fr;
+
+            gap: 30px;
+
+            align-items: center;
+        }
+
+        .featured-media {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .featured-media img {
+            width: 210px;
+            height: 170px;
+
+            object-fit: contain;
+
+            border-radius: 12px;
+
+            background: #f5f7f9;
+
+            padding: 12px;
+        }
+
+        .featured-placeholder {
+            width: 210px;
+            height: 170px;
+
+            border-radius: 12px;
+
+            background: #f0f3f5;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 55px;
+        }
+
+        .featured-badge {
+            display: inline-block;
+
+            background: #fff3cd;
+            color: #856404;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            margin-bottom: 10px;
+        }
+
+        .supporter-type {
+            color: #0b6623;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+            margin-bottom: 6px;
+        }
+
+        .featured-card h3 {
+            font-size: 27px;
+            margin-bottom: 10px;
+            color: #17202a;
+        }
+
+        .featured-description {
+            color: #5f6b76;
+            margin-bottom: 18px;
+        }
+
+        /* ========================================
+           SOCIAL LINKS
+        ======================================== */
+
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .social-link {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 38px;
+            height: 36px;
+
+            padding: 0 11px;
+
+            border-radius: 7px;
+
+            background: #eef2f4;
+
+            color: #263238;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            transition: 0.2s ease;
+        }
+
+        .social-link:hover {
+            background: #dfe6ea;
+            transform: translateY(-1px);
+        }
+
+        .website-link {
+            background: #0b6623;
+            color: white;
+        }
+
+        .website-link:hover {
+            background: #09551d;
+        }
+
+        /* ========================================
+           SUPPORTER GRID
+        ======================================== */
+
+        .supporters-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 22px;
+        }
+
+        .supporter-card {
+            background: white;
+
+            border-radius: 14px;
+
+            border: 1px solid #e4e8eb;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 3px 12px rgba(0,0,0,0.06);
+
+            display: flex;
+            flex-direction: column;
+
+            min-height: 100%;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .supporter-card:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 8px 22px rgba(0,0,0,0.10);
+        }
+
+        .supporter-media {
+            height: 190px;
+
+            background: #f4f6f8;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px;
+        }
+
+        .supporter-media img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            border-radius: 8px;
+        }
+
+        .supporter-placeholder {
+            font-size: 55px;
+        }
+
+        .supporter-content {
+            padding: 20px;
+
+            display: flex;
+            flex-direction: column;
+
+            flex: 1;
+        }
+
+        .supporter-content h3 {
+            font-size: 21px;
+            margin-bottom: 5px;
+            color: #17202a;
+        }
+
+        .supporter-description {
+            color: #68727d;
+
+            font-size: 14px;
+
+            margin-top: 12px;
+
+            margin-bottom: 17px;
+        }
+
+        .featured-small-badge {
+            align-self: flex-start;
+
+            background: #fff3cd;
+            color: #856404;
+
+            padding: 4px 8px;
+
+            border-radius: 12px;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+        .support-amount {
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #0b6623;
+
+            margin-bottom: 14px;
+        }
+
+        .card-footer {
+            margin-top: auto;
+        }
+
+        /* ========================================
+           EMPTY STATE
+        ======================================== */
+
+        .empty-state {
+            background: white;
+
+            border: 1px dashed #cbd3d9;
+
+            border-radius: 14px;
+
+            padding: 50px 20px;
+
+            text-align: center;
+
+            color: #68727d;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            color: #344047;
+            margin-bottom: 7px;
+        }
+
+        /* ========================================
+           ERROR
+        ======================================== */
+
+        .error-state {
+            background: #fff5f5;
+
+            border: 1px solid #f1c4c4;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            text-align: center;
+
+            color: #a33a3a;
+        }
+
+        /* ========================================
+           FOOTER
+        ======================================== */
+
+        footer {
+            background: #17202a;
+            color: white;
+
+            padding: 30px 20px;
+
+            text-align: center;
+
+            margin-top: 25px;
+        }
+
+        footer p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+
+        @media (max-width: 900px) {
+
+            .supporters-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .featured-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .site-header {
+                padding: 13px 15px;
+            }
+
+            .brand {
+                font-size: 17px;
+            }
+
+            .back-button {
+                padding: 8px 11px;
+                font-size: 12px;
+            }
+
+            .hero {
+                padding: 40px 18px 55px;
+            }
+
+            .hero-icon {
+                font-size: 40px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .section {
+                padding: 35px 0;
+            }
+
+            .section-heading h2 {
+                font-size: 24px;
+            }
+
+            .supporters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-card {
+                padding: 22px 17px;
+            }
+
+            .featured-media img,
+            .featured-placeholder {
+                width: 170px;
+                height: 140px;
+            }
+
+            .featured-card h3 {
+                font-size: 23px;
+            }
+
+            .supporter-media {
+                height: 180px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================
+     HEADER
+======================================== -->
+
+<header class="site-header">
+
+    <div class="header-inner">
+
+        <a
+            href="index.html"
+            class="brand"
+        >
+            ⚽ KABARU FOOTBALL
+        </a>
+
+        <a
+            href="index.html"
+            class="back-button"
+        >
+            ← Back to Website
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- ========================================
+     HERO
+======================================== -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="hero-icon">
+            🤝
+        </div>
+
+        <h1>
+            Sponsors & Partners
+        </h1>
+
+        <p>
+            We proudly recognize the individuals,
+            businesses, organizations and partners
+            supporting the growth and development of
+            football in Kabaru Ward.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     FEATURED SUPPORTER
+======================================== -->
+
+<section class="section featured-section">
+
+    <div class="container">
+
+        <div
+            id="featuredSupporter"
+        >
+
+            <div class="loading-box">
+
+                <div class="loading-spinner"></div>
+
+                Loading featured supporter...
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     ALL SUPPORTERS
+======================================== -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <h2>
+                All Sponsors & Partners
+            </h2>
+
+            <p>
+                Meet the supporters contributing to
+                football development in Kabaru Ward.
+            </p>
+
+        </div>
+
+
+        <div
+            id="supportersContainer"
+        >
+
+            <div class="loading-box">
+
+                <div class="loading-spinner"></div>
+
+                Loading sponsors and partners...
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================
+     FOOTER
+======================================== -->
+
+<footer>
+
+    <p>
+        © <span id="currentYear"></span>
+        Kabaru Ward Football.
+        All rights reserved.
+    </p>
+
+</footer>
+
+
+<!-- ========================================
+     SUPABASE
+======================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+
+        /* ========================================
+           SUPABASE CONFIGURATION
+        ======================================== */
+
+        const SUPABASE_URL =
+            "https://aitcfhalfkdlitaefhfo.supabase.co/rest/v1/";
+
+        const SUPABASE_ANON_KEY =
+            "sb_publishable_NyK1UAffJLTxXwyGxD89Ww_O2J-iPhl";
+
+
+        const {
+            createClient
+        } = supabase;
+
+
+        const client =
+            createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
+
+
+        /* ========================================
+           ELEMENTS
+        ======================================== */
+
+        const featuredEl =
+            document.getElementById(
+                "featuredSupporter"
+            );
+
+        const supportersEl =
+            document.getElementById(
+                "supportersContainer"
+            );
+
+        const currentYearEl =
+            document.getElementById(
+                "currentYear"
+            );
+
+
+        currentYearEl.textContent =
+            new Date().getFullYear();
+
+
+        /* ========================================
+           HELPERS
+        ======================================== */
+
+        function escapeHtml(value) {
+
+            if (value === null ||
+                value === undefined) {
+
+                return "";
+
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+
+        function getSafeUrl(url) {
+
+            if (!url) {
+                return null;
+            }
+
+            const value =
+                String(url).trim();
+
+            if (
+                value.startsWith("https://") ||
+                value.startsWith("http://")
+            ) {
+
+                return value;
+
+            }
+
+            return null;
+        }
+
+
+        function getSupporterImage(
+            supporter
+        ) {
+
+            if (
+                supporter &&
+                supporter.logo_url
+            ) {
+
+                return {
+                    url: supporter.logo_url,
+                    alt: supporter.name || "Sponsor logo"
+                };
+
+            }
+
+            if (
+                supporter &&
+                supporter.photo_url
+            ) {
+
+                return {
+                    url: supporter.photo_url,
+                    alt: supporter.name || "Supporter photo"
+                };
+
+            }
+
+            return null;
+
+        }
+
+
+        function getSupporterType(
+            supporter
+        ) {
+
+            if (
+                supporter &&
+                supporter.supporter_type
+            ) {
+
+                return supporter.supporter_type;
+
+            }
+
+            return "Supporter";
+
+        }
+
+
+        function buildSocialLinks(
+            supporter
+        ) {
+
+            const links = [];
+
+
+            const website =
+                getSafeUrl(
+                    supporter.website_url
+                );
+
+            const facebook =
+                getSafeUrl(
+                    supporter.facebook_url
+                );
+
+            const instagram =
+                getSafeUrl(
+                    supporter.instagram_url
+                );
+
+            const x =
+                getSafeUrl(
+                    supporter.x_url
+                );
+
+            const youtube =
+                getSafeUrl(
+                    supporter.youtube_url
+                );
+
+
+            if (website) {
+
+                links.push(`
+                    <a
+                        class="social-link website-link"
+                        href="${website}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Website"
+                    >
+                        🌐 Website
+                    </a>
+                `);
+
+            }
+
+
+            if (facebook) {
+
+                links.push(`
+                    <a
+                        class="social-link"
+                        href="${facebook}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook"
+                    >
+                        f Facebook
+                    </a>
+                `);
+
+            }
+
+
+            if (instagram) {
+
+                links.push(`
+                    <a
+                        class="social-link"
+                        href="${instagram}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram"
+                    >
+                        ◎ Instagram
+                    </a>
+                `);
+
+            }
+
+
+            if (x) {
+
+                links.push(`
+                    <a
+                        class="social-link"
+                        href="${x}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="X"
+                    >
+                        𝕏
+                    </a>
+                `);
+
+            }
+
+
+            if (youtube) {
+
+                links.push(`
+                    <a
+                        class="social-link"
+                        href="${youtube}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="YouTube"
+                    >
+                        ▶ YouTube
+                    </a>
+                `);
+
+            }
+
+
+            return links.join("");
+
+        }
+
+
+        function buildMedia(
+            supporter,
+            featured = false
+        ) {
+
+            const image =
+                getSupporterImage(
+                    supporter
+                );
+
+
+            if (image) {
+
+                if (featured) {
+
+                    return `
+                        <div class="featured-media">
+
+                            <img
+                                src="${escapeHtml(image.url)}"
+                                alt="${escapeHtml(image.alt)}"
+                                loading="lazy"
+                                onerror="this.style.display='none';"
+                            >
+
+                        </div>
+                    `;
+
+                }
+
+
+                return `
+                    <div class="supporter-media">
+
+                        <img
+                            src="${escapeHtml(image.url)}"
+                            alt="${escapeHtml(image.alt)}"
+                            loading="lazy"
+                            onerror="this.style.display='none';"
+                        >
+
+                    </div>
+                `;
+
+            }
+
+
+            if (featured) {
+
+                return `
+                    <div class="featured-media">
+
+                        <div class="featured-placeholder">
+                            🤝
+                        </div>
+
+                    </div>
+                `;
+
+            }
+
+
+            return `
+                <div class="supporter-media">
+
+                    <div class="supporter-placeholder">
+                        🤝
+                    </div>
+
+                </div>
+            `;
+
+        }
+
+
+        function formatAmount(
+            record
+        ) {
+
+            if (
+                !record ||
+                record.is_amount_public !== true ||
+                record.amount === null ||
+                record.amount === undefined
+            ) {
+
+                return "";
+
+            }
+
+
+            const amount =
+                Number(record.amount);
+
+
+            if (
+                Number.isNaN(amount)
+            ) {
+
+                return "";
+
+            }
+
+
+            return `
+                <div class="support-amount">
+                    Support:
+                    KSh ${amount.toLocaleString()}
+                </div>
+            `;
+
+        }
+
+
+        /* ========================================
+           LOAD SUPPORTERS
+        ======================================== */
+
+        async function loadSupporters() {
+
+            try {
+
+                /*
+                 * Load all active supporters.
+                 *
+                 * We deliberately do NOT limit this
+                 * to the current League competition.
+                 *
+                 * This makes sponsors.html a general
+                 * Kabaru Football Sponsors & Partners
+                 * directory.
+                 */
+
+                const {
+                    data: supporters,
+                    error
+                } = await client
+                    .from("supporters")
+                    .select("*")
+                    .eq("is_active", true)
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                if (
+                    !supporters ||
+                    supporters.length === 0
+                ) {
+
+                    featuredEl.innerHTML = "";
+
+                    supportersEl.innerHTML = `
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                🤝
+                            </div>
+
+                            <h3>
+                                Sponsors & Partners
+                            </h3>
+
+                            <p>
+                                No active sponsors or
+                                partners have been listed yet.
+                            </p>
+
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                /*
+                 * Load competition support records
+                 * for these supporters.
+                 */
+
+                const supporterIds =
+                    supporters.map(
+                        supporter => supporter.id
+                    );
+
+
+                let supportRecords = [];
+
+
+                if (
+                    supporterIds.length > 0
+                ) {
+
+                    const {
+                        data,
+                        error:
+                            supportError
+                    } = await client
+                        .from("competition_support")
+                        .select(`
+                            id,
+                            competition_id,
+                            supporter_id,
+                            support_type,
+                            title,
+                            description,
+                            amount,
+                            is_amount_public,
+                            featured,
+                            display_order,
+                            status,
+                            created_at
+                        `)
+                        .in(
+                            "supporter_id",
+                            supporterIds
+                        )
+                        .eq(
+                            "status",
+                            "Active"
+                        )
+                        .order(
+                            "featured",
+                            {
+                                ascending: false
+                            }
+                        )
+                        .order(
+                            "display_order",
+                            {
+                                ascending: true
+                            }
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+
+                    if (supportError) {
+
+                        throw supportError;
+
+                    }
+
+
+                    supportRecords =
+                        data || [];
+
+                }
+
+
+                /*
+                 * Connect support records to supporters.
+                 */
+
+                const recordsBySupporter =
+                    new Map();
+
+
+                supportRecords.forEach(
+                    record => {
+
+                        const key =
+                            String(
+                                record.supporter_id
+                            );
+
+
+                        if (
+                            !recordsBySupporter.has(
+                                key
+                            )
+                        ) {
+
+                            recordsBySupporter.set(
+                                key,
+                                []
+                            );
+
+                        }
+
+
+                        recordsBySupporter
+                            .get(key)
+                            .push(record);
+
+                    }
+                );
+
+
+                /*
+                 * Determine featured supporter.
+                 *
+                 * Priority:
+                 * 1. Explicit featured support record
+                 * 2. First active supporter
+                 */
+
+                let featuredSupporter = null;
+                let featuredRecord = null;
+
+
+                for (
+                    const supporter of supporters
+                ) {
+
+                    const records =
+                        recordsBySupporter.get(
+                            String(supporter.id)
+                        ) || [];
+
+
+                    const featured =
+                        records.find(
+                            record =>
+                                record.featured === true
+                        );
+
+
+                    if (featured) {
+
+                        featuredSupporter =
+                            supporter;
+
+                        featuredRecord =
+                            featured;
+
+                        break;
+
+                    }
+
+                }
+
+
+                if (!featuredSupporter) {
+
+                    featuredSupporter =
+                        supporters[0];
+
+                    const records =
+                        recordsBySupporter.get(
+                            String(
+                                featuredSupporter.id
+                            )
+                        ) || [];
+
+
+                    featuredRecord =
+                        records[0] || null;
+
+                }
+
+
+                /* ========================================
+                   RENDER FEATURED
+                ======================================== */
+
+                const featuredType =
+                    featuredRecord &&
+                    featuredRecord.support_type
+                        ? featuredRecord.support_type
+                        : getSupporterType(
+                            featuredSupporter
+                        );
+
+
+                const featuredDescription =
+                    featuredRecord &&
+                    featuredRecord.description
+                        ? featuredRecord.description
+                        : "Supporting football development in Kabaru Ward.";
+
+
+                const featuredTitle =
+                    featuredRecord &&
+                    featuredRecord.title
+                        ? featuredRecord.title
+                        : "";
+
+
+                featuredEl.innerHTML = `
+
+                    <div class="featured-card">
+
+                        ${buildMedia(
+                            featuredSupporter,
+                            true
+                        )}
+
+                        <div>
+
+                            <div class="featured-badge">
+                                ⭐ Featured Supporter
+                            </div>
+
+                            <div class="supporter-type">
+                                ${escapeHtml(
+                                    featuredType
+                                )}
+                            </div>
+
+                            <h3>
+                                ${escapeHtml(
+                                    featuredSupporter.name
+                                )}
+                            </h3>
+
+                            ${
+                                featuredTitle
+                                    ? `
+                                        <p
+                                            style="
+                                                font-weight:700;
+                                                margin-bottom:8px;
+                                                color:#344047;
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                featuredTitle
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                            }
+
+                            <p class="featured-description">
+                                ${escapeHtml(
+                                    featuredDescription
+                                )}
+                            </p>
+
+                            ${formatAmount(
+                                featuredRecord
+                            )}
+
+                            <div class="social-links">
+
+                                ${buildSocialLinks(
+                                    featuredSupporter
+                                )}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                /* ========================================
+                   RENDER ALL SUPPORTERS
+                ======================================== */
+
+                const cards =
+                    supporters.map(
+                        supporter => {
+
+                            const records =
+                                recordsBySupporter.get(
+                                    String(
+                                        supporter.id
+                                    )
+                                ) || [];
+
+
+                            const primaryRecord =
+                                records[0] || null;
+
+
+                            const type =
+                                primaryRecord &&
+                                primaryRecord.support_type
+                                    ? primaryRecord.support_type
+                                    : getSupporterType(
+                                        supporter
+                                    );
+
+
+                            const description =
+                                primaryRecord &&
+                                primaryRecord.description
+                                    ? primaryRecord.description
+                                    : "Supporting football development in Kabaru Ward.";
+
+
+                            const title =
+                                primaryRecord &&
+                                primaryRecord.title
+                                    ? primaryRecord.title
+                                    : "";
+
+
+                            const isFeatured =
+                                records.some(
+                                    record =>
+                                        record.featured === true
+                                );
+
+
+                            return `
+
+                                <article
+                                    class="supporter-card"
+                                >
+
+                                    ${buildMedia(
+                                        supporter,
+                                        false
+                                    )}
+
+                                    <div
+                                        class="supporter-content"
+                                    >
+
+                                        ${
+                                            isFeatured
+                                                ? `
+                                                    <div class="featured-small-badge">
+                                                        ⭐ Featured
+                                                    </div>
+                                                  `
+                                                : ""
+                                        }
+
+                                        <div
+                                            class="supporter-type"
+                                        >
+                                            ${escapeHtml(
+                                                type
+                                            )}
+                                        </div>
+
+                                        <h3>
+                                            ${escapeHtml(
+                                                supporter.name
+                                            )}
+                                        </h3>
+
+                                        ${
+                                            title
+                                                ? `
+                                                    <div
+                                                        style="
+                                                            font-size:13px;
+                                                            font-weight:700;
+                                                            margin-top:4px;
+                                                            color:#344047;
+                                                        "
+                                                    >
+                                                        ${escapeHtml(
+                                                            title
+                                                        )}
+                                                    </div>
+                                                  `
+                                                : ""
+                                        }
+
+                                        <p
+                                            class="supporter-description"
+                                        >
+                                            ${escapeHtml(
+                                                description
+                                            )}
+                                        </p>
+
+                                        ${formatAmount(
+                                            primaryRecord
+                                        )}
+
+                                        <div
+                                            class="card-footer"
+                                        >
+
+                                            <div
+                                                class="social-links"
+                                            >
+                                                ${buildSocialLinks(
+                                                    supporter
+                                                )}
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </article>
+
+                            `;
+
+                        }
+                    );
+
+
+                supportersEl.innerHTML = `
+
+                    <div class="supporters-grid">
+
+                        ${cards.join("")}
+
+                    </div>
+
+                `;
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Sponsors & Partners error:",
+                    error
+                );
+
+
+                featuredEl.innerHTML = "";
+
+
+                supportersEl.innerHTML = `
+
+                    <div class="error-state">
+
+                        <h3>
+                            Unable to load sponsors and partners
+                        </h3>
+
+                        <p>
+                            Please try refreshing the page.
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        /* ========================================
+           START
+        ======================================== */
+
+        await loadSupporters();
+
+    }
+
+);
+
+</script>
+
+</body>
+
+</html>
