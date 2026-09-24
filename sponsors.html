@@ -1519,8 +1519,15 @@ document.addEventListener(
                 ======================================== */
 
                 const cards =
-                    supporters.map(
-                        supporter => {
+    supporters
+        .filter(
+            supporter =>
+                !featuredSupporter ||
+                String(supporter.id) !==
+                String(featuredSupporter.id)
+        )
+        .map(
+            supporter => {
 
                             const records =
                                 recordsBySupporter.get(
