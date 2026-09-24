@@ -2976,9 +2976,6 @@ const {
         resultIds
     );
 
-if (playerStatsError) {
-    throw playerStatsError;
-}
 
             if (playerStatsError) {
                 throw playerStatsError;
