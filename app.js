@@ -5565,7 +5565,20 @@ async function loadCompetitionSupport(
 
         const competition =
             await loadCompetition();
+if (playerCompetitionFilter) {
 
+    playerCompetitionFilter.addEventListener(
+        "change",
+        async function () {
+
+            await loadPlayerStatistics(
+                competition
+            );
+
+        }
+    );
+
+}
         // ========================================
         // LOAD MAIN WEBSITE DATA
         // ========================================
