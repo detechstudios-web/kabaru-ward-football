@@ -19,10 +19,18 @@
 
     <style>
 
+        /* ========================================
+           GLOBAL
+        ======================================== */
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -31,7 +39,7 @@
                 Helvetica,
                 sans-serif;
 
-            background: #f5f7fa;
+            background: #f4f6f8;
             color: #17202a;
             line-height: 1.6;
         }
@@ -41,6 +49,10 @@
             color: inherit;
         }
 
+        img {
+            max-width: 100%;
+        }
+
         /* ========================================
            HEADER
         ======================================== */
@@ -48,15 +60,20 @@
         .site-header {
             background: #0b6623;
             color: white;
-            padding: 16px 20px;
+
+            padding: 15px 20px;
+
             position: sticky;
             top: 0;
+
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+
+            box-shadow:
+                0 3px 14px rgba(0, 0, 0, 0.16);
         }
 
         .header-inner {
-            max-width: 1200px;
+            width: min(1200px, 92%);
             margin: 0 auto;
 
             display: flex;
@@ -69,7 +86,9 @@
         .brand {
             font-size: 21px;
             font-weight: 800;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
+
+            white-space: nowrap;
         }
 
         .back-button {
@@ -77,17 +96,28 @@
             color: #0b6623;
 
             padding: 9px 15px;
-            border-radius: 7px;
+
+            border-radius: 8px;
 
             font-size: 14px;
             font-weight: 700;
 
-            transition: 0.2s ease;
+            box-shadow:
+                0 2px 7px rgba(0, 0, 0, 0.12);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                opacity 0.2s ease;
         }
 
         .back-button:hover {
             transform: translateY(-1px);
-            opacity: 0.92;
+
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.16);
+
+            opacity: 0.94;
         }
 
         /* ========================================
@@ -98,37 +128,101 @@
             background:
                 linear-gradient(
                     135deg,
-                    #0b6623,
-                    #159447
+                    #0b6623 0%,
+                    #11833a 55%,
+                    #159447 100%
                 );
 
             color: white;
 
-            padding: 55px 20px 65px;
+            padding: 58px 20px 78px;
 
             text-align: center;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 260px;
+            height: 260px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            right: -80px;
+            top: -90px;
+        }
+
+        .hero::before {
+            content: "";
+
+            position: absolute;
+
+            width: 190px;
+            height: 190px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.045);
+
+            left: -70px;
+            bottom: -80px;
         }
 
         .hero-content {
             max-width: 850px;
             margin: 0 auto;
+
+            position: relative;
+            z-index: 2;
         }
 
         .hero-icon {
-            font-size: 48px;
-            margin-bottom: 8px;
+            width: 76px;
+            height: 76px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(255, 255, 255, 0.13);
+
+            border: 1px solid rgba(255, 255, 255, 0.20);
+
+            font-size: 39px;
+
+            box-shadow:
+                0 7px 20px rgba(0, 0, 0, 0.10);
         }
 
         .hero h1 {
             font-size: clamp(30px, 5vw, 48px);
-            margin-bottom: 12px;
+
+            margin-bottom: 13px;
+
             font-weight: 800;
+
+            letter-spacing: -0.5px;
         }
 
         .hero p {
             font-size: 17px;
-            max-width: 700px;
+
+            max-width: 720px;
+
             margin: 0 auto;
+
             opacity: 0.95;
         }
 
@@ -146,23 +240,43 @@
         ======================================== */
 
         .section {
-            padding: 45px 0;
+            padding: 48px 0;
+        }
+
+        .featured-section {
+            margin-top: -38px;
+
+            position: relative;
+
+            z-index: 5;
+
+            padding-top: 0;
         }
 
         .section-heading {
             text-align: center;
-            margin-bottom: 28px;
+
+            margin-bottom: 30px;
         }
 
         .section-heading h2 {
-            font-size: 28px;
+            font-size: 29px;
+
             color: #0b6623;
-            margin-bottom: 7px;
+
+            margin-bottom: 8px;
+
+            font-weight: 800;
         }
 
         .section-heading p {
             color: #68727d;
+
             font-size: 15px;
+
+            max-width: 650px;
+
+            margin: 0 auto;
         }
 
         /* ========================================
@@ -171,18 +285,27 @@
 
         .loading-box {
             background: white;
-            border-radius: 12px;
-            padding: 35px 20px;
+
+            border-radius: 15px;
+
+            padding: 38px 20px;
+
             text-align: center;
+
             color: #68727d;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+
+            box-shadow:
+                0 3px 15px rgba(0, 0, 0, 0.06);
+
+            border: 1px solid #e4e8eb;
         }
 
         .loading-spinner {
-            width: 35px;
-            height: 35px;
+            width: 36px;
+            height: 36px;
 
             border: 4px solid #e1e6ea;
+
             border-top-color: #0b6623;
 
             border-radius: 50%;
@@ -193,117 +316,175 @@
         }
 
         @keyframes spin {
+
             to {
                 transform: rotate(360deg);
             }
+
         }
 
         /* ========================================
            FEATURED SUPPORTER
         ======================================== */
 
-        .featured-section {
-            margin-top: -35px;
-            position: relative;
-            z-index: 5;
-        }
-
         .featured-card {
             background: white;
 
-            border-radius: 16px;
+            border-radius: 20px;
 
             padding: 30px;
 
             box-shadow:
-                0 8px 30px rgba(0,0,0,0.10);
+                0 12px 35px rgba(0, 0, 0, 0.11);
 
-            border: 1px solid #e5e9ed;
+            border: 1px solid #e2e7ea;
 
             display: grid;
 
             grid-template-columns:
-                minmax(180px, 250px)
+                minmax(200px, 280px)
                 1fr;
 
-            gap: 30px;
+            gap: 34px;
 
             align-items: center;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .featured-card::before {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 6px;
+
+            background: #0b6623;
         }
 
         .featured-media {
             display: flex;
+
             justify-content: center;
             align-items: center;
+
+            min-height: 190px;
+
+            padding: 10px;
         }
 
         .featured-media img {
-            width: 210px;
-            height: 170px;
+            width: 230px;
+            height: 185px;
 
             object-fit: contain;
 
-            border-radius: 12px;
+            border-radius: 15px;
 
-            background: #f5f7f9;
+            background: #f6f8f9;
 
-            padding: 12px;
+            padding: 16px;
+
+            border: 1px solid #e4e9ec;
+
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.05);
         }
 
         .featured-placeholder {
-            width: 210px;
-            height: 170px;
+            width: 230px;
+            height: 185px;
 
-            border-radius: 12px;
+            border-radius: 15px;
 
-            background: #f0f3f5;
+            background:
+                linear-gradient(
+                    135deg,
+                    #f0f4f2,
+                    #e7eeea
+                );
+
+            border: 1px solid #dce5df;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
-            font-size: 55px;
+            font-size: 58px;
+        }
+
+        .featured-content {
+            min-width: 0;
         }
 
         .featured-badge {
-            display: inline-block;
+            display: inline-flex;
 
-            background: #fff3cd;
-            color: #856404;
+            align-items: center;
 
-            padding: 5px 10px;
+            background: #fff4d6;
+            color: #795b00;
+
+            padding: 6px 12px;
 
             border-radius: 20px;
 
             font-size: 12px;
-            font-weight: 700;
 
-            margin-bottom: 10px;
+            font-weight: 800;
+
+            margin-bottom: 12px;
+
+            border: 1px solid #f0df9f;
         }
 
         .supporter-type {
             color: #0b6623;
 
-            font-size: 13px;
+            font-size: 12px;
 
-            font-weight: 700;
+            font-weight: 800;
 
             text-transform: uppercase;
 
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
 
             margin-bottom: 6px;
         }
 
         .featured-card h3 {
-            font-size: 27px;
+            font-size: 30px;
+
+            line-height: 1.2;
+
             margin-bottom: 10px;
+
             color: #17202a;
+
+            font-weight: 800;
+        }
+
+        .featured-title {
+            font-weight: 700;
+
+            color: #344047;
+
+            margin-bottom: 9px;
         }
 
         .featured-description {
             color: #5f6b76;
+
             margin-bottom: 18px;
+
+            max-width: 700px;
         }
 
         /* ========================================
@@ -312,7 +493,9 @@
 
         .social-links {
             display: flex;
+
             flex-wrap: wrap;
+
             gap: 8px;
         }
 
@@ -322,35 +505,73 @@
             align-items: center;
             justify-content: center;
 
-            min-width: 38px;
-            height: 36px;
+            min-height: 36px;
 
-            padding: 0 11px;
+            padding: 0 12px;
 
-            border-radius: 7px;
+            border-radius: 8px;
 
             background: #eef2f4;
 
             color: #263238;
 
-            font-size: 13px;
+            border: 1px solid #e0e5e8;
+
+            font-size: 12px;
+
             font-weight: 700;
 
-            transition: 0.2s ease;
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
         }
 
         .social-link:hover {
-            background: #dfe6ea;
+            background: #e3e9ec;
+
             transform: translateY(-1px);
+
+            box-shadow:
+                0 3px 8px rgba(0, 0, 0, 0.08);
         }
 
         .website-link {
             background: #0b6623;
+
             color: white;
+
+            border-color: #0b6623;
         }
 
         .website-link:hover {
             background: #09551d;
+        }
+
+        /* ========================================
+           SUPPORT AMOUNT
+        ======================================== */
+
+        .support-amount {
+            display: inline-flex;
+
+            align-items: center;
+
+            background: #eef7f0;
+
+            color: #0b6623;
+
+            border: 1px solid #d5ead9;
+
+            padding: 7px 11px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            margin-bottom: 15px;
         }
 
         /* ========================================
@@ -363,49 +584,60 @@
             grid-template-columns:
                 repeat(3, minmax(0, 1fr));
 
-            gap: 22px;
+            gap: 24px;
         }
 
         .supporter-card {
             background: white;
 
-            border-radius: 14px;
+            border-radius: 16px;
 
-            border: 1px solid #e4e8eb;
+            border: 1px solid #e2e7ea;
 
             overflow: hidden;
 
             box-shadow:
-                0 3px 12px rgba(0,0,0,0.06);
+                0 4px 15px rgba(0, 0, 0, 0.06);
 
             display: flex;
+
             flex-direction: column;
 
             min-height: 100%;
 
             transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
+                transform 0.22s ease,
+                box-shadow 0.22s ease,
+                border-color 0.22s ease;
         }
 
         .supporter-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
 
             box-shadow:
-                0 8px 22px rgba(0,0,0,0.10);
+                0 12px 27px rgba(0, 0, 0, 0.10);
+
+            border-color: #d4ddd7;
         }
 
         .supporter-media {
-            height: 190px;
+            height: 205px;
 
-            background: #f4f6f8;
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5f7f8,
+                    #edf1f3
+                );
 
             display: flex;
 
             align-items: center;
             justify-content: center;
 
-            padding: 18px;
+            padding: 20px;
+
+            border-bottom: 1px solid #e7ebed;
         }
 
         .supporter-media img {
@@ -414,17 +646,30 @@
 
             object-fit: contain;
 
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         .supporter-placeholder {
-            font-size: 55px;
+            width: 80px;
+            height: 80px;
+
+            border-radius: 50%;
+
+            background: #e4ebe7;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 42px;
         }
 
         .supporter-content {
-            padding: 20px;
+            padding: 22px;
 
             display: flex;
+
             flex-direction: column;
 
             flex: 1;
@@ -432,8 +677,24 @@
 
         .supporter-content h3 {
             font-size: 21px;
-            margin-bottom: 5px;
+
+            line-height: 1.25;
+
+            margin-bottom: 4px;
+
             color: #17202a;
+
+            font-weight: 800;
+        }
+
+        .supporter-title {
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-top: 5px;
+
+            color: #344047;
         }
 
         .supporter-description {
@@ -449,27 +710,21 @@
         .featured-small-badge {
             align-self: flex-start;
 
-            background: #fff3cd;
-            color: #856404;
+            background: #fff4d6;
 
-            padding: 4px 8px;
+            color: #795b00;
 
-            border-radius: 12px;
+            padding: 5px 9px;
+
+            border-radius: 14px;
 
             font-size: 11px;
-            font-weight: 700;
 
-            margin-bottom: 8px;
-        }
+            font-weight: 800;
 
-        .support-amount {
-            font-size: 13px;
+            margin-bottom: 9px;
 
-            font-weight: 700;
-
-            color: #0b6623;
-
-            margin-bottom: 14px;
+            border: 1px solid #f0df9f;
         }
 
         .card-footer {
@@ -483,25 +738,52 @@
         .empty-state {
             background: white;
 
-            border: 1px dashed #cbd3d9;
+            border: 1px dashed #cbd5d9;
 
-            border-radius: 14px;
+            border-radius: 16px;
 
-            padding: 50px 20px;
+            padding: 55px 25px;
 
             text-align: center;
 
             color: #68727d;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.04);
         }
 
         .empty-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
+            width: 72px;
+            height: 72px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #edf3ef;
+
+            font-size: 38px;
         }
 
         .empty-state h3 {
-            color: #344047;
-            margin-bottom: 7px;
+            color: #263238;
+
+            margin-bottom: 8px;
+
+            font-size: 21px;
+        }
+
+        .empty-state p {
+            max-width: 650px;
+
+            margin: 0 auto;
+
+            font-size: 14px;
         }
 
         /* ========================================
@@ -513,13 +795,17 @@
 
             border: 1px solid #f1c4c4;
 
-            border-radius: 12px;
+            border-radius: 14px;
 
-            padding: 25px;
+            padding: 28px;
 
             text-align: center;
 
             color: #a33a3a;
+        }
+
+        .error-state h3 {
+            margin-bottom: 6px;
         }
 
         /* ========================================
@@ -528,63 +814,115 @@
 
         footer {
             background: #17202a;
+
             color: white;
 
-            padding: 30px 20px;
+            padding: 32px 20px;
 
             text-align: center;
 
-            margin-top: 25px;
+            margin-top: 15px;
         }
 
         footer p {
             font-size: 13px;
+
             opacity: 0.8;
         }
 
         /* ========================================
-           RESPONSIVE
+           TABLET
         ======================================== */
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
 
             .supporters-grid {
                 grid-template-columns:
                     repeat(2, minmax(0, 1fr));
             }
 
+        }
+
+        /* ========================================
+           MOBILE / TABLET
+        ======================================== */
+
+        @media (max-width: 800px) {
+
             .featured-card {
                 grid-template-columns: 1fr;
+
                 text-align: center;
+
+                gap: 20px;
+
+                padding: 27px 22px;
+            }
+
+            .featured-card::before {
+                width: 100%;
+                height: 5px;
+
+                right: 0;
+                bottom: auto;
+            }
+
+            .featured-media {
+                min-height: auto;
+            }
+
+            .featured-description {
+                margin-left: auto;
+                margin-right: auto;
             }
 
             .social-links {
                 justify-content: center;
             }
 
+            .support-amount {
+                justify-content: center;
+            }
+
         }
+
+        /* ========================================
+           MOBILE
+        ======================================== */
 
         @media (max-width: 600px) {
 
             .site-header {
-                padding: 13px 15px;
+                padding: 12px 15px;
+            }
+
+            .header-inner {
+                width: 100%;
             }
 
             .brand {
-                font-size: 17px;
+                font-size: 16px;
             }
 
             .back-button {
-                padding: 8px 11px;
-                font-size: 12px;
+                padding: 8px 10px;
+
+                font-size: 11px;
             }
 
             .hero {
-                padding: 40px 18px 55px;
+                padding: 42px 18px 60px;
             }
 
             .hero-icon {
-                font-size: 40px;
+                width: 66px;
+                height: 66px;
+
+                font-size: 34px;
+            }
+
+            .hero h1 {
+                font-size: 31px;
             }
 
             .hero p {
@@ -592,33 +930,95 @@
             }
 
             .section {
-                padding: 35px 0;
+                padding: 38px 0;
+            }
+
+            .featured-section {
+                margin-top: -30px;
+            }
+
+            .section-heading {
+                margin-bottom: 24px;
             }
 
             .section-heading h2 {
                 font-size: 24px;
             }
 
+            .section-heading p {
+                font-size: 14px;
+            }
+
             .supporters-grid {
                 grid-template-columns: 1fr;
+
+                gap: 18px;
             }
 
             .featured-card {
-                padding: 22px 17px;
+                border-radius: 16px;
+
+                padding: 25px 17px;
             }
 
             .featured-media img,
             .featured-placeholder {
-                width: 170px;
-                height: 140px;
+                width: 175px;
+                height: 145px;
             }
 
             .featured-card h3 {
-                font-size: 23px;
+                font-size: 24px;
+            }
+
+            .featured-description {
+                font-size: 14px;
             }
 
             .supporter-media {
-                height: 180px;
+                height: 185px;
+            }
+
+            .supporter-content {
+                padding: 19px;
+            }
+
+            .social-link {
+                min-height: 35px;
+
+                padding: 0 10px;
+
+                font-size: 11px;
+            }
+
+            .empty-state {
+                padding: 45px 18px;
+            }
+
+        }
+
+        /* ========================================
+           VERY SMALL PHONES
+        ======================================== */
+
+        @media (max-width: 380px) {
+
+            .brand {
+                font-size: 14px;
+            }
+
+            .back-button {
+                font-size: 10px;
+
+                padding: 7px 8px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .featured-card h3 {
+                font-size: 22px;
             }
 
         }
@@ -787,6 +1187,12 @@ document.addEventListener(
            SUPABASE CONFIGURATION
         ======================================== */
 
+        /*
+         * KEEP YOUR CURRENT WORKING VALUES HERE.
+         *
+         * The Project URL must NOT contain /rest/v1/
+         */
+
         const SUPABASE_URL =
             "https://aitcfhalfkdlitaefhfo.supabase.co";
 
@@ -836,8 +1242,10 @@ document.addEventListener(
 
         function escapeHtml(value) {
 
-            if (value === null ||
-                value === undefined) {
+            if (
+                value === null ||
+                value === undefined
+            ) {
 
                 return "";
 
@@ -849,6 +1257,7 @@ document.addEventListener(
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+
         }
 
 
@@ -861,6 +1270,7 @@ document.addEventListener(
             const value =
                 String(url).trim();
 
+
             if (
                 value.startsWith("https://") ||
                 value.startsWith("http://")
@@ -871,6 +1281,7 @@ document.addEventListener(
             }
 
             return null;
+
         }
 
 
@@ -885,10 +1296,13 @@ document.addEventListener(
 
                 return {
                     url: supporter.logo_url,
-                    alt: supporter.name || "Sponsor logo"
+                    alt:
+                        supporter.name ||
+                        "Sponsor logo"
                 };
 
             }
+
 
             if (
                 supporter &&
@@ -897,10 +1311,13 @@ document.addEventListener(
 
                 return {
                     url: supporter.photo_url,
-                    alt: supporter.name || "Supporter photo"
+                    alt:
+                        supporter.name ||
+                        "Supporter photo"
                 };
 
             }
+
 
             return null;
 
@@ -937,20 +1354,24 @@ document.addEventListener(
                     supporter.website_url
                 );
 
+
             const facebook =
                 getSafeUrl(
                     supporter.facebook_url
                 );
+
 
             const instagram =
                 getSafeUrl(
                     supporter.instagram_url
                 );
 
+
             const x =
                 getSafeUrl(
                     supporter.x_url
                 );
+
 
             const youtube =
                 getSafeUrl(
@@ -963,7 +1384,7 @@ document.addEventListener(
                 links.push(`
                     <a
                         class="social-link website-link"
-                        href="${website}"
+                        href="${escapeHtml(website)}"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Website"
@@ -980,7 +1401,7 @@ document.addEventListener(
                 links.push(`
                     <a
                         class="social-link"
-                        href="${facebook}"
+                        href="${escapeHtml(facebook)}"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Facebook"
@@ -997,7 +1418,7 @@ document.addEventListener(
                 links.push(`
                     <a
                         class="social-link"
-                        href="${instagram}"
+                        href="${escapeHtml(instagram)}"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Instagram"
@@ -1014,12 +1435,12 @@ document.addEventListener(
                 links.push(`
                     <a
                         class="social-link"
-                        href="${x}"
+                        href="${escapeHtml(x)}"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="X"
                     >
-                        𝕏
+                        𝕏 X
                     </a>
                 `);
 
@@ -1031,7 +1452,7 @@ document.addEventListener(
                 links.push(`
                     <a
                         class="social-link"
-                        href="${youtube}"
+                        href="${escapeHtml(youtube)}"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="YouTube"
@@ -1070,7 +1491,6 @@ document.addEventListener(
                                 src="${escapeHtml(image.url)}"
                                 alt="${escapeHtml(image.alt)}"
                                 loading="lazy"
-                                onerror="this.style.display='none';"
                             >
 
                         </div>
@@ -1086,7 +1506,6 @@ document.addEventListener(
                             src="${escapeHtml(image.url)}"
                             alt="${escapeHtml(image.alt)}"
                             loading="lazy"
-                            onerror="this.style.display='none';"
                         >
 
                     </div>
@@ -1173,12 +1592,8 @@ document.addEventListener(
                 /*
                  * Load all active supporters.
                  *
-                 * We deliberately do NOT limit this
-                 * to the current League competition.
-                 *
-                 * This makes sponsors.html a general
-                 * Kabaru Football Sponsors & Partners
-                 * directory.
+                 * This page is NOT restricted to
+                 * the current League competition.
                  */
 
                 const {
@@ -1187,7 +1602,10 @@ document.addEventListener(
                 } = await client
                     .from("supporters")
                     .select("*")
-                    .eq("is_active", true)
+                    .eq(
+                        "is_active",
+                        true
+                    )
                     .order(
                         "created_at",
                         {
@@ -1209,6 +1627,7 @@ document.addEventListener(
                 ) {
 
                     featuredEl.innerHTML = "";
+
 
                     supportersEl.innerHTML = `
 
@@ -1243,7 +1662,8 @@ document.addEventListener(
 
                 const supporterIds =
                     supporters.map(
-                        supporter => supporter.id
+                        supporter =>
+                            supporter.id
                     );
 
 
@@ -1259,7 +1679,9 @@ document.addEventListener(
                         error:
                             supportError
                     } = await client
-                        .from("competition_support")
+                        .from(
+                            "competition_support"
+                        )
                         .select(`
                             id,
                             competition_id,
@@ -1316,7 +1738,8 @@ document.addEventListener(
 
 
                 /*
-                 * Connect support records to supporters.
+                 * Connect support records to
+                 * their supporters.
                  */
 
                 const recordsBySupporter =
@@ -1358,12 +1781,15 @@ document.addEventListener(
                  * Determine featured supporter.
                  *
                  * Priority:
-                 * 1. Explicit featured support record
+                 * 1. Explicit featured record
                  * 2. First active supporter
                  */
 
-                let featuredSupporter = null;
-                let featuredRecord = null;
+                let featuredSupporter =
+                    null;
+
+                let featuredRecord =
+                    null;
 
 
                 for (
@@ -1372,7 +1798,9 @@ document.addEventListener(
 
                     const records =
                         recordsBySupporter.get(
-                            String(supporter.id)
+                            String(
+                                supporter.id
+                            )
                         ) || [];
 
 
@@ -1403,6 +1831,7 @@ document.addEventListener(
                     featuredSupporter =
                         supporters[0];
 
+
                     const records =
                         recordsBySupporter.get(
                             String(
@@ -1418,7 +1847,7 @@ document.addEventListener(
 
 
                 /* ========================================
-                   RENDER FEATURED
+                   FEATURED INFORMATION
                 ======================================== */
 
                 const featuredType =
@@ -1444,6 +1873,10 @@ document.addEventListener(
                         : "";
 
 
+                /* ========================================
+                   RENDER FEATURED
+                ======================================== */
+
                 featuredEl.innerHTML = `
 
                     <div class="featured-card">
@@ -1453,7 +1886,7 @@ document.addEventListener(
                             true
                         )}
 
-                        <div>
+                        <div class="featured-content">
 
                             <div class="featured-badge">
                                 ⭐ Featured Supporter
@@ -1475,11 +1908,7 @@ document.addEventListener(
                                 featuredTitle
                                     ? `
                                         <p
-                                            style="
-                                                font-weight:700;
-                                                margin-bottom:8px;
-                                                color:#344047;
-                                            "
+                                            class="featured-title"
                                         >
                                             ${escapeHtml(
                                                 featuredTitle
@@ -1489,7 +1918,9 @@ document.addEventListener(
                                     : ""
                             }
 
-                            <p class="featured-description">
+                            <p
+                                class="featured-description"
+                            >
                                 ${escapeHtml(
                                     featuredDescription
                                 )}
@@ -1515,193 +1946,203 @@ document.addEventListener(
 
 
                 /* ========================================
-                   RENDER ALL SUPPORTERS
+                   RENDER ALL OTHER SUPPORTERS
                 ======================================== */
 
                 const cards =
-    supporters
-        .filter(
-            supporter =>
-                !featuredSupporter ||
-                String(supporter.id) !==
-                String(featuredSupporter.id)
-        )
-        .map(
-            supporter => {
+                    supporters
+                        .filter(
+                            supporter =>
+                                !featuredSupporter ||
+                                String(
+                                    supporter.id
+                                ) !==
+                                String(
+                                    featuredSupporter.id
+                                )
+                        )
+                        .map(
+                            supporter => {
 
-                            const records =
-                                recordsBySupporter.get(
-                                    String(
-                                        supporter.id
-                                    )
-                                ) || [];
+                                const records =
+                                    recordsBySupporter.get(
+                                        String(
+                                            supporter.id
+                                        )
+                                    ) || [];
 
 
-                            const primaryRecord =
-                                records[0] || null;
+                                const primaryRecord =
+                                    records[0] ||
+                                    null;
 
 
-                            const type =
-                                primaryRecord &&
-                                primaryRecord.support_type
-                                    ? primaryRecord.support_type
-                                    : getSupporterType(
-                                        supporter
+                                const type =
+                                    primaryRecord &&
+                                    primaryRecord.support_type
+                                        ? primaryRecord.support_type
+                                        : getSupporterType(
+                                            supporter
+                                        );
+
+
+                                const description =
+                                    primaryRecord &&
+                                    primaryRecord.description
+                                        ? primaryRecord.description
+                                        : "Supporting football development in Kabaru Ward.";
+
+
+                                const title =
+                                    primaryRecord &&
+                                    primaryRecord.title
+                                        ? primaryRecord.title
+                                        : "";
+
+
+                                const isFeatured =
+                                    records.some(
+                                        record =>
+                                            record.featured === true
                                     );
 
 
-                            const description =
-                                primaryRecord &&
-                                primaryRecord.description
-                                    ? primaryRecord.description
-                                    : "Supporting football development in Kabaru Ward.";
+                                return `
 
-
-                            const title =
-                                primaryRecord &&
-                                primaryRecord.title
-                                    ? primaryRecord.title
-                                    : "";
-
-
-                            const isFeatured =
-                                records.some(
-                                    record =>
-                                        record.featured === true
-                                );
-
-
-                            return `
-
-                                <article
-                                    class="supporter-card"
-                                >
-
-                                    ${buildMedia(
-                                        supporter,
-                                        false
-                                    )}
-
-                                    <div
-                                        class="supporter-content"
+                                    <article
+                                        class="supporter-card"
                                     >
 
-                                        ${
-                                            isFeatured
-                                                ? `
-                                                    <div class="featured-small-badge">
-                                                        ⭐ Featured
-                                                    </div>
-                                                  `
-                                                : ""
-                                        }
-
-                                        <div
-                                            class="supporter-type"
-                                        >
-                                            ${escapeHtml(
-                                                type
-                                            )}
-                                        </div>
-
-                                        <h3>
-                                            ${escapeHtml(
-                                                supporter.name
-                                            )}
-                                        </h3>
-
-                                        ${
-                                            title
-                                                ? `
-                                                    <div
-                                                        style="
-                                                            font-size:13px;
-                                                            font-weight:700;
-                                                            margin-top:4px;
-                                                            color:#344047;
-                                                        "
-                                                    >
-                                                        ${escapeHtml(
-                                                            title
-                                                        )}
-                                                    </div>
-                                                  `
-                                                : ""
-                                        }
-
-                                        <p
-                                            class="supporter-description"
-                                        >
-                                            ${escapeHtml(
-                                                description
-                                            )}
-                                        </p>
-
-                                        ${formatAmount(
-                                            primaryRecord
+                                        ${buildMedia(
+                                            supporter,
+                                            false
                                         )}
 
                                         <div
-                                            class="card-footer"
+                                            class="supporter-content"
                                         >
 
+                                            ${
+                                                isFeatured
+                                                    ? `
+                                                        <div
+                                                            class="featured-small-badge"
+                                                        >
+                                                            ⭐ Featured
+                                                        </div>
+                                                      `
+                                                    : ""
+                                            }
+
                                             <div
-                                                class="social-links"
+                                                class="supporter-type"
                                             >
-                                                ${buildSocialLinks(
-                                                    supporter
+                                                ${escapeHtml(
+                                                    type
                                                 )}
+                                            </div>
+
+                                            <h3>
+                                                ${escapeHtml(
+                                                    supporter.name
+                                                )}
+                                            </h3>
+
+                                            ${
+                                                title
+                                                    ? `
+                                                        <div
+                                                            class="supporter-title"
+                                                        >
+                                                            ${escapeHtml(
+                                                                title
+                                                            )}
+                                                        </div>
+                                                      `
+                                                    : ""
+                                            }
+
+                                            <p
+                                                class="supporter-description"
+                                            >
+                                                ${escapeHtml(
+                                                    description
+                                                )}
+                                            </p>
+
+                                            ${formatAmount(
+                                                primaryRecord
+                                            )}
+
+                                            <div
+                                                class="card-footer"
+                                            >
+
+                                                <div
+                                                    class="social-links"
+                                                >
+
+                                                    ${buildSocialLinks(
+                                                        supporter
+                                                    )}
+
+                                                </div>
+
                                             </div>
 
                                         </div>
 
-                                    </div>
+                                    </article>
 
-                                </article>
+                                `;
 
-                            `;
-
-                        }
-                    );
+                            }
+                        );
 
 
-                if (cards.length === 0) {
+                /* ========================================
+                   EMPTY OTHER-SUPPORTERS STATE
+                ======================================== */
 
-    supportersEl.innerHTML = `
+                if (
+                    cards.length === 0
+                ) {
 
-        <div class="empty-state">
+                    supportersEl.innerHTML = `
 
-            <div class="empty-icon">
-                🤝
-            </div>
+                        <div class="empty-state">
 
-            <h3>
-                More Sponsors & Partners Coming Soon
-            </h3>
+                            <div class="empty-icon">
+                                🤝
+                            </div>
 
-            <p>
-                We look forward to welcoming more
-                individuals, businesses and organizations
-                supporting football development in Kabaru Ward.
-            </p>
+                            <h3>
+                                More Sponsors & Partners Coming Soon
+                            </h3>
 
-        </div>
+                            <p>
+                                We look forward to welcoming more
+                                individuals, businesses and organizations
+                                supporting football development in Kabaru Ward.
+                            </p>
 
-    `;
+                        </div>
 
-} else {
+                    `;
 
-    supportersEl.innerHTML = `
+                } else {
 
-        <div class="supporters-grid">
+                    supportersEl.innerHTML = `
 
-            ${cards.join("")}
+                        <div class="supporters-grid">
 
-        </div>
+                            ${cards.join("")}
 
-    `;
+                        </div>
 
-}
+                    `;
+
+                }
 
             }
 
