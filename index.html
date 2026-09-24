@@ -1127,7 +1127,131 @@ header {
     margin-bottom:
         5px;
 }
+/* ========================================
+   PLAYER LEADERS FILTER
+======================================== */
 
+.leaders-filter {
+
+    max-width:
+        520px;
+
+    margin:
+        0 auto 30px;
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    padding:
+        20px;
+
+    box-shadow:
+        var(--shadow);
+}
+
+
+.leaders-filter label {
+
+    display:
+        block;
+
+    color:
+        var(--green-dark);
+
+    font-size:
+        13px;
+
+    font-weight:
+        900;
+
+    margin-bottom:
+        8px;
+}
+
+
+.leaders-filter select {
+
+    width:
+        100%;
+
+    background:
+        white;
+
+    color:
+        var(--green-dark);
+
+    border:
+        1px solid #cddbd2;
+
+    border-radius:
+        10px;
+
+    padding:
+        13px 14px;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+}
+
+
+.leaders-filter select:focus {
+
+    border-color:
+        var(--green);
+
+    box-shadow:
+        0 0 0 3px rgba(7,91,53,.08);
+
+    outline:
+        none;
+}
+
+
+.leaders-filter p {
+
+    margin-top:
+        8px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        12px;
+
+    line-height:
+        1.4;
+}
+
+
+@media (
+    max-width: 700px
+) {
+
+    .leaders-filter {
+
+        width:
+            100%;
+
+        margin-bottom:
+            25px;
+
+        padding:
+            16px;
+    }
+
+}
 
 /* ========================================
    REGISTRATION
