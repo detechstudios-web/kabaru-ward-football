@@ -5565,6 +5565,7 @@ async function loadCompetitionSupport(
 
         const competition =
             await loadCompetition();
+        currentMainCompetition = competition;
 if (playerCompetitionFilter) {
 
     playerCompetitionFilter.addEventListener(
