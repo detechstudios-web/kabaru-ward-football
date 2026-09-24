@@ -1176,34 +1176,261 @@
 
 
             <div class="form-group">
+    <label for="competitionStatus">
+        Status
+    </label>
 
-                <label for="competitionStatus">
-                    Status
+    <select id="competitionStatus">
+        <option value="Upcoming">
+            Upcoming
+        </option>
+
+        <option value="Active">
+            Active
+        </option>
+
+        <option value="Completed">
+            Completed
+        </option>
+
+        <option value="Cancelled">
+            Cancelled
+        </option>
+    </select>
+</div>
+
+<!-- ========================================
+     COMPETITION FORMAT CONFIGURATION
+     ======================================== -->
+
+<div
+    id="competitionFormatConfiguration"
+    style="display: none;"
+>
+
+    <div
+        style="
+            margin: 20px 0;
+            padding: 18px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #f8f9fa;
+        "
+    >
+
+        <h3 style="margin-top: 0;">
+            Competition Format Configuration
+        </h3>
+
+        <p
+            style="
+                margin-bottom: 18px;
+                color: #666;
+                font-size: 14px;
+            "
+        >
+            Configure the structure of this competition.
+            These settings determine how stages and knockout
+            rounds will be created.
+        </p>
+
+        <!-- KNOCKOUT SETTINGS -->
+
+        <div
+            id="knockoutConfiguration"
+            style="display: none;"
+        >
+
+            <h4>
+                Knockout Settings
+            </h4>
+
+            <div class="form-group">
+
+                <label for="knockoutStartRound">
+                    Knockout Starting Round
                 </label>
 
-                <select
-                    id="competitionStatus"
-                    required>
+                <select id="knockoutStartRound">
 
-                    <option value="Upcoming">
-                        Upcoming
+                    <option value="">
+                        Select starting round
                     </option>
 
-                    <option value="Active">
-                        Active
+                    <option value="Round of 64">
+                        Round of 64
                     </option>
 
-                    <option value="Completed">
-                        Completed
+                    <option value="Round of 32">
+                        Round of 32
                     </option>
 
-                    <option value="Cancelled">
-                        Cancelled
+                    <option value="Round of 16">
+                        Round of 16
+                    </option>
+
+                    <option value="Quarter-Finals">
+                        Quarter-Finals
+                    </option>
+
+                    <option value="Semi-Finals">
+                        Semi-Finals
                     </option>
 
                 </select>
 
             </div>
+
+            <div class="form-group">
+
+                <label for="knockoutLegs">
+                    Number of Legs
+                </label>
+
+                <select id="knockoutLegs">
+
+                    <option value="1">
+                        One Leg
+                    </option>
+
+                    <option value="2">
+                        Two Legs
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Match Decisions
+                </label>
+
+                <div style="margin-top: 8px;">
+
+                    <label
+                        style="
+                            display: block;
+                            margin-bottom: 8px;
+                        "
+                    >
+                        <input
+                            type="checkbox"
+                            id="knockoutExtraTime"
+                        >
+
+                        Allow Extra Time
+                    </label>
+
+                    <label
+                        style="
+                            display: block;
+                            margin-bottom: 8px;
+                        "
+                    >
+                        <input
+                            type="checkbox"
+                            id="knockoutPenalties"
+                        >
+
+                        Allow Penalty Shootout
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- GROUP SETTINGS -->
+
+        <div
+            id="groupConfiguration"
+            style="display: none;"
+        >
+
+            <h4>
+                Group Stage Settings
+            </h4>
+
+            <div class="form-group">
+
+                <label for="numberOfGroups">
+                    Number of Groups
+                </label>
+
+                <input
+                    type="number"
+                    id="numberOfGroups"
+                    min="1"
+                    step="1"
+                    placeholder="e.g. 4"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="teamsPerGroup">
+                    Teams Per Group
+                </label>
+
+                <input
+                    type="number"
+                    id="teamsPerGroup"
+                    min="2"
+                    step="1"
+                    placeholder="e.g. 4"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="qualifiersPerGroup">
+                    Qualifiers Per Group
+                </label>
+
+                <input
+                    type="number"
+                    id="qualifiersPerGroup"
+                    min="1"
+                    step="1"
+                    placeholder="e.g. 2"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="qualificationMethod">
+                    Qualification Method
+                </label>
+
+                <select id="qualificationMethod">
+
+                    <option value="">
+                        Select qualification method
+                    </option>
+
+                    <option value="top_positions">
+                        Top Positions Automatically
+                    </option>
+
+                    <option value="manual">
+                        Manual Qualification
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
         </div>
 
