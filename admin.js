@@ -1755,129 +1755,930 @@ let redCardEntries = [];
         };
 
 
-    // ========================================
-    // CREATE COMPETITION
-    // ========================================
+// ========================================
+// COMPETITION ENGINE HELPERS
+// ========================================
 
-    if (competitionForm) {
+function getCompetitionFormat(
+    competitionType
+) {
 
-        competitionForm.addEventListener(
-            "submit",
-            async function (event) {
+    if (
+        competitionType ===
+        "League"
+    ) {
+        return "league";
+    }
 
-                event.preventDefault();
+    if (
+        competitionType ===
+        "Knockout"
+    ) {
+        return "knockout";
+    }
 
+    if (
+        competitionType ===
+        "Group + Knockout"
+    ) {
+        return "group_knockout";
+    }
 
-                const nameInput =
-                    document.getElementById(
-                        "competitionName"
-                    );
+    if (
+        competitionType ===
+        "Friendly"
+    ) {
+        return "friendly";
+    }
 
-                const typeInput =
-                    document.getElementById(
-                        "competitionType"
-                    );
-
-                const seasonInput =
-                    document.getElementById(
-                        "competitionSeason"
-                    );
-
-                const startDateInput =
-                    document.getElementById(
-                        "competitionStartDate"
-                    );
-
-                const endDateInput =
-                    document.getElementById(
-                        "competitionEndDate"
-                    );
-
-                const statusInput =
-                    document.getElementById(
-                        "competitionStatus"
-                    );
-
-                const descriptionInput =
-                    document.getElementById(
-                        "competitionDescription"
-                    );
+    return null;
+}
 
 
-                const name =
-                    nameInput
-                        ? nameInput.value.trim()
-                        : "";
+// ========================================
+// KNOCKOUT ROUND INFORMATION
+// ========================================
+
+function getKnockoutRoundInfo(
+    startingRound
+) {
+
+    const roundOrder = [
+        "Round of 64",
+        "Round of 32",
+        "Round of 16",
+        "Quarter-Finals",
+        "Semi-Finals",
+        "Final"
+    ];
+
+    const matchCounts = {
+        "Round of 64": 32,
+        "Round of 32": 16,
+        "Round of 16": 8,
+        "Quarter-Finals": 4,
+        "Semi-Finals": 2,
+        "Final": 1
+    };
+
+    const startingIndex =
+        roundOrder.indexOf(
+            startingRound
+        );
+
+    if (
+        startingIndex === -1
+    ) {
+        throw new Error(
+            "Invalid knockout starting round."
+        );
+    }
+
+    return roundOrder
+        .slice(startingIndex)
+        .map(
+            function (roundName, index) {
+
+                return {
+                    name:
+                        roundName,
+
+                    round_order:
+                        index + 1,
+
+                    number_of_matches:
+                        matchCounts[
+                            roundName
+                        ]
+                };
+
+            }
+        );
+}
 
 
-                const competitionType =
-                    typeInput
-                        ? typeInput.value
-                        : "";
+// ========================================
+// CREATE KNOCKOUT STAGE
+// ========================================
+
+async function createKnockoutStage(
+    competitionId,
+    competitionName,
+    startingRound,
+    legs,
+    extraTimeEnabled,
+    penaltiesEnabled,
+    stageOrder
+) {
+
+    const {
+        data: stage,
+        error: stageError
+    } =
+        await supabaseClient
+            .from(
+                "competition_stages"
+            )
+            .insert({
+
+                competition_id:
+                    competitionId,
+
+                name:
+                    competitionName +
+                    " - Knockout",
+
+                stage_type:
+                    "knockout",
+
+                stage_order:
+                    stageOrder,
+
+                status:
+                    "Upcoming",
+
+                description:
+                    "Knockout stage generated automatically."
+
+            })
+            .select()
+            .single();
+
+    if (stageError) {
+        throw stageError;
+    }
 
 
-                const season =
-                    seasonInput
-                        ? String(
-                            seasonInput.value
-                        ).trim()
-                        : "";
+    const rounds =
+        getKnockoutRoundInfo(
+            startingRound
+        );
 
 
-                const startDate =
-                    startDateInput &&
-                    startDateInput.value
-                        ? startDateInput.value
-                        : null;
+    for (
+        const round of rounds
+    ) {
+
+        const {
+            error: roundError
+        } =
+            await supabaseClient
+                .from(
+                    "competition_knockout_rounds"
+                )
+                .insert({
+
+                    stage_id:
+                        stage.id,
+
+                    name:
+                        round.name,
+
+                    round_order:
+                        round.round_order,
+
+                    status:
+                        "Upcoming",
+
+                    number_of_matches:
+                        round.number_of_matches,
+
+                    legs:
+                        legs,
+
+                    advancement_rule:
+                        legs === 2
+                            ? "aggregate_score"
+                            : "winner",
+
+                    aggregate_enabled:
+                        legs === 2,
+
+                    extra_time_enabled:
+                        extraTimeEnabled,
+
+                    penalties_enabled:
+                        penaltiesEnabled
+
+                });
+
+        if (roundError) {
+            throw roundError;
+        }
+    }
 
 
-                const endDate =
-                    endDateInput &&
-                    endDateInput.value
-                        ? endDateInput.value
-                        : null;
+    return stage;
+}
 
 
-                const status =
-                    statusInput
-                        ? statusInput.value
-                        : "Upcoming";
+// ========================================
+// CREATE LEAGUE STAGE
+// ========================================
+
+async function createLeagueStage(
+    competitionId,
+    competitionName
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "competition_stages"
+            )
+            .insert({
+
+                competition_id:
+                    competitionId,
+
+                name:
+                    competitionName +
+                    " - League",
+
+                stage_type:
+                    "league",
+
+                stage_order:
+                    1,
+
+                status:
+                    "Upcoming",
+
+                description:
+                    "League stage generated automatically."
+
+            })
+            .select()
+            .single();
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
 
 
-                const description =
-                    descriptionInput
-                        ? descriptionInput.value.trim()
-                        : "";
+// ========================================
+// CREATE GROUP + KNOCKOUT STRUCTURE
+// ========================================
+
+async function createGroupKnockoutStructure(
+    competitionId,
+    competitionName,
+    numberOfGroups,
+    teamsPerGroup,
+    qualifiersPerGroup,
+    qualificationMethod,
+    startingRound,
+    legs,
+    extraTimeEnabled,
+    penaltiesEnabled
+) {
+
+    const totalQualifiers =
+        numberOfGroups *
+        qualifiersPerGroup;
 
 
-                if (!name) {
+    const roundRequirements = {
+        "Round of 64": 64,
+        "Round of 32": 32,
+        "Round of 16": 16,
+        "Quarter-Finals": 8,
+        "Semi-Finals": 4
+    };
+
+
+    const requiredTeams =
+        roundRequirements[
+            startingRound
+        ];
+
+
+    if (!requiredTeams) {
+
+        throw new Error(
+            "Invalid knockout starting round."
+        );
+    }
+
+
+    if (
+        numberOfGroups < 1
+    ) {
+
+        throw new Error(
+            "Number of groups must be at least 1."
+        );
+    }
+
+
+    if (
+        teamsPerGroup < 1
+    ) {
+
+        throw new Error(
+            "Teams per group must be at least 1."
+        );
+    }
+
+
+    if (
+        qualifiersPerGroup < 1 ||
+        qualifiersPerGroup >
+        teamsPerGroup
+    ) {
+
+        throw new Error(
+            "Qualifiers per group cannot exceed teams per group."
+        );
+    }
+
+
+    if (
+        totalQualifiers !==
+        requiredTeams
+    ) {
+
+        throw new Error(
+            "The group stage produces " +
+            totalQualifiers +
+            " knockout qualifiers, but " +
+            startingRound +
+            " requires exactly " +
+            requiredTeams +
+            " teams."
+        );
+    }
+
+
+    const {
+        data: groupStage,
+        error: groupStageError
+    } =
+        await supabaseClient
+            .from(
+                "competition_stages"
+            )
+            .insert({
+
+                competition_id:
+                    competitionId,
+
+                name:
+                    competitionName +
+                    " - Group Stage",
+
+                stage_type:
+                    "group",
+
+                stage_order:
+                    1,
+
+                status:
+                    "Upcoming",
+
+                description:
+                    "Group stage generated automatically.",
+
+                number_of_groups:
+                    numberOfGroups,
+
+                teams_per_group:
+                    teamsPerGroup,
+
+                qualifiers_per_group:
+                    qualifiersPerGroup,
+
+                qualification_method:
+                    qualificationMethod
+
+            })
+            .select()
+            .single();
+
+    if (groupStageError) {
+        throw groupStageError;
+    }
+
+
+    const groups = [];
+
+
+    for (
+        let i = 1;
+        i <= numberOfGroups;
+        i++
+    ) {
+
+        const groupLetter =
+            String.fromCharCode(
+                64 + i
+            );
+
+
+        const {
+            data: group,
+            error: groupError
+        } =
+            await supabaseClient
+                .from(
+                    "competition_groups"
+                )
+                .insert({
+
+                    stage_id:
+                        groupStage.id,
+
+                    name:
+                        "Group " +
+                        groupLetter,
+
+                    group_order:
+                        i
+
+                })
+                .select()
+                .single();
+
+        if (groupError) {
+            throw groupError;
+        }
+
+
+        groups.push(group);
+
+
+        for (
+            let position = 1;
+            position <=
+            qualifiersPerGroup;
+            position++
+        ) {
+
+            const {
+                error:
+                    qualificationError
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_qualification_slots"
+                    )
+                    .insert({
+
+                        stage_id:
+                            groupStage.id,
+
+                        group_id:
+                            group.id,
+
+                        position:
+                            position,
+
+                        label:
+                            "Group " +
+                            groupLetter +
+                            " - Position " +
+                            position
+
+                    });
+
+            if (
+                qualificationError
+            ) {
+                throw qualificationError;
+            }
+        }
+    }
+
+
+    const knockoutStage =
+        await createKnockoutStage(
+            competitionId,
+            competitionName,
+            startingRound,
+            legs,
+            extraTimeEnabled,
+            penaltiesEnabled,
+            2
+        );
+
+
+    const {
+        error:
+            progressionError
+    } =
+        await supabaseClient
+            .from(
+                "competition_stages"
+            )
+            .update({
+
+                next_stage_id:
+                    knockoutStage.id,
+
+                progression_method:
+                    "qualification"
+
+            })
+            .eq(
+                "id",
+                groupStage.id
+            );
+
+
+    if (
+        progressionError
+    ) {
+        throw progressionError;
+    }
+
+
+    return {
+        groupStage:
+            groupStage,
+
+        knockoutStage:
+            knockoutStage,
+
+        groups:
+            groups
+    };
+}
+
+
+// ========================================
+// CREATE COMPETITION STRUCTURE
+// ========================================
+
+async function createCompetitionStructure(
+    competition
+) {
+
+    const format =
+        competition.competition_format;
+
+
+    if (
+        format ===
+        "friendly"
+    ) {
+
+        console.log(
+            "Friendly competition created without competition stages."
+        );
+
+        return;
+    }
+
+
+    if (
+        format ===
+        "league"
+    ) {
+
+        await createLeagueStage(
+            competition.id,
+            competition.name
+        );
+
+        return;
+    }
+
+
+    if (
+        format ===
+        "knockout"
+    ) {
+
+        await createKnockoutStage(
+            competition.id,
+            competition.name,
+            competition.knockout_start_round,
+            competition.knockout_legs,
+            competition.knockout_extra_time,
+            competition.knockout_penalties,
+            1
+        );
+
+        return;
+    }
+
+
+    if (
+        format ===
+        "group_knockout"
+    ) {
+
+        await createGroupKnockoutStructure(
+            competition.id,
+            competition.name,
+            competition.number_of_groups,
+            competition.teams_per_group,
+            competition.qualifiers_per_group,
+            competition.qualification_method,
+            competition.knockout_start_round,
+            competition.knockout_legs,
+            competition.knockout_extra_time,
+            competition.knockout_penalties
+        );
+
+        return;
+    }
+
+
+    throw new Error(
+        "Unsupported competition format: " +
+        format
+    );
+}
+
+
+// ========================================
+// CREATE COMPETITION
+// ========================================
+
+if (competitionForm) {
+
+    competitionForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const nameInput =
+                document.getElementById(
+                    "competitionName"
+                );
+
+            const typeInput =
+                document.getElementById(
+                    "competitionType"
+                );
+
+            const seasonInput =
+                document.getElementById(
+                    "competitionSeason"
+                );
+
+            const startDateInput =
+                document.getElementById(
+                    "competitionStartDate"
+                );
+
+            const endDateInput =
+                document.getElementById(
+                    "competitionEndDate"
+                );
+
+            const statusInput =
+                document.getElementById(
+                    "competitionStatus"
+                );
+
+            const descriptionInput =
+                document.getElementById(
+                    "competitionDescription"
+                );
+
+
+            const name =
+                nameInput
+                    ? nameInput.value.trim()
+                    : "";
+
+
+            const competitionType =
+                typeInput
+                    ? typeInput.value
+                    : "";
+
+
+            const season =
+                seasonInput
+                    ? String(
+                        seasonInput.value
+                    ).trim()
+                    : "";
+
+
+            const startDate =
+                startDateInput &&
+                startDateInput.value
+                    ? startDateInput.value
+                    : null;
+
+
+            const endDate =
+                endDateInput &&
+                endDateInput.value
+                    ? endDateInput.value
+                    : null;
+
+
+            const status =
+                statusInput
+                    ? statusInput.value
+                    : "Upcoming";
+
+
+            const description =
+                descriptionInput
+                    ? descriptionInput.value.trim()
+                    : "";
+
+
+            const competitionFormat =
+                getCompetitionFormat(
+                    competitionType
+                );
+
+
+            const knockoutStartRoundInput =
+                document.getElementById(
+                    "knockoutStartRound"
+                );
+
+            const knockoutLegsInput =
+                document.getElementById(
+                    "knockoutLegs"
+                );
+
+            const knockoutExtraTimeInput =
+                document.getElementById(
+                    "knockoutExtraTime"
+                );
+
+            const knockoutPenaltiesInput =
+                document.getElementById(
+                    "knockoutPenalties"
+                );
+
+            const numberOfGroupsInput =
+                document.getElementById(
+                    "numberOfGroups"
+                );
+
+            const teamsPerGroupInput =
+                document.getElementById(
+                    "teamsPerGroup"
+                );
+
+            const qualifiersPerGroupInput =
+                document.getElementById(
+                    "qualifiersPerGroup"
+                );
+
+            const qualificationMethodInput =
+                document.getElementById(
+                    "qualificationMethod"
+                );
+
+
+            const knockoutStartRound =
+                knockoutStartRoundInput &&
+                knockoutStartRoundInput.value
+                    ? knockoutStartRoundInput.value
+                    : null;
+
+
+            const knockoutLegs =
+                knockoutLegsInput &&
+                knockoutLegsInput.value
+                    ? Number(
+                        knockoutLegsInput.value
+                    )
+                    : 1;
+
+
+            const knockoutExtraTime =
+                knockoutExtraTimeInput
+                    ? knockoutExtraTimeInput.checked
+                    : false;
+
+
+            const knockoutPenalties =
+                knockoutPenaltiesInput
+                    ? knockoutPenaltiesInput.checked
+                    : false;
+
+
+            const numberOfGroups =
+                numberOfGroupsInput &&
+                numberOfGroupsInput.value
+                    ? Number(
+                        numberOfGroupsInput.value
+                    )
+                    : null;
+
+
+            const teamsPerGroup =
+                teamsPerGroupInput &&
+                teamsPerGroupInput.value
+                    ? Number(
+                        teamsPerGroupInput.value
+                    )
+                    : null;
+
+
+            const qualifiersPerGroup =
+                qualifiersPerGroupInput &&
+                qualifiersPerGroupInput.value
+                    ? Number(
+                        qualifiersPerGroupInput.value
+                    )
+                    : null;
+
+
+            const qualificationMethod =
+                qualificationMethodInput &&
+                qualificationMethodInput.value
+                    ? qualificationMethodInput.value
+                    : null;
+
+
+            if (!name) {
+
+                competitionFormMessage.textContent =
+                    "❌ Please enter the competition name.";
+
+                competitionFormMessage.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            if (!competitionType) {
+
+                competitionFormMessage.textContent =
+                    "❌ Please select the competition type.";
+
+                competitionFormMessage.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            if (!competitionFormat) {
+
+                competitionFormMessage.textContent =
+                    "❌ Invalid competition format.";
+
+                competitionFormMessage.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            if (!season) {
+
+                competitionFormMessage.textContent =
+                    "❌ Please enter the season.";
+
+                competitionFormMessage.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            if (
+                startDate &&
+                endDate &&
+                endDate < startDate
+            ) {
+
+                competitionFormMessage.textContent =
+                    "❌ End date cannot be before start date.";
+
+                competitionFormMessage.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            if (
+                competitionFormat ===
+                    "knockout" ||
+                competitionFormat ===
+                    "group_knockout"
+            ) {
+
+                if (
+                    !knockoutStartRound
+                ) {
 
                     competitionFormMessage.textContent =
-                        "❌ Please enter the competition name.";
-
-                    competitionFormMessage.style.display =
-                        "block";
-
-                    return;
-                }
-
-
-                if (!competitionType) {
-
-                    competitionFormMessage.textContent =
-                        "❌ Please select the competition type.";
-
-                    competitionFormMessage.style.display =
-                        "block";
-
-                    return;
-                }
-
-
-                if (!season) {
-
-                    competitionFormMessage.textContent =
-                        "❌ Please enter the season.";
+                        "❌ Please select the knockout starting round.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1887,13 +2688,34 @@ let redCardEntries = [];
 
 
                 if (
-                    startDate &&
-                    endDate &&
-                    endDate < startDate
+                    knockoutLegs !== 1 &&
+                    knockoutLegs !== 2
                 ) {
 
                     competitionFormMessage.textContent =
-                        "❌ End date cannot be before start date.";
+                        "❌ Knockout legs must be one or two.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+            }
+
+
+            if (
+                competitionFormat ===
+                "group_knockout"
+            ) {
+
+                if (
+                    !numberOfGroups ||
+                    !teamsPerGroup ||
+                    !qualifiersPerGroup
+                ) {
+
+                    competitionFormMessage.textContent =
+                        "❌ Please complete all group stage settings.";
 
                     competitionFormMessage.style.display =
                         "block";
@@ -1902,117 +2724,273 @@ let redCardEntries = [];
                 }
 
 
+                if (
+                    !qualificationMethod
+                ) {
+
+                    competitionFormMessage.textContent =
+                        "❌ Please select a qualification method.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+
+
+                if (
+                    qualifiersPerGroup >
+                    teamsPerGroup
+                ) {
+
+                    competitionFormMessage.textContent =
+                        "❌ Qualifiers per group cannot exceed teams per group.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+
+
+                const roundRequirements = {
+                    "Round of 64": 64,
+                    "Round of 32": 32,
+                    "Round of 16": 16,
+                    "Quarter-Finals": 8,
+                    "Semi-Finals": 4
+                };
+
+
+                const requiredTeams =
+                    roundRequirements[
+                        knockoutStartRound
+                    ];
+
+
+                const totalQualifiers =
+                    numberOfGroups *
+                    qualifiersPerGroup;
+
+
+                if (
+                    totalQualifiers !==
+                    requiredTeams
+                ) {
+
+                    competitionFormMessage.textContent =
+                        "❌ Your group settings produce " +
+                        totalQualifiers +
+                        " qualifiers, but " +
+                        knockoutStartRound +
+                        " requires exactly " +
+                        requiredTeams +
+                        " teams.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+                    return;
+                }
+            }
+
+
+            competitionFormMessage.textContent =
+                "Saving competition and generating structure...";
+
+            competitionFormMessage.style.display =
+                "block";
+
+
+            createCompetitionButton.disabled =
+                true;
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "competitions"
+                        )
+                        .insert({
+
+                            name:
+                                name,
+
+                            competition_type:
+                                competitionType,
+
+                            competition_format:
+                                competitionFormat,
+
+                            season:
+                                season,
+
+                            start_date:
+                                startDate,
+
+                            end_date:
+                                endDate,
+
+                            status:
+                                status,
+
+                            description:
+                                description ||
+                                null,
+
+                            knockout_start_round:
+                                (
+                                    competitionFormat ===
+                                        "knockout" ||
+                                    competitionFormat ===
+                                        "group_knockout"
+                                )
+                                    ? knockoutStartRound
+                                    : null,
+
+                            number_of_groups:
+                                competitionFormat ===
+                                "group_knockout"
+                                    ? numberOfGroups
+                                    : null,
+
+                            teams_per_group:
+                                competitionFormat ===
+                                "group_knockout"
+                                    ? teamsPerGroup
+                                    : null,
+
+                            qualifiers_per_group:
+                                competitionFormat ===
+                                "group_knockout"
+                                    ? qualifiersPerGroup
+                                    : null,
+
+                            qualification_method:
+                                competitionFormat ===
+                                "group_knockout"
+                                    ? qualificationMethod
+                                    : null
+
+                        })
+                        .select()
+                        .single();
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                /*
+                 * The database competition row does not
+                 * contain knockout legs or decision toggles,
+                 * so those settings are passed directly to
+                 * the structure generator below.
+                 */
+
+                await createCompetitionStructure({
+
+                    id:
+                        data.id,
+
+                    name:
+                        data.name,
+
+                    competition_format:
+                        competitionFormat,
+
+                    knockout_start_round:
+                        knockoutStartRound,
+
+                    knockout_legs:
+                        knockoutLegs,
+
+                    knockout_extra_time:
+                        knockoutExtraTime,
+
+                    knockout_penalties:
+                        knockoutPenalties,
+
+                    number_of_groups:
+                        numberOfGroups,
+
+                    teams_per_group:
+                        teamsPerGroup,
+
+                    qualifiers_per_group:
+                        qualifiersPerGroup,
+
+                    qualification_method:
+                        qualificationMethod
+
+                });
+
+
+                console.log(
+                    "Competition and structure created successfully:",
+                    data
+                );
+
+
                 competitionFormMessage.textContent =
-                    "Saving competition...";
+                    "✅ Competition and competition structure created successfully.";
 
                 competitionFormMessage.style.display =
                     "block";
 
 
-                createCompetitionButton.disabled =
-                    true;
-
-
-                try {
-
-                    const {
-                        data,
-                        error
-                    } =
-                        await supabaseClient
-                            .from("competitions")
-                            .insert({
-
-                                name:
-                                    name,
-
-                                competition_type:
-                                    competitionType,
-
-                                season:
-                                    season,
-
-                                start_date:
-                                    startDate,
-
-                                end_date:
-                                    endDate,
-
-                                status:
-                                    status,
-
-                                description:
-                                    description ||
-                                    null
-
-                            })
-                            .select()
-                            .single();
-
-
-                    if (error) {
-                        throw error;
-                    }
-
-
-                    console.log(
-                        "Competition created successfully:",
-                        data
-                    );
-
-
-                    competitionFormMessage.textContent =
-                        "✅ Competition created successfully!";
-
-
-                    competitionFormMessage.style.display =
-                        "block";
-
-
-                    if (competitionForm) {
-                        competitionForm.reset();
-                    }
-
-
-                    await loadCompetitions();
-
-
-                } catch (error) {
-
-                    console.error(
-                        "CREATE COMPETITION ERROR:",
-                        error
-                    );
-
-
-                    competitionFormMessage.textContent =
-                        "❌ Unable to create competition: " +
-                        (
-                            error.message ||
-                            "Unknown error"
-                        );
-
-
-                    competitionFormMessage.style.display =
-                        "block";
-
-
-                } finally {
-
-                    createCompetitionButton.disabled =
-                        false;
+                if (competitionForm) {
+                    competitionForm.reset();
                 }
 
+
+                updateCompetitionFormatConfiguration();
+
+
+                await loadCompetitions();
+
+
+            } catch (error) {
+
+                console.error(
+                    "CREATE COMPETITION ERROR:",
+                    error
+                );
+
+
+                competitionFormMessage.textContent =
+                    "❌ Unable to create competition: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    );
+
+                competitionFormMessage.style.display =
+                    "block";
+
+
+            } finally {
+
+                createCompetitionButton.disabled =
+                    false;
             }
-        );
 
-    } else {
+        }
+    );
 
-        console.warn(
-            "CREATE COMPETITION BUTTON NOT FOUND. " +
-            "Make sure the button has id='createCompetitionButton'."
-        );
-    }
+} else {
+
+    console.warn(
+        "CREATE COMPETITION FORM NOT FOUND. " +
+        "Make sure the form has id='competitionForm'."
+    );
+}
 
 
     // ========================================
