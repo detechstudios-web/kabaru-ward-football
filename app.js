@@ -818,14 +818,37 @@ async function setupMainCompetitionSelector(
             throw fixturesError;
         }
 
-        const upcomingFixtures =
-            (fixtures || []).filter(
-                function (fixture) {
-                    return !isCompletedStatus(fixture.status) &&
-                           !isCancelledStatus(fixture.status);
-                }
-            );
+        let upcomingFixtures =
+    (fixtures || []).filter(
+        function (fixture) {
+            return !isCompletedStatus(fixture.status) &&
+                   !isCancelledStatus(fixture.status);
+        }
+    );
 
+// ========================================
+// SHOW ONLY SELECTED COMPETITION
+// ========================================
+
+if (
+    competition &&
+    competition.id !== undefined &&
+    competition.id !== null
+) {
+
+    upcomingFixtures =
+        upcomingFixtures.filter(
+            function (fixture) {
+
+                return String(
+                    fixture.competition_id
+                ) ===
+                String(
+                    competition.id
+                );
+            }
+        );
+}
         // ========================================
         // NO UPCOMING FIXTURES
         // ========================================
