@@ -496,7 +496,7 @@ async function setupMainCompetitionSelector(
 
         const competitions =
             await loadAllCompetitions(
-                season
+    
             );
 
         mainCompetitionFilter.innerHTML = "";
