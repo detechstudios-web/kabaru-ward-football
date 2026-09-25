@@ -4503,6 +4503,115 @@ return "Unknown Player";
                     messageEl.innerHTML =
                         "";
                 }
+                if (players < 1) {
+                    alert(
+                        "Please add at least one player."
+                    );
+                    return;
+                }
+
+                const playerRows =
+                    playersContainer.querySelectorAll(
+                        ".player-row"
+                    );
+
+                const playerData = [];
+
+                const imageFiles = [];
+
+                playerRows.forEach(
+                    function (row) {
+
+                        const nameInput =
+                            row.querySelector(
+                                '[name="player_name"]'
+                            );
+
+                        const jerseyInput =
+                            row.querySelector(
+                                '[name="jersey_number"]'
+                            );
+
+                        const positionInput =
+                            row.querySelector(
+                                '[name="position"]'
+                            );
+
+                        const photoInput =
+                            row.querySelector(
+                                '[name="player_photo"]'
+                            );
+
+                        const name =
+                            nameInput?.value
+                                ?.trim() || "";
+
+                        const jersey =
+                            jerseyInput?.value || "";
+
+                        const position =
+                            positionInput?.value || "";
+
+                        const photoFile =
+                            photoInput?.files?.[0] ||
+                            null;
+
+                        playerData.push({
+                            full_name:
+                                name,
+
+                            jersey_number:
+                                Number(jersey),
+
+                            position:
+                                position
+                        });
+
+                        imageFiles.push({
+                            name:
+                                name,
+
+                            jersey:
+                                Number(jersey),
+
+                            photo:
+                                photoFile
+                        });
+                    }
+                );
+
+                for (
+                    const player of playerData
+                ) {
+
+                    if (
+                        !player.full_name
+                    ) {
+                        alert(
+                            "Please enter the full name for every player."
+                        );
+                        return;
+                    }
+
+                    if (
+                        !player.jersey_number ||
+                        player.jersey_number < 1
+                    ) {
+                        alert(
+                            "Please enter a valid jersey number for every player."
+                        );
+                        return;
+                    }
+
+                    if (
+                        !player.position
+                    ) {
+                        alert(
+                            "Please select a position for every player."
+                        );
+                        return;
+                    }
+                }
 
                 try {
 
