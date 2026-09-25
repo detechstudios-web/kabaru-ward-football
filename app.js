@@ -4717,30 +4717,22 @@ const disciplineMasterName =
                         );
                     }
 
-                    // ========================================
-                    // TEAM LOGO
-                    // ========================================
+                    // TEAM LOGO FILE
+const logoFile =
+    formData.get(
+        "teamLogo"
+    );
 
-                    let logoUrl = "";
-
-                    const logoFile =
-                        formData.get(
-                            "teamLogo"
-                        );
-
-                    if (
-                        logoFile &&
-                        logoFile instanceof File &&
-                        logoFile.size > 0
-                    ) {
-
-                        logoUrl =
-                            await uploadImage(
-                                logoFile,
-                                "team-logos",
-                                "teams"
-                            );
-                    }
+if (
+    logoFile &&
+    logoFile instanceof File &&
+    logoFile.size > 0 &&
+    logoFile.size > 5 * 1024 * 1024
+) {
+    throw new Error(
+        "Team logo must be 5MB or smaller."
+    );
+}
 
                     // ========================================
                     // INSERT TEAM
