@@ -2637,38 +2637,71 @@ footer strong {
 
         <div class="competition-card">
 
-            <div>
-
-                <div class="competition-label">
-                    CURRENT COMPETITION
-                </div>
-
-
-                <h2 id="competitionName">
-                    Loading Competition...
-                </h2>
-
-
-                <p id="competitionSeason">
-                    Loading season...
-                </p>
-
-            </div>
-
-
-            <div>
-
-                <span
-                    id="competitionStatus"
-                    class="status-badge"
-                >
-                    Loading...
-                </span>
-
-            </div>
-
+    <div>
+        <div class="competition-label">
+            CURRENT COMPETITION
         </div>
 
+        <h2 id="competitionName">
+            Loading Competition...
+        </h2>
+
+        <p id="competitionSeason">
+            Loading season...
+        </p>
+    </div>
+
+    <div
+        style="
+            display:flex;
+            flex-direction:column;
+            align-items:flex-end;
+            gap:10px;
+            min-width:220px;
+        "
+    >
+
+        <span
+            id="competitionStatus"
+            class="status-badge"
+        >
+            Loading...
+        </span>
+
+        <label
+            for="mainCompetitionFilter"
+            style="
+                font-size:12px;
+                font-weight:800;
+                color:#fff;
+            "
+        >
+            🏆 SELECT COMPETITION
+        </label>
+
+        <select
+            id="mainCompetitionFilter"
+            style="
+                width:100%;
+                max-width:260px;
+                padding:11px 12px;
+                border-radius:8px;
+                border:none;
+                font-size:14px;
+                font-weight:700;
+                background:#fff;
+                color:#111;
+                cursor:pointer;
+            "
+        >
+            <option value="">
+                Loading competitions...
+            </option>
+        </select>
+
+    </div>
+
+</div>
     </div>
 
 </div>
