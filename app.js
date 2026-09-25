@@ -473,7 +473,211 @@ const redCardsEl =
         return [];
     }
 }
+// ========================================
+// PUBLIC COMPETITION SELECTOR
+// ========================================
 
+async function setupMainCompetitionSelector(
+    defaultCompetition
+) {
+
+    if (!mainCompetitionFilter) {
+        return;
+    }
+
+    try {
+
+        const season =
+            defaultCompetition &&
+            defaultCompetition.season !== undefined &&
+            defaultCompetition.season !== null
+                ? defaultCompetition.season
+                : new Date().getFullYear();
+
+        const competitions =
+            await loadAllCompetitions(
+                season
+            );
+
+        mainCompetitionFilter.innerHTML = "";
+
+        if (
+            !competitions ||
+            competitions.length === 0
+        ) {
+
+            mainCompetitionFilter.innerHTML = `
+                <option value="">
+                    No competitions available
+                </option>
+            `;
+
+            return;
+        }
+
+        competitions.forEach(
+            function (competition) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    String(
+                        competition.id
+                    );
+
+                option.textContent =
+                    competition.name ||
+                    "Competition";
+
+                mainCompetitionFilter.appendChild(
+                    option
+                );
+            }
+        );
+
+        // ----------------------------------------
+        // SELECT THE CURRENT MAIN COMPETITION
+        // ----------------------------------------
+
+        if (
+            defaultCompetition &&
+            defaultCompetition.id !== undefined &&
+            defaultCompetition.id !== null
+        ) {
+
+            mainCompetitionFilter.value =
+                String(
+                    defaultCompetition.id
+                );
+        }
+
+        // ----------------------------------------
+        // COMPETITION CHANGE
+        // ----------------------------------------
+
+        mainCompetitionFilter.addEventListener(
+            "change",
+            async function () {
+
+                const selectedId =
+                    mainCompetitionFilter.value;
+
+                const selectedCompetition =
+                    competitions.find(
+                        function (competition) {
+
+                            return String(
+                                competition.id
+                            ) ===
+                            String(
+                                selectedId
+                            );
+                        }
+                    );
+
+                if (!selectedCompetition) {
+                    return;
+                }
+
+                currentMainCompetition =
+                    selectedCompetition;
+
+                // --------------------------------
+                // UPDATE COMPETITION HEADER
+                // --------------------------------
+
+                if (competitionNameEl) {
+
+                    competitionNameEl.textContent =
+                        selectedCompetition.name ||
+                        "Competition";
+                }
+
+                if (competitionSeasonEl) {
+
+                    competitionSeasonEl.textContent =
+                        selectedCompetition.season
+                            ? `Season ${selectedCompetition.season}`
+                            : "";
+                }
+
+                if (competitionStatusEl) {
+
+                    competitionStatusEl.textContent =
+                        selectedCompetition.status ||
+                        "";
+                }
+
+                // --------------------------------
+                // KEEP PLAYER FILTER IN SYNC
+                // --------------------------------
+
+                if (playerCompetitionFilter) {
+
+                    playerCompetitionFilter.value =
+                        String(
+                            selectedCompetition.id
+                        );
+                }
+
+                // --------------------------------
+                // LOAD SELECTED COMPETITION DATA
+                // --------------------------------
+
+                try {
+
+                    await Promise.all([
+
+                        loadFixtures(
+                            selectedCompetition
+                        ),
+
+                        loadResults(
+                            selectedCompetition
+                        ),
+
+                        loadLeagueTable(
+                            selectedCompetition
+                        ),
+
+                        loadPlayerStatistics(
+                            selectedCompetition
+                        ),
+
+                        loadCompetitionSupport(
+                            selectedCompetition
+                        )
+
+                    ]);
+
+                } catch (error) {
+
+                    console.error(
+                        "COMPETITION SWITCH ERROR:",
+                        error
+                    );
+                }
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "MAIN COMPETITION SELECTOR ERROR:",
+            error
+        );
+
+        mainCompetitionFilter.innerHTML = `
+            <option value="">
+                Unable to load competitions
+            </option>
+        `;
+    }
+}
     // ========================================
     // LOAD UPCOMING FIXTURES
     // ========================================
