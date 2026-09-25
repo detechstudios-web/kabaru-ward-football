@@ -17,7 +17,10 @@ let currentMainCompetition = null;
 
     const competitionStatusEl =
         document.getElementById("competitionStatus");
-
+const mainCompetitionFilter =
+    document.getElementById(
+        "mainCompetitionFilter"
+    );
     const fixturesContainer =
         document.getElementById("upcomingFixtures");
 
