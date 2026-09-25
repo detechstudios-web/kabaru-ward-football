@@ -1917,61 +1917,60 @@ resultCard.addEventListener(
                     ? competition.season
                     : new Date().getFullYear();
 
-            // ========================================
-            // LOAD ACTIVE LEAGUE
-            // ========================================
+           // ========================================
+// USE THE SELECTED COMPETITION
+// ========================================
 
-            const {
-                data: leagueCompetition,
-                error: competitionError
-            } = await supabaseClient
-                .from("competitions")
-                .select(`
-                    id,
-                    name,
-                    competition_type,
-                    season,
-                    status
-                `)
-                .eq(
-                    "competition_type",
-                    "League"
-                )
-                .eq(
-                    "season",
-                    season
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                )
-                .limit(1)
-                .maybeSingle();
+const leagueCompetition =
+    competition || null;
 
-            if (competitionError) {
-                throw competitionError;
-            }
+// ========================================
+// LEAGUE TABLE ONLY APPLIES TO LEAGUES
+// ========================================
 
-            if (!leagueCompetition) {
+if (
+    !leagueCompetition ||
+    leagueCompetition.competition_type !==
+        "League"
+) {
 
-                leagueTableEl.innerHTML = `
-                    <tr>
-                        <td
-                            colspan="11"
-                            style="
-                                text-align:center;
-                                padding:30px;
-                            "
-                        >
-                            No league competition available.
-                        </td>
-                    </tr>
-                `;
+    leagueTableEl.innerHTML = `
+        <tr>
+            <td
+                colspan="11"
+                style="
+                    text-align:center;
+                    padding:30px;
+                "
+            >
+                <div
+                    style="
+                        font-size:36px;
+                        margin-bottom:10px;
+                    "
+                >
+                    🏆
+                </div>
 
-                return;
-            }
+                <strong>
+                    No league table for this competition
+                </strong>
+
+                <div
+                    style="
+                        margin-top:8px;
+                        color:#666;
+                    "
+                >
+                    Select a league competition to view
+                    league standings.
+                </div>
+            </td>
+        </tr>
+    `;
+
+    return;
+} 
 
 // ========================================
 // LOAD APPROVED TEAMS
