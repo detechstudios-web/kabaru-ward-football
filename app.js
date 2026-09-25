@@ -4727,37 +4727,47 @@ return "Unknown Player";
                     // ========================================
 
                     const {
-                        data: insertedTeam,
-                        error: insertError
-                    } = await supabaseClient
-                        .from("teams")
-                        .insert([
-                            {
-                                name:
-                                    teamName,
-                                short_name:
-                                    shortName ||
-                                    teamName,
-                                coach_name:
-                                    coachName,
-                                captain_name:
-                                    captainName,
-                                vice_captain_name:
-                                    viceCaptainName,
-                                discipline_master_name:
-                                    disciplineMasterName,
-                                logo_url:
-                                    logoUrl,
-                                registration_status:
-    "Pending"
-                            }
-                        ])
-                        .select()
-                        .single();
+    data: rpcData,
+    error
+} = await supabaseClient.rpc(
+    "submit_team_registration",
+    {
+        p_name:
+            teamName,
 
-                    if (insertError) {
-                        throw insertError;
-                    }
+        p_short_name:
+            shortName ||
+            teamName,
+
+        p_location:
+            teamLocation,
+
+        p_coach_name:
+            coachName,
+
+        p_captain_name:
+            captainName,
+
+        p_vice_captain_name:
+            viceCaptainName,
+
+        p_discipline_master_name:
+            disciplineMasterName,
+
+        p_phone:
+            teamPhone,
+
+        p_email:
+            teamEmail,
+
+        p_players:
+            playerData
+    }
+);
+
+if (error) {
+    throw error;
+}
 
                     // ========================================
                     // SUCCESS
