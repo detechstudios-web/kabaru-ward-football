@@ -4661,7 +4661,26 @@ return "Unknown Player";
                                 "discipline_master_name"
                             ) || ""
                         ).trim();
+const teamLocation =
+    String(
+        formData.get(
+            "teamLocation"
+        ) || ""
+    ).trim();
 
+const teamPhone =
+    String(
+        formData.get(
+            "teamPhone"
+        ) || ""
+    ).trim();
+
+const teamEmail =
+    String(
+        formData.get(
+            "teamEmail"
+        ) || ""
+    ).trim();
                     if (!teamName) {
                         throw new Error(
                             "Please enter the team name."
