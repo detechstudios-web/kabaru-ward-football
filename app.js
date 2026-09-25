@@ -4803,10 +4803,7 @@ if (error) {
 
                     form.reset();
 
-                    console.log(
-                        "TEAM REGISTERED:",
-                        insertedTeam
-                    );
+                    
 
                 } catch (error) {
 
