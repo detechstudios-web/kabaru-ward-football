@@ -4213,6 +4213,277 @@ return "Unknown Player";
             form.querySelector(
                 "button[type='submit']"
             );
+        // ========================================
+        // PLAYER MANAGEMENT
+        // ========================================
+
+        const playersContainer =
+            document.getElementById(
+                "playersContainer"
+            );
+
+        const addPlayerBtn =
+            document.getElementById(
+                "addPlayerBtn"
+            );
+
+        const playerCount =
+            document.getElementById(
+                "playerCount"
+            );
+
+        let players = 0;
+
+        const MAX_PLAYERS = 20;
+
+
+        // ========================================
+        // UPDATE PLAYER COUNT
+        // ========================================
+
+        function updatePlayerCount() {
+
+            if (!playerCount) {
+                return;
+            }
+
+            playerCount.textContent =
+                `${players}/${MAX_PLAYERS} players`;
+        }
+
+
+        // ========================================
+        // UPDATE PLAYER NUMBERS
+        // ========================================
+
+        function updatePlayerNumbers() {
+
+            if (!playersContainer) {
+                return;
+            }
+
+            const rows =
+                playersContainer.querySelectorAll(
+                    ".player-row"
+                );
+
+            rows.forEach(
+                function (row, index) {
+
+                    const number =
+                        row.querySelector(
+                            ".player-number"
+                        );
+
+                    if (number) {
+
+                        number.innerHTML =
+                            `<strong>
+                                Player ${index + 1}
+                            </strong>`;
+                    }
+                }
+            );
+        }
+
+
+        // ========================================
+        // CREATE PLAYER ROW
+        // ========================================
+
+        function createPlayerRow() {
+
+            if (
+                players >=
+                MAX_PLAYERS
+            ) {
+
+                alert(
+                    "Maximum of 20 players allowed."
+                );
+
+                return;
+            }
+
+            players++;
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "player-row";
+
+
+            row.innerHTML = `
+
+                <div class="player-number">
+
+                    <strong>
+                        Player ${players}
+                    </strong>
+
+                </div>
+
+
+                <input
+                    type="text"
+                    name="player_name"
+                    placeholder="Player full name"
+                    required
+                >
+
+
+                <input
+                    type="number"
+                    name="jersey_number"
+                    placeholder="Jersey number"
+                    min="1"
+                    max="99"
+                    required
+                >
+
+
+                <select
+                    name="position"
+                    required
+                >
+
+                    <option value="">
+                        Select position
+                    </option>
+
+                    <option value="Goalkeeper">
+                        Goalkeeper
+                    </option>
+
+                    <option value="Defender">
+                        Defender
+                    </option>
+
+                    <option value="Midfielder">
+                        Midfielder
+                    </option>
+
+                    <option value="Forward">
+                        Forward
+                    </option>
+
+                </select>
+
+
+                <div
+                    style="
+                        margin-top:8px;
+                        margin-bottom:8px;
+                    "
+                >
+
+                    <label
+                        style="
+                            display:block;
+                            font-size:13px;
+                            font-weight:700;
+                            margin-bottom:5px;
+                        "
+                    >
+
+                        📷 Player Photo
+
+                        <span
+                            style="
+                                font-weight:400;
+                                color:#777;
+                            "
+                        >
+                            (optional)
+                        </span>
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        name="player_photo"
+                        accept="image/*"
+                    >
+
+
+                    <small
+                        style="
+                            display:block;
+                            margin-top:4px;
+                            color:#777;
+                        "
+                    >
+                        Maximum 5MB.
+                    </small>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="remove-player-btn"
+                >
+                    Remove
+                </button>
+            `;
+
+
+            const removeBtn =
+                row.querySelector(
+                    ".remove-player-btn"
+                );
+
+
+            removeBtn.addEventListener(
+                "click",
+                function () {
+
+                    row.remove();
+
+                    players--;
+
+                    updatePlayerNumbers();
+
+                    updatePlayerCount();
+                }
+            );
+
+
+            playersContainer.appendChild(
+                row
+            );
+
+            updatePlayerCount();
+        }
+
+
+        // ========================================
+        // ADD PLAYER BUTTON
+        // ========================================
+
+        if (addPlayerBtn) {
+
+            addPlayerBtn.addEventListener(
+                "click",
+                createPlayerRow
+            );
+        }
+
+
+        // ========================================
+        // CREATE FIRST PLAYER
+        // ========================================
+
+        if (playersContainer) {
+
+            createPlayerRow();
+        }
+
 
         form.addEventListener(
             "submit",
