@@ -4780,7 +4780,79 @@ if (
 if (error) {
     throw error;
 }
+// SAVE TEAM LOGO
+if (
+    logoFile &&
+    logoFile instanceof File &&
+    logoFile.size > 0 &&
+    rpcData
+) {
+    let teamId = null;
 
+    if (typeof rpcData === "number") {
+        teamId = rpcData;
+    } else if (
+        typeof rpcData === "object"
+    ) {
+        teamId =
+            rpcData.id ||
+            rpcData.team_id ||
+            rpcData.teamId;
+    }
+
+    if (!teamId) {
+        throw new Error(
+            "Team was registered, but the team ID could not be identified for logo upload."
+        );
+    }
+
+    if (messageEl) {
+        messageEl.innerHTML = `
+            <div
+                style="
+                    padding:15px;
+                    border-radius:8px;
+                    background:#fff3cd;
+                    color:#856404;
+                    margin-top:15px;
+                "
+            >
+                <strong>
+                    Uploading team logo...
+                </strong>
+                <div style="margin-top:6px;">
+                    Please wait.
+                </div>
+            </div>
+        `;
+    }
+
+    const logoUrl =
+        await uploadImage(
+            logoFile,
+            "team-logos",
+            `team-${teamId}`
+        );
+
+    const {
+        error: logoUpdateError
+    } = await supabaseClient
+        .from("teams")
+        .update({
+            logo_url: logoUrl
+        })
+        .eq(
+            "id",
+            teamId
+        );
+
+    if (logoUpdateError) {
+        throw new Error(
+            "Team was registered, but the team logo could not be saved: " +
+            logoUpdateError.message
+        );
+    }
+}
                     // ========================================
                     // SUCCESS
                     // ========================================
