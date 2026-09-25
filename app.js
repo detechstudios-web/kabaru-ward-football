@@ -1399,14 +1399,38 @@ if (
                 throw fixturesError;
             }
 
-            const completedFixtures =
-                (fixtures || []).filter(
-                    function (fixture) {
-                        return isCompletedStatus(
-                            fixture.status
-                        );
-                    }
+            let completedFixtures =
+    (fixtures || []).filter(
+        function (fixture) {
+            return isCompletedStatus(
+                fixture.status
+            );
+        }
+    );
+
+// ========================================
+// SHOW ONLY SELECTED COMPETITION
+// ========================================
+
+if (
+    competition &&
+    competition.id !== undefined &&
+    competition.id !== null
+) {
+
+    completedFixtures =
+        completedFixtures.filter(
+            function (fixture) {
+
+                return String(
+                    fixture.competition_id
+                ) ===
+                String(
+                    competition.id
                 );
+            }
+        );
+}
 
 // ========================================
 // LOAD RESULTS
