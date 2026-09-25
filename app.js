@@ -4724,7 +4724,7 @@ const teamEmail =
 
                     const logoFile =
                         formData.get(
-                            "logo"
+                            "teamLogo"
                         );
 
                     if (
