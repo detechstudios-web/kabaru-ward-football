@@ -495,9 +495,7 @@ async function setupMainCompetitionSelector(
                 : new Date().getFullYear();
 
         const competitions =
-            await loadAllCompetitions(
-    
-            );
+    await loadAllCompetitions();
 
         mainCompetitionFilter.innerHTML = "";
 
