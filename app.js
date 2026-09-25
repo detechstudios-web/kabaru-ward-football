@@ -4886,7 +4886,17 @@ if (
                     }
 
                     form.reset();
+if (playersContainer) {
+    playersContainer.innerHTML = "";
+}
 
+players = 0;
+
+if (playersContainer) {
+    createPlayerRow();
+}
+
+updatePlayerCount();
                     
 
                 } catch (error) {
