@@ -4621,46 +4621,19 @@ return "Unknown Player";
                         );
 
                     const teamName =
-                        String(
-                            formData.get(
-                                "team_name"
-                            ) || ""
-                        ).trim();
+    String(
+        formData.get(
+            "teamName"
+        ) || ""
+    ).trim();
 
-                    const shortName =
-                        String(
-                            formData.get(
-                                "short_name"
-                            ) || ""
-                        ).trim();
+const shortName =
+    String(
+        formData.get(
+            "shortName"
+        ) || ""
+    ).trim();
 
-                    const coachName =
-                        String(
-                            formData.get(
-                                "coach_name"
-                            ) || ""
-                        ).trim();
-
-                    const captainName =
-                        String(
-                            formData.get(
-                                "captain_name"
-                            ) || ""
-                        ).trim();
-
-                    const viceCaptainName =
-                        String(
-                            formData.get(
-                                "vice_captain_name"
-                            ) || ""
-                        ).trim();
-
-                    const disciplineMasterName =
-                        String(
-                            formData.get(
-                                "discipline_master_name"
-                            ) || ""
-                        ).trim();
 const teamLocation =
     String(
         formData.get(
@@ -4679,6 +4652,34 @@ const teamEmail =
     String(
         formData.get(
             "teamEmail"
+        ) || ""
+    ).trim();
+
+const coachName =
+    String(
+        formData.get(
+            "coachName"
+        ) || ""
+    ).trim();
+
+const captainName =
+    String(
+        formData.get(
+            "captainName"
+        ) || ""
+    ).trim();
+
+const viceCaptainName =
+    String(
+        formData.get(
+            "viceCaptainName"
+        ) || ""
+    ).trim();
+
+const disciplineMasterName =
+    String(
+        formData.get(
+            "disciplineMasterName"
         ) || ""
     ).trim();
                     if (!teamName) {
