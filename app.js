@@ -2982,27 +2982,23 @@ resultRows.forEach(
             // ========================================
 
             const {
-                data: competitionRows,
-                error: competitionsError
-            } = await supabaseClient
-                .from("competitions")
-                .select(`
-                    id,
-                    name,
-                    competition_type,
-                    season,
-                    status
-                `)
-                .eq(
-                    "season",
-                    season
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+    data: competitionRows,
+    error: competitionsError
+} = await supabaseClient
+    .from("competitions")
+    .select(`
+        id,
+        name,
+        competition_type,
+        season,
+        status
+    `)
+    .order(
+        "created_at",
+        {
+            ascending: false
+        }
+    );
 
             if (competitionsError) {
                 throw competitionsError;
