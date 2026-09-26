@@ -3993,7 +3993,312 @@ async function loadFixtures() {
     // ========================================
     // DELETE FIXTURE
     // ========================================
+async function editFixture(fixtureId) {
+    try {
+        const { data: fixture, error } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                venue,
+                matchday,
+                status,
+                competition:competitions (
+                    id,
+                    name,
+                    season
+                ),
+                home_team:teams!fixtures_home_team_id_fkey (
+                    id,
+                    name,
+                    short_name
+                ),
+                away_team:teams!fixtures_away_team_id_fkey (
+                    id,
+                    name,
+                    short_name
+                )
+            `)
+            .eq("id", fixtureId)
+            .single();
 
+        if (error) {
+            console.error("Error loading fixture for editing:", error);
+            alert("Unable to load fixture.");
+            return;
+        }
+
+        if (!fixture) {
+            alert("Fixture not found.");
+            return;
+        }
+
+        const existingModal = document.getElementById("editFixtureModal");
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement("div");
+        modal.id = "editFixtureModal";
+
+        modal.innerHTML = `
+            <div style="
+                position:fixed;
+                inset:0;
+                background:rgba(0,0,0,0.65);
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                padding:20px;
+                z-index:9999;
+            ">
+                <div style="
+                    background:#fff;
+                    width:100%;
+                    max-width:500px;
+                    max-height:90vh;
+                    overflow-y:auto;
+                    border-radius:12px;
+                    padding:20px;
+                    box-sizing:border-box;
+                ">
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        margin-bottom:15px;
+                    ">
+                        <h2 style="margin:0;">
+                            ✏️ Edit Fixture
+                        </h2>
+
+                        <button
+                            type="button"
+                            onclick="document.getElementById('editFixtureModal').remove()"
+                            style="
+                                border:none;
+                                background:none;
+                                font-size:24px;
+                                cursor:pointer;
+                            "
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    <div style="
+                        background:#f5f5f5;
+                        padding:12px;
+                        border-radius:8px;
+                        margin-bottom:15px;
+                    ">
+                        <strong>
+                            ${fixture.home_team?.name || "Home Team"}
+                            vs
+                            ${fixture.away_team?.name || "Away Team"}
+                        </strong>
+
+                        <div style="font-size:13px; margin-top:5px;">
+                            ${fixture.competition?.name || "Competition"}
+                            ${fixture.competition?.season ? ` • ${fixture.competition.season}` : ""}
+                        </div>
+                    </div>
+
+                    <form id="editFixtureForm">
+
+                        <label style="display:block; margin-bottom:6px;">
+                            <strong>Match Date</strong>
+                        </label>
+
+                        <input
+                            type="date"
+                            id="editFixtureDate"
+                            value="${fixture.match_date || ""}"
+                            required
+                            style="
+                                width:100%;
+                                padding:10px;
+                                margin-bottom:15px;
+                                box-sizing:border-box;
+                            "
+                        >
+
+                        <label style="display:block; margin-bottom:6px;">
+                            <strong>Kick-off Time</strong>
+                        </label>
+
+                        <input
+                            type="time"
+                            id="editFixtureKickoff"
+                            value="${fixture.kick_off ? String(fixture.kick_off).substring(0,5) : ""}"
+                            required
+                            style="
+                                width:100%;
+                                padding:10px;
+                                margin-bottom:15px;
+                                box-sizing:border-box;
+                            "
+                        >
+
+                        <label style="display:block; margin-bottom:6px;">
+                            <strong>Venue</strong>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editFixtureVenue"
+                            value="${fixture.venue || ""}"
+                            placeholder="Enter venue"
+                            required
+                            style="
+                                width:100%;
+                                padding:10px;
+                                margin-bottom:15px;
+                                box-sizing:border-box;
+                            "
+                        >
+
+                        <label style="display:block; margin-bottom:6px;">
+                            <strong>Matchday</strong>
+                        </label>
+
+                        <input
+                            type="number"
+                            id="editFixtureMatchday"
+                            value="${fixture.matchday ?? ""}"
+                            min="1"
+                            placeholder="Matchday"
+                            style="
+                                width:100%;
+                                padding:10px;
+                                margin-bottom:15px;
+                                box-sizing:border-box;
+                            "
+                        >
+
+                        <label style="display:block; margin-bottom:6px;">
+                            <strong>Status</strong>
+                        </label>
+
+                        <select
+                            id="editFixtureStatus"
+                            style="
+                                width:100%;
+                                padding:10px;
+                                margin-bottom:20px;
+                                box-sizing:border-box;
+                            "
+                        >
+                            <option value="Scheduled" ${fixture.status === "Scheduled" ? "selected" : ""}>
+                                Scheduled
+                            </option>
+
+                            <option value="Postponed" ${fixture.status === "Postponed" ? "selected" : ""}>
+                                Postponed
+                            </option>
+
+                            <option value="Cancelled" ${fixture.status === "Cancelled" ? "selected" : ""}>
+                                Cancelled
+                            </option>
+
+                            <option value="Completed" ${fixture.status === "Completed" ? "selected" : ""}>
+                                Completed
+                            </option>
+                        </select>
+
+                        <div style="
+                            display:flex;
+                            gap:10px;
+                            justify-content:flex-end;
+                            flex-wrap:wrap;
+                        ">
+
+                            <button
+                                type="button"
+                                onclick="document.getElementById('editFixtureModal').remove()"
+                                class="btn"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                💾 Save Changes
+                            </button>
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.getElementById("editFixtureForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const matchDate = document.getElementById("editFixtureDate").value;
+            const kickOff = document.getElementById("editFixtureKickoff").value;
+            const venue = document.getElementById("editFixtureVenue").value.trim();
+            const matchdayValue = document.getElementById("editFixtureMatchday").value;
+            const status = document.getElementById("editFixtureStatus").value;
+
+            if (!matchDate) {
+                alert("Please select the match date.");
+                return;
+            }
+
+            if (!kickOff) {
+                alert("Please select the kick-off time.");
+                return;
+            }
+
+            if (!venue) {
+                alert("Please enter the venue.");
+                return;
+            }
+
+            const matchday = matchdayValue
+                ? Number(matchdayValue)
+                : null;
+
+            const { error: updateError } = await supabaseClient
+                .from("fixtures")
+                .update({
+                    match_date: matchDate,
+                    kick_off: kickOff,
+                    venue: venue,
+                    matchday: matchday,
+                    status: status
+                })
+                .eq("id", fixtureId);
+
+            if (updateError) {
+                console.error("Error updating fixture:", updateError);
+                alert("Failed to update fixture. Please try again.");
+                return;
+            }
+
+            modal.remove();
+
+            alert("✅ Fixture updated successfully.");
+
+            await loadFixtures();
+        });
+
+    } catch (error) {
+        console.error("Unexpected error editing fixture:", error);
+        alert("An unexpected error occurred while editing the fixture.");
+    }
+}
     window.deleteFixture =
         async function (fixtureId) {
 
