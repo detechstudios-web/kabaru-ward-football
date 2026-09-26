@@ -7207,7 +7207,14 @@ if (
                             "id",
                             currentFixture.id
                         );
+// Automatically progress knockout competition
+let knockoutProgression = null;
 
+knockoutProgression = await advanceKnockoutAfterResult(
+    currentFixture,
+    homeFinalScore,
+    awayFinalScore
+);
 
                 if (
                     fixtureUpdateError
