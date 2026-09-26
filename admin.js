@@ -6990,8 +6990,8 @@ if (
                     await supabaseClient
                         .from("players")
                         .select(
-                            "id, full_name, jersey_number, position, registration_status"
-                        )
+    "id, full_name, jersey_number, position, registration_status, rejection_reason"
+)
                         .eq(
                             "team_id",
                             team.id
@@ -7010,84 +7010,156 @@ if (
 
 
                 let playersHtml =
-                    "<p>No players registered.</p>";
+    "<p>No players registered.</p>";
 
+if (
+    players &&
+    players.length > 0
+) {
 
-                if (
-                    players &&
-                    players.length > 0
-                ) {
+    playersHtml = `
 
-                    playersHtml = `
+        <div style="overflow-x:auto;">
 
-                        <div style="overflow-x:auto;">
+            <table class="players-table">
 
-                            <table class="players-table">
+                <thead>
 
-                                <thead>
+                    <tr>
+
+                        <th>#</th>
+                        <th>Player</th>
+                        <th>Position</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${
+                        players.map(
+                            function (player) {
+
+                                const status =
+                                    String(
+                                        player.registration_status ||
+                                        "Pending"
+                                    );
+
+                                const isPending =
+                                    status === "Pending";
+
+                                return `
 
                                     <tr>
 
-                                        <th>#</th>
-                                        <th>Player</th>
-                                        <th>Position</th>
-                                        <th>Status</th>
+                                        <td>
+                                            ${escapeHtml(
+                                                player.jersey_number
+                                            )}
+                                        </td>
+
+                                        <td>
+                                            ${escapeHtml(
+                                                player.full_name
+                                            )}
+                                        </td>
+
+                                        <td>
+                                            ${escapeHtml(
+                                                player.position ||
+                                                "-"
+                                            )}
+                                        </td>
+
+                                        <td>
+                                            ${escapeHtml(
+                                                status
+                                            )}
+
+                                            ${
+                                                player.rejection_reason
+                                                    ? `
+                                                        <br>
+                                                        <small
+                                                            style="
+                                                                color:#b02a37;
+                                                                display:block;
+                                                                margin-top:4px;
+                                                            "
+                                                        >
+                                                            Reason:
+                                                            ${escapeHtml(
+                                                                player.rejection_reason
+                                                            )}
+                                                        </small>
+                                                    `
+                                                    : ""
+                                            }
+
+                                        </td>
+
+                                        <td>
+
+                                            ${
+                                                isPending
+                                                    ? `
+                                                        <button
+                                                            type="button"
+                                                            class="admin-btn approve-player-btn"
+                                                            data-player-id="${player.id}"
+                                                            style="
+                                                                margin:2px;
+                                                                padding:6px 10px;
+                                                            "
+                                                        >
+                                                            ✅ Approve
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            class="admin-btn reject-player-btn"
+                                                            data-player-id="${player.id}"
+                                                            style="
+                                                                margin:2px;
+                                                                padding:6px 10px;
+                                                            "
+                                                        >
+                                                            ❌ Reject
+                                                        </button>
+                                                    `
+                                                    : `
+                                                        <span
+                                                            style="
+                                                                color:#777;
+                                                                font-size:13px;
+                                                            "
+                                                        >
+                                                            No action
+                                                        </span>
+                                                    `
+                                            }
+
+                                        </td>
 
                                     </tr>
 
-                                </thead>
+                                `;
+                            }
+                        ).join("")
+                    }
 
-                                <tbody>
+                </tbody>
 
-                                    ${
-                                        players.map(
-                                            function (player) {
+            </table>
 
-                                                return `
+        </div>
 
-                                                    <tr>
-
-                                                        <td>
-                                                            ${escapeHtml(
-                                                                player.jersey_number
-                                                            )}
-                                                        </td>
-
-                                                        <td>
-                                                            ${escapeHtml(
-                                                                player.full_name
-                                                            )}
-                                                        </td>
-
-                                                        <td>
-                                                            ${escapeHtml(
-                                                                player.position ||
-                                                                "-"
-                                                            )}
-                                                        </td>
-
-                                                        <td>
-                                                            ${escapeHtml(
-                                                                player.registration_status ||
-                                                                "-"
-                                                            )}
-                                                        </td>
-
-                                                    </tr>
-
-                                                `;
-                                            }
-                                        ).join("")
-                                    }
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    `;
-                }
+    `;
+}
 
 
                 const card =
