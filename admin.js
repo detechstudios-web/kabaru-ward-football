@@ -7332,6 +7332,50 @@ if (
                         }
                     );
                 }
+                const approvePlayerButtons =
+    card.querySelectorAll(
+        ".approve-player-btn"
+    );
+
+approvePlayerButtons.forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                approvePlayer(
+                    this.dataset.playerId
+                );
+
+            }
+        );
+
+    }
+);
+
+
+const rejectPlayerButtons =
+    card.querySelectorAll(
+        ".reject-player-btn"
+    );
+
+rejectPlayerButtons.forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                rejectPlayer(
+                    this.dataset.playerId
+                );
+
+            }
+        );
+
+    }
+);
             }
 
 
