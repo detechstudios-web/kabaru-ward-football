@@ -5761,7 +5761,452 @@ initializeResultEventControls();
 // ========================================
 
 if (saveResultBtn) {
+// ============================================================
+// AUTOMATIC KNOCKOUT PROGRESSION
+// ============================================================
 
+async function advanceKnockoutAfterResult(
+    completedFixture,
+    homeFinalScore,
+    awayFinalScore
+) {
+    try {
+        // ----------------------------------------------------
+        // 1. Get competition information
+        // ----------------------------------------------------
+        const { data: competition, error: competitionError } =
+            await supabase
+                .from("competitions")
+                .select(`
+                    id,
+                    name,
+                    competition_type,
+                    competition_format,
+                    knockout_legs
+                `)
+                .eq("id", completedFixture.competition_id)
+                .single();
+
+        if (competitionError) throw competitionError;
+
+        // Only process pure knockout competitions.
+        if (competition.competition_format !== "knockout") {
+            return {
+                type: "not_applicable"
+            };
+        }
+
+        // Current result structure supports one-leg knockout.
+        if (
+            competition.knockout_legs &&
+            Number(competition.knockout_legs) !== 1
+        ) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but automatic progression is currently disabled for two-leg knockout competitions."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 2. Determine winner of the completed match
+        // ----------------------------------------------------
+        if (Number(homeFinalScore) === Number(awayFinalScore)) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but automatic knockout progression could not continue because the match is tied. A winner must be determined through extra time or penalties."
+            };
+        }
+
+        const winnerTeamId =
+            Number(homeFinalScore) > Number(awayFinalScore)
+                ? completedFixture.home_team_id
+                : completedFixture.away_team_id;
+
+        // ----------------------------------------------------
+        // 3. Get knockout stage
+        // ----------------------------------------------------
+        const { data: stage, error: stageError } =
+            await supabase
+                .from("competition_stages")
+                .select("*")
+                .eq("competition_id", competition.id)
+                .eq("stage_type", "knockout")
+                .order("created_at", { ascending: true })
+                .limit(1)
+                .maybeSingle();
+
+        if (stageError) throw stageError;
+
+        if (!stage) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but no knockout stage was found for this competition."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 4. Get knockout rounds
+        // ----------------------------------------------------
+        const { data: rounds, error: roundsError } =
+            await supabase
+                .from("competition_knockout_rounds")
+                .select("*")
+                .eq("stage_id", stage.id)
+                .order("round_order", { ascending: true });
+
+        if (roundsError) throw roundsError;
+
+        if (!rounds || rounds.length === 0) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but no knockout rounds were configured."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 5. Get all fixtures in this competition
+        // ----------------------------------------------------
+        const { data: fixtures, error: fixturesError } =
+            await supabase
+                .from("fixtures")
+                .select(`
+                    id,
+                    competition_id,
+                    home_team_id,
+                    away_team_id,
+                    match_date,
+                    kick_off,
+                    venue,
+                    matchday,
+                    status
+                `)
+                .eq("competition_id", competition.id);
+
+        if (fixturesError) throw fixturesError;
+
+        // ----------------------------------------------------
+        // 6. Get all results
+        // ----------------------------------------------------
+        const fixtureIds = (fixtures || []).map(f => f.id);
+
+        if (fixtureIds.length === 0) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but no fixtures were found."
+            };
+        }
+
+        const { data: results, error: resultsError } =
+            await supabase
+                .from("results")
+                .select(`
+                    id,
+                    fixture_id,
+                    home_score,
+                    away_score
+                `)
+                .in("fixture_id", fixtureIds);
+
+        if (resultsError) throw resultsError;
+
+        const resultMap = new Map(
+            (results || []).map(r => [r.fixture_id, r])
+        );
+
+        const completedFixtures = (fixtures || []).filter(
+            fixture =>
+                fixture.status === "Completed" &&
+                resultMap.has(fixture.id)
+        );
+
+        // ----------------------------------------------------
+        // 7. Identify the round that has just been completed
+        // ----------------------------------------------------
+        let completedRound = null;
+        let cumulativeMatches = 0;
+
+        for (const round of rounds) {
+            cumulativeMatches += Number(
+                round.number_of_matches || 0
+            );
+
+            if (completedFixtures.length === cumulativeMatches) {
+                completedRound = round;
+                break;
+            }
+        }
+
+        if (!completedRound) {
+            return {
+                type: "not_applicable"
+            };
+        }
+
+        // ----------------------------------------------------
+        // 8. Check if this is the FINAL
+        // ----------------------------------------------------
+        const lastRound = rounds[rounds.length - 1];
+
+        if (completedRound.id === lastRound.id) {
+            return {
+                type: "champion",
+                winnerTeamId
+            };
+        }
+
+        // ----------------------------------------------------
+        // 9. Find the fixtures belonging to the completed round
+        // ----------------------------------------------------
+        const previousRoundsMatchCount = rounds
+            .filter(
+                round =>
+                    Number(round.round_order) <=
+                    Number(completedRound.round_order)
+            )
+            .reduce(
+                (total, round) =>
+                    total + Number(round.number_of_matches || 0),
+                0
+            );
+
+        const roundFixtures = completedFixtures
+            .sort(
+                (a, b) =>
+                    new Date(b.match_date) -
+                    new Date(a.match_date)
+            )
+            .slice(
+                0,
+                Number(completedRound.number_of_matches)
+            );
+
+        if (
+            roundFixtures.length !==
+            Number(completedRound.number_of_matches)
+        ) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but the system could not identify all completed fixtures in the current knockout round."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 10. Determine winners of all matches in this round
+        // ----------------------------------------------------
+        const winners = [];
+
+        for (const fixture of roundFixtures) {
+            const result = resultMap.get(fixture.id);
+
+            if (!result) continue;
+
+            if (
+                Number(result.home_score) ===
+                Number(result.away_score)
+            ) {
+                return {
+                    type: "warning",
+                    message:
+                        "The result was saved, but progression is waiting for a winner to be determined in a tied knockout match."
+                };
+            }
+
+            const winner =
+                Number(result.home_score) >
+                Number(result.away_score)
+                    ? fixture.home_team_id
+                    : fixture.away_team_id;
+
+            winners.push(winner);
+        }
+
+        // ----------------------------------------------------
+        // 11. Determine how many matches the next round needs
+        // ----------------------------------------------------
+        const nextRoundIndex =
+            rounds.findIndex(
+                round => round.id === completedRound.id
+            ) + 1;
+
+        const nextRound = rounds[nextRoundIndex];
+
+        if (!nextRound) {
+            return {
+                type: "champion"
+            };
+        }
+
+        const expectedWinners =
+            Number(completedRound.number_of_matches) * 2;
+
+        if (winners.length !== expectedWinners) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but the number of advancing teams does not match the next knockout round."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 12. Check whether next-round fixtures already exist
+        // ----------------------------------------------------
+        const nextRoundMatches =
+            Number(nextRound.number_of_matches);
+
+        const existingTeamIds = new Set();
+
+        for (const fixture of fixtures || []) {
+            if (
+                fixture.home_team_id &&
+                fixture.away_team_id
+            ) {
+                existingTeamIds.add(
+                    `${fixture.home_team_id}-${fixture.away_team_id}`
+                );
+
+                existingTeamIds.add(
+                    `${fixture.away_team_id}-${fixture.home_team_id}`
+                );
+            }
+        }
+
+        // ----------------------------------------------------
+        // 13. Create next-round fixtures
+        // ----------------------------------------------------
+        const newFixtures = [];
+
+        // Default date = day after latest completed match
+        const latestFixture = roundFixtures
+            .slice()
+            .sort(
+                (a, b) =>
+                    new Date(b.match_date) -
+                    new Date(a.match_date)
+            )[0];
+
+        const defaultDate = new Date(
+            latestFixture.match_date + "T00:00:00"
+        );
+
+        defaultDate.setDate(
+            defaultDate.getDate() + 1
+        );
+
+        const defaultDateString =
+            defaultDate.toISOString().split("T")[0];
+
+        const defaultKickoff =
+            latestFixture.kick_off || "15:00";
+
+        const defaultVenue =
+            latestFixture.venue || "Kabaru Grounds";
+
+        const nextMatchday =
+            Math.max(
+                ...roundFixtures.map(
+                    fixture =>
+                        Number(fixture.matchday || 0)
+                )
+            ) + 1;
+
+        for (
+            let i = 0;
+            i < winners.length;
+            i += 2
+        ) {
+            const homeTeam = winners[i];
+            const awayTeam = winners[i + 1];
+
+            if (!homeTeam || !awayTeam) continue;
+
+            const pairKey =
+                `${homeTeam}-${awayTeam}`;
+
+            const reversePairKey =
+                `${awayTeam}-${homeTeam}`;
+
+            if (
+                existingTeamIds.has(pairKey) ||
+                existingTeamIds.has(reversePairKey)
+            ) {
+                continue;
+            }
+
+            newFixtures.push({
+                competition_id: competition.id,
+                home_team_id: homeTeam,
+                away_team_id: awayTeam,
+
+                // IMPORTANT:
+                // This is only the DEFAULT date.
+                // The fixture can still be edited later.
+                match_date: defaultDateString,
+
+                kick_off: defaultKickoff,
+                venue: defaultVenue,
+                matchday: nextMatchday,
+                status: "Scheduled"
+            });
+        }
+
+        if (newFixtures.length !== nextRoundMatches) {
+            return {
+                type: "warning",
+                message:
+                    "The result was saved, but the system could not create the expected number of next-round fixtures."
+            };
+        }
+
+        const { error: insertError } =
+            await supabase
+                .from("fixtures")
+                .insert(newFixtures);
+
+        if (insertError) throw insertError;
+
+        // ----------------------------------------------------
+        // 14. Update knockout round statuses
+        // ----------------------------------------------------
+        await supabase
+            .from("competition_knockout_rounds")
+            .update({
+                status: "Completed"
+            })
+            .eq("id", completedRound.id);
+
+        await supabase
+            .from("competition_knockout_rounds")
+            .update({
+                status: "Active"
+            })
+            .eq("id", nextRound.id);
+
+        return {
+            type: "progressed",
+            roundName: nextRound.name,
+            fixturesCreated: newFixtures.length,
+            defaultDate: defaultDateString
+        };
+
+    } catch (error) {
+        console.error(
+            "Automatic knockout progression error:",
+            error
+        );
+
+        return {
+            type: "warning",
+            message:
+                "The result was saved, but automatic knockout progression encountered an error. Please check Fixture Manager."
+        };
+    }
+}
     saveResultBtn.addEventListener(
         "click",
         async function () {
