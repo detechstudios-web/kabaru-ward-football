@@ -7515,7 +7515,7 @@ async function rejectPlayer(playerId) {
 
         if (
             !confirm(
-                "Approve this team and all its players?"
+                "Approve this team? Players will be reviewed separately."
             )
         ) {
             return;
@@ -7544,24 +7544,7 @@ async function rejectPlayer(playerId) {
             }
 
 
-            const {
-                error: playerError
-            } =
-                await supabaseClient
-                    .from("players")
-                    .update({
-                        registration_status:
-                            "Approved"
-                    })
-                    .eq(
-                        "team_id",
-                        id
-                    );
-
-
-            if (playerError) {
-                throw playerError;
-            }
+            
 
 
             alert(
@@ -7632,24 +7615,7 @@ async function rejectPlayer(playerId) {
             }
 
 
-            const {
-                error: playerError
-            } =
-                await supabaseClient
-                    .from("players")
-                    .update({
-                        registration_status:
-                            "Rejected"
-                    })
-                    .eq(
-                        "team_id",
-                        id
-                    );
-
-
-            if (playerError) {
-                throw playerError;
-            }
+            
 
 
             alert(
