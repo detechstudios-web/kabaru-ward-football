@@ -6043,8 +6043,7 @@ async function advanceKnockoutAfterResult(
         }
 
         const expectedWinners =
-            Number(completedRound.number_of_matches) * 2;
-
+    Number(completedRound.number_of_matches);
         if (winners.length !== expectedWinners) {
             return {
                 type: "warning",
