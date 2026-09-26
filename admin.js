@@ -4357,7 +4357,7 @@ async function editFixture(fixtureId) {
                 );
             }
         };
-
+window.editFixture = editFixture;
 
     // ========================================
     // LOAD RESULT FIXTURES
