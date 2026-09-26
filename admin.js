@@ -7258,7 +7258,7 @@ if (
                     </h3>
 
 
-                    ${playersHtml}
+                    
 
                     ${playersHtml}
 
@@ -7364,7 +7364,149 @@ if (
         }
     }
 
+// ========================================
+// APPROVE INDIVIDUAL PLAYER
+// ========================================
 
+async function approvePlayer(playerId) {
+
+    if (
+        !confirm(
+            "Approve this player?"
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("players")
+                .update({
+                    registration_status:
+                        "Approved",
+                    rejection_reason:
+                        null
+                })
+                .eq(
+                    "id",
+                    playerId
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        alert(
+            "✅ Player approved successfully!"
+        );
+
+        await loadPendingTeams();
+
+        await loadApprovedTeams();
+
+        await loadResultFixtures();
+
+    } catch (error) {
+
+        console.error(
+            "Approve player error:",
+            error
+        );
+
+        alert(
+            "Unable to approve player: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+    }
+}
+
+
+// ========================================
+// REJECT INDIVIDUAL PLAYER
+// ========================================
+
+async function rejectPlayer(playerId) {
+
+    const reason =
+        prompt(
+            "Enter the reason for rejecting this player:"
+        );
+
+    if (reason === null) {
+        return;
+    }
+
+    const cleanReason =
+        reason.trim();
+
+    if (!cleanReason) {
+
+        alert(
+            "A rejection reason is required."
+        );
+
+        return;
+    }
+
+    if (
+        !confirm(
+            "Reject this player?"
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("players")
+                .update({
+                    registration_status:
+                        "Rejected",
+                    rejection_reason:
+                        cleanReason
+                })
+                .eq(
+                    "id",
+                    playerId
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        alert(
+            "Player rejected successfully."
+        );
+
+        await loadPendingTeams();
+
+    } catch (error) {
+
+        console.error(
+            "Reject player error:",
+            error
+        );
+
+        alert(
+            "Unable to reject player: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+    }
+}
     // ========================================
     // APPROVE TEAM
     // ========================================
