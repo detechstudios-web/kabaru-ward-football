@@ -6204,8 +6204,12 @@ async function advanceKnockoutAfterResult(
             message:
                 "The result was saved, but automatic knockout progression encountered an error. Please check Fixture Manager."
         };
-    }
+        }
 }
+
+window.advanceKnockoutAfterResult =
+    advanceKnockoutAfterResult;
+
     saveResultBtn.addEventListener(
         "click",
         async function () {
@@ -14904,7 +14908,98 @@ await loadVenues();
 await loadFixtures();
 
 await loadResultFixtures();
+// ========================================
+// ONE-TIME KNOCKOUT RESULT RECOVERY
+// ========================================
 
+try {
+
+    const {
+        data: recoveryCompetition,
+        error: recoveryCompetitionError
+    } = await supabaseClient
+        .from("competitions")
+        .select("id")
+        .eq("name", "TEST KABARU KNOCKOUT")
+        .eq("competition_format", "knockout")
+        .maybeSingle();
+
+    if (recoveryCompetitionError) {
+        throw recoveryCompetitionError;
+    }
+
+    if (recoveryCompetition) {
+
+        const {
+            data: recoveryFixtures,
+            error: recoveryFixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select("*")
+            .eq(
+                "competition_id",
+                recoveryCompetition.id
+            )
+            .eq(
+                "status",
+                "Completed"
+            );
+
+        if (recoveryFixturesError) {
+            throw recoveryFixturesError;
+        }
+
+        if (
+            recoveryFixtures &&
+            recoveryFixtures.length > 0 &&
+            window.advanceKnockoutAfterResult
+        ) {
+
+            const recoveryFixture =
+                recoveryFixtures[0];
+
+            const {
+                data: recoveryResult,
+                error: recoveryResultError
+            } = await supabaseClient
+                .from("results")
+                .select(
+                    "home_score, away_score"
+                )
+                .eq(
+                    "fixture_id",
+                    recoveryFixture.id
+                )
+                .maybeSingle();
+
+            if (recoveryResultError) {
+                throw recoveryResultError;
+            }
+
+            if (recoveryResult) {
+
+                const recoveryOutcome =
+                    await window.advanceKnockoutAfterResult(
+                        recoveryFixture,
+                        recoveryResult.home_score,
+                        recoveryResult.away_score
+                    );
+
+                console.log(
+                    "KNOCKOUT RECOVERY RESULT:",
+                    recoveryOutcome
+                );
+            }
+        }
+    }
+
+} catch (recoveryError) {
+
+    console.error(
+        "KNOCKOUT RECOVERY ERROR:",
+        recoveryError
+    );
+}
 await loadPendingTeams();
 
 await loadSquadChangeRequests();
