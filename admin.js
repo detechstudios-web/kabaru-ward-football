@@ -3844,15 +3844,23 @@ function renderCreatedFixtures() {
                             "
                         >
 
-                            <button
-                                type="button"
-                                class="btn btn-danger"
-                                onclick="deleteFixture(${Number(
-                                    fixture.id
-                                )})"
-                            >
-                                🗑️ Delete Fixture
-                            </button>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+  <button
+    type="button"
+    class="btn btn-primary"
+    onclick="editFixture(${Number(fixture.id)})"
+  >
+    ✏️ Edit Fixture
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-danger"
+    onclick="deleteFixture(${Number(fixture.id)})"
+  >
+    🗑️ Delete Fixture
+  </button>
+</div>
 
                         </div>
 
