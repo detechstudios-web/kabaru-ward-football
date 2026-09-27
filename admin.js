@@ -5930,67 +5930,112 @@ initializeResultEventControls();
     // APPROVE TEAM
     // ========================================
 
-    window.approveTeam =
-        async function (teamId) {
+    window.approveTeam = async function (teamId) {
+    if (
+        !window.confirm(
+            "Approve this team and create its Team Portal login?"
+        )
+    ) {
+        return;
+    }
 
-            if (
-                !window.confirm(
-                    "Approve this team?"
-                )
-            ) {
-                return;
-            }
+    try {
+        // First approve the team
+        const { error: approveError } =
+            await supabaseClient
+                .from("teams")
+                .update({
+                    registration_status: "Approved"
+                })
+                .eq("id", teamId);
 
+        if (approveError) {
+            throw approveError;
+        }
 
-            try {
-
-                const {
-                    error
-                } =
-                    await supabaseClient
-                        .from("teams")
-                        .update({
-                            registration_status:
-                                "Approved"
-                        })
-                        .eq(
-                            "id",
-                            teamId
-                        );
-
-
-                if (error) {
-                    throw error;
+        // Create the Team Portal account
+        const { data, error: accountError } =
+            await supabaseClient.functions.invoke(
+                "create-team-account",
+                {
+                    body: {
+                        teamId: teamId
+                    }
                 }
+            );
 
+        if (accountError) {
+            console.error(
+                "CREATE TEAM ACCOUNT ERROR:",
+                accountError
+            );
 
-                showMessage(
-                    "Team approved successfully.",
-                    "success"
-                );
-
-
-                await loadPendingTeams();
-
-
-            } catch (error) {
-
-                console.error(
-                    "APPROVE TEAM ERROR:",
-                    error
-                );
-
-
-                showMessage(
-                    "❌ Unable to approve team: " +
+            showMessage(
+                "The team was approved, but the Team Portal account could not be created. Reason: " +
                     (
-                        error.message ||
-                        "Unknown error"
+                        accountError.message ||
+                        "Edge Function error"
                     ),
-                    "error"
-                );
-            }
-        };
+                "error"
+            );
+
+            await loadPendingTeams();
+            return;
+        }
+
+        console.log(
+            "TEAM ACCOUNT CREATED:",
+            data
+        );
+
+        // Show the credentials returned by the Edge Function
+        if (
+            data &&
+            data.email &&
+            data.temporaryPassword
+        ) {
+            alert(
+                "TEAM APPROVED SUCCESSFULLY\n\n" +
+                "Team: " +
+                (data.teamName || "Team") +
+                "\n\n" +
+                "Team Portal Email:\n" +
+                data.email +
+                "\n\n" +
+                "Temporary Password:\n" +
+                data.temporaryPassword +
+                "\n\n" +
+                "IMPORTANT: Save these details and send them privately to the team."
+            );
+        } else {
+            alert(
+                "Team approved successfully, but no login credentials were returned by the Edge Function. Check the browser console."
+            );
+        }
+
+        showMessage(
+            "Team approved and Team Portal account created successfully.",
+            "success"
+        );
+
+        await loadPendingTeams();
+
+    } catch (error) {
+        console.error(
+            "APPROVE TEAM ERROR:",
+            error
+        );
+
+        showMessage(
+            "❌ Unable to approve team: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                ),
+            "error"
+        );
+    }
+};
 
 
     // ========================================
