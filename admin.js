@@ -8319,75 +8319,166 @@ async function rejectPlayer(playerId) {
         );
     }
 }
-    // ========================================
-    // APPROVE TEAM
-    // ========================================
+// ========================================
+// APPROVE TEAM + CREATE TEAM LOGIN
+// ========================================
 
-    async function approveTeam(id) {
+async function approveTeam(id) {
+
+    if (
+        !confirm(
+            "Approve this team and create its Team Portal login?"
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        // ========================================
+        // STEP 1 — APPROVE THE TEAM
+        // ========================================
+
+        const {
+            error: teamError
+        } =
+            await supabaseClient
+                .from("teams")
+                .update({
+                    registration_status:
+                        "Approved"
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+        if (teamError) {
+            throw teamError;
+        }
+
+
+        // ========================================
+        // STEP 2 — CREATE TEAM AUTH ACCOUNT
+        // ========================================
+
+        const {
+            data: accountData,
+            error: accountError
+        } =
+            await supabaseClient.functions.invoke(
+                "create-team-account",
+                {
+                    body: {
+                        team_id: id
+                    }
+                }
+            );
+
+        if (accountError) {
+            throw accountError;
+        }
+
+
+        // ========================================
+        // STEP 3 — HANDLE FUNCTION RESPONSE
+        // ========================================
 
         if (
-            !confirm(
-                "Approve this team? Players will be reviewed separately."
-            )
+            !accountData ||
+            accountData.success !== true
         ) {
-            return;
+
+            throw new Error(
+                accountData &&
+                accountData.error
+                    ? accountData.error
+                    : "Team account could not be created."
+            );
+        }
+
+
+        // ========================================
+        // EXISTING ACCOUNT
+        // ========================================
+
+        if (
+            accountData.already_exists === true
+        ) {
+
+            alert(
+                "✅ Team approved successfully.\n\n" +
+                "This team already has a Team Portal account.\n\n" +
+                "Login email:\n" +
+                accountData.email
+            );
+
+        }
+
+        // ========================================
+        // NEW ACCOUNT
+        // ========================================
+
+        else {
+
+            alert(
+                "✅ TEAM APPROVED SUCCESSFULLY!\n\n" +
+
+                "Team:\n" +
+                accountData.team_name +
+                "\n\n" +
+
+                "TEAM PORTAL LOGIN DETAILS\n" +
+                "━━━━━━━━━━━━━━━━━━━━\n\n" +
+
+                "Email:\n" +
+                accountData.email +
+                "\n\n" +
+
+                "Temporary Password:\n" +
+                accountData.temporary_password +
+                "\n\n" +
+
+                "⚠️ SAVE THESE DETAILS NOW.\n" +
+                "The temporary password is shown only here.\n\n" +
+
+                "Send these login details privately to the team."
+            );
         }
 
 
-        try {
+        // ========================================
+        // REFRESH ADMIN DATA
+        // ========================================
 
-            const {
-                error: teamError
-            } =
-                await supabaseClient
-                    .from("teams")
-                    .update({
-                        registration_status:
-                            "Approved"
-                    })
-                    .eq(
-                        "id",
-                        id
-                    );
+        await loadPendingTeams();
+
+        await loadApprovedTeams();
+
+        await loadResultFixtures();
 
 
-            if (teamError) {
-                throw teamError;
-            }
+    } catch (error) {
+
+        console.error(
+            "Approve team / create account error:",
+            error
+        );
 
 
-            
+        alert(
+            "⚠️ TEAM APPROVAL RESULT\n\n" +
+            "The team may have been approved, " +
+            "but the Team Portal account could not be created.\n\n" +
+            "Reason:\n" +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
 
-
-            alert(
-                "✅ Team approved successfully!"
-            );
-
-
-            await loadPendingTeams();
-
-            await loadApprovedTeams();
-
-            await loadResultFixtures();
-
-
-        } catch (error) {
-
-            console.error(
-                "Approve team error:",
-                error
-            );
-
-
-            alert(
-                "Unable to approve team: " +
-                (
-                    error.message ||
-                    "Unknown error"
-                )
-            );
-        }
     }
+}
 
 
     // ========================================
