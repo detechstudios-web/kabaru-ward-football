@@ -4605,7 +4605,52 @@ async function reviewIncomingTransfer(requestId, action) {
                     document.getElementById(
                         "requestStatusFilter"
                     );
+/*
+========================================
+REQUEST HISTORY FILTER EVENTS
+========================================
+*/
 
+if (periodFilter) {
+
+    periodFilter.addEventListener(
+        "change",
+        function () {
+
+            loadRequests();
+
+        }
+    );
+
+}
+
+
+if (typeFilter) {
+
+    typeFilter.addEventListener(
+        "change",
+        function () {
+
+            loadRequests();
+
+        }
+    );
+
+}
+
+
+if (statusFilter) {
+
+    statusFilter.addEventListener(
+        "change",
+        function () {
+
+            loadRequests();
+
+        }
+    );
+
+}
 
                 /*
                 ========================================
