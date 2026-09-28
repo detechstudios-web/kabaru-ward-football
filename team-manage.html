@@ -4544,65 +4544,7 @@ async function reviewIncomingTransfer(requestId, action) {
                         );
                     }
                 }
-/*
-========================================
-REQUEST HISTORY FILTER EVENTS
-========================================
-*/
 
-const requestPeriodFilter =
-    document.getElementById(
-        "requestPeriodFilter"
-    );
-
-const requestTypeFilter =
-    document.getElementById(
-        "requestTypeFilter"
-    );
-
-const requestStatusFilter =
-    document.getElementById(
-        "requestStatusFilter"
-    );
-
-if (requestPeriodFilter) {
-
-    requestPeriodFilter.addEventListener(
-        "change",
-        function () {
-
-            loadRequests();
-
-        }
-    );
-
-}
-
-if (requestTypeFilter) {
-
-    requestTypeFilter.addEventListener(
-        "change",
-        function () {
-
-            loadRequests();
-
-        }
-    );
-
-}
-
-if (requestStatusFilter) {
-
-    requestStatusFilter.addEventListener(
-        "change",
-        function () {
-
-            loadRequests();
-
-        }
-    );
-
-}
                 /*
                 ========================================
                 COMBINE
