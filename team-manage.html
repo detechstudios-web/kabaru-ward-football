@@ -8334,7 +8334,8 @@ editTeamBtn.addEventListener(
 
                 const reason =
                     transferReason.value.trim() || null;
-
+const requestedJerseyNumber =
+    Number(transferJerseyNumber.value || 0);
                 if (!fromTeamId) {
                     showTransferFormMessage(
                         "Please select the player's current club.",
@@ -8358,7 +8359,13 @@ editTeamBtn.addEventListener(
                     );
                     return;
                 }
-
+if (!requestedJerseyNumber || requestedJerseyNumber < 1) {
+    showTransferFormMessage(
+        "Please enter a valid new jersey number.",
+        "error"
+    );
+    return;
+}
                 if (fromTeamId === toTeamId) {
                     showTransferFormMessage(
                         "The player's current club must be different from the destination club.",
