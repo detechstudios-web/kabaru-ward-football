@@ -4721,18 +4721,7 @@ if (
                 : ""
         }
 
-        ${
-            request.reason
-                ? `
-                    <div class="request-detail">
-                        <strong>Reason:</strong>
-                        ${escapeHtml(
-                            request.reason
-                        )}
-                    </div>
-                  `
-                : ""
-        }
+        
 
         ${
             transferCanBeReviewed
