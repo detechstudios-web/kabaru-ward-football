@@ -4050,7 +4050,67 @@ document.addEventListener(
         LOAD REQUEST HISTORY
         ========================================
         */
+async function reviewIncomingTransfer(requestId, action) {
+    if (!requestId || !teamId) {
+        showMessage("Unable to process this transfer request.", "error");
+        return;
+    }
 
+    const isApprove = action === "approve";
+
+    const teamNotes = prompt(
+        isApprove
+            ? "Optional: enter approval notes:"
+            : "Please enter a reason for rejecting this transfer:"
+    );
+
+    if (!isApprove && teamNotes === null) {
+        return;
+    }
+
+    const rpcName = isApprove
+        ? "approve_transfer_by_current_team"
+        : "reject_transfer_by_current_team";
+
+    try {
+        const { data, error } = await supabaseClient.rpc(
+            rpcName,
+            {
+                p_request_id: Number(requestId),
+                p_team_id: Number(teamId),
+                p_team_notes: teamNotes ? teamNotes.trim() : null
+            }
+        );
+
+        if (error) {
+            console.error("Transfer review error:", error);
+            showMessage(
+                error.message || "Unable to process the transfer request.",
+                "error"
+            );
+            return;
+        }
+
+        const response = Array.isArray(data) ? data[0] : data;
+
+        showMessage(
+            response?.message ||
+                (isApprove
+                    ? "Transfer approved successfully. It is now awaiting administrator approval."
+                    : "Transfer request rejected successfully."),
+            "success"
+        );
+
+        await loadRequests();
+
+    } catch (err) {
+        console.error("Unexpected transfer review error:", err);
+        showMessage(
+            err.message || "An unexpected error occurred.",
+            "error"
+        );
+    }
+}
         async function loadRequests() {
 
             try {
