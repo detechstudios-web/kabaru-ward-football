@@ -4585,7 +4585,293 @@ async function reviewIncomingTransfer(requestId, action) {
                         );
                     }
                 );
+                /*
+                ========================================
+                PREPARE REQUEST HISTORY FILTERS
+                ========================================
+                */
 
+                const periodFilter =
+                    document.getElementById(
+                        "requestPeriodFilter"
+                    );
+
+                const typeFilter =
+                    document.getElementById(
+                        "requestTypeFilter"
+                    );
+
+                const statusFilter =
+                    document.getElementById(
+                        "requestStatusFilter"
+                    );
+
+
+                /*
+                ========================================
+                BUILD MONTH / PERIOD OPTIONS
+                ========================================
+                */
+
+                if (periodFilter) {
+
+                    const currentPeriod =
+                        periodFilter.value || "all";
+
+                    const periods = [
+                        ...new Set(
+                            allRequests
+                                .map(function (request) {
+
+                                    if (!request.created_at) {
+                                        return null;
+                                    }
+
+                                    const date =
+                                        new Date(
+                                            request.created_at
+                                        );
+
+                                    if (
+                                        Number.isNaN(
+                                            date.getTime()
+                                        )
+                                    ) {
+                                        return null;
+                                    }
+
+                                    return (
+                                        date.getFullYear() +
+                                        "-" +
+                                        String(
+                                            date.getMonth() + 1
+                                        ).padStart(2, "0")
+                                    );
+
+                                })
+                                .filter(Boolean)
+                        )
+                    ];
+
+                    periods.sort().reverse();
+
+                    periodFilter.innerHTML =
+                        `<option value="all">
+                            All Periods
+                        </option>`;
+
+                    periods.forEach(
+                        function (period) {
+
+                            const [
+                                year,
+                                month
+                            ] = period.split("-");
+
+                            const date =
+                                new Date(
+                                    Number(year),
+                                    Number(month) - 1,
+                                    1
+                                );
+
+                            const label =
+                                date.toLocaleString(
+                                    "en-KE",
+                                    {
+                                        month: "long",
+                                        year: "numeric"
+                                    }
+                                );
+
+                            periodFilter.insertAdjacentHTML(
+                                "beforeend",
+                                `
+                                <option value="${period}">
+                                    ${escapeHtml(label)}
+                                </option>
+                                `
+                            );
+
+                        }
+                    );
+
+                    if (
+                        periods.includes(
+                            currentPeriod
+                        )
+                    ) {
+                        periodFilter.value =
+                            currentPeriod;
+                    }
+                    else {
+                        periodFilter.value = "all";
+                    }
+
+                }
+
+
+                /*
+                ========================================
+                BUILD REQUEST TYPE OPTIONS
+                ========================================
+                */
+
+                if (typeFilter) {
+
+                    const currentType =
+                        typeFilter.value || "all";
+
+                    const requestTypes = [
+                        ...new Set(
+                            allRequests
+                                .map(function (request) {
+                                    return String(
+                                        request.request_type ||
+                                        ""
+                                    ).trim();
+                                })
+                                .filter(Boolean)
+                        )
+                    ];
+
+                    requestTypes.sort(
+                        function (a, b) {
+                            return a.localeCompare(b);
+                        }
+                    );
+
+                    typeFilter.innerHTML =
+                        `<option value="all">
+                            All Types
+                        </option>`;
+
+                    requestTypes.forEach(
+                        function (type) {
+
+                            typeFilter.insertAdjacentHTML(
+                                "beforeend",
+                                `
+                                <option value="${escapeHtml(type)}">
+                                    ${escapeHtml(type)}
+                                </option>
+                                `
+                            );
+
+                        }
+                    );
+
+                    if (
+                        requestTypes.includes(
+                            currentType
+                        )
+                    ) {
+                        typeFilter.value =
+                            currentType;
+                    }
+                    else {
+                        typeFilter.value = "all";
+                    }
+
+                }
+
+
+                /*
+                ========================================
+                APPLY REQUEST HISTORY FILTERS
+                ========================================
+                */
+
+                const selectedPeriod =
+                    periodFilter
+                        ? periodFilter.value
+                        : "all";
+
+                const selectedType =
+                    typeFilter
+                        ? typeFilter.value
+                        : "all";
+
+                const selectedStatus =
+                    statusFilter
+                        ? statusFilter.value
+                        : "all";
+
+
+                const filteredRequests =
+                    allRequests.filter(
+                        function (request) {
+
+                            const requestDate =
+                                request.created_at
+                                    ? new Date(
+                                        request.created_at
+                                    )
+                                    : null;
+
+                            let requestPeriod =
+                                "";
+
+                            if (
+                                requestDate &&
+                                !Number.isNaN(
+                                    requestDate.getTime()
+                                )
+                            ) {
+
+                                requestPeriod =
+                                    requestDate.getFullYear() +
+                                    "-" +
+                                    String(
+                                        requestDate.getMonth() + 1
+                                    ).padStart(2, "0");
+
+                            }
+
+
+                            const requestType =
+                                String(
+                                    request.request_type ||
+                                    ""
+                                ).trim();
+
+
+                            const requestStatus =
+                                String(
+                                    request.status ||
+                                    "Pending"
+                                ).trim();
+
+
+                            const periodMatches =
+                                selectedPeriod ===
+                                    "all" ||
+                                requestPeriod ===
+                                    selectedPeriod;
+
+
+                            const typeMatches =
+                                selectedType ===
+                                    "all" ||
+                                requestType ===
+                                    selectedType;
+
+
+                            const statusMatches =
+                                selectedStatus ===
+                                    "all" ||
+                                requestStatus.toLowerCase() ===
+                                    selectedStatus.toLowerCase();
+
+
+                            return (
+                                periodMatches &&
+                                typeMatches &&
+                                statusMatches
+                            );
+
+                        }
+                    );
                 /*
                 ========================================
                 EMPTY STATE
