@@ -4586,104 +4586,179 @@ async function reviewIncomingTransfer(requestId, action) {
                             let details = "";
 
                             /*
-                            ========================================
-                            TRANSFER
-                            ========================================
-                            */
+========================================
+TRANSFER
+========================================
+*/
 
-                            if (
-                                request.request_type ===
-                                "Transfer"
-                            ) {
+if (
+    request.request_type ===
+    "Transfer"
+) {
 
-                                details = `
-                                    <div class="request-detail">
-                                        <strong>🔁 Transfer Request</strong>
-                                    </div>
+    const currentTeamIsFromTeam =
+        Number(request.from_team_id) === Number(teamId);
 
-                                    <div class="request-detail">
-                                        <strong>Player:</strong>
-                                        ${
-                                            player
-                                                ? escapeHtml(
-                                                    player.full_name
-                                                ) +
-                                                (
-                                                    player.jersey_number
-                                                        ? " #" +
-                                                          escapeHtml(
-                                                              player.jersey_number
-                                                          )
-                                                        : ""
-                                                )
-                                                : "Player #" +
-                                                  escapeHtml(
-                                                      request.player_id
-                                                  )
-                                        }
-                                    </div>
+    const currentTeamApprovalPending =
+        String(
+            request.from_team_status || "Pending"
+        ).toLowerCase() === "pending";
 
-                                    <div class="request-detail">
-                                        <strong>From:</strong>
-                                        ${
-                                            fromTeam
-                                                ? escapeHtml(
-                                                    fromTeam.name
-                                                )
-                                                : "Team #" +
-                                                  escapeHtml(
-                                                      request.from_team_id
-                                                  )
-                                        }
-                                    </div>
+    const transferCanBeReviewed =
+        currentTeamIsFromTeam &&
+        currentTeamApprovalPending;
 
-                                    <div class="request-detail">
-                                        <strong>To:</strong>
-                                        ${
-                                            toTeam
-                                                ? escapeHtml(
-                                                    toTeam.name
-                                                )
-                                                : "Team #" +
-                                                  escapeHtml(
-                                                      request.to_team_id
-                                                  )
-                                        }
-                                    </div>
+    details = `
+        <div class="request-detail">
+            <strong>🔁 Transfer Request</strong>
+        </div>
 
-                                    <div class="request-detail">
-                                        <strong>Current Team Approval:</strong>
-                                        ${escapeHtml(
-                                            request.from_team_status ||
-                                            "Pending"
-                                        )}
-                                    </div>
+        <div class="request-detail">
+            <strong>Player:</strong>
+            ${
+                player
+                    ? escapeHtml(
+                        player.full_name
+                    ) +
+                    (
+                        player.jersey_number
+                            ? " #" +
+                              escapeHtml(
+                                  player.jersey_number
+                              )
+                            : ""
+                    )
+                    : "Player #" +
+                      escapeHtml(
+                          request.player_id
+                      )
+            }
+        </div>
 
-                                    <div class="request-detail">
-                                        <strong>Admin Approval:</strong>
-                                        ${escapeHtml(
-                                            request.admin_status ||
-                                            "Pending"
-                                        )}
-                                    </div>
+        <div class="request-detail">
+            <strong>From:</strong>
+            ${
+                fromTeam
+                    ? escapeHtml(
+                        fromTeam.name
+                    )
+                    : "Team #" +
+                      escapeHtml(
+                          request.from_team_id
+                      )
+            }
+        </div>
 
-                                    ${
-                                        competition
-                                            ? `
-                                                <div class="request-detail">
-                                                    <strong>Competition:</strong>
-                                                    ${escapeHtml(
-                                                        competition.name
-                                                    )} — ${escapeHtml(
-                                                        competition.season
-                                                    )}
-                                                </div>
-                                              `
-                                            : ""
-                                    }
-                                `;
+        <div class="request-detail">
+            <strong>To:</strong>
+            ${
+                toTeam
+                    ? escapeHtml(
+                        toTeam.name
+                    )
+                    : "Team #" +
+                      escapeHtml(
+                          request.to_team_id
+                      )
+            }
+        </div>
 
-                            }
+        <div class="request-detail">
+            <strong>Current Team Approval:</strong>
+            ${escapeHtml(
+                request.from_team_status ||
+                "Pending"
+            )}
+        </div>
+
+        ${
+            request.from_team_reviewed_at
+                ? `
+                    <div class="request-detail">
+                        <strong>Reviewed:</strong>
+                        ${formatDateTime(
+                            request.from_team_reviewed_at
+                        )}
+                    </div>
+                  `
+                : ""
+        }
+
+        ${
+            request.from_team_notes
+                ? `
+                    <div class="request-detail">
+                        <strong>Current Team Notes:</strong>
+                        ${escapeHtml(
+                            request.from_team_notes
+                        )}
+                    </div>
+                  `
+                : ""
+        }
+
+        <div class="request-detail">
+            <strong>Admin Approval:</strong>
+            ${escapeHtml(
+                request.admin_status ||
+                "Pending"
+            )}
+        </div>
+
+        ${
+            competition
+                ? `
+                    <div class="request-detail">
+                        <strong>Competition:</strong>
+                        ${escapeHtml(
+                            competition.name
+                        )} — ${escapeHtml(
+                            competition.season
+                        )}
+                    </div>
+                  `
+                : ""
+        }
+
+        ${
+            request.reason
+                ? `
+                    <div class="request-detail">
+                        <strong>Reason:</strong>
+                        ${escapeHtml(
+                            request.reason
+                        )}
+                    </div>
+                  `
+                : ""
+        }
+
+        ${
+            transferCanBeReviewed
+                ? `
+                    <div class="transfer-review-actions">
+                        <button
+                            type="button"
+                            class="btn btn-success"
+                            onclick="reviewIncomingTransfer(${Number(request.id)}, 'approve')"
+                        >
+                            ✅ Approve Transfer
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            onclick="reviewIncomingTransfer(${Number(request.id)}, 'reject')"
+                        >
+                            ❌ Reject Transfer
+                        </button>
+                    </div>
+                  `
+                : ""
+        }
+    `;
+
+}
 
                             /*
                             ========================================
