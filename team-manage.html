@@ -1630,7 +1630,95 @@ footer strong {
             Track squad and team change requests
             submitted for this team.
         </div>
+        <!-- ========================================
+             REQUEST HISTORY FILTERS
+        ======================================== -->
 
+        <div
+            class="request-history-filters"
+            id="requestHistoryFilters"
+        >
+
+            <div class="form-group">
+                <label for="requestPeriodFilter">
+                    Period
+                </label>
+
+                <select
+                    id="requestPeriodFilter"
+                    class="form-control"
+                >
+                    <option value="all">
+                        All Periods
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label for="requestTypeFilter">
+                    Request Type
+                </label>
+
+                <select
+                    id="requestTypeFilter"
+                    class="form-control"
+                >
+                    <option value="all">
+                        All Types
+                    </option>
+
+                    <option value="Add Player">
+                        Add Player
+                    </option>
+
+                    <option value="Edit Player">
+                        Edit Player
+                    </option>
+
+                    <option value="Edit Team">
+                        Edit Team
+                    </option>
+
+                    <option value="Remove Player">
+                        Remove Player
+                    </option>
+
+                    <option value="Transfer">
+                        Transfer
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label for="requestStatusFilter">
+                    Status
+                </label>
+
+                <select
+                    id="requestStatusFilter"
+                    class="form-control"
+                >
+                    <option value="all">
+                        All Statuses
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Approved">
+                        Approved
+                    </option>
+
+                    <option value="Rejected">
+                        Rejected
+                    </option>
+                </select>
+            </div>
+
+        </div>
 
         <div
             id="requestsLoading"
