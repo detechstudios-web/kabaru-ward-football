@@ -4878,7 +4878,7 @@ async function reviewIncomingTransfer(requestId, action) {
                 ========================================
                 */
 
-                if (allRequests.length === 0) {
+                if (filteredRequests.length === 0) {
 
                     requestsList.innerHTML = `
                         <div class="empty">
@@ -4893,8 +4893,8 @@ async function reviewIncomingTransfer(requestId, action) {
 
                 } else {
 
-                    allRequests.forEach(
-                        function (request) {
+                    filteredRequests.forEach(
+    function (request) {
 
                             const status =
                                 request.status ||
