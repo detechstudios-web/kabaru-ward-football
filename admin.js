@@ -3865,7 +3865,7 @@ async function saveCompetitionParticipation(
                                     teamId
                                 ),
                             entry_method:
-                                "Admin Selected",
+                                "direct",
                             status:
                                 "Active"
                         };
