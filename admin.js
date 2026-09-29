@@ -2992,7 +2992,955 @@ if (competitionForm) {
     );
 }
 
+// ========================================
+// COMPETITION PARTICIPATION MANAGER
+// ========================================
 
+let competitionParticipationContainer = null;
+
+function ensureCompetitionParticipationManager() {
+    if (competitionParticipationContainer) {
+        return competitionParticipationContainer;
+    }
+
+    const competitionFormElement =
+        document.getElementById("competitionForm");
+
+    if (!competitionFormElement) {
+        return null;
+    }
+
+    competitionParticipationContainer =
+        document.createElement("div");
+
+    competitionParticipationContainer.id =
+        "competitionParticipationManager";
+
+    competitionParticipationContainer.style.cssText = `
+        margin-top:25px;
+        padding:20px;
+        border:1px solid #ddd;
+        border-radius:12px;
+        background:#fafafa;
+    `;
+
+    competitionParticipationContainer.innerHTML = `
+        <h2 style="margin-top:0;">
+            ⚽ Competition Team Participation
+        </h2>
+
+        <p style="color:#555;">
+            Select the teams that will participate in a competition.
+            Approved teams remain registered on the website even when
+            they are not selected for a particular competition.
+        </p>
+
+        <div style="margin-top:15px;">
+            <label
+                for="participationCompetitionSelect"
+                style="font-weight:700;display:block;margin-bottom:6px;"
+            >
+                Competition
+            </label>
+
+            <select
+                id="participationCompetitionSelect"
+                style="
+                    width:100%;
+                    padding:10px;
+                    border:1px solid #ccc;
+                    border-radius:8px;
+                "
+            >
+                <option value="">
+                    Select competition
+                </option>
+            </select>
+        </div>
+
+        <div
+            id="participationStageContainer"
+            style="margin-top:15px;"
+        ></div>
+
+        <div
+            id="participationTeamsContainer"
+            style="margin-top:15px;"
+        ></div>
+
+        <div
+            id="participationMessage"
+            style="
+                display:none;
+                margin-top:15px;
+                padding:10px;
+                border-radius:8px;
+            "
+        ></div>
+    `;
+
+    competitionFormElement.parentNode.insertBefore(
+        competitionParticipationContainer,
+        competitionFormElement.nextSibling
+    );
+
+    const competitionSelect =
+        document.getElementById(
+            "participationCompetitionSelect"
+        );
+
+    if (competitionSelect) {
+        competitionSelect.addEventListener(
+            "change",
+            async function () {
+                await loadCompetitionParticipationStages();
+            }
+        );
+    }
+
+    return competitionParticipationContainer;
+}
+
+function showParticipationMessage(
+    message,
+    type = "info"
+) {
+    const messageElement =
+        document.getElementById(
+            "participationMessage"
+        );
+
+    if (!messageElement) {
+        return;
+    }
+
+    messageElement.style.display =
+        "block";
+
+    messageElement.textContent =
+        message;
+
+    if (type === "success") {
+        messageElement.style.background =
+            "#d4edda";
+        messageElement.style.color =
+            "#155724";
+    } else if (type === "error") {
+        messageElement.style.background =
+            "#fdecec";
+        messageElement.style.color =
+            "#b00020";
+    } else {
+        messageElement.style.background =
+            "#f5f5f5";
+        messageElement.style.color =
+            "#333";
+    }
+}
+
+async function loadCompetitionParticipationManager() {
+    const container =
+        ensureCompetitionParticipationManager();
+
+    if (!container) {
+        return;
+    }
+
+    const competitionSelect =
+        document.getElementById(
+            "participationCompetitionSelect"
+        );
+
+    if (!competitionSelect) {
+        return;
+    }
+
+    competitionSelect.innerHTML = `
+        <option value="">
+            Loading competitions...
+        </option>
+    `;
+
+    try {
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("competitions")
+            .select(`
+                id,
+                name,
+                competition_type,
+                competition_format,
+                season,
+                status
+            `)
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        competitionSelect.innerHTML = `
+            <option value="">
+                Select competition
+            </option>
+        `;
+
+        if (!data || data.length === 0) {
+            competitionSelect.innerHTML = `
+                <option value="">
+                    No competitions available
+                </option>
+            `;
+            return;
+        }
+
+        data.forEach(
+            function (competition) {
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    competition.id;
+
+                option.textContent =
+                    (
+                        competition.name ||
+                        "Competition"
+                    ) +
+                    (
+                        competition.season
+                            ? " — " +
+                              competition.season
+                            : ""
+                    );
+
+                competitionSelect.appendChild(
+                    option
+                );
+            }
+        );
+    } catch (error) {
+        console.error(
+            "LOAD PARTICIPATION COMPETITIONS ERROR:",
+            error
+        );
+
+        competitionSelect.innerHTML = `
+            <option value="">
+                Unable to load competitions
+            </option>
+        `;
+    }
+}
+
+async function loadCompetitionParticipationStages() {
+    const competitionSelect =
+        document.getElementById(
+            "participationCompetitionSelect"
+        );
+
+    const stageContainer =
+        document.getElementById(
+            "participationStageContainer"
+        );
+
+    const teamsContainer =
+        document.getElementById(
+            "participationTeamsContainer"
+        );
+
+    if (
+        !competitionSelect ||
+        !stageContainer ||
+        !teamsContainer
+    ) {
+        return;
+    }
+
+    const competitionId =
+        competitionSelect.value;
+
+    stageContainer.innerHTML = "";
+    teamsContainer.innerHTML = "";
+
+    if (!competitionId) {
+        return;
+    }
+
+    stageContainer.innerHTML = `
+        <div style="color:#666;">
+            Loading competition stages...
+        </div>
+    `;
+
+    try {
+        const {
+            data: stages,
+            error: stagesError
+        } = await supabaseClient
+            .from("competition_stages")
+            .select(`
+                id,
+                competition_id,
+                name,
+                stage_type,
+                stage_order,
+                status
+            `)
+            .eq(
+                "competition_id",
+                Number(competitionId)
+            )
+            .order(
+                "stage_order",
+                {
+                    ascending:true
+                }
+            )
+            .order(
+                "id",
+                {
+                    ascending:true
+                }
+            );
+
+        if (stagesError) {
+            throw stagesError;
+        }
+
+        if (
+            !stages ||
+            stages.length === 0
+        ) {
+            stageContainer.innerHTML = `
+                <div
+                    style="
+                        padding:12px;
+                        background:#fff3cd;
+                        border-radius:8px;
+                        color:#856404;
+                    "
+                >
+                    ⚠️ This competition has no stages yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        stageContainer.innerHTML = `
+            <label
+                for="participationStageSelect"
+                style="
+                    font-weight:700;
+                    display:block;
+                    margin-bottom:6px;
+                "
+            >
+                Competition Stage
+            </label>
+
+            <select
+                id="participationStageSelect"
+                style="
+                    width:100%;
+                    padding:10px;
+                    border:1px solid #ccc;
+                    border-radius:8px;
+                "
+            ></select>
+        `;
+
+        const stageSelect =
+            document.getElementById(
+                "participationStageSelect"
+            );
+
+        stages.forEach(
+            function (stage) {
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    stage.id;
+
+                option.textContent =
+                    (
+                        stage.name ||
+                        "Stage"
+                    ) +
+                    (
+                        stage.stage_type
+                            ? " — " +
+                              stage.stage_type
+                            : ""
+                    );
+
+                stageSelect.appendChild(
+                    option
+                );
+            }
+        );
+
+        stageSelect.addEventListener(
+            "change",
+            async function () {
+                await loadParticipationTeams(
+                    Number(
+                        stageSelect.value
+                    )
+                );
+            }
+        );
+
+        await loadParticipationTeams(
+            Number(
+                stages[0].id
+            )
+        );
+
+    } catch (error) {
+        console.error(
+            "LOAD PARTICIPATION STAGES ERROR:",
+            error
+        );
+
+        stageContainer.innerHTML = `
+            <div
+                style="
+                    padding:12px;
+                    background:#fdecec;
+                    border-radius:8px;
+                    color:#b00020;
+                "
+            >
+                ❌ Unable to load competition stages:
+                ${escapeHtml(
+                    error.message ||
+                    "Unknown error"
+                )}
+            </div>
+        `;
+    }
+}
+
+async function loadParticipationTeams(
+    stageId
+) {
+    const teamsContainer =
+        document.getElementById(
+            "participationTeamsContainer"
+        );
+
+    if (!teamsContainer) {
+        return;
+    }
+
+    teamsContainer.innerHTML = `
+        <div style="color:#666;">
+            Loading approved teams...
+        </div>
+    `;
+
+    try {
+        const {
+            data: teams,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name,
+                registration_status,
+                logo_url
+            `)
+            .eq(
+                "registration_status",
+                "Approved"
+            )
+            .order(
+                "name",
+                {
+                    ascending:true
+                }
+            );
+
+        if (teamsError) {
+            throw teamsError;
+        }
+
+        const {
+            data: existingEntries,
+            error: entriesError
+        } = await supabaseClient
+            .from("competition_stage_teams")
+            .select(`
+                id,
+                stage_id,
+                team_id,
+                entry_method,
+                status
+            `)
+            .eq(
+                "stage_id",
+                Number(stageId)
+            );
+
+        if (entriesError) {
+            throw entriesError;
+        }
+
+        const participatingTeamIds =
+            new Set(
+                (
+                    existingEntries ||
+                    []
+                ).map(
+                    function (entry) {
+                        return Number(
+                            entry.team_id
+                        );
+                    }
+                )
+            );
+
+        if (
+            !teams ||
+            teams.length === 0
+        ) {
+            teamsContainer.innerHTML = `
+                <div
+                    style="
+                        padding:12px;
+                        background:#fff3cd;
+                        border-radius:8px;
+                        color:#856404;
+                    "
+                >
+                    No approved teams are currently available.
+                </div>
+            `;
+
+            return;
+        }
+
+        let html = `
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    margin-bottom:12px;
+                "
+            >
+                <h3 style="margin:0;">
+                    Select Participating Teams
+                </h3>
+
+                <div
+                    style="
+                        display:flex;
+                        gap:8px;
+                        flex-wrap:wrap;
+                    "
+                >
+                    <button
+                        type="button"
+                        class="admin-btn"
+                        id="selectAllParticipationTeams"
+                    >
+                        ☑️ Select All
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-btn"
+                        id="clearAllParticipationTeams"
+                    >
+                        ⬜ Clear All
+                    </button>
+                </div>
+            </div>
+
+            <div
+                style="
+                    display:grid;
+                    gap:10px;
+                "
+            >
+        `;
+
+        teams.forEach(
+            function (team) {
+                const checked =
+                    participatingTeamIds.has(
+                        Number(team.id)
+                    );
+
+                html += `
+                    <label
+                        style="
+                            display:flex;
+                            align-items:center;
+                            gap:12px;
+                            padding:12px;
+                            background:#fff;
+                            border:1px solid #ddd;
+                            border-radius:8px;
+                            cursor:pointer;
+                        "
+                    >
+                        <input
+                            type="checkbox"
+                            class="participation-team-checkbox"
+                            value="${Number(
+                                team.id
+                            )}"
+                            ${
+                                checked
+                                    ? "checked"
+                                    : ""
+                            }
+                            style="
+                                width:20px;
+                                height:20px;
+                            "
+                        >
+
+                        <span>
+                            <strong>
+                                ${escapeHtml(
+                                    team.name ||
+                                    "Unnamed Team"
+                                )}
+                            </strong>
+
+                            ${
+                                team.short_name
+                                    ? `
+                                        <span
+                                            style="
+                                                color:#666;
+                                                margin-left:6px;
+                                            "
+                                        >
+                                            (${escapeHtml(
+                                                team.short_name
+                                            )})
+                                        </span>
+                                      `
+                                    : ""
+                            }
+                        </span>
+                    </label>
+                `;
+            }
+        );
+
+        html += `
+            </div>
+
+            <div
+                style="
+                    margin-top:15px;
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                "
+            >
+                <button
+                    type="button"
+                    class="admin-btn"
+                    id="saveCompetitionParticipationButton"
+                    style="
+                        background:#16803c;
+                        color:#fff;
+                    "
+                >
+                    💾 SAVE PARTICIPATING TEAMS
+                </button>
+            </div>
+        `;
+
+        teamsContainer.innerHTML =
+            html;
+
+        const checkboxes =
+            function () {
+                return Array.from(
+                    document.querySelectorAll(
+                        ".participation-team-checkbox"
+                    )
+                );
+            };
+
+        document
+            .getElementById(
+                "selectAllParticipationTeams"
+            )
+            ?.addEventListener(
+                "click",
+                function () {
+                    checkboxes().forEach(
+                        function (checkbox) {
+                            checkbox.checked =
+                                true;
+                        }
+                    );
+                }
+            );
+
+        document
+            .getElementById(
+                "clearAllParticipationTeams"
+            )
+            ?.addEventListener(
+                "click",
+                function () {
+                    checkboxes().forEach(
+                        function (checkbox) {
+                            checkbox.checked =
+                                false;
+                        }
+                    );
+                }
+            );
+
+        document
+            .getElementById(
+                "saveCompetitionParticipationButton"
+            )
+            ?.addEventListener(
+                "click",
+                async function () {
+                    await saveCompetitionParticipation(
+                        Number(stageId)
+                    );
+                }
+            );
+
+    } catch (error) {
+        console.error(
+            "LOAD PARTICIPATION TEAMS ERROR:",
+            error
+        );
+
+        teamsContainer.innerHTML = `
+            <div
+                style="
+                    padding:12px;
+                    background:#fdecec;
+                    border-radius:8px;
+                    color:#b00020;
+                "
+            >
+                ❌ Unable to load participating teams:
+                ${escapeHtml(
+                    error.message ||
+                    "Unknown error"
+                )}
+            </div>
+        `;
+    }
+}
+
+async function saveCompetitionParticipation(
+    stageId
+) {
+    const checkboxes =
+        Array.from(
+            document.querySelectorAll(
+                ".participation-team-checkbox"
+            )
+        );
+
+    const selectedTeamIds =
+        checkboxes
+            .filter(
+                function (checkbox) {
+                    return checkbox.checked;
+                }
+            )
+            .map(
+                function (checkbox) {
+                    return Number(
+                        checkbox.value
+                    );
+                }
+            );
+
+    const selectedTeamSet =
+        new Set(
+            selectedTeamIds
+        );
+
+    try {
+        showParticipationMessage(
+            "Saving participating teams..."
+        );
+
+        const {
+            data: existingEntries,
+            error: existingError
+        } = await supabaseClient
+            .from("competition_stage_teams")
+            .select(`
+                id,
+                team_id,
+                stage_id
+            `)
+            .eq(
+                "stage_id",
+                Number(stageId)
+            );
+
+        if (existingError) {
+            throw existingError;
+        }
+
+        const existingTeamSet =
+            new Set(
+                (
+                    existingEntries ||
+                    []
+                ).map(
+                    function (entry) {
+                        return Number(
+                            entry.team_id
+                        );
+                    }
+                )
+            );
+
+        const teamsToInsert =
+            selectedTeamIds.filter(
+                function (teamId) {
+                    return !existingTeamSet.has(
+                        teamId
+                    );
+                }
+            );
+
+        const entriesToDelete =
+            (
+                existingEntries ||
+                []
+            ).filter(
+                function (entry) {
+                    return !selectedTeamSet.has(
+                        Number(
+                            entry.team_id
+                        )
+                    );
+                }
+            );
+
+        if (
+            teamsToInsert.length > 0
+        ) {
+            const insertRows =
+                teamsToInsert.map(
+                    function (teamId) {
+                        return {
+                            stage_id:
+                                Number(
+                                    stageId
+                                ),
+                            team_id:
+                                Number(
+                                    teamId
+                                ),
+                            entry_method:
+                                "Admin Selected",
+                            status:
+                                "Active"
+                        };
+                    }
+                );
+
+            const {
+                error
+            } = await supabaseClient
+                .from(
+                    "competition_stage_teams"
+                )
+                .insert(
+                    insertRows
+                );
+
+            if (error) {
+                throw error;
+            }
+        }
+
+        if (
+            entriesToDelete.length > 0
+        ) {
+            const idsToDelete =
+                entriesToDelete.map(
+                    function (entry) {
+                        return Number(
+                            entry.id
+                        );
+                    }
+                );
+
+            const {
+                error
+            } = await supabaseClient
+                .from(
+                    "competition_stage_teams"
+                )
+                .delete()
+                .in(
+                    "id",
+                    idsToDelete
+                );
+
+            if (error) {
+                throw error;
+            }
+        }
+
+        showParticipationMessage(
+            "✅ Participating teams saved successfully.",
+            "success"
+        );
+
+        await loadParticipationTeams(
+            Number(stageId)
+        );
+
+    } catch (error) {
+        console.error(
+            "SAVE COMPETITION PARTICIPATION ERROR:",
+            error
+        );
+
+        showParticipationMessage(
+            "❌ Unable to save participating teams: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+    }
+}
     // ========================================
     // LOAD APPROVED TEAMS
     // ========================================
@@ -15347,9 +16295,8 @@ console.log(
 
 
 await loadCompetitions();
-
 await loadCompetitionRegistrationSettings();
-
+await loadCompetitionParticipationManager();
 await loadApprovedTeams();
 
 await loadVenues();
