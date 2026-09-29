@@ -2065,14 +2065,38 @@ const {
 if (teamsError) {
     throw teamsError;
 }
-            // ========================================
-            // CREATE TABLE DATA FOR ALL TEAMS
-            // ========================================
 
-            const table = {};
+// ========================================
+// LOAD TEAMS SELECTED FOR THIS COMPETITION
+// ========================================
 
-            approvedTeams.forEach(
-                function (team) {
+const participatingTeamIds =
+    await getCompetitionParticipatingTeamIds(
+        leagueCompetition.id
+    );
+
+// ========================================
+// ONLY PARTICIPATING APPROVED TEAMS
+// ========================================
+
+const participatingApprovedTeams =
+    (approvedTeams || []).filter(
+        function (team) {
+            return participatingTeamIds.includes(
+                String(team.id)
+            );
+        }
+    );
+
+// ========================================
+// CREATE TABLE DATA ONLY FOR
+// PARTICIPATING TEAMS
+// ========================================
+
+const table = {};
+
+            participatingApprovedTeams.forEach(
+    function (team) {
 
                     table[
                         String(team.id)
