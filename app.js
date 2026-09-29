@@ -1875,7 +1875,72 @@ resultCard.addEventListener(
         }
     }
 
+// ========================================
+// LOAD PARTICIPATING TEAMS FOR COMPETITION
+// ========================================
+async function getCompetitionParticipatingTeamIds(
+    competitionId
+) {
+    if (!competitionId) {
+        return [];
+    }
 
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("competition_stages")
+        .select(`
+            id,
+            competition_stage_teams (
+                team_id,
+                status
+            )
+        `)
+        .eq(
+            "competition_id",
+            competitionId
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    const teamIds = new Set();
+
+    (data || []).forEach(
+        function (stage) {
+            (
+                stage.competition_stage_teams ||
+                []
+            ).forEach(
+                function (membership) {
+                    const status =
+                        String(
+                            membership.status ||
+                            ""
+                        ).toLowerCase();
+
+                    if (
+                        membership.team_id &&
+                        (
+                            !status ||
+                            status === "active"
+                        )
+                    ) {
+                        teamIds.add(
+                            String(
+                                membership.team_id
+                            )
+                        );
+                    }
+                }
+            );
+        }
+    );
+
+    return Array.from(teamIds);
+}
     // ========================================
     // LOAD LEAGUE TABLE
     // ========================================
