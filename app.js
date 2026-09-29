@@ -826,6 +826,7 @@ async function setupMainCompetitionSelector(
 
 // ========================================
 // SHOW ONLY SELECTED COMPETITION
+// AND ITS PARTICIPATING TEAMS
 // ========================================
 
 if (
@@ -834,15 +835,41 @@ if (
     competition.id !== null
 ) {
 
+    const participatingTeamIds =
+        await getCompetitionParticipatingTeamIds(
+            competition.id
+        );
+
     upcomingFixtures =
         upcomingFixtures.filter(
             function (fixture) {
 
-                return String(
-                    fixture.competition_id
-                ) ===
-                String(
-                    competition.id
+                const isCorrectCompetition =
+                    String(
+                        fixture.competition_id
+                    ) ===
+                    String(
+                        competition.id
+                    );
+
+                const homeParticipates =
+                    participatingTeamIds.includes(
+                        String(
+                            fixture.home_team_id
+                        )
+                    );
+
+                const awayParticipates =
+                    participatingTeamIds.includes(
+                        String(
+                            fixture.away_team_id
+                        )
+                    );
+
+                return (
+                    isCorrectCompetition &&
+                    homeParticipates &&
+                    awayParticipates
                 );
             }
         );
