@@ -6907,8 +6907,8 @@ initializeResultEventControls();
                 "create-team-account",
                 {
                     body: {
-                        teamId: teamId
-                    }
+  team_id: teamId
+}
                 }
             );
 
