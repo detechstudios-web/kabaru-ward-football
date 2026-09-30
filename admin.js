@@ -766,12 +766,21 @@ let redCardEntries = [];
                             ">
 
                                 <button
-                                    type="button"
-                                    class="btn btn-primary"
-                                    onclick="editCompetition('${competition.id}')"
-                                >
-                                    ✏️ Edit Competition
-                                </button>
+    type="button"
+    class="btn btn-primary"
+    onclick="editCompetition('${competition.id}')"
+>
+    ✏️ Edit Competition
+</button>
+
+<button
+    type="button"
+    class="btn"
+    style="background:#dc3545;color:white;"
+    onclick="deleteCompetition('${competition.id}')"
+>
+    🗑️ Delete / Archive
+</button>
 
                             </div>
 
