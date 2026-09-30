@@ -2399,6 +2399,13 @@ async function createCompetitionStructure(
 
 
 // ========================================
+// COMPETITION EDIT STATE
+// ========================================
+
+let editingCompetitionId = null;
+
+
+// ========================================
 // CREATE COMPETITION
 // ========================================
 
