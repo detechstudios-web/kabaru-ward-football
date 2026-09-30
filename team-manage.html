@@ -3169,10 +3169,11 @@ disableButton(editTeamBtn);
                 .maybeSingle();
 
             if (error) {
-                console.error("Movement settings error:", error);
-                updateTransferButton(false);
-                return;
-            }
+    console.error("Movement settings error:", error);
+    updateTransferButton(false);
+    updateReleaseButton(false);
+    return;
+}
 
             movementSettings = data || {
                 allow_transfers: false,
@@ -3182,9 +3183,8 @@ disableButton(editTeamBtn);
                 registration_locked: false
             };
 
-            updateTransferButton(
-                canRequestTransfer()
-            );
+            updateTransferButton(canRequestTransfer());
+updateReleaseButton(canRequestRelease());
         }
 
 
