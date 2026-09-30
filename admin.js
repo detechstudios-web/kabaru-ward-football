@@ -986,6 +986,419 @@ window.editCompetition = async function (competitionId) {
     }
 };
     // ========================================
+// DELETE / ARCHIVE COMPETITION
+// ========================================
+
+window.deleteCompetition = async function (competitionId) {
+
+    try {
+
+        // ========================================
+        // LOAD COMPETITION
+        // ========================================
+
+        const {
+            data: competition,
+            error: competitionError
+        } =
+            await supabaseClient
+                .from("competitions")
+                .select("*")
+                .eq("id", competitionId)
+                .single();
+
+
+        if (competitionError) {
+            throw competitionError;
+        }
+
+
+        if (!competition) {
+            throw new Error(
+                "Competition could not be found."
+            );
+        }
+
+
+        // ========================================
+        // CONFIRM ACTION
+        // ========================================
+
+        const confirmed =
+            confirm(
+                "Competition: " +
+                competition.name +
+                "\n\n" +
+                "The system will first check whether this competition has fixtures.\n\n" +
+                "• If there are NO fixtures, it can be permanently deleted.\n" +
+                "• If fixtures already exist, it will be ARCHIVED instead so football history is protected.\n\n" +
+                "Continue?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        // ========================================
+        // CHECK FOR FIXTURES
+        // ========================================
+
+        const {
+            count: fixtureCount,
+            error: fixtureError
+        } =
+            await supabaseClient
+                .from("fixtures")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .eq(
+                    "competition_id",
+                    competitionId
+                );
+
+
+        if (fixtureError) {
+            throw fixtureError;
+        }
+
+
+        // ========================================
+        // IF FIXTURES EXIST:
+        // ARCHIVE INSTEAD OF DELETING
+        // ========================================
+
+        if ((fixtureCount || 0) > 0) {
+
+            const archiveConfirmed =
+                confirm(
+                    "This competition already has " +
+                    fixtureCount +
+                    " fixture(s).\n\n" +
+                    "It will NOT be permanently deleted.\n\n" +
+                    "Do you want to archive it instead?"
+                );
+
+
+            if (!archiveConfirmed) {
+                return;
+            }
+
+
+            const {
+                error: archiveError
+            } =
+                await supabaseClient
+                    .from("competitions")
+                    .update({
+                        status: "Archived"
+                    })
+                    .eq(
+                        "id",
+                        competitionId
+                    );
+
+
+            if (archiveError) {
+                throw archiveError;
+            }
+
+
+            alert(
+                "✅ Competition archived successfully.\n\n" +
+                "Its fixtures and football history have been preserved."
+            );
+
+
+            await loadCompetitions();
+
+
+            return;
+        }
+
+
+        // ========================================
+        // NO FIXTURES
+        // SAFE TO PERMANENTLY DELETE
+        // ========================================
+
+        const deleteConfirmed =
+            confirm(
+                "This competition has no fixtures.\n\n" +
+                "It can be permanently deleted.\n\n" +
+                "This will remove the competition and its competition structure.\n\n" +
+                "This action cannot be undone.\n\n" +
+                "Are you sure?"
+            );
+
+
+        if (!deleteConfirmed) {
+            return;
+        }
+
+
+        // ========================================
+        // LOAD COMPETITION STAGES
+        // ========================================
+
+        const {
+            data: stages,
+            error: stagesError
+        } =
+            await supabaseClient
+                .from("competition_stages")
+                .select("id")
+                .eq(
+                    "competition_id",
+                    competitionId
+                );
+
+
+        if (stagesError) {
+            throw stagesError;
+        }
+
+
+        const stageIds =
+            (stages || [])
+                .map(
+                    stage =>
+                        stage.id
+                );
+
+
+        // ========================================
+        // DELETE STAGE-RELATED STRUCTURE
+        // ========================================
+
+        if (stageIds.length > 0) {
+
+            // Remove references between stages first.
+            const {
+                error: clearNextStageError
+            } =
+                await supabaseClient
+                    .from("competition_stages")
+                    .update({
+                        next_stage_id: null
+                    })
+                    .in(
+                        "id",
+                        stageIds
+                    );
+
+
+            if (clearNextStageError) {
+                throw clearNextStageError;
+            }
+
+
+            // Qualification slots
+            const {
+                error: qualificationSlotsError
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_qualification_slots"
+                    )
+                    .delete()
+                    .in(
+                        "stage_id",
+                        stageIds
+                    );
+
+
+            if (qualificationSlotsError) {
+                throw qualificationSlotsError;
+            }
+
+
+            // Groups
+            const {
+                error: groupsError
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_groups"
+                    )
+                    .delete()
+                    .in(
+                        "stage_id",
+                        stageIds
+                    );
+
+
+            if (groupsError) {
+                throw groupsError;
+            }
+
+
+            // Knockout rounds
+            const {
+                error: knockoutRoundsError
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_knockout_rounds"
+                    )
+                    .delete()
+                    .in(
+                        "stage_id",
+                        stageIds
+                    );
+
+
+            if (knockoutRoundsError) {
+                throw knockoutRoundsError;
+            }
+
+
+            // Stage teams
+            const {
+                error: stageTeamsError
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_stage_teams"
+                    )
+                    .delete()
+                    .in(
+                        "stage_id",
+                        stageIds
+                    );
+
+
+            if (stageTeamsError) {
+                throw stageTeamsError;
+            }
+
+
+            // Finally delete the stages
+            const {
+                error: deleteStagesError
+            } =
+                await supabaseClient
+                    .from(
+                        "competition_stages"
+                    )
+                    .delete()
+                    .in(
+                        "id",
+                        stageIds
+                    );
+
+
+            if (deleteStagesError) {
+                throw deleteStagesError;
+            }
+        }
+
+
+        // ========================================
+        // DELETE REGISTRATION SETTINGS
+        // ========================================
+
+        const {
+            error: registrationSettingsError
+        } =
+            await supabaseClient
+                .from(
+                    "competition_registration_settings"
+                )
+                .delete()
+                .eq(
+                    "competition_id",
+                    competitionId
+                );
+
+
+        if (registrationSettingsError) {
+            throw registrationSettingsError;
+        }
+
+
+        // ========================================
+        // DELETE COMPETITION SUPPORT LINKS
+        // ========================================
+
+        const {
+            error: competitionSupportError
+        } =
+            await supabaseClient
+                .from(
+                    "competition_support"
+                )
+                .delete()
+                .eq(
+                    "competition_id",
+                    competitionId
+                );
+
+
+        if (competitionSupportError) {
+            throw competitionSupportError;
+        }
+
+
+        // ========================================
+        // DELETE COMPETITION
+        // ========================================
+
+        const {
+            error: deleteCompetitionError
+        } =
+            await supabaseClient
+                .from("competitions")
+                .delete()
+                .eq(
+                    "id",
+                    competitionId
+                );
+
+
+        if (deleteCompetitionError) {
+            throw deleteCompetitionError;
+        }
+
+
+        // ========================================
+        // SUCCESS
+        // ========================================
+
+        alert(
+            "✅ Competition deleted successfully."
+        );
+
+
+        await loadCompetitions();
+
+
+    } catch (error) {
+
+        console.error(
+            "DELETE / ARCHIVE COMPETITION ERROR:",
+            error
+        );
+
+
+        alert(
+            "❌ Unable to delete/archive competition:\n\n" +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+
+    }
+
+};
+    // ========================================
     // COMPETITION SQUAD MANAGEMENT SETTINGS
     // ========================================
 
