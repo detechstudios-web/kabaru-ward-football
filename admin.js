@@ -805,7 +805,177 @@ let redCardEntries = [];
         }
     }
 
+// ========================================
+// EDIT COMPETITION
+// ========================================
 
+window.editCompetition = async function (competitionId) {
+
+    try {
+
+        const {
+            data: competition,
+            error
+        } =
+            await supabaseClient
+                .from("competitions")
+                .select("*")
+                .eq("id", competitionId)
+                .single();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!competition) {
+            throw new Error(
+                "Competition could not be found."
+            );
+        }
+
+
+        const nameInput =
+            document.getElementById(
+                "competitionName"
+            );
+
+        const typeInput =
+            document.getElementById(
+                "competitionType"
+            );
+
+        const seasonInput =
+            document.getElementById(
+                "competitionSeason"
+            );
+
+        const startDateInput =
+            document.getElementById(
+                "competitionStartDate"
+            );
+
+        const endDateInput =
+            document.getElementById(
+                "competitionEndDate"
+            );
+
+        const statusInput =
+            document.getElementById(
+                "competitionStatus"
+            );
+
+        const descriptionInput =
+            document.getElementById(
+                "competitionDescription"
+            );
+
+
+        if (nameInput) {
+            nameInput.value =
+                competition.name || "";
+        }
+
+
+        if (typeInput) {
+            typeInput.value =
+                competition.competition_type || "";
+
+            // Competition type/format should not
+            // be changed after the structure exists.
+            typeInput.disabled = true;
+        }
+
+
+        if (seasonInput) {
+            seasonInput.value =
+                competition.season || "";
+        }
+
+
+        if (startDateInput) {
+            startDateInput.value =
+                competition.start_date || "";
+        }
+
+
+        if (endDateInput) {
+            endDateInput.value =
+                competition.end_date || "";
+        }
+
+
+        if (statusInput) {
+            statusInput.value =
+                competition.status || "Upcoming";
+        }
+
+
+        if (descriptionInput) {
+            descriptionInput.value =
+                competition.description || "";
+        }
+
+
+        editingCompetitionId =
+            competition.id;
+
+
+        updateCompetitionFormatConfiguration();
+
+
+        if (createCompetitionButton) {
+
+            createCompetitionButton.textContent =
+                "💾 Update Competition";
+        }
+
+
+        if (competitionFormMessage) {
+
+            competitionFormMessage.textContent =
+                "✏️ Editing: " +
+                competition.name +
+                ". Update the details below and save.";
+
+            competitionFormMessage.style.display =
+                "block";
+
+            competitionFormMessage.className =
+                "competition-form-message";
+        }
+
+
+        // Scroll to the competition form
+        competitionForm.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "EDIT COMPETITION LOAD ERROR:",
+            error
+        );
+
+
+        if (competitionFormMessage) {
+
+            competitionFormMessage.textContent =
+                "❌ Unable to load competition for editing: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                );
+
+            competitionFormMessage.style.display =
+                "block";
+        }
+    }
+};
     // ========================================
     // COMPETITION SQUAD MANAGEMENT SETTINGS
     // ========================================
