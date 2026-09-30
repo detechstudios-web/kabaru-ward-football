@@ -1386,16 +1386,31 @@ footer strong {
 
             </div>
 
+<div class="action-card">
 
-            <div class="action-card">
+    <div class="action-icon">
+        ↗️
+    </div>
 
-                <div class="action-icon">
-                    ➖
-                </div>
+    <h3>
+        Release Player
+    </h3>
 
-                <h3>
-                    Remove Player
-                </h3>
+    <p>
+        Submit a request to release a player
+        from your team and make the player
+        available as a free agent.
+    </p>
+
+    <button
+        id="releasePlayerBtn"
+        class="btn btn-disabled"
+        disabled
+    >
+        Release Player
+    </button>
+
+</div>
 
                 <p>
                     Submit a request to remove a player
@@ -2104,11 +2119,10 @@ document.addEventListener(
                 "addPlayerBtn"
             );
 
-        const removePlayerBtn =
-            document.getElementById(
-                "removePlayerBtn"
-            );
-
+        const releasePlayerBtn =
+    document.getElementById(
+        "releasePlayerBtn"
+    );
         const editPlayerBtn =
             document.getElementById(
                 "editPlayerBtn"
@@ -3032,8 +3046,8 @@ document.addEventListener(
             );
 
             disableButton(
-                removePlayerBtn
-            );
+    releasePlayerBtn
+);
 
             disableButton(
                 editPlayerBtn
@@ -3081,9 +3095,9 @@ document.addEventListener(
             if (!isOpen) {
 
                 disableButton(addPlayerBtn);
-                disableButton(removePlayerBtn);
-                disableButton(editPlayerBtn);
-                disableButton(editTeamBtn);
+disableButton(releasePlayerBtn);
+disableButton(editPlayerBtn);
+disableButton(editTeamBtn);
 
             } else {
 
@@ -3092,9 +3106,7 @@ document.addEventListener(
                     : disableButton(addPlayerBtn);
 
 
-                currentSettings.allow_remove_players
-                    ? enableButton(removePlayerBtn)
-                    : disableButton(removePlayerBtn);
+                
 
 
                 currentSettings.allow_edit_players
