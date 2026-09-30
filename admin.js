@@ -746,7 +746,7 @@ let redCardEntries = [];
                             </div>
 
 
-                            ${
+                                                        ${
                                 competition.description
                                     ? `
                                         <p>
@@ -757,6 +757,23 @@ let redCardEntries = [];
                                       `
                                     : ""
                             }
+
+                            <div style="
+                                display:flex;
+                                gap:10px;
+                                flex-wrap:wrap;
+                                margin-top:15px;
+                            ">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    onclick="editCompetition('${competition.id}')"
+                                >
+                                    ✏️ Edit Competition
+                                </button>
+
+                            </div>
 
                         </div>
 
