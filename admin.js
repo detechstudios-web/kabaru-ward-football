@@ -2996,11 +2996,103 @@ if (competitionForm) {
                 "block";
 
 
-            createCompetitionButton.disabled =
+                        createCompetitionButton.disabled =
                 true;
 
 
             try {
+
+                // ========================================
+                // UPDATE EXISTING COMPETITION
+                // ========================================
+
+                if (editingCompetitionId) {
+
+                    const {
+                        error: updateError
+                    } =
+                        await supabaseClient
+                            .from("competitions")
+                            .update({
+
+                                name:
+                                    name,
+
+                                season:
+                                    season,
+
+                                start_date:
+                                    startDate,
+
+                                end_date:
+                                    endDate,
+
+                                status:
+                                    status,
+
+                                description:
+                                    description ||
+                                    null
+
+                            })
+                            .eq(
+                                "id",
+                                editingCompetitionId
+                            );
+
+
+                    if (updateError) {
+                        throw updateError;
+                    }
+
+
+                    console.log(
+                        "Competition updated successfully:",
+                        editingCompetitionId
+                    );
+
+
+                    competitionFormMessage.textContent =
+                        "✅ Competition updated successfully.";
+
+                    competitionFormMessage.style.display =
+                        "block";
+
+
+                    editingCompetitionId =
+                        null;
+
+
+                    if (typeInput) {
+                        typeInput.disabled =
+                            false;
+                    }
+
+
+                    if (competitionForm) {
+                        competitionForm.reset();
+                    }
+
+
+                    updateCompetitionFormatConfiguration();
+
+
+                    if (createCompetitionButton) {
+                        createCompetitionButton.textContent =
+                            "Create Competition";
+                    }
+
+
+                    await loadCompetitions();
+
+
+                    return;
+                }
+
+
+                // ========================================
+                // CREATE NEW COMPETITION
+                // ========================================
 
                 const {
                     data,
