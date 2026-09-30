@@ -3144,9 +3144,10 @@ disableButton(editTeamBtn);
             movementSettings = null;
 
             if (!competitionId) {
-                updateTransferButton(false);
-                return;
-            }
+    updateTransferButton(false);
+    updateReleaseButton(false);
+    return;
+}
 
             const {
                 data,
