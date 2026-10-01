@@ -8809,7 +8809,112 @@ releasePlayerSelect.addEventListener(
     "change",
     updateReleasePlayerPreview
 );
+releaseForm.addEventListener(
+    "submit",
+    async function (event) {
+        event.preventDefault();
 
+        if (!currentCompetition) {
+            showReleaseFormMessage(
+                "Please select Club Squad or a competition first.",
+                "error"
+            );
+            return;
+        }
+
+        if (!canRequestRelease()) {
+            showReleaseFormMessage(
+                "Player releases are not currently allowed for the selected competition.",
+                "error"
+            );
+            return;
+        }
+
+        const playerId =
+            Number(releasePlayerSelect.value || 0);
+
+        const reason =
+            releaseReason.value.trim() || null;
+
+        if (!playerId) {
+            showReleaseFormMessage(
+                "Please select a player.",
+                "error"
+            );
+            return;
+        }
+
+        const player =
+            approvedPlayers.find(function (item) {
+                return Number(item.id) === playerId;
+            });
+
+        if (!player) {
+            showReleaseFormMessage(
+                "The selected player is no longer available in this squad.",
+                "error"
+            );
+            return;
+        }
+
+        submitReleaseBtn.disabled = true;
+        submitReleaseBtn.textContent = "Submitting...";
+
+        try {
+            const {
+                data,
+                error
+            } = await supabaseClient.rpc(
+                "release_player_to_free_agent",
+                {
+                    p_player_id: playerId,
+                    p_team_id: Number(teamId),
+                    p_reason: reason
+                }
+            );
+
+            if (error) {
+                throw error;
+            }
+
+            const response = data || {};
+
+            if (response.success === false) {
+                throw new Error(
+                    response.message ||
+                    "Release request could not be submitted."
+                );
+            }
+
+            closeReleaseModalWindow();
+
+            showMessage(
+                response.message ||
+                "Release request submitted successfully. The player will remain with the team until an administrator approves the release.",
+                "success"
+            );
+
+            await loadRequests();
+        }
+        catch (error) {
+            console.error(
+                "Release player error:",
+                error
+            );
+
+            showReleaseFormMessage(
+                error.message ||
+                "Unable to submit release request.",
+                "error"
+            );
+        }
+        finally {
+            submitReleaseBtn.disabled = false;
+            submitReleaseBtn.textContent =
+                "Submit Release Request";
+        }
+    }
+);
         /*
         ========================================
         COMPETITION CHANGE
