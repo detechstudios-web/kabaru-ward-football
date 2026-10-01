@@ -3642,7 +3642,111 @@ function updateReleaseButton(enabled) {
             transferModal.setAttribute("aria-hidden", "true");
             document.body.style.overflow = "";
         }
+function populateReleasePlayers() {
+    releasePlayerSelect.innerHTML =
+        `<option value="">Select player</option>`;
 
+    approvedPlayers.forEach(function (player) {
+        const option =
+            document.createElement("option");
+
+        option.value = player.id;
+
+        option.textContent =
+            player.full_name +
+            (player.jersey_number !== null &&
+            player.jersey_number !== undefined
+                ? " — #" + player.jersey_number
+                : "");
+
+        releasePlayerSelect.appendChild(option);
+    });
+
+    updateReleasePlayerPreview();
+}
+
+function updateReleasePlayerPreview() {
+    const selectedId =
+        Number(releasePlayerSelect.value || 0);
+
+    const player =
+        approvedPlayers.find(function (item) {
+            return Number(item.id) === selectedId;
+        });
+
+    if (!player) {
+        releasePlayerPreview.style.display = "none";
+        releasePlayerPreview.innerHTML = "";
+        return;
+    }
+
+    const photo = player.photo_url
+        ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(player.full_name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;">`
+        : `<div class="jersey" style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:50%;">⚽</div>`;
+
+    releasePlayerPreview.style.display = "flex";
+
+    releasePlayerPreview.innerHTML =
+        photo +
+        `<div>
+            <strong>${escapeHtml(player.full_name)}</strong><br>
+            <span>${escapeHtml(player.position || "Player")} · Jersey ${escapeHtml(player.jersey_number ?? "—")}</span>
+        </div>`;
+}
+
+function openReleaseModal() {
+    if (!currentCompetition) {
+        showMessage(
+            "Please select All Competitions — Club Squad or a competition first.",
+            "error"
+        );
+        return;
+    }
+
+    if (!canRequestRelease()) {
+        showMessage(
+            "Player releases are not currently allowed for the selected competition.",
+            "error"
+        );
+        return;
+    }
+
+    if (!approvedPlayers.length) {
+        showMessage(
+            "This team has no approved players available for release.",
+            "error"
+        );
+        return;
+    }
+
+    releaseForm.reset();
+
+    releaseFormMessage.style.display = "none";
+    releaseFormMessage.textContent = "";
+
+    populateReleasePlayers();
+
+    releaseModal.classList.add("show");
+    releaseModal.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
+}
+
+function closeReleaseModalWindow() {
+    releaseModal.classList.remove("show");
+    releaseModal.setAttribute("aria-hidden", "true");
+
+    document.body.style.overflow = "";
+}
+
+function showReleaseFormMessage(message, type) {
+    releaseFormMessage.textContent = message;
+
+    releaseFormMessage.className =
+        "message " + (type || "error");
+
+    releaseFormMessage.style.display = "block";
+}
 
         function showTransferFormMessage(message, type) {
             transferFormMessage.textContent = message;
