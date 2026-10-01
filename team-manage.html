@@ -1915,7 +1915,116 @@ footer strong {
     </div>
 
 </div>
+<!-- ========================================
+     RELEASE PLAYER MODAL
+======================================== -->
 
+<div
+    id="releaseModal"
+    class="movement-modal"
+    aria-hidden="true"
+>
+
+    <div class="movement-modal-card">
+
+        <div class="movement-modal-head">
+
+            <div>
+                <div class="kicker">PLAYER MOVEMENT</div>
+                <h3>🚪 Release Player</h3>
+            </div>
+
+            <button
+                type="button"
+                id="closeReleaseModal"
+                class="movement-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="card-subtitle">
+            Select a player from your current club squad.
+            The player will remain with the club until the
+            administrator approves the release request.
+            After approval, the player becomes a Free Agent.
+        </div>
+
+        <form id="releaseForm">
+
+            <div class="form-group">
+
+                <label for="releasePlayerSelect">
+                    Player *
+                </label>
+
+                <select
+                    id="releasePlayerSelect"
+                    class="form-control"
+                    required
+                >
+                    <option value="">
+                        Select player
+                    </option>
+                </select>
+
+            </div>
+
+            <div
+                id="releasePlayerPreview"
+                class="movement-player-preview"
+                style="display:none;"
+            ></div>
+
+            <div class="form-group">
+
+                <label for="releaseReason">
+                    Reason / Notes
+                </label>
+
+                <textarea
+                    id="releaseReason"
+                    class="form-control"
+                    rows="4"
+                    maxlength="1000"
+                    placeholder="Optional: explain the reason for the release request."
+                ></textarea>
+
+            </div>
+
+            <div
+                id="releaseFormMessage"
+                class="message"
+                style="display:none;"
+            ></div>
+
+            <div class="movement-actions">
+
+                <button
+                    type="button"
+                    id="cancelReleaseBtn"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="submitReleaseBtn"
+                    class="btn btn-primary"
+                >
+                    Submit Release Request
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 <!-- ========================================
      FOOTER
