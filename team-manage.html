@@ -8781,7 +8781,34 @@ p_requested_jersey_number: requestedJerseyNumber
                 }
             }
         );
+releasePlayerBtn.addEventListener(
+    "click",
+    openReleaseModal
+);
 
+closeReleaseModal.addEventListener(
+    "click",
+    closeReleaseModalWindow
+);
+
+cancelReleaseBtn.addEventListener(
+    "click",
+    closeReleaseModalWindow
+);
+
+releaseModal.addEventListener(
+    "click",
+    function (event) {
+        if (event.target === releaseModal) {
+            closeReleaseModalWindow();
+        }
+    }
+);
+
+releasePlayerSelect.addEventListener(
+    "change",
+    updateReleasePlayerPreview
+);
 
         /*
         ========================================
