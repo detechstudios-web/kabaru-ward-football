@@ -1507,13 +1507,7 @@ document.addEventListener(
                                 "id",
                                 resultIds
                             )
-                            .order(
-                                "id",
-                                {
-                                    ascending:
-                                        false
-                                }
-                            );
+                            .order("fixture.match_date", { ascending: false });
 
                     if (resultError) {
                         console.warn(
