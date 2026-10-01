@@ -3080,10 +3080,11 @@ const submitReleaseBtn =
                     : "Not allowed";
 
 
-            allowRemove.textContent =
-                currentSettings.allow_remove_players
-                    ? "Allowed"
-                    : "Not allowed";
+            allowRelease.textContent =
+    movementSettings &&
+    movementSettings.allow_releases
+        ? "Allowed"
+        : "Not allowed";
 
 
             allowEditPlayer.textContent =
