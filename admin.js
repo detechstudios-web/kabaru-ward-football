@@ -2353,12 +2353,55 @@ const allowFreeAgentSignings =
 
 
             if (error) {
-                throw error;
+    throw error;
+}
+
+
+/* ========================================
+   SAVE FREE-AGENT SIGNING PERMISSION
+   ======================================== */
+
+const allowFreeAgentEl =
+    document.getElementById(
+        "allowFreeAgent-" +
+        competitionId
+    );
+
+const allowFreeAgentSignings =
+    allowFreeAgentEl
+        ? allowFreeAgentEl.checked
+        : false;
+
+
+const {
+    error: movementSettingsError
+} =
+    await supabaseClient
+        .from(
+            "player_movement_settings"
+        )
+        .upsert(
+            {
+                competition_id:
+                    competitionId,
+
+                allow_free_agent_signings:
+                    allowFreeAgentSignings
+            },
+            {
+                onConflict:
+                    "competition_id"
             }
+        );
 
 
-            messageEl.style.background =
-                "#e8f7ee";
+if (movementSettingsError) {
+    throw movementSettingsError;
+}
+
+
+messageEl.style.background =
+    "#e8f7ee";
 
             messageEl.style.color =
                 "#087f3e";
