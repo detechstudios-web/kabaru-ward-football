@@ -2157,11 +2157,7 @@ const allowFreeAgentSignings =
                     "allowEditTeam-" +
                     competitionId
                 );
-            const allowFreeAgentEl =
-    document.getElementById(
-        "allowFreeAgent-" +
-        competitionId
-    );
+            
 
             const startDatetimeEl =
                 document.getElementById(
@@ -2236,10 +2232,7 @@ const allowFreeAgentSignings =
                 allowEditTeamEl
                     ? allowEditTeamEl.checked
                     : false;
-            const allowFreeAgentSignings =
-    allowFreeAgentEl
-        ? allowFreeAgentEl.checked
-        : false;
+            
 
             const startDatetime =
                 startDatetimeEl &&
@@ -2338,8 +2331,7 @@ const allowFreeAgentSignings =
 
                                 allow_edit_team:
                                     allowEditTeam,
-                                allow_free_agent_signings:
-    allowFreeAgentSignings,
+                                
 
                                 start_datetime:
                                     startDatetime,
