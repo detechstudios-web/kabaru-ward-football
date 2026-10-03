@@ -1514,8 +1514,19 @@ document.addEventListener(
                             resultError
                         );
                     } else {
-                        results =
-                            resultData || [];
+                        results = resultData || [];
+
+results.sort((a, b) => {
+    const dateA = a.fixture?.match_date
+        ? new Date(a.fixture.match_date)
+        : new Date(0);
+
+    const dateB = b.fixture?.match_date
+        ? new Date(b.fixture.match_date)
+        : new Date(0);
+
+    return dateB - dateA;
+});
                     }
                 }
 
