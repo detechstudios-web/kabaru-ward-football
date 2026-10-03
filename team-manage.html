@@ -9071,6 +9071,37 @@ p_requested_jersey_number: requestedJerseyNumber
                 }
             }
         );
+signFreeAgentBtn.addEventListener(
+    "click",
+    async function () {
+
+        if (!canRequestFreeAgentSigning()) {
+            return;
+        }
+
+        freeAgentFormMessage.textContent = "";
+        freeAgentFormMessage.className =
+            "form-message";
+
+        freeAgentPlayerSelect.value = "";
+
+        freeAgentPlayerPreview.style.display =
+            "none";
+
+        freeAgentPlayerPreview.innerHTML = "";
+
+        freeAgentJerseyNumber.value = "";
+
+        freeAgentReason.value = "";
+
+        signFreeAgentModal.classList.add(
+            "active"
+        );
+
+        await loadAvailableFreeAgents();
+    }
+);
+        
 releasePlayerBtn.addEventListener(
     "click",
     openReleaseModal
