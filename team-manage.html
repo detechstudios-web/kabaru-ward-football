@@ -9118,6 +9118,102 @@ cancelSignFreeAgentBtn.addEventListener(
         );
     }
 );
+freeAgentPlayerSelect.addEventListener(
+    "change",
+    function () {
+
+        const playerId =
+            Number(freeAgentPlayerSelect.value);
+
+        if (!playerId) {
+            freeAgentPlayerPreview.style.display =
+                "none";
+
+            freeAgentPlayerPreview.innerHTML =
+                "";
+
+            return;
+        }
+
+        const player =
+            availableFreeAgents.find(
+                function (item) {
+                    return Number(item.id) === playerId;
+                }
+            );
+
+        if (!player) {
+            freeAgentPlayerPreview.style.display =
+                "none";
+
+            freeAgentPlayerPreview.innerHTML =
+                "";
+
+            return;
+        }
+
+        freeAgentPlayerPreview.innerHTML = `
+            <div class="player-preview-content">
+
+                ${
+                    player.photo_url
+                        ? `
+                            <img
+                                src="${escapeHtml(
+                                    player.photo_url
+                                )}"
+                                alt="${escapeHtml(
+                                    player.full_name
+                                )}"
+                                class="player-preview-photo"
+                            >
+                        `
+                        : ""
+                }
+
+                <div class="player-preview-details">
+
+                    <strong>
+                        ${escapeHtml(
+                            player.full_name
+                        )}
+                    </strong>
+
+                    ${
+                        player.position
+                            ? `
+                                <div>
+                                    Position:
+                                    ${escapeHtml(
+                                        player.position
+                                    )}
+                                </div>
+                            `
+                            : ""
+                    }
+
+                    ${
+                        player.jersey_number
+                            ? `
+                                <div>
+                                    Previous Jersey:
+                                    ${escapeHtml(
+                                        player.jersey_number
+                                    )}
+                                </div>
+                            `
+                            : ""
+                    }
+
+                </div>
+
+            </div>
+        `;
+
+        freeAgentPlayerPreview.style.display =
+            "block";
+    }
+);
         
 releasePlayerBtn.addEventListener(
     "click",
