@@ -3460,8 +3460,17 @@ updateFreeAgentSigningButton(
                 registration_locked: false
             };
 
-            updateTransferButton(canRequestTransfer());
-updateReleaseButton(canRequestRelease());
+            updateTransferButton(
+    canRequestTransfer()
+);
+
+updateReleaseButton(
+    canRequestRelease()
+);
+
+updateFreeAgentSigningButton(
+    canRequestFreeAgentSigning()
+);
         }
 
 
