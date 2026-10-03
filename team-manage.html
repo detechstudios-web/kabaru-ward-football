@@ -9101,6 +9101,23 @@ signFreeAgentBtn.addEventListener(
         await loadAvailableFreeAgents();
     }
 );
+closeSignFreeAgentModal.addEventListener(
+    "click",
+    function () {
+        signFreeAgentModal.classList.remove(
+            "active"
+        );
+    }
+);
+
+cancelSignFreeAgentBtn.addEventListener(
+    "click",
+    function () {
+        signFreeAgentModal.classList.remove(
+            "active"
+        );
+    }
+);
         
 releasePlayerBtn.addEventListener(
     "click",
