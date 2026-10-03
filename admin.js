@@ -1907,6 +1907,29 @@ const allowFreeAgentSignings =
                                 🏷️ Edit team
 
                             </label>
+                            <label style="
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    cursor:pointer;
+">
+
+    <input
+        type="checkbox"
+        id="allowFreeAgent-${competition.id}"
+        ${
+            allowFreeAgentSignings
+                ? "checked"
+                : ""
+        }
+    >
+
+    🆓 Allow free-agent signings
+
+</label>
 
                         </div>
 
