@@ -2236,6 +2236,10 @@ const allowFreeAgentSignings =
                 allowEditTeamEl
                     ? allowEditTeamEl.checked
                     : false;
+            const allowFreeAgentSignings =
+    allowFreeAgentEl
+        ? allowFreeAgentEl.checked
+        : false;
 
             const startDatetime =
                 startDatetimeEl &&
