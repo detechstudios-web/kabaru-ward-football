@@ -3338,6 +3338,7 @@ let availableFreeAgents = [];
             */
             if (!currentCompetition || !movementSettings) {
                 updateTransferButton(false);
+                updateFreeAgentSigningButton(false);
             } else {
                 updateTransferButton(
                     canRequestTransfer()
