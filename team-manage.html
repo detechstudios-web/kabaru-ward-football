@@ -3533,6 +3533,117 @@ function updateFreeAgentSigningButton(enabled) {
         signFreeAgentBtn.className = "btn btn-disabled";
     }
 }
+async function loadAvailableFreeAgents() {
+
+    if (!freeAgentPlayerSelect) {
+        return;
+    }
+
+    freeAgentPlayerSelect.innerHTML = `
+        <option value="">
+            Loading free agents...
+        </option>
+    `;
+
+    freeAgentPlayerPreview.style.display = "none";
+    freeAgentPlayerPreview.innerHTML = "";
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("players")
+            .select(`
+                id,
+                full_name,
+                jersey_number,
+                position,
+                photo_url,
+                team_id,
+                registration_status
+            `)
+            .is(
+                "team_id",
+                null
+            )
+            .eq(
+                "registration_status",
+                "Approved"
+            )
+            .order(
+                "full_name",
+                {
+                    ascending: true
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        availableFreeAgents =
+            data || [];
+
+        freeAgentPlayerSelect.innerHTML = `
+            <option value="">
+                Select a free-agent player
+            </option>
+        `;
+
+        if (availableFreeAgents.length === 0) {
+
+            freeAgentPlayerSelect.innerHTML = `
+                <option value="">
+                    No free agents available
+                </option>
+            `;
+
+            return;
+        }
+
+        availableFreeAgents.forEach(
+            function (player) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    player.id;
+
+                option.textContent =
+                    player.full_name +
+                    (
+                        player.position
+                            ? " — " + player.position
+                            : ""
+                    );
+
+                freeAgentPlayerSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Free agents load error:",
+            error
+        );
+
+        availableFreeAgents = [];
+
+        freeAgentPlayerSelect.innerHTML = `
+            <option value="">
+                Unable to load free agents
+            </option>
+        `;
+    }
+}
+        
 function canRequestRelease() {
     if (!currentCompetition || !movementSettings) {
         return false;
