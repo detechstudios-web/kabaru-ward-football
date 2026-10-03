@@ -2157,6 +2157,11 @@ const allowFreeAgentSignings =
                     "allowEditTeam-" +
                     competitionId
                 );
+            const allowFreeAgentEl =
+    document.getElementById(
+        "allowFreeAgent-" +
+        competitionId
+    );
 
             const startDatetimeEl =
                 document.getElementById(
