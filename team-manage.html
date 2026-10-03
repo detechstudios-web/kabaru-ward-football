@@ -9214,6 +9214,135 @@ freeAgentPlayerSelect.addEventListener(
             "block";
     }
 );
+   signFreeAgentForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+        const playerId =
+            Number(freeAgentPlayerSelect.value);
+
+        const requestedJerseyNumber =
+            Number(
+                freeAgentJerseyNumber.value || 0
+            );
+
+        const reason =
+            freeAgentReason.value.trim();
+
+        if (!playerId) {
+            freeAgentFormMessage.textContent =
+                "Please select a free-agent player.";
+
+            freeAgentFormMessage.className =
+                "form-message error";
+
+            return;
+        }
+
+        if (
+            !requestedJerseyNumber ||
+            requestedJerseyNumber < 1 ||
+            requestedJerseyNumber > 99
+        ) {
+            freeAgentFormMessage.textContent =
+                "Please enter a valid jersey number between 1 and 99.";
+
+            freeAgentFormMessage.className =
+                "form-message error";
+
+            return;
+        }
+
+        submitSignFreeAgentBtn.disabled =
+            true;
+
+        submitSignFreeAgentBtn.textContent =
+            "Submitting...";
+
+        freeAgentFormMessage.textContent = "";
+
+        try {
+
+            const competitionId =
+                String(competitionSelect.value) === "club"
+                    ? null
+                    : Number(currentCompetition.id);
+
+            const {
+                data,
+                error
+            } = await supabaseClient.rpc(
+                "request_free_agent_signing",
+                {
+                    p_player_id:
+                        playerId,
+
+                    p_to_team_id:
+                        Number(teamId),
+
+                    p_competition_id:
+                        competitionId,
+
+                    p_reason:
+                        reason || null,
+
+                    p_requested_jersey_number:
+                        requestedJerseyNumber
+                }
+            );
+
+            if (error) {
+                throw error;
+            }
+
+            freeAgentFormMessage.textContent =
+                data?.message ||
+                "Free-agent signing request submitted successfully.";
+
+            freeAgentFormMessage.className =
+                "form-message success";
+
+            await loadAvailableFreeAgents();
+
+            setTimeout(
+                function () {
+
+                    signFreeAgentModal.classList.remove(
+                        "active"
+                    );
+
+                    loadRequestHistory();
+
+                },
+                1200
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Free-agent signing error:",
+                error
+            );
+
+            freeAgentFormMessage.textContent =
+                error.message ||
+                "Unable to submit the signing request.";
+
+            freeAgentFormMessage.className =
+                "form-message error";
+
+        } finally {
+
+            submitSignFreeAgentBtn.disabled =
+                false;
+
+            submitSignFreeAgentBtn.textContent =
+                "Submit Signing Request";
+        }
+    }
+);     
         
 releasePlayerBtn.addEventListener(
     "click",
