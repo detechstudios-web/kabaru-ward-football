@@ -1921,6 +1921,103 @@ footer strong {
     </div>
 
 </div>
+    <div id="signFreeAgentModal" class="modal">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>🆓 Sign Free Agent</h2>
+            <button
+                type="button"
+                id="closeSignFreeAgentModal"
+                class="modal-close"
+            >
+                &times;
+            </button>
+        </div>
+
+        <form id="signFreeAgentForm">
+
+            <div class="form-group">
+                <label for="freeAgentPlayerSelect">
+                    Select Free Agent
+                </label>
+
+                <select
+                    id="freeAgentPlayerSelect"
+                    required
+                >
+                    <option value="">
+                        Select a free-agent player
+                    </option>
+                </select>
+            </div>
+
+            <div
+                id="freeAgentPlayerPreview"
+                class="player-preview"
+                style="display: none;"
+            ></div>
+
+            <div class="form-group">
+                <label for="freeAgentJerseyNumber">
+                    New Jersey Number
+                </label>
+
+                <input
+                    type="number"
+                    id="freeAgentJerseyNumber"
+                    min="1"
+                    max="99"
+                    required
+                    placeholder="Enter new jersey number"
+                >
+
+                <small>
+                    Enter the jersey number the player will use at your team.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="freeAgentReason">
+                    Reason / Notes
+                </label>
+
+                <textarea
+                    id="freeAgentReason"
+                    rows="4"
+                    placeholder="Optional notes about the signing"
+                ></textarea>
+            </div>
+
+            <div
+                id="freeAgentFormMessage"
+                class="form-message"
+            ></div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelSignFreeAgentBtn"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="submitSignFreeAgentBtn"
+                    class="btn btn-primary"
+                >
+                    Submit Signing Request
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
 <!-- ========================================
      RELEASE PLAYER MODAL
 ======================================== -->
