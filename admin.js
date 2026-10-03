@@ -1625,7 +1625,8 @@ window.deleteCompetition = async function (competitionId) {
 
                     const allowEditTeam =
                         existing.allow_edit_team !== false;
-
+const allowFreeAgentSignings =
+    existing.allow_free_agent_signings !== false;
                     const registrationLocked =
                         existing.registration_locked === true;
 
