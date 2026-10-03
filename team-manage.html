@@ -3403,7 +3403,9 @@ disableButton(editTeamBtn);
             updateTransferButton(
                 canRequestTransfer()
             );
-
+updateFreeAgentSigningButton(
+    canRequestFreeAgentSigning()
+);
         }
 
 
@@ -3451,6 +3453,7 @@ disableButton(editTeamBtn);
 
             movementSettings = data || {
                 allow_transfers: false,
+                allow_free_agent_signings: false,
                 require_current_team_approval: true,
                 require_admin_approval: true,
                 allow_movement_during_competition: false,
