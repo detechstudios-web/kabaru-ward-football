@@ -3491,7 +3491,48 @@ updateReleaseButton(canRequestRelease());
 
     return true;
 }
+function canRequestFreeAgentSigning() {
 
+    if (!currentCompetition || !movementSettings) {
+        return false;
+    }
+
+    if (!movementSettings.allow_free_agent_signings) {
+        return false;
+    }
+
+    if (movementSettings.registration_locked) {
+        return false;
+    }
+
+    const status =
+        String(currentCompetition.status || "")
+            .toLowerCase();
+
+    if (
+        status === "active" &&
+        !movementSettings.allow_movement_during_competition
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+function updateFreeAgentSigningButton(enabled) {
+
+    if (!signFreeAgentBtn) {
+        return;
+    }
+
+    if (enabled) {
+        signFreeAgentBtn.disabled = false;
+        signFreeAgentBtn.className = "btn btn-primary";
+    } else {
+        signFreeAgentBtn.disabled = true;
+        signFreeAgentBtn.className = "btn btn-disabled";
+    }
+}
 function canRequestRelease() {
     if (!currentCompetition || !movementSettings) {
         return false;
