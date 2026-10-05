@@ -4719,148 +4719,368 @@ async function saveCompetitionParticipation(
         );
     }
 }
-    // ========================================
-    // LOAD APPROVED TEAMS
-    // ========================================
+    
+                    // ========================================
+// LOAD FIXTURE TEAMS FOR SELECTED COMPETITION
+// ========================================
 
-    async function loadApprovedTeams() {
+async function getEligibleFixtureTeamIds(
+    competitionId
+) {
+
+    if (!competitionId) {
+        return [];
+    }
+
+    // Get the selected competition format.
+    const {
+        data: competition,
+        error: competitionError
+    } = await supabaseClient
+        .from("competitions")
+        .select(
+            "id, competition_format"
+        )
+        .eq(
+            "id",
+            Number(competitionId)
+        )
+        .single();
+
+    if (competitionError) {
+        throw competitionError;
+    }
+
+    // ========================================
+    // FRIENDLIES
+    // ========================================
+    // Friendlies do not use competition
+    // participation/stage selections.
+    // Every approved team is eligible.
+    if (
+        competition &&
+        competition.competition_format ===
+        "friendly"
+    ) {
+
+        const {
+            data: approvedTeams,
+            error: approvedTeamsError
+        } = await supabaseClient
+            .from("teams")
+            .select("id")
+            .eq(
+                "registration_status",
+                "Approved"
+            );
+
+        if (approvedTeamsError) {
+            throw approvedTeamsError;
+        }
+
+        return (
+            approvedTeams || []
+        ).map(
+            function (team) {
+                return Number(
+                    team.id
+                );
+            }
+        );
+    }
+
+    // ========================================
+    // NON-FRIENDLY COMPETITIONS
+    // ========================================
+    // Get all stages belonging to this
+    // competition.
+    const {
+        data: stages,
+        error: stagesError
+    } = await supabaseClient
+        .from("competition_stages")
+        .select("id")
+        .eq(
+            "competition_id",
+            Number(competitionId)
+        );
+
+    if (stagesError) {
+        throw stagesError;
+    }
+
+    const stageIds =
+        (
+            stages || []
+        ).map(
+            function (stage) {
+                return Number(
+                    stage.id
+                );
+            }
+        );
+
+    if (stageIds.length === 0) {
+        return [];
+    }
+
+    // Get the teams that were actually
+    // ticked/selected to participate in
+    // any stage of this competition.
+    const {
+        data: participationEntries,
+        error: participationError
+    } = await supabaseClient
+        .from("competition_stage_teams")
+        .select("team_id")
+        .in(
+            "stage_id",
+            stageIds
+        );
+
+    if (participationError) {
+        throw participationError;
+    }
+
+    // Remove duplicates where a team is
+    // participating in more than one stage.
+    const uniqueTeamIds =
+        new Set();
+
+    (
+        participationEntries || []
+    ).forEach(
+        function (entry) {
+
+            if (
+                entry.team_id !==
+                    null &&
+                entry.team_id !==
+                    undefined
+            ) {
+
+                uniqueTeamIds.add(
+                    Number(
+                        entry.team_id
+                    )
+                );
+            }
+        }
+    );
+
+    return Array.from(
+        uniqueTeamIds
+    );
+}
+
+
+async function loadApprovedTeams() {
+
+    if (
+        !homeTeamSelect ||
+        !awayTeamSelect
+    ) {
+        return;
+    }
+
+    // If a competition is already selected,
+    // load only teams eligible for that
+    // competition.
+    if (
+        competitionSelect &&
+        competitionSelect.value
+    ) {
+
+        await loadFixtureTeamsForCompetition(
+            competitionSelect.value
+        );
+
+        return;
+    }
+
+    homeTeamSelect.innerHTML =
+        "<option value=''>Select competition first</option>";
+
+    awayTeamSelect.innerHTML =
+        "<option value=''>Select competition first</option>";
+}
+
+
+// ========================================
+// LOAD FIXTURE TEAMS FOR SELECTED COMPETITION
+// ========================================
+
+async function loadFixtureTeamsForCompetition(
+    competitionId
+) {
+
+    if (
+        !homeTeamSelect ||
+        !awayTeamSelect
+    ) {
+        return;
+    }
+
+    homeTeamSelect.innerHTML =
+        "<option value=''>Loading teams...</option>";
+
+    awayTeamSelect.innerHTML =
+        "<option value=''>Loading teams...</option>";
+
+    if (!competitionId) {
+
+        homeTeamSelect.innerHTML =
+            "<option value=''>Select competition first</option>";
+
+        awayTeamSelect.innerHTML =
+            "<option value=''>Select competition first</option>";
+
+        return;
+    }
+
+    try {
+
+        const eligibleTeamIds =
+            await getEligibleFixtureTeamIds(
+                competitionId
+            );
+
+        homeTeamSelect.innerHTML =
+            "<option value=''>Select home team</option>";
+
+        awayTeamSelect.innerHTML =
+            "<option value=''>Select away team</option>";
 
         if (
-            !homeTeamSelect ||
-            !awayTeamSelect
+            eligibleTeamIds.length === 0
         ) {
+
+            homeTeamSelect.innerHTML =
+                "<option value=''>No participating teams</option>";
+
+            awayTeamSelect.innerHTML =
+                "<option value=''>No participating teams</option>";
+
             return;
         }
 
-
-        homeTeamSelect.innerHTML =
-            "<option value=''>Loading teams...</option>";
-
-        awayTeamSelect.innerHTML =
-            "<option value=''>Loading teams...</option>";
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabaseClient
-                    .from("teams")
-                    .select(
-                        "id, name, short_name"
-                    )
-                    .eq(
-                        "registration_status",
-                        "Approved"
-                    )
-                    .order(
-                        "name",
-                        {
-                            ascending: true
-                        }
-                    );
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            homeTeamSelect.innerHTML =
-                "<option value=''>Select home team</option>";
-
-            awayTeamSelect.innerHTML =
-                "<option value=''>Select away team</option>";
-
-
-            if (
-                !data ||
-                data.length === 0
-            ) {
-
-                homeTeamSelect.innerHTML =
-                    "<option value=''>No approved teams</option>";
-
-                awayTeamSelect.innerHTML =
-                    "<option value=''>No approved teams</option>";
-
-                return;
-            }
-
-
-            data.forEach(
-                function (team) {
-
-                    const name =
-                        team.name +
-                        (
-                            team.short_name
-                                ? " (" +
-                                  team.short_name +
-                                  ")"
-                                : ""
-                        );
-
-
-                    const homeOption =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    homeOption.value =
-                        team.id;
-
-
-                    homeOption.textContent =
-                        name;
-
-
-                    homeTeamSelect.appendChild(
-                        homeOption
-                    );
-
-
-                    const awayOption =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    awayOption.value =
-                        team.id;
-
-
-                    awayOption.textContent =
-                        name;
-
-
-                    awayTeamSelect.appendChild(
-                        awayOption
-                    );
-
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("teams")
+            .select(
+                "id, name, short_name"
+            )
+            .eq(
+                "registration_status",
+                "Approved"
+            )
+            .in(
+                "id",
+                eligibleTeamIds
+            )
+            .order(
+                "name",
+                {
+                    ascending: true
                 }
             );
 
+        if (error) {
+            throw error;
+        }
 
-        } catch (error) {
-
-            console.error(
-                "Team loading error:",
-                error
-            );
-
+        if (
+            !data ||
+            data.length === 0
+        ) {
 
             homeTeamSelect.innerHTML =
-                "<option value=''>Unable to load teams</option>";
+                "<option value=''>No participating teams</option>";
 
             awayTeamSelect.innerHTML =
-                "<option value=''>Unable to load teams</option>";
-        }
-    }
+                "<option value=''>No participating teams</option>";
 
+            return;
+        }
+
+        data.forEach(
+            function (team) {
+
+                const name =
+                    team.name +
+                    (
+                        team.short_name
+                            ? " (" +
+                              team.short_name +
+                              ")"
+                            : ""
+                    );
+
+                const homeOption =
+                    document.createElement(
+                        "option"
+                    );
+
+                homeOption.value =
+                    team.id;
+
+                homeOption.textContent =
+                    name;
+
+                homeTeamSelect.appendChild(
+                    homeOption
+                );
+
+                const awayOption =
+                    document.createElement(
+                        "option"
+                    );
+
+                awayOption.value =
+                    team.id;
+
+                awayOption.textContent =
+                    name;
+
+                awayTeamSelect.appendChild(
+                    awayOption
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LOAD FIXTURE TEAMS ERROR:",
+            error
+        );
+
+        homeTeamSelect.innerHTML =
+            "<option value=''>Unable to load teams</option>";
+
+        awayTeamSelect.innerHTML =
+            "<option value=''>Unable to load teams</option>";
+    }
+}
+
+
+// Update fixture team choices whenever
+// the competition changes.
+if (competitionSelect) {
+
+    competitionSelect.addEventListener(
+        "change",
+        async function () {
+
+            await loadFixtureTeamsForCompetition(
+                this.value
+            );
+
+        }
+    );
+}
 
     // ========================================
     // LOAD VENUES
