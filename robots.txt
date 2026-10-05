@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin.html
+Disallow: /admin-login.html
+Disallow: /team-login.html
+Disallow: /team-manage.html
+
+Sitemap: https://detechstudios-web.github.io/kabaru-ward-football/sitemap.xml
