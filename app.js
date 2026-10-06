@@ -3927,7 +3927,654 @@ async function loadGroupKnockoutTables(
 }
 
 
+// ========================================
+// LOAD KNOCKOUT STAGE
+// ========================================
 
+async function loadKnockoutStage(
+    competition
+) {
+
+    if (!groupKnockoutTablesEl) {
+        return;
+    }
+
+    try {
+
+        // ----------------------------------------
+        // 1. Get knockout stage
+        // ----------------------------------------
+
+        const {
+            data: stage,
+            error: stageError
+        } = await supabaseClient
+            .from("competition_stages")
+            .select(`
+                id,
+                name,
+                stage_type,
+                stage_order
+            `)
+            .eq(
+                "competition_id",
+                competition.id
+            )
+            .eq(
+                "stage_type",
+                "knockout"
+            )
+            .order(
+                "stage_order",
+                {
+                    ascending: true
+                }
+            )
+            .limit(1)
+            .maybeSingle();
+
+        if (stageError) {
+            throw stageError;
+        }
+
+        if (!stage) {
+
+            groupKnockoutTablesEl.innerHTML = `
+                <div
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    "
+                >
+                    <div
+                        style="
+                            font-size:36px;
+                            margin-bottom:10px;
+                        "
+                    >
+                        🏆
+                    </div>
+
+                    <strong>
+                        No knockout stage configured
+                    </strong>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        // ----------------------------------------
+        // 2. Get configured knockout rounds
+        // ----------------------------------------
+
+        const {
+            data: rounds,
+            error: roundsError
+        } = await supabaseClient
+            .from(
+                "competition_knockout_rounds"
+            )
+            .select(`
+                id,
+                name,
+                round_order,
+                status,
+                number_of_matches
+            `)
+            .eq(
+                "stage_id",
+                stage.id
+            )
+            .order(
+                "round_order",
+                {
+                    ascending: true
+                }
+            );
+
+        if (roundsError) {
+            throw roundsError;
+        }
+
+        if (
+            !rounds ||
+            rounds.length === 0
+        ) {
+
+            groupKnockoutTablesEl.innerHTML = `
+                <div
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    "
+                >
+                    <div
+                        style="
+                            font-size:36px;
+                            margin-bottom:10px;
+                        "
+                    >
+                        🏆
+                    </div>
+
+                    <strong>
+                        No knockout rounds configured
+                    </strong>
+                </div>
+            `;
+
+            return;
+        }
+
+
+        // ----------------------------------------
+        // 3. Get competition fixtures
+        // ----------------------------------------
+
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                venue,
+                matchday,
+                status
+            `)
+            .eq(
+                "competition_id",
+                competition.id
+            )
+            .order(
+                "matchday",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "match_date",
+                {
+                    ascending: true
+                }
+            );
+
+        if (fixturesError) {
+            throw fixturesError;
+        }
+
+
+        // ----------------------------------------
+        // 4. Get results
+        // ----------------------------------------
+
+        const fixtureIds =
+            (fixtures || []).map(
+                function (fixture) {
+                    return fixture.id;
+                }
+            );
+
+        let results = [];
+
+        if (
+            fixtureIds.length > 0
+        ) {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("results")
+                .select(`
+                    id,
+                    fixture_id,
+                    home_score,
+                    away_score
+                `)
+                .in(
+                    "fixture_id",
+                    fixtureIds
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            results = data || [];
+        }
+
+
+        const resultMap =
+            new Map(
+                results.map(
+                    function (result) {
+                        return [
+                            result.fixture_id,
+                            result
+                        ];
+                    }
+                )
+            );
+
+
+        // ----------------------------------------
+        // 5. Determine matchday for each round
+        // ----------------------------------------
+
+        const roundMatchdays = [];
+
+        let matchdayCursor = 0;
+
+        for (
+            const round of rounds
+        ) {
+
+            const matchCount =
+                Number(
+                    round.number_of_matches || 0
+                );
+
+            const roundFixtures =
+                (fixtures || []).filter(
+                    function (fixture) {
+
+                        const fixtureMatchday =
+                            Number(
+                                fixture.matchday
+                            );
+
+                        return (
+                            fixtureMatchday >
+                            matchdayCursor
+                        );
+                    }
+                );
+
+            if (
+                roundFixtures.length === 0
+            ) {
+                roundMatchdays.push(
+                    null
+                );
+
+                continue;
+            }
+
+            const matchdays =
+                roundFixtures
+                    .map(
+                        function (fixture) {
+                            return Number(
+                                fixture.matchday
+                            );
+                        }
+                    )
+                    .filter(
+                        function (value) {
+                            return Number.isFinite(
+                                value
+                            );
+                        }
+                    );
+
+            if (
+                matchdays.length === 0
+            ) {
+
+                roundMatchdays.push(
+                    null
+                );
+
+                continue;
+            }
+
+            const currentMatchday =
+                Math.min(
+                    ...matchdays
+                );
+
+            roundMatchdays.push(
+                currentMatchday
+            );
+
+            matchdayCursor =
+                currentMatchday;
+        }
+
+
+        // ----------------------------------------
+        // 6. Render rounds
+        // ----------------------------------------
+
+        let output = "";
+
+
+        rounds.forEach(
+            function (
+                round,
+                roundIndex
+            ) {
+
+                const roundMatchday =
+                    roundMatchdays[
+                        roundIndex
+                    ];
+
+                let roundFixtures = [];
+
+                if (
+                    roundMatchday !== null
+                ) {
+
+                    roundFixtures =
+                        (fixtures || []).filter(
+                            function (
+                                fixture
+                            ) {
+
+                                return (
+                                    Number(
+                                        fixture.matchday
+                                    ) ===
+                                    roundMatchday
+                                );
+                            }
+                        );
+                }
+
+
+                // Only show the configured number
+                // of fixtures for this round.
+
+                const expectedMatches =
+                    Number(
+                        round.number_of_matches || 0
+                    );
+
+                if (
+                    expectedMatches > 0 &&
+                    roundFixtures.length >
+                    expectedMatches
+                ) {
+
+                    roundFixtures =
+                        roundFixtures.slice(
+                            0,
+                            expectedMatches
+                        );
+                }
+
+
+                output += `
+                    <div
+                        style="
+                            margin-bottom:30px;
+                        "
+                    >
+
+                        <h3
+                            style="
+                                margin:0 0 15px 0;
+                                text-align:center;
+                            "
+                        >
+                            🏆
+                            ${escapeHtml(
+                                round.name
+                            )}
+                        </h3>
+                `;
+
+
+                if (
+                    roundFixtures.length === 0
+                ) {
+
+                    output += `
+                        <div
+                            style="
+                                text-align:center;
+                                padding:20px;
+                                color:#777;
+                                background:#f8f8f8;
+                                border-radius:8px;
+                            "
+                        >
+                            Fixtures will appear
+                            here when this round
+                            is created.
+                        </div>
+                    `;
+
+                } else {
+
+                    output += `
+                        <div
+                            class="table-wrapper"
+                        >
+                            <table
+                                class="league-table"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Match
+                                        </th>
+
+                                        <th>
+                                            Date
+                                        </th>
+
+                                        <th>
+                                            Time
+                                        </th>
+
+                                        <th>
+                                            Result
+                                        </th>
+
+                                        <th>
+                                            Status
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                    `;
+
+
+                    roundFixtures.forEach(
+                        function (
+                            fixture
+                        ) {
+
+                            const result =
+                                resultMap.get(
+                                    fixture.id
+                                );
+
+
+                            const homeTeam =
+                                (window.__teamsCache || [])
+                                    .find(
+                                        function (
+                                            team
+                                        ) {
+                                            return String(
+                                                team.id
+                                            ) ===
+                                            String(
+                                                fixture.home_team_id
+                                            );
+                                        }
+                                    );
+
+
+                            const awayTeam =
+                                (window.__teamsCache || [])
+                                    .find(
+                                        function (
+                                            team
+                                        ) {
+                                            return String(
+                                                team.id
+                                            ) ===
+                                            String(
+                                                fixture.away_team_id
+                                            );
+                                        }
+                                    );
+
+
+                            const homeName =
+                                homeTeam
+                                    ? homeTeam.name
+                                    : "Home Team";
+
+
+                            const awayName =
+                                awayTeam
+                                    ? awayTeam.name
+                                    : "Away Team";
+
+
+                            let resultText =
+                                "vs";
+
+
+                            if (result) {
+
+                                resultText =
+                                    `${result.home_score}
+                                    -
+                                    ${result.away_score}`;
+                            }
+
+
+                            output += `
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            ${escapeHtml(
+                                                homeName
+                                            )}
+                                        </strong>
+
+                                        <br>
+
+                                        <span
+                                            style="
+                                                color:#777;
+                                            "
+                                        >
+                                            vs
+                                        </span>
+
+                                        <br>
+
+                                        <strong>
+                                            ${escapeHtml(
+                                                awayName
+                                            )}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            fixture.match_date
+                                                ? escapeHtml(
+                                                    fixture.match_date
+                                                )
+                                                : "-"
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            fixture.kick_off
+                                                ? escapeHtml(
+                                                    fixture.kick_off
+                                                )
+                                                : "-"
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            ${escapeHtml(
+                                                resultText
+                                            )}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            escapeHtml(
+                                                fixture.status ||
+                                                "Scheduled"
+                                            )
+                                        }
+                                    </td>
+
+                                </tr>
+                            `;
+                        }
+                    );
+
+
+                    output += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+
+                output += `
+                    </div>
+                `;
+            }
+        );
+
+
+        groupKnockoutTablesEl.innerHTML =
+            output;
+
+
+    } catch (error) {
+
+        console.error(
+            "LOAD KNOCKOUT STAGE ERROR:",
+            error
+        );
+
+        groupKnockoutTablesEl.innerHTML = `
+            <div
+                style="
+                    text-align:center;
+                    padding:30px;
+                    color:#b00020;
+                "
+            >
+                ❌ Unable to load knockout stage.
+                <br><br>
+                ${escapeHtml(
+                    error.message ||
+                    "Unknown error"
+                )}
+            </div>
+        `;
+    }
+}
 
     // ========================================
     // LOAD PLAYER STATISTICS
