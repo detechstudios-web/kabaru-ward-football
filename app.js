@@ -4572,6 +4572,781 @@ const awayTeam =
     }
 }
 
+// ========================================
+// GET GROUP + KNOCKOUT QUALIFIED TEAMS
+// ========================================
+//
+// Reads the existing qualification configuration
+// created by the admin competition structure.
+//
+// It does NOT create fixtures yet.
+// It only determines which teams have qualified.
+// ========================================
+
+async function getGroupKnockoutQualifiedTeams(
+    competition
+) {
+
+    if (
+        !competition ||
+        !competition.id
+    ) {
+        return {
+            qualifiedTeams: [],
+            groups: [],
+            allGroupsComplete: false
+        };
+    }
+
+    // ----------------------------------------
+    // 1. GET GROUP STAGE
+    // ----------------------------------------
+
+    const {
+        data: stages,
+        error: stagesError
+    } = await supabaseClient
+        .from("competition_stages")
+        .select(`
+            id,
+            name,
+            stage_type,
+            stage_order,
+            next_stage_id,
+            progression_method
+        `)
+        .eq(
+            "competition_id",
+            competition.id
+        )
+        .order(
+            "stage_order",
+            {
+                ascending: true
+            }
+        );
+
+    if (stagesError) {
+        throw stagesError;
+    }
+
+    const groupStage =
+        (stages || []).find(
+            function (stage) {
+                return String(
+                    stage.stage_type || ""
+                ).toLowerCase() ===
+                "group";
+            }
+        );
+
+    if (!groupStage) {
+        return {
+            qualifiedTeams: [],
+            groups: [],
+            allGroupsComplete: false
+        };
+    }
+
+    // ----------------------------------------
+    // 2. GET GROUPS
+    // ----------------------------------------
+
+    const {
+        data: groups,
+        error: groupsError
+    } = await supabaseClient
+        .from("competition_groups")
+        .select(`
+            id,
+            name,
+            group_order
+        `)
+        .eq(
+            "stage_id",
+            groupStage.id
+        )
+        .order(
+            "group_order",
+            {
+                ascending: true
+            }
+        );
+
+    if (groupsError) {
+        throw groupsError;
+    }
+
+    if (
+        !groups ||
+        groups.length === 0
+    ) {
+        return {
+            qualifiedTeams: [],
+            groups: [],
+            allGroupsComplete: false
+        };
+    }
+
+    const groupIds =
+        groups.map(
+            function (group) {
+                return group.id;
+            }
+        );
+
+    // ----------------------------------------
+    // 3. GET GROUP TEAMS
+    // ----------------------------------------
+
+    const {
+        data: groupTeams,
+        error: groupTeamsError
+    } = await supabaseClient
+        .from("competition_group_teams")
+        .select(`
+            id,
+            group_id,
+            team_id
+        `)
+        .in(
+            "group_id",
+            groupIds
+        );
+
+    if (groupTeamsError) {
+        throw groupTeamsError;
+    }
+
+    // ----------------------------------------
+    // 4. GET TEAM DETAILS
+    // ----------------------------------------
+
+    const teamIds =
+        [
+            ...new Set(
+                (groupTeams || [])
+                    .map(
+                        function (membership) {
+                            return membership.team_id;
+                        }
+                    )
+                    .filter(
+                        function (id) {
+                            return (
+                                id !== null &&
+                                id !== undefined
+                            );
+                        }
+                    )
+            )
+        ];
+
+    let teams = [];
+
+    if (teamIds.length > 0) {
+
+        const {
+            data,
+            error: teamsError
+        } = await supabaseClient
+            .from("teams")
+            .select(`
+                id,
+                name,
+                short_name,
+                logo_url
+            `)
+            .in(
+                "id",
+                teamIds
+            );
+
+        if (teamsError) {
+            throw teamsError;
+        }
+
+        teams = data || [];
+    }
+
+    const teamMap =
+        new Map(
+            teams.map(
+                function (team) {
+                    return [
+                        String(team.id),
+                        team
+                    ];
+                }
+            )
+        );
+
+    // ----------------------------------------
+    // 5. GET GROUP FIXTURES
+    // ----------------------------------------
+
+    const {
+        data: fixtures,
+        error: fixturesError
+    } = await supabaseClient
+        .from("fixtures")
+        .select(`
+            id,
+            competition_id,
+            home_team_id,
+            away_team_id,
+            status
+        `)
+        .eq(
+            "competition_id",
+            competition.id
+        );
+
+    if (fixturesError) {
+        throw fixturesError;
+    }
+
+    const competitionFixtures =
+        fixtures || [];
+
+    // ----------------------------------------
+    // 6. GET RESULTS
+    // ----------------------------------------
+
+    const fixtureIds =
+        competitionFixtures
+            .map(
+                function (fixture) {
+                    return fixture.id;
+                }
+            )
+            .filter(
+                function (id) {
+                    return (
+                        id !== null &&
+                        id !== undefined
+                    );
+                }
+            );
+
+    let results = [];
+
+    if (fixtureIds.length > 0) {
+
+        const {
+            data,
+            error: resultsError
+        } = await supabaseClient
+            .from("results")
+            .select(`
+                id,
+                fixture_id,
+                home_score,
+                away_score
+            `)
+            .in(
+                "fixture_id",
+                fixtureIds
+            );
+
+        if (resultsError) {
+            throw resultsError;
+        }
+
+        results = data || [];
+    }
+
+    const resultMap =
+        new Map(
+            results.map(
+                function (result) {
+                    return [
+                        String(
+                            result.fixture_id
+                        ),
+                        result
+                    ];
+                }
+            )
+        );
+
+    // ----------------------------------------
+    // 7. BUILD EACH GROUP TABLE
+    // ----------------------------------------
+
+    const groupStandings = [];
+
+    let allGroupsComplete = true;
+
+    for (
+        const group of groups
+    ) {
+
+        const memberships =
+            (groupTeams || []).filter(
+                function (membership) {
+                    return String(
+                        membership.group_id
+                    ) === String(
+                        group.id
+                    );
+                }
+            );
+
+        const table = {};
+
+        memberships.forEach(
+            function (membership) {
+
+                const team =
+                    teamMap.get(
+                        String(
+                            membership.team_id
+                        )
+                    );
+
+                if (!team) {
+                    return;
+                }
+
+                const teamId =
+                    String(
+                        team.id
+                    );
+
+                table[teamId] = {
+
+                    id:
+                        team.id,
+
+                    name:
+                        team.name,
+
+                    short_name:
+                        team.short_name,
+
+                    logo_url:
+                        team.logo_url,
+
+                    played:
+                        0,
+
+                    won:
+                        0,
+
+                    drawn:
+                        0,
+
+                    lost:
+                        0,
+
+                    gf:
+                        0,
+
+                    ga:
+                        0,
+
+                    gd:
+                        0,
+
+                    points:
+                        0
+                };
+            }
+        );
+
+        const groupTeamIds =
+            new Set(
+                Object.keys(table)
+            );
+
+        const groupFixtures =
+            competitionFixtures.filter(
+                function (fixture) {
+
+                    const homeId =
+                        String(
+                            fixture.home_team_id
+                        );
+
+                    const awayId =
+                        String(
+                            fixture.away_team_id
+                        );
+
+                    return (
+                        groupTeamIds.has(
+                            homeId
+                        ) &&
+                        groupTeamIds.has(
+                            awayId
+                        )
+                    );
+                }
+            );
+
+        let completedGroupFixtures = 0;
+
+        groupFixtures.forEach(
+            function (fixture) {
+
+                const status =
+                    String(
+                        fixture.status || ""
+                    ).toLowerCase();
+
+                const result =
+                    resultMap.get(
+                        String(
+                            fixture.id
+                        )
+                    );
+
+                if (
+                    status !==
+                    "completed" ||
+                    !result
+                ) {
+                    return;
+                }
+
+                const homeId =
+                    String(
+                        fixture.home_team_id
+                    );
+
+                const awayId =
+                    String(
+                        fixture.away_team_id
+                    );
+
+                if (
+                    !table[homeId] ||
+                    !table[awayId]
+                ) {
+                    return;
+                }
+
+                const homeScore =
+                    Number(
+                        result.home_score
+                    );
+
+                const awayScore =
+                    Number(
+                        result.away_score
+                    );
+
+                if (
+                    !Number.isFinite(
+                        homeScore
+                    ) ||
+                    !Number.isFinite(
+                        awayScore
+                    )
+                ) {
+                    return;
+                }
+
+                completedGroupFixtures += 1;
+
+                table[homeId].played += 1;
+                table[awayId].played += 1;
+
+                table[homeId].gf +=
+                    homeScore;
+
+                table[homeId].ga +=
+                    awayScore;
+
+                table[awayId].gf +=
+                    awayScore;
+
+                table[awayId].ga +=
+                    homeScore;
+
+                if (
+                    homeScore >
+                    awayScore
+                ) {
+
+                    table[homeId].won += 1;
+                    table[awayId].lost += 1;
+
+                    table[homeId].points += 3;
+
+                } else if (
+                    homeScore <
+                    awayScore
+                ) {
+
+                    table[awayId].won += 1;
+                    table[homeId].lost += 1;
+
+                    table[awayId].points += 3;
+
+                } else {
+
+                    table[homeId].drawn += 1;
+                    table[awayId].drawn += 1;
+
+                    table[homeId].points += 1;
+                    table[awayId].points += 1;
+                }
+            }
+        );
+
+        Object.values(table).forEach(
+            function (team) {
+
+                team.gd =
+                    team.gf -
+                    team.ga;
+            }
+        );
+
+        const rows =
+            Object.values(table);
+
+        rows.sort(
+            function (a, b) {
+
+                if (
+                    b.points !==
+                    a.points
+                ) {
+                    return (
+                        b.points -
+                        a.points
+                    );
+                }
+
+                if (
+                    b.gd !==
+                    a.gd
+                ) {
+                    return (
+                        b.gd -
+                        a.gd
+                    );
+                }
+
+                if (
+                    b.gf !==
+                    a.gf
+                ) {
+                    return (
+                        b.gf -
+                        a.gf
+                    );
+                }
+
+                return (
+                    a.name || ""
+                ).localeCompare(
+                    b.name || ""
+                );
+            }
+        );
+
+        // ----------------------------------------
+        // CHECK WHETHER THIS GROUP IS COMPLETE
+        // ----------------------------------------
+
+        let expectedMatches = 0;
+
+        const teamCount =
+            rows.length;
+
+        if (
+            teamCount > 1
+        ) {
+            expectedMatches =
+                (
+                    teamCount *
+                    (teamCount - 1)
+                ) / 2;
+        }
+
+        if (
+            groupFixtures.length <
+            expectedMatches ||
+            completedGroupFixtures <
+            expectedMatches
+        ) {
+            allGroupsComplete = false;
+        }
+
+        groupStandings.push({
+
+            group:
+                group,
+
+            standings:
+                rows,
+
+            fixtures:
+                groupFixtures,
+
+            completedFixtures:
+                completedGroupFixtures,
+
+            expectedFixtures:
+                expectedMatches
+        });
+    }
+
+    // ----------------------------------------
+    // 8. GET QUALIFICATION SLOTS
+    // ----------------------------------------
+
+    const {
+        data: qualificationSlots,
+        error: qualificationSlotsError
+    } = await supabaseClient
+        .from(
+            "competition_qualification_slots"
+        )
+        .select(`
+            id,
+            stage_id,
+            group_id,
+            position,
+            label
+        `)
+        .eq(
+            "stage_id",
+            groupStage.id
+        )
+        .order(
+            "group_id",
+            {
+                ascending: true
+            }
+        )
+        .order(
+            "position",
+            {
+                ascending: true
+            }
+        );
+
+    if (qualificationSlotsError) {
+        throw qualificationSlotsError;
+    }
+
+    // ----------------------------------------
+    // 9. DETERMINE QUALIFIED TEAMS
+    // ----------------------------------------
+
+    const qualifiedTeams = [];
+
+    if (
+        allGroupsComplete
+    ) {
+
+        (qualificationSlots || []).forEach(
+            function (slot) {
+
+                const groupData =
+                    groupStandings.find(
+                        function (item) {
+                            return String(
+                                item.group.id
+                            ) === String(
+                                slot.group_id
+                            );
+                        }
+                    );
+
+                if (!groupData) {
+                    return;
+                }
+
+                const position =
+                    Number(
+                        slot.position
+                    );
+
+                if (
+                    !Number.isInteger(
+                        position
+                    ) ||
+                    position < 1
+                ) {
+                    return;
+                }
+
+                const qualifiedTeam =
+                    groupData.standings[
+                        position - 1
+                    ];
+
+                if (!qualifiedTeam) {
+                    return;
+                }
+
+                qualifiedTeams.push({
+
+                    slot_id:
+                        slot.id,
+
+                    slot_label:
+                        slot.label,
+
+                    group_id:
+                        slot.group_id,
+
+                    group_name:
+                        groupData.group.name,
+
+                    position:
+                        position,
+
+                    team_id:
+                        qualifiedTeam.id,
+
+                    team_name:
+                        qualifiedTeam.name,
+
+                    short_name:
+                        qualifiedTeam.short_name,
+
+                    logo_url:
+                        qualifiedTeam.logo_url
+                });
+            }
+        );
+    }
+
+    return {
+
+        competition_id:
+            competition.id,
+
+        group_stage_id:
+            groupStage.id,
+
+        next_stage_id:
+            groupStage.next_stage_id,
+
+        progression_method:
+            groupStage.progression_method,
+
+        allGroupsComplete:
+            allGroupsComplete,
+
+        groups:
+            groupStandings,
+
+        qualificationSlots:
+            qualificationSlots || [],
+
+        qualifiedTeams:
+            qualifiedTeams
+    };
+}
+    
     // ========================================
     // LOAD PLAYER STATISTICS
     // ========================================
