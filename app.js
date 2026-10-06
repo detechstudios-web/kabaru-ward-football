@@ -3943,7 +3943,20 @@ async function loadGroupKnockoutTables(
 async function loadKnockoutStage(
     competition
 ) {
+    // ========================================
+    // CHECK GROUP → KNOCKOUT QUALIFICATION
+    // ========================================
 
+    const qualification =
+        await getGroupKnockoutQualifiedTeams(
+            competition
+        );
+
+    console.log(
+        "GROUP → KNOCKOUT QUALIFICATION:",
+        qualification
+    );
+    
     if (!groupKnockoutTablesEl) {
         return;
     }
