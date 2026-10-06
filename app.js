@@ -58,6 +58,15 @@ const resultsEl =
 
 const leagueTableEl =
     leagueTableBody;
+    const groupKnockoutTablesEl =
+    document.getElementById(
+        "groupKnockoutTables"
+    );
+
+const normalLeagueTableWrapperEl =
+    document.getElementById(
+        "normalLeagueTableWrapper"
+    );
 
 const topScorersEl =
     scorerContainer;
