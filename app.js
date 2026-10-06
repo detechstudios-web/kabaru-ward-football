@@ -2113,7 +2113,15 @@ if (
 
     return;
 }
+if (groupKnockoutTablesEl) {
+    groupKnockoutTablesEl.style.display =
+        "none";
+}
 
+if (normalLeagueTableWrapperEl) {
+    normalLeagueTableWrapperEl.style.display =
+        "block";
+}
 // Normal league competitions continue
 // through the existing league-table logic below.
 
