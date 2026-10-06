@@ -3067,6 +3067,794 @@ resultRows.forEach(
             `;
         }
     }
+// ========================================
+// LOAD GROUP + KNOCKOUT TABLES
+// ========================================
+
+async function loadGroupKnockoutTables(
+    competition
+) {
+
+    if (!groupKnockoutTablesEl) {
+        return;
+    }
+
+    groupKnockoutTablesEl.innerHTML = `
+        <div
+            style="
+                text-align:center;
+                padding:30px;
+            "
+        >
+            Loading group standings...
+        </div>
+    `;
+
+    try {
+
+        // ========================================
+        // LOAD GROUP STAGE
+        // ========================================
+
+        const {
+            data: stages,
+            error: stageError
+        } = await supabaseClient
+            .from("competition_stages")
+            .select(`
+                id,
+                name,
+                stage_type,
+                stage_order
+            `)
+            .eq(
+                "competition_id",
+                competition.id
+            )
+            .order(
+                "stage_order",
+                {
+                    ascending: true
+                }
+            );
+
+        if (stageError) {
+            throw stageError;
+        }
+
+        const groupStage =
+            (stages || []).find(
+                function (stage) {
+
+                    return (
+                        String(
+                            stage.stage_type ||
+                            ""
+                        ).toLowerCase()
+                        === "group"
+                    );
+                }
+            );
+
+        if (!groupStage) {
+
+            groupKnockoutTablesEl.innerHTML = `
+                <div
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    "
+                >
+                    <strong>
+                        No group stage found.
+                    </strong>
+                </div>
+            `;
+
+            return;
+        }
+
+        // ========================================
+        // LOAD GROUPS
+        // ========================================
+
+        const {
+            data: groups,
+            error: groupsError
+        } = await supabaseClient
+            .from("competition_groups")
+            .select(`
+                id,
+                name,
+                group_order
+            `)
+            .eq(
+                "stage_id",
+                groupStage.id
+            )
+            .order(
+                "group_order",
+                {
+                    ascending: true
+                }
+            );
+
+        if (groupsError) {
+            throw groupsError;
+        }
+
+        if (
+            !groups ||
+            groups.length === 0
+        ) {
+
+            groupKnockoutTablesEl.innerHTML = `
+                <div
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    "
+                >
+                    <strong>
+                        No groups have been formed yet.
+                    </strong>
+                </div>
+            `;
+
+            return;
+        }
+
+        // ========================================
+        // LOAD GROUP TEAMS
+        // ========================================
+
+        const groupIds =
+            groups.map(
+                function (group) {
+                    return group.id;
+                }
+            );
+
+        const {
+            data: groupTeams,
+            error: groupTeamsError
+        } = await supabaseClient
+            .from("competition_group_teams")
+            .select(`
+                id,
+                group_id,
+                team_id
+            `)
+            .in(
+                "group_id",
+                groupIds
+            );
+
+        if (groupTeamsError) {
+            throw groupTeamsError;
+        }
+
+        // ========================================
+        // LOAD TEAM DETAILS
+        // ========================================
+
+        const teamIds =
+            (groupTeams || [])
+                .map(
+                    function (row) {
+                        return row.team_id;
+                    }
+                )
+                .filter(
+                    function (id) {
+                        return (
+                            id !== null &&
+                            id !== undefined
+                        );
+                    }
+                );
+
+        let teams = [];
+
+        if (teamIds.length > 0) {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("teams")
+                .select(`
+                    id,
+                    name,
+                    short_name,
+                    logo_url,
+                    registration_status
+                `)
+                .in(
+                    "id",
+                    teamIds
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            teams = data || [];
+        }
+
+        // ========================================
+        // TEAM MAP
+        // ========================================
+
+        const teamMap = {};
+
+        teams.forEach(
+            function (team) {
+
+                teamMap[
+                    String(team.id)
+                ] = team;
+            }
+        );
+
+        // ========================================
+        // LOAD COMPETITION FIXTURES
+        // ========================================
+
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabaseClient
+            .from("fixtures")
+            .select(`
+                id,
+                competition_id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                status
+            `)
+            .eq(
+                "competition_id",
+                competition.id
+            );
+
+        if (fixturesError) {
+            throw fixturesError;
+        }
+
+        // ========================================
+        // LOAD RESULTS
+        // ========================================
+
+        const fixtureIds =
+            (fixtures || [])
+                .map(
+                    function (fixture) {
+                        return fixture.id;
+                    }
+                )
+                .filter(
+                    function (id) {
+                        return (
+                            id !== null &&
+                            id !== undefined
+                        );
+                    }
+                );
+
+        let results = [];
+
+        if (fixtureIds.length > 0) {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("results")
+                .select(`
+                    fixture_id,
+                    home_score,
+                    away_score
+                `)
+                .in(
+                    "fixture_id",
+                    fixtureIds
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            results = data || [];
+        }
+
+        // ========================================
+        // RESULT MAP
+        // ========================================
+
+        const resultMap = {};
+
+        results.forEach(
+            function (result) {
+
+                resultMap[
+                    String(
+                        result.fixture_id
+                    )
+                ] = result;
+            }
+        );
+
+        // ========================================
+        // PREPARE OUTPUT
+        // ========================================
+
+        let output = "";
+
+        // ========================================
+        // BUILD EACH GROUP
+        // ========================================
+
+        groups.forEach(
+            function (group) {
+
+                const members =
+                    (groupTeams || [])
+                        .filter(
+                            function (row) {
+
+                                return (
+                                    String(
+                                        row.group_id
+                                    ) ===
+                                    String(
+                                        group.id
+                                    )
+                                );
+                            }
+                        );
+
+                const table = {};
+
+                members.forEach(
+                    function (member) {
+
+                        const team =
+                            teamMap[
+                                String(
+                                    member.team_id
+                                )
+                            ];
+
+                        if (!team) {
+                            return;
+                        }
+
+                        table[
+                            String(
+                                member.team_id
+                            )
+                        ] = {
+
+                            id:
+                                team.id,
+
+                            name:
+                                team.name ||
+                                "Unknown Team",
+
+                            short_name:
+                                team.short_name ||
+                                team.name ||
+                                "Unknown",
+
+                            logo_url:
+                                team.logo_url ||
+                                "",
+
+                            played: 0,
+                            won: 0,
+                            drawn: 0,
+                            lost: 0,
+                            gf: 0,
+                            ga: 0,
+                            gd: 0,
+                            points: 0
+                        };
+                    }
+                );
+
+                // ========================================
+                // PROCESS GROUP MATCHES
+                // ========================================
+
+                (fixtures || []).forEach(
+                    function (fixture) {
+
+                        const homeId =
+                            String(
+                                fixture.home_team_id
+                            );
+
+                        const awayId =
+                            String(
+                                fixture.away_team_id
+                            );
+
+                        if (
+                            !table[homeId] ||
+                            !table[awayId]
+                        ) {
+                            return;
+                        }
+
+                        if (
+                            String(
+                                fixture.status ||
+                                ""
+                            ).toLowerCase()
+                            !== "completed"
+                        ) {
+                            return;
+                        }
+
+                        const result =
+                            resultMap[
+                                String(
+                                    fixture.id
+                                )
+                            ];
+
+                        if (!result) {
+                            return;
+                        }
+
+                        const homeScore =
+                            Number(
+                                result.home_score
+                            );
+
+                        const awayScore =
+                            Number(
+                                result.away_score
+                            );
+
+                        if (
+                            !Number.isFinite(
+                                homeScore
+                            ) ||
+                            !Number.isFinite(
+                                awayScore
+                            )
+                        ) {
+                            return;
+                        }
+
+                        table[homeId].played++;
+                        table[awayId].played++;
+
+                        table[homeId].gf +=
+                            homeScore;
+
+                        table[homeId].ga +=
+                            awayScore;
+
+                        table[awayId].gf +=
+                            awayScore;
+
+                        table[awayId].ga +=
+                            homeScore;
+
+                        if (
+                            homeScore >
+                            awayScore
+                        ) {
+
+                            table[homeId].won++;
+                            table[awayId].lost++;
+
+                            table[homeId].points += 3;
+
+                        } else if (
+                            homeScore <
+                            awayScore
+                        ) {
+
+                            table[awayId].won++;
+                            table[homeId].lost++;
+
+                            table[awayId].points += 3;
+
+                        } else {
+
+                            table[homeId].drawn++;
+                            table[awayId].drawn++;
+
+                            table[homeId].points++;
+                            table[awayId].points++;
+                        }
+
+                        table[homeId].gd =
+                            table[homeId].gf -
+                            table[homeId].ga;
+
+                        table[awayId].gd =
+                            table[awayId].gf -
+                            table[awayId].ga;
+                    }
+                );
+
+                // ========================================
+                // SORT GROUP
+                // ========================================
+
+                const sortedTeams =
+                    Object.values(table)
+                        .sort(
+                            function (a, b) {
+
+                                if (
+                                    b.points !==
+                                    a.points
+                                ) {
+                                    return (
+                                        b.points -
+                                        a.points
+                                    );
+                                }
+
+                                if (
+                                    b.gd !==
+                                    a.gd
+                                ) {
+                                    return (
+                                        b.gd -
+                                        a.gd
+                                    );
+                                }
+
+                                if (
+                                    b.gf !==
+                                    a.gf
+                                ) {
+                                    return (
+                                        b.gf -
+                                        a.gf
+                                    );
+                                }
+
+                                return a.name.localeCompare(
+                                    b.name
+                                );
+                            }
+                        );
+
+                // ========================================
+                // GROUP HEADER
+                // ========================================
+
+                output += `
+                    <div
+                        style="
+                            margin-bottom:30px;
+                        "
+                    >
+
+                        <h3
+                            style="
+                                margin:0 0 12px 0;
+                                font-size:20px;
+                            "
+                        >
+                            ${escapeHtml(
+                                group.name
+                            )}
+                        </h3>
+
+                        <div
+                            class="table-wrapper"
+                        >
+
+                            <table
+                                class="league-table"
+                            >
+
+                                <thead>
+                                    <tr>
+                                        <th>Pos</th>
+                                        <th>Team</th>
+                                        <th>P</th>
+                                        <th>W</th>
+                                        <th>D</th>
+                                        <th>L</th>
+                                        <th>GF</th>
+                                        <th>GA</th>
+                                        <th>GD</th>
+                                        <th>Pts</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                `;
+
+                // ========================================
+                // GROUP ROWS
+                // ========================================
+
+                sortedTeams.forEach(
+                    function (
+                        team,
+                        index
+                    ) {
+
+                        const logo =
+                            team.logo_url
+                                ? `
+                                    <img
+                                        src="${escapeHtml(
+                                            team.logo_url
+                                        )}"
+                                        alt="${escapeHtml(
+                                            team.name
+                                        )} logo"
+                                        style="
+                                            width:35px;
+                                            height:35px;
+                                            object-fit:contain;
+                                            vertical-align:middle;
+                                            margin-right:7px;
+                                        "
+                                    >
+                                `
+                                : `
+                                    <span
+                                        style="
+                                            font-size:24px;
+                                            margin-right:7px;
+                                        "
+                                    >
+                                        ⚽
+                                    </span>
+                                `;
+
+                        const gdText =
+                            team.gd > 0
+                                ? `+${team.gd}`
+                                : String(
+                                    team.gd
+                                );
+
+                        output += `
+                            <tr>
+
+                                <td
+                                    style="
+                                        font-weight:700;
+                                    "
+                                >
+                                    ${index + 1}
+                                </td>
+
+                                <td>
+                                    <div
+                                        style="
+                                            display:flex;
+                                            align-items:center;
+                                        "
+                                    >
+
+                                        ${logo}
+
+                                        <span
+                                            style="
+                                                font-weight:700;
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                team.name
+                                            )}
+                                        </span>
+
+                                    </div>
+                                </td>
+
+                                <td>
+                                    ${team.played}
+                                </td>
+
+                                <td>
+                                    ${team.won}
+                                </td>
+
+                                <td>
+                                    ${team.drawn}
+                                </td>
+
+                                <td>
+                                    ${team.lost}
+                                </td>
+
+                                <td>
+                                    ${team.gf}
+                                </td>
+
+                                <td>
+                                    ${team.ga}
+                                </td>
+
+                                <td>
+                                    ${gdText}
+                                </td>
+
+                                <td
+                                    style="
+                                        font-weight:800;
+                                    "
+                                >
+                                    ${team.points}
+                                </td>
+
+                            </tr>
+                        `;
+                    }
+                );
+
+                output += `
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                `;
+            }
+        );
+
+        // ========================================
+        // DISPLAY GROUP TABLES
+        // ========================================
+
+        groupKnockoutTablesEl.innerHTML =
+            output;
+
+    } catch (error) {
+
+        console.error(
+            "LOAD GROUP TABLES ERROR:",
+            error
+        );
+
+        groupKnockoutTablesEl.innerHTML = `
+            <div
+                style="
+                    text-align:center;
+                    padding:30px;
+                "
+            >
+                <strong>
+                    Unable to load group standings.
+                </strong>
+
+                <div
+                    style="
+                        margin-top:8px;
+                        color:#666;
+                    "
+                >
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </div>
+            </div>
+        `;
+    }
+}
+
+
 
 
     // ========================================
