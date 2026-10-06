@@ -2063,7 +2063,21 @@ if (
     leagueCompetition.competition_format ===
     "group_knockout"
 ) {
-    await loadGroupKnockoutTables(leagueCompetition);
+
+    if (groupKnockoutTablesEl) {
+        groupKnockoutTablesEl.style.display =
+            "block";
+    }
+
+    if (normalLeagueTableWrapperEl) {
+        normalLeagueTableWrapperEl.style.display =
+            "none";
+    }
+
+    await loadGroupKnockoutTables(
+        leagueCompetition
+    );
+
     return;
 }
 
