@@ -2104,6 +2104,16 @@ if (
     "knockout"
 ) {
 
+    if (competitionStandingsTitleEl) {
+        competitionStandingsTitleEl.textContent =
+            "🏆 Knockout Stage";
+    }
+
+    if (competitionStandingsDescriptionEl) {
+        competitionStandingsDescriptionEl.textContent =
+            "Knockout matches and results for this competition.";
+    }
+
     if (groupKnockoutTablesEl) {
         groupKnockoutTablesEl.style.display =
             "block";
@@ -2115,8 +2125,8 @@ if (
     }
 
     await loadKnockoutStage(
-    leagueCompetition
-);
+        leagueCompetition
+    );
 
     return;
 }
