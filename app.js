@@ -4050,16 +4050,28 @@ async function loadKnockoutStage(
         } = await supabaseClient
             .from("fixtures")
             .select(`
-                id,
-                competition_id,
-                home_team_id,
-                away_team_id,
-                match_date,
-                kick_off,
-                venue,
-                matchday,
-                status
-            `)
+    id,
+    competition_id,
+    home_team_id,
+    away_team_id,
+    match_date,
+    kick_off,
+    venue,
+    matchday,
+    status,
+    home_team:home_team_id (
+        id,
+        name,
+        short_name,
+        logo_url
+    ),
+    away_team:away_team_id (
+        id,
+        name,
+        short_name,
+        logo_url
+    )
+`)
             .eq(
                 "competition_id",
                 competition.id
