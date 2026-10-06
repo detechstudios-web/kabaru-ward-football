@@ -5060,7 +5060,94 @@ try {
         showParticipationMessage(
             "Saving participating teams..."
         );
+        // ========================================
+        // VALIDATE GROUP ASSIGNMENTS
+        // ========================================
 
+        const {
+            data: currentStage,
+            error: currentStageError
+        } = await supabaseClient
+            .from("competition_stages")
+            .select(`
+                id,
+                stage_type,
+                teams_per_group
+            `)
+            .eq(
+                "id",
+                Number(stageId)
+            )
+            .single();
+
+        if (currentStageError) {
+            throw currentStageError;
+        }
+
+        if (
+            currentStage &&
+            currentStage.stage_type === "group"
+        ) {
+
+            if (
+                groupAssignments.length !==
+                selectedTeamIds.length
+            ) {
+
+                throw new Error(
+                    "Every participating team must be assigned to a group."
+                );
+            }
+
+
+            const groupCounts =
+                {};
+
+            groupAssignments.forEach(
+                function (assignment) {
+
+                    const groupId =
+                        String(
+                            assignment.group_id
+                        );
+
+                    groupCounts[groupId] =
+                        (
+                            groupCounts[groupId] ||
+                            0
+                        ) + 1;
+                }
+            );
+
+
+            const groupLimit =
+                Number(
+                    currentStage.teams_per_group ||
+                    0
+                );
+
+
+            if (groupLimit > 0) {
+
+                for (
+                    const groupId
+                    in groupCounts
+                ) {
+
+                    if (
+                        groupCounts[groupId] >
+                        groupLimit
+                    ) {
+
+                        throw new Error(
+                            "A group cannot contain more than " +
+                            groupLimit +
+                            " teams."
+                        );
+                    }
+                }
+            }
+        }
         const {
             data: existingEntries,
             error: existingError
