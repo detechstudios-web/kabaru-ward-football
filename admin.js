@@ -5013,15 +5013,143 @@ async function saveCompetitionParticipation(
             );
 
     const selectedTeamSet =
-        new Set(
-            selectedTeamIds
+    new Set(
+        selectedTeamIds
+    );
+
+// ========================================
+// COLLECT GROUP ASSIGNMENTS
+// ========================================
+
+const groupSelects =
+    Array.from(
+        document.querySelectorAll(
+            ".participation-team-group"
+        )
+    );
+
+const groupAssignments =
+    groupSelects
+        .filter(
+            function (select) {
+                return (
+                    select.value &&
+                    selectedTeamSet.has(
+                        Number(
+                            select.dataset.teamId
+                        )
+                    )
+                );
+            }
+        )
+        .map(
+            function (select) {
+                return {
+                    team_id:
+                        Number(
+                            select.dataset.teamId
+                        ),
+                    group_id:
+                        Number(
+                            select.value
+                        )
+                };
+            }
         );
 
-    try {
+try {
         showParticipationMessage(
             "Saving participating teams..."
         );
+        // ========================================
+        // VALIDATE GROUP ASSIGNMENTS
+        // ========================================
 
+        const {
+            data: currentStage,
+            error: currentStageError
+        } = await supabaseClient
+            .from("competition_stages")
+            .select(`
+                id,
+                stage_type,
+                teams_per_group
+            `)
+            .eq(
+                "id",
+                Number(stageId)
+            )
+            .single();
+
+        if (currentStageError) {
+            throw currentStageError;
+        }
+
+        if (
+            currentStage &&
+            currentStage.stage_type === "group"
+        ) {
+
+            if (
+                groupAssignments.length !==
+                selectedTeamIds.length
+            ) {
+
+                throw new Error(
+                    "Every participating team must be assigned to a group."
+                );
+            }
+
+
+            const groupCounts =
+                {};
+
+            groupAssignments.forEach(
+                function (assignment) {
+
+                    const groupId =
+                        String(
+                            assignment.group_id
+                        );
+
+                    groupCounts[groupId] =
+                        (
+                            groupCounts[groupId] ||
+                            0
+                        ) + 1;
+                }
+            );
+
+
+            const groupLimit =
+                Number(
+                    currentStage.teams_per_group ||
+                    0
+                );
+
+
+            if (groupLimit > 0) {
+
+                for (
+                    const groupId
+                    in groupCounts
+                ) {
+
+                    if (
+                        groupCounts[groupId] >
+                        groupLimit
+                    ) {
+
+                        throw new Error(
+                            "A group cannot contain more than " +
+                            groupLimit +
+                            " teams."
+                        );
+                    }
+                }
+            }
+        }
+    
         const {
             data: existingEntries,
             error: existingError
@@ -5142,6 +5270,300 @@ async function saveCompetitionParticipation(
 
             if (error) {
                 throw error;
+            }
+        }
+            // ========================================
+        // SAVE GROUP ASSIGNMENTS
+        // ========================================
+
+        if (
+            currentStage &&
+            currentStage.stage_type === "group"
+        ) {
+
+            // ----------------------------------------
+            // LOAD GROUPS BELONGING TO THIS STAGE
+            // ----------------------------------------
+
+            const {
+                data: stageGroups,
+                error: stageGroupsError
+            } = await supabaseClient
+                .from("competition_groups")
+                .select(`
+                    id,
+                    stage_id,
+                    name
+                `)
+                .eq(
+                    "stage_id",
+                    Number(stageId)
+                )
+                .order(
+                    "group_order",
+                    {
+                        ascending: true
+                    }
+                );
+
+            if (stageGroupsError) {
+                throw stageGroupsError;
+            }
+
+            const validGroupIds =
+                new Set(
+                    (stageGroups || []).map(
+                        function (group) {
+                            return Number(
+                                group.id
+                            );
+                        }
+                    )
+                );
+
+            // ----------------------------------------
+            // MAKE SURE ALL SELECTED GROUPS ARE VALID
+            // ----------------------------------------
+
+            const invalidAssignment =
+                groupAssignments.find(
+                    function (assignment) {
+                        return !validGroupIds.has(
+                            Number(
+                                assignment.group_id
+                            )
+                        );
+                    }
+                );
+
+            if (invalidAssignment) {
+                throw new Error(
+                    "One or more selected group assignments are invalid."
+                );
+            }
+
+            // ----------------------------------------
+            // LOAD EXISTING GROUP ASSIGNMENTS
+            // ----------------------------------------
+
+            let existingGroupAssignments = [];
+
+            if (
+                validGroupIds.size > 0
+            ) {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from(
+                        "competition_group_teams"
+                    )
+                    .select(`
+                        id,
+                        group_id,
+                        team_id
+                    `)
+                    .in(
+                        "group_id",
+                        Array.from(
+                            validGroupIds
+                        )
+                    );
+
+                if (error) {
+                    throw error;
+                }
+
+                existingGroupAssignments =
+                    data || [];
+            }
+
+            // ----------------------------------------
+            // CREATE MAP OF NEW ASSIGNMENTS
+            // ----------------------------------------
+
+            const newAssignmentMap =
+                new Map();
+
+            groupAssignments.forEach(
+                function (assignment) {
+
+                    newAssignmentMap.set(
+                        Number(
+                            assignment.team_id
+                        ),
+                        Number(
+                            assignment.group_id
+                        )
+                    );
+                }
+            );
+
+            // ----------------------------------------
+            // FIND ASSIGNMENTS TO DELETE
+            // ----------------------------------------
+
+            const groupEntriesToDelete =
+                existingGroupAssignments.filter(
+                    function (entry) {
+
+                        const teamId =
+                            Number(
+                                entry.team_id
+                            );
+
+                        const existingGroupId =
+                            Number(
+                                entry.group_id
+                            );
+
+                        const newGroupId =
+                            newAssignmentMap.get(
+                                teamId
+                            );
+
+                        return (
+                            !selectedTeamSet.has(
+                                teamId
+                            ) ||
+                            newGroupId === undefined ||
+                            Number(newGroupId) !==
+                                existingGroupId
+                        );
+                    }
+                );
+
+            // ----------------------------------------
+            // DELETE OLD / CHANGED ASSIGNMENTS
+            // ----------------------------------------
+
+            if (
+                groupEntriesToDelete.length > 0
+            ) {
+
+                const groupIdsToDelete =
+                    groupEntriesToDelete.map(
+                        function (entry) {
+                            return Number(
+                                entry.id
+                            );
+                        }
+                    );
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from(
+                        "competition_group_teams"
+                    )
+                    .delete()
+                    .in(
+                        "id",
+                        groupIdsToDelete
+                    );
+
+                if (error) {
+                    throw error;
+                }
+            }
+
+            // ----------------------------------------
+            // FIND NEW ASSIGNMENTS TO INSERT
+            // ----------------------------------------
+
+            const remainingAssignments =
+                existingGroupAssignments.filter(
+                    function (entry) {
+
+                        return (
+                            !groupEntriesToDelete.some(
+                                function (deleted) {
+                                    return Number(
+                                        deleted.id
+                                    ) ===
+                                    Number(
+                                        entry.id
+                                    );
+                                }
+                            )
+                        );
+                    }
+                );
+
+            const existingAssignmentKeys =
+                new Set(
+                    remainingAssignments.map(
+                        function (entry) {
+                            return (
+                                Number(
+                                    entry.team_id
+                                ) +
+                                "-" +
+                                Number(
+                                    entry.group_id
+                                )
+                            );
+                        }
+                    )
+                );
+
+            const assignmentsToInsert =
+                groupAssignments.filter(
+                    function (assignment) {
+
+                        const key =
+                            Number(
+                                assignment.team_id
+                            ) +
+                            "-" +
+                            Number(
+                                assignment.group_id
+                            );
+
+                        return !existingAssignmentKeys.has(
+                            key
+                        );
+                    }
+                );
+
+            // ----------------------------------------
+            // INSERT NEW GROUP ASSIGNMENTS
+            // ----------------------------------------
+
+            if (
+                assignmentsToInsert.length > 0
+            ) {
+
+                const insertGroupRows =
+                    assignmentsToInsert.map(
+                        function (assignment) {
+                            return {
+                                group_id:
+                                    Number(
+                                        assignment.group_id
+                                    ),
+                                team_id:
+                                    Number(
+                                        assignment.team_id
+                                    )
+                            };
+                        }
+                    );
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from(
+                        "competition_group_teams"
+                    )
+                    .insert(
+                        insertGroupRows
+                    );
+
+                if (error) {
+                    throw error;
+                }
             }
         }
 
