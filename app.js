@@ -2072,6 +2072,16 @@ if (
     "group_knockout"
 ) {
 
+    if (competitionStandingsTitleEl) {
+        competitionStandingsTitleEl.textContent =
+            "🏆 Group Standings";
+    }
+
+    if (competitionStandingsDescriptionEl) {
+        competitionStandingsDescriptionEl.textContent =
+            "Group standings updated from completed match results.";
+    }
+
     if (groupKnockoutTablesEl) {
         groupKnockoutTablesEl.style.display =
             "block";
