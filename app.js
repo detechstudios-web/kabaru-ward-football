@@ -2162,6 +2162,16 @@ if (
 
     return;
 }
+if (competitionStandingsTitleEl) {
+    competitionStandingsTitleEl.textContent =
+        "🏆 League Table";
+}
+
+if (competitionStandingsDescriptionEl) {
+    competitionStandingsDescriptionEl.textContent =
+        "Automatically updated from completed match results.";
+}
+
 if (groupKnockoutTablesEl) {
     groupKnockoutTablesEl.style.display =
         "none";
