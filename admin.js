@@ -4216,6 +4216,7 @@ async function loadCompetitionParticipationStages() {
 async function loadParticipationTeams(
     stageId
 ) {
+
     const teamsContainer =
         document.getElementById(
             "participationTeamsContainer"
@@ -4232,6 +4233,11 @@ async function loadParticipationTeams(
     `;
 
     try {
+
+        // ========================================
+        // LOAD APPROVED TEAMS
+        // ========================================
+
         const {
             data: teams,
             error: teamsError
@@ -4259,6 +4265,11 @@ async function loadParticipationTeams(
             throw teamsError;
         }
 
+
+        // ========================================
+        // LOAD PARTICIPATING TEAMS
+        // ========================================
+
         const {
             data: existingEntries,
             error: entriesError
@@ -4280,6 +4291,7 @@ async function loadParticipationTeams(
             throw entriesError;
         }
 
+
         const participatingTeamIds =
             new Set(
                 (
@@ -4294,10 +4306,124 @@ async function loadParticipationTeams(
                 )
             );
 
+
+        // ========================================
+        // LOAD STAGE INFORMATION
+        // ========================================
+
+        const {
+            data: stage,
+            error: stageError
+        } = await supabaseClient
+            .from("competition_stages")
+            .select(`
+                id,
+                stage_type,
+                number_of_groups,
+                teams_per_group
+            `)
+            .eq(
+                "id",
+                Number(stageId)
+            )
+            .single();
+
+        if (stageError) {
+            throw stageError;
+        }
+
+
+        // ========================================
+        // LOAD GROUPS IF THIS IS A GROUP STAGE
+        // ========================================
+
+        let groups = [];
+
+        let groupAssignments = [];
+
+        if (
+            stage &&
+            stage.stage_type === "group"
+        ) {
+
+            const {
+                data: groupRows,
+                error: groupsError
+            } = await supabaseClient
+                .from("competition_groups")
+                .select(`
+                    id,
+                    stage_id,
+                    name,
+                    group_order
+                `)
+                .eq(
+                    "stage_id",
+                    Number(stageId)
+                )
+                .order(
+                    "group_order",
+                    {
+                        ascending:true
+                    }
+                );
+
+            if (groupsError) {
+                throw groupsError;
+            }
+
+            groups =
+                groupRows ||
+                [];
+
+
+            if (groups.length > 0) {
+
+                const groupIds =
+                    groups.map(
+                        function (group) {
+                            return Number(
+                                group.id
+                            );
+                        }
+                    );
+
+
+                const {
+                    data: assignmentRows,
+                    error: assignmentError
+                } = await supabaseClient
+                    .from("competition_group_teams")
+                    .select(`
+                        id,
+                        group_id,
+                        team_id
+                    `)
+                    .in(
+                        "group_id",
+                        groupIds
+                    );
+
+                if (assignmentError) {
+                    throw assignmentError;
+                }
+
+                groupAssignments =
+                    assignmentRows ||
+                    [];
+            }
+        }
+
+
+        // ========================================
+        // NO APPROVED TEAMS
+        // ========================================
+
         if (
             !teams ||
             teams.length === 0
         ) {
+
             teamsContainer.innerHTML = `
                 <div
                     style="
@@ -4314,6 +4440,11 @@ async function loadParticipationTeams(
             return;
         }
 
+
+        // ========================================
+        // HEADER
+        // ========================================
+
         let html = `
             <div
                 style="
@@ -4325,6 +4456,7 @@ async function loadParticipationTeams(
                     margin-bottom:12px;
                 "
             >
+
                 <h3 style="margin:0;">
                     Select Participating Teams
                 </h3>
@@ -4336,6 +4468,7 @@ async function loadParticipationTeams(
                         flex-wrap:wrap;
                     "
                 >
+
                     <button
                         type="button"
                         class="admin-btn"
@@ -4351,9 +4484,61 @@ async function loadParticipationTeams(
                     >
                         ⬜ Clear All
                     </button>
-                </div>
-            </div>
 
+                </div>
+
+            </div>
+        `;
+
+
+        // ========================================
+        // GROUP STAGE INFORMATION
+        // ========================================
+
+        if (
+            stage &&
+            stage.stage_type === "group"
+        ) {
+
+            html += `
+                <div
+                    style="
+                        margin-bottom:15px;
+                        padding:12px;
+                        background:#eef6ff;
+                        border:1px solid #cfe2ff;
+                        border-radius:8px;
+                    "
+                >
+
+                    <strong>
+                        ⚽ Group Assignment
+                    </strong>
+
+                    <div
+                        style="
+                            margin-top:5px;
+                            color:#555;
+                        "
+                    >
+                        Select the group for each participating team.
+                        Each group can contain up to
+                        ${Number(
+                            stage.teams_per_group || 0
+                        )}
+                        team(s).
+                    </div>
+
+                </div>
+            `;
+        }
+
+
+        // ========================================
+        // TEAM LIST
+        // ========================================
+
+        html += `
             <div
                 style="
                     display:grid;
@@ -4362,72 +4547,199 @@ async function loadParticipationTeams(
             >
         `;
 
+
         teams.forEach(
             function (team) {
-                const checked =
-                    participatingTeamIds.has(
-                        Number(team.id)
+
+                const teamId =
+                    Number(
+                        team.id
                     );
 
+                const checked =
+                    participatingTeamIds.has(
+                        teamId
+                    );
+
+
+                let assignedGroupId =
+                    "";
+
+
+                if (
+                    stage &&
+                    stage.stage_type === "group"
+                ) {
+
+                    const assignment =
+                        groupAssignments.find(
+                            function (row) {
+
+                                return (
+                                    Number(
+                                        row.team_id
+                                    ) ===
+                                    teamId
+                                );
+
+                            }
+                        );
+
+
+                    if (assignment) {
+
+                        assignedGroupId =
+                            String(
+                                assignment.group_id
+                            );
+                    }
+                }
+
+
+                let groupSelectHtml =
+                    "";
+
+
+                if (
+                    stage &&
+                    stage.stage_type === "group"
+                ) {
+
+                    groupSelectHtml = `
+                        <select
+                            class="participation-team-group"
+                            data-team-id="${teamId}"
+                            style="
+                                min-width:150px;
+                                padding:8px;
+                                border:1px solid #ccc;
+                                border-radius:8px;
+                            "
+                            ${checked ? "" : "disabled"}
+                        >
+
+                            <option value="">
+                                Select Group
+                            </option>
+
+                            ${
+                                groups.map(
+                                    function (group) {
+
+                                        return `
+                                            <option
+                                                value="${Number(
+                                                    group.id
+                                                )}"
+                                                ${
+                                                    String(
+                                                        group.id
+                                                    ) ===
+                                                    String(
+                                                        assignedGroupId
+                                                    )
+                                                        ? "selected"
+                                                        : ""
+                                                }
+                                            >
+                                                ${escapeHtml(
+                                                    group.name
+                                                )}
+                                            </option>
+                                        `;
+
+                                    }
+                                ).join("")
+                            }
+
+                        </select>
+                    `;
+                }
+
+
                 html += `
-                    <label
+                    <div
                         style="
                             display:flex;
                             align-items:center;
+                            justify-content:space-between;
                             gap:12px;
+                            flex-wrap:wrap;
                             padding:12px;
                             background:#fff;
                             border:1px solid #ddd;
                             border-radius:8px;
-                            cursor:pointer;
                         "
                     >
-                        <input
-                            type="checkbox"
-                            class="participation-team-checkbox"
-                            value="${Number(
-                                team.id
-                            )}"
-                            ${
-                                checked
-                                    ? "checked"
-                                    : ""
-                            }
+
+                        <label
                             style="
-                                width:20px;
-                                height:20px;
+                                display:flex;
+                                align-items:center;
+                                gap:12px;
+                                cursor:pointer;
+                                flex:1;
+                                min-width:220px;
                             "
                         >
 
-                        <span>
-                            <strong>
-                                ${escapeHtml(
-                                    team.name ||
-                                    "Unnamed Team"
-                                )}
-                            </strong>
+                            <input
+                                type="checkbox"
+                                class="participation-team-checkbox"
+                                value="${teamId}"
+                                ${
+                                    checked
+                                        ? "checked"
+                                        : ""
+                                }
+                                style="
+                                    width:20px;
+                                    height:20px;
+                                "
+                            >
 
-                            ${
-                                team.short_name
-                                    ? `
-                                        <span
-                                            style="
-                                                color:#666;
-                                                margin-left:6px;
-                                            "
-                                        >
-                                            (${escapeHtml(
-                                                team.short_name
-                                            )})
-                                        </span>
-                                      `
-                                    : ""
-                            }
-                        </span>
-                    </label>
+                            <span>
+
+                                <strong>
+                                    ${escapeHtml(
+                                        team.name ||
+                                        "Unnamed Team"
+                                    )}
+                                </strong>
+
+                                ${
+                                    team.short_name
+                                        ? `
+                                            <span
+                                                style="
+                                                    color:#666;
+                                                    margin-left:6px;
+                                                "
+                                            >
+                                                (${escapeHtml(
+                                                    team.short_name
+                                                )})
+                                            </span>
+                                        `
+                                        : ""
+                                }
+
+                            </span>
+
+                        </label>
+
+                        ${
+                            stage &&
+                            stage.stage_type === "group"
+                                ? groupSelectHtml
+                                : ""
+                        }
+
+                    </div>
                 `;
             }
         );
+
 
         html += `
             </div>
@@ -4440,6 +4752,7 @@ async function loadParticipationTeams(
                     flex-wrap:wrap;
                 "
             >
+
                 <button
                     type="button"
                     class="admin-btn"
@@ -4451,20 +4764,34 @@ async function loadParticipationTeams(
                 >
                     💾 SAVE PARTICIPATING TEAMS
                 </button>
+
             </div>
         `;
+
 
         teamsContainer.innerHTML =
             html;
 
+
+        // ========================================
+        // CHECKBOX HELPERS
+        // ========================================
+
         const checkboxes =
             function () {
+
                 return Array.from(
                     document.querySelectorAll(
                         ".participation-team-checkbox"
                     )
                 );
+
             };
+
+
+        // ========================================
+        // SELECT ALL
+        // ========================================
 
         document
             .getElementById(
@@ -4473,14 +4800,36 @@ async function loadParticipationTeams(
             ?.addEventListener(
                 "click",
                 function () {
+
                     checkboxes().forEach(
                         function (checkbox) {
+
                             checkbox.checked =
                                 true;
+
+                            const teamId =
+                                checkbox.value;
+
+                            const groupSelect =
+                                document.querySelector(
+                                    `.participation-team-group[data-team-id="${teamId}"]`
+                                );
+
+                            if (groupSelect) {
+                                groupSelect.disabled =
+                                    false;
+                            }
+
                         }
                     );
+
                 }
             );
+
+
+        // ========================================
+        // CLEAR ALL
+        // ========================================
 
         document
             .getElementById(
@@ -4489,14 +4838,81 @@ async function loadParticipationTeams(
             ?.addEventListener(
                 "click",
                 function () {
+
                     checkboxes().forEach(
                         function (checkbox) {
+
                             checkbox.checked =
                                 false;
+
+                            const teamId =
+                                checkbox.value;
+
+                            const groupSelect =
+                                document.querySelector(
+                                    `.participation-team-group[data-team-id="${teamId}"]`
+                                );
+
+                            if (groupSelect) {
+
+                                groupSelect.disabled =
+                                    true;
+
+                                groupSelect.value =
+                                    "";
+                            }
+
                         }
                     );
+
                 }
             );
+
+
+        // ========================================
+        // ENABLE / DISABLE GROUP SELECTOR
+        // ========================================
+
+        checkboxes().forEach(
+            function (checkbox) {
+
+                checkbox.addEventListener(
+                    "change",
+                    function () {
+
+                        const teamId =
+                            checkbox.value;
+
+                        const groupSelect =
+                            document.querySelector(
+                                `.participation-team-group[data-team-id="${teamId}"]`
+                            );
+
+                        if (!groupSelect) {
+                            return;
+                        }
+
+                        groupSelect.disabled =
+                            !checkbox.checked;
+
+                        if (
+                            !checkbox.checked
+                        ) {
+
+                            groupSelect.value =
+                                "";
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ========================================
+        // SAVE
+        // ========================================
 
         document
             .getElementById(
@@ -4504,6 +4920,40 @@ async function loadParticipationTeams(
             )
             ?.addEventListener(
                 "click",
+                async function () {
+
+                    await saveCompetitionParticipation(
+                        Number(stageId)
+                    );
+
+                }
+            );
+
+    } catch (error) {
+
+        console.error(
+            "LOAD PARTICIPATION TEAMS ERROR:",
+            error
+        );
+
+        teamsContainer.innerHTML = `
+            <div
+                style="
+                    padding:12px;
+                    background:#fdecec;
+                    border-radius:8px;
+                    color:#b00020;
+                "
+            >
+                ❌ Unable to load participating teams:
+                ${escapeHtml(
+                    error.message ||
+                    "Unknown error"
+                )}
+            </div>
+        `;
+    }
+}
                 async function () {
                     await saveCompetitionParticipation(
                         Number(stageId)
