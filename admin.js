@@ -4870,6 +4870,46 @@ async function loadParticipationTeams(
 
 
 
+        // ========================================
+        // ENABLE / DISABLE GROUP SELECTOR
+        // ========================================
+
+        checkboxes().forEach(
+            function (checkbox) {
+
+                checkbox.addEventListener(
+                    "change",
+                    function () {
+
+                        const teamId =
+                            checkbox.value;
+
+                        const groupSelect =
+                            document.querySelector(
+                                `.participation-team-group[data-team-id="${teamId}"]`
+                            );
+                        
+                        if (!groupSelect) {
+                            return;
+                        }
+
+                        groupSelect.disabled =
+                            !checkbox.checked;
+
+                        if (
+                            !checkbox.checked
+                        ) {
+
+                            groupSelect.value =
+                                "";
+                        }
+
+                    }
+                );
+
+            }
+        );
+
 
         // ========================================
         // SAVE
