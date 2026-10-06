@@ -438,13 +438,14 @@ const redCardsEl =
         let query = supabaseClient
             .from("competitions")
             .select(`
-                id,
-                name,
-                competition_type,
-                season,
-                status,
-                created_at
-            `)
+    id,
+    name,
+    competition_type,
+    competition_format,
+    season,
+    status,
+    created_at
+`)
             .order("created_at", {
                 ascending: false
             });
