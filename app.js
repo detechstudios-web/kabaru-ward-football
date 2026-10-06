@@ -4386,35 +4386,10 @@ async function loadKnockoutStage(
 
 
                             const homeTeam =
-                                (window.__teamsCache || [])
-                                    .find(
-                                        function (
-                                            team
-                                        ) {
-                                            return String(
-                                                team.id
-                                            ) ===
-                                            String(
-                                                fixture.home_team_id
-                                            );
-                                        }
-                                    );
+    fixture.home_team || null;
 
-
-                            const awayTeam =
-                                (window.__teamsCache || [])
-                                    .find(
-                                        function (
-                                            team
-                                        ) {
-                                            return String(
-                                                team.id
-                                            ) ===
-                                            String(
-                                                fixture.away_team_id
-                                            );
-                                        }
-                                    );
+const awayTeam =
+    fixture.away_team || null;
 
 
                             const homeName =
