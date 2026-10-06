@@ -5012,11 +5012,51 @@ async function saveCompetitionParticipation(
             );
 
     const selectedTeamSet =
-        new Set(
-            selectedTeamIds
+    new Set(
+        selectedTeamIds
+    );
+
+// ========================================
+// COLLECT GROUP ASSIGNMENTS
+// ========================================
+
+const groupSelects =
+    Array.from(
+        document.querySelectorAll(
+            ".participation-team-group"
+        )
+    );
+
+const groupAssignments =
+    groupSelects
+        .filter(
+            function (select) {
+                return (
+                    select.value &&
+                    selectedTeamSet.has(
+                        Number(
+                            select.dataset.teamId
+                        )
+                    )
+                );
+            }
+        )
+        .map(
+            function (select) {
+                return {
+                    team_id:
+                        Number(
+                            select.dataset.teamId
+                        ),
+                    group_id:
+                        Number(
+                            select.value
+                        )
+                };
+            }
         );
 
-    try {
+try {
         showParticipationMessage(
             "Saving participating teams..."
         );
