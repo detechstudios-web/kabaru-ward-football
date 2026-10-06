@@ -67,7 +67,15 @@ const normalLeagueTableWrapperEl =
     document.getElementById(
         "normalLeagueTableWrapper"
     );
+const competitionStandingsTitleEl =
+    document.getElementById(
+        "competitionStandingsTitle"
+    );
 
+const competitionStandingsDescriptionEl =
+    document.getElementById(
+        "competitionStandingsDescription"
+    );
 const topScorersEl =
     scorerContainer;
 
