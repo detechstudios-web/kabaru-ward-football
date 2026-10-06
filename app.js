@@ -2016,15 +2016,10 @@ const leagueCompetition =
     competition || null;
 
 // ========================================
-// LEAGUE TABLE ONLY APPLIES TO LEAGUES
+// COMPETITION FORMAT HANDLING
 // ========================================
 
-if (
-    !leagueCompetition ||
-    leagueCompetition.competition_type !==
-        "League"
-) {
-
+if (!leagueCompetition) {
     leagueTableEl.innerHTML = `
         <tr>
             <td
@@ -2044,24 +2039,60 @@ if (
                 </div>
 
                 <strong>
-                    No league table for this competition
+                    No competition selected
                 </strong>
-
-                <div
-                    style="
-                        margin-top:8px;
-                        color:#666;
-                    "
-                >
-                    Select a league competition to view
-                    league standings.
-                </div>
             </td>
         </tr>
     `;
 
     return;
-} 
+}
+
+// Group + Knockout competitions will be handled
+// separately after the normal league table logic.
+if (
+    leagueCompetition.competition_format ===
+    "group_knockout"
+) {
+    await loadGroupKnockoutTables(leagueCompetition);
+    return;
+}
+
+// Friendly competitions do not have league standings.
+if (
+    leagueCompetition.competition_format ===
+    "friendly"
+) {
+    leagueTableEl.innerHTML = `
+        <tr>
+            <td
+                colspan="11"
+                style="
+                    text-align:center;
+                    padding:30px;
+                "
+            >
+                <div
+                    style="
+                        font-size:36px;
+                        margin-bottom:10px;
+                    "
+                >
+                    ⚽
+                </div>
+
+                <strong>
+                    No league table for friendly matches
+                </strong>
+            </td>
+        </tr>
+    `;
+
+    return;
+}
+
+// Normal league competitions continue
+// through the existing league-table logic below.
 
 // ========================================
 // LOAD APPROVED TEAMS
