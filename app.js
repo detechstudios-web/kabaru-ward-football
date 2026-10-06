@@ -2096,38 +2096,9 @@ if (
             "none";
     }
 
-    if (groupKnockoutTablesEl) {
-        groupKnockoutTablesEl.innerHTML = `
-            <div
-                style="
-                    text-align:center;
-                    padding:30px;
-                "
-            >
-                <div
-                    style="
-                        font-size:36px;
-                        margin-bottom:10px;
-                    "
-                >
-                    🏆
-                </div>
-
-                <strong>
-                    Knockout Stage
-                </strong>
-
-                <p
-                    style="
-                        margin-top:8px;
-                        color:#777;
-                    "
-                >
-                    Knockout fixtures and results will appear here.
-                </p>
-            </div>
-        `;
-    }
+    await loadKnockoutStage(
+    leagueCompetition
+);
 
     return;
 }
