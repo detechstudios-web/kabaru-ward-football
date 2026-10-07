@@ -9906,16 +9906,10 @@ if (
     };
 }
 
-// Group + Knockout competitions are handled separately
-// when the group stage finishes.
-// The normal knockout progression below remains unchanged.
-if (
-    competition.competition_format === "group_knockout"
-) {
-    return {
-        type: "group_knockout_pending"
-    };
-}
+// Group + Knockout competitions use the same knockout
+// progression logic after the group stage has finished.
+// The Group → Knockout transition is handled separately
+// by advanceGroupToKnockout().
 
         // Current result structure supports one-leg knockout.
         if (
