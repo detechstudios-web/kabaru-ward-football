@@ -10034,16 +10034,37 @@ if (
         );
 
         const completedFixtures = (fixtures || []).filter(
-            fixture =>
-                fixture.status === "Completed" &&
-                resultMap.has(fixture.id)
-        );
+    fixture =>
+        fixture.status === "Completed" &&
+        resultMap.has(fixture.id)
+);
+
+// For knockout progression, only fixtures from the
+// knockout round containing the completed fixture
+// should be considered.
+//
+// This is especially important for Group + Knockout
+// competitions because their group-stage results are
+// also stored in the same fixtures table.
+//
+// Knockout rounds are generated with their own matchday,
+// so the completed fixture's matchday identifies the
+// current knockout round.
+const currentKnockoutMatchday =
+    Number(completedFixture.matchday || 0);
+
+const currentRoundFixtures =
+    completedFixtures.filter(
+        fixture =>
+            Number(fixture.matchday || 0) ===
+            currentKnockoutMatchday
+    );
 
 // ----------------------------------------------------
 // 7. Identify the round that has just been completed
 // ----------------------------------------------------
 const completedFixtureCount =
-    completedFixtures.length;
+    currentRoundFixtures.length;
 
 let completedRound = null;
 let previousRoundMatchCount = 0;
