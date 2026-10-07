@@ -10219,27 +10219,34 @@ const roundFixtures = completedFixtures
         }
 
         // ----------------------------------------------------
-        // 12. Check whether next-round fixtures already exist
-        // ----------------------------------------------------
-        const nextRoundMatches =
-            Number(nextRound.number_of_matches);
+// 12. Check whether next-round fixtures already exist
+// ----------------------------------------------------
+const nextRoundMatches =
+    Number(nextRound.number_of_matches);
 
-        const existingTeamIds = new Set();
+const existingTeamIds = new Set();
 
-        for (const fixture of fixtures || []) {
-            if (
-                fixture.home_team_id &&
-                fixture.away_team_id
-            ) {
-                existingTeamIds.add(
-                    `${fixture.home_team_id}-${fixture.away_team_id}`
-                );
+for (const fixture of fixtures || []) {
+    if (
+        Number(fixture.matchday || 0) !==
+        Number(currentKnockoutMatchday || 0) + 1
+    ) {
+        continue;
+    }
 
-                existingTeamIds.add(
-                    `${fixture.away_team_id}-${fixture.home_team_id}`
-                );
-            }
-        }
+    if (
+        fixture.home_team_id &&
+        fixture.away_team_id
+    ) {
+        existingTeamIds.add(
+            `${fixture.home_team_id}-${fixture.away_team_id}`
+        );
+
+        existingTeamIds.add(
+            `${fixture.away_team_id}-${fixture.home_team_id}`
+        );
+    }
+}
 
         // ----------------------------------------------------
         // 13. Create next-round fixtures
