@@ -8933,12 +8933,29 @@ async function advanceKnockoutAfterResult(
 
         if (competitionError) throw competitionError;
 
-        // Only process pure knockout competitions.
-        if (competition.competition_format !== "knockout") {
-            return {
-                type: "not_applicable"
-            };
-        }
+        // ----------------------------------------------------
+// HANDLE GROUP + KNOCKOUT COMPETITIONS
+// ----------------------------------------------------
+
+if (
+    competition.competition_format !== "knockout" &&
+    competition.competition_format !== "group_knockout"
+) {
+    return {
+        type: "not_applicable"
+    };
+}
+
+// Group + Knockout competitions are handled separately
+// when the group stage finishes.
+// The normal knockout progression below remains unchanged.
+if (
+    competition.competition_format === "group_knockout"
+) {
+    return {
+        type: "group_knockout_pending"
+    };
+}
 
         // Current result structure supports one-leg knockout.
         if (
