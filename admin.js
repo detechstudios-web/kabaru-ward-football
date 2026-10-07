@@ -8908,7 +8908,966 @@ if (saveResultBtn) {
 // ============================================================
 // AUTOMATIC KNOCKOUT PROGRESSION
 // ============================================================
+// ============================================================
+// GROUP → KNOCKOUT AUTOMATIC TRANSITION
+// ============================================================
 
+async function advanceGroupToKnockout(
+    competitionId
+) {
+    try {
+
+        // ----------------------------------------------------
+        // 1. Get GROUP stage
+        // ----------------------------------------------------
+
+        const {
+            data: groupStage,
+            error: groupStageError
+        } = await supabase
+            .from("competition_stages")
+            .select(`
+                id,
+                next_stage_id,
+                progression_method,
+                number_of_groups,
+                teams_per_group,
+                qualifiers_per_group
+            `)
+            .eq(
+                "competition_id",
+                competitionId
+            )
+            .eq(
+                "stage_type",
+                "group"
+            )
+            .order(
+                "stage_order",
+                {
+                    ascending: true
+                }
+            )
+            .limit(1)
+            .maybeSingle();
+
+        if (groupStageError) {
+            throw groupStageError;
+        }
+
+        if (!groupStage) {
+            return {
+                type: "not_applicable"
+            };
+        }
+
+        if (!groupStage.next_stage_id) {
+            return {
+                type: "warning",
+                message:
+                    "Group stage is complete, but no knockout stage is linked."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 2. Get groups
+        // ----------------------------------------------------
+
+        const {
+            data: groups,
+            error: groupsError
+        } = await supabase
+            .from("competition_groups")
+            .select(`
+                id,
+                name,
+                group_order
+            `)
+            .eq(
+                "stage_id",
+                groupStage.id
+            )
+            .order(
+                "group_order",
+                {
+                    ascending: true
+                }
+            );
+
+        if (groupsError) {
+            throw groupsError;
+        }
+
+        if (
+            !groups ||
+            groups.length === 0
+        ) {
+            return {
+                type: "warning",
+                message:
+                    "No groups were found for this group stage."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 3. Get group teams
+        // ----------------------------------------------------
+
+        const groupIds =
+            groups.map(
+                function (group) {
+                    return group.id;
+                }
+            );
+
+        const {
+            data: groupTeams,
+            error: groupTeamsError
+        } = await supabase
+            .from("competition_group_teams")
+            .select(`
+                group_id,
+                team_id
+            `)
+            .in(
+                "group_id",
+                groupIds
+            );
+
+        if (groupTeamsError) {
+            throw groupTeamsError;
+        }
+
+        // ----------------------------------------------------
+        // 4. Get all competition fixtures
+        // ----------------------------------------------------
+
+        const {
+            data: fixtures,
+            error: fixturesError
+        } = await supabase
+            .from("fixtures")
+            .select(`
+                id,
+                home_team_id,
+                away_team_id,
+                match_date,
+                kick_off,
+                venue,
+                matchday,
+                status
+            `)
+            .eq(
+                "competition_id",
+                competitionId
+            );
+
+        if (fixturesError) {
+            throw fixturesError;
+        }
+
+        const allFixtures =
+            fixtures || [];
+
+        // ----------------------------------------------------
+        // 5. Get results
+        // ----------------------------------------------------
+
+        const fixtureIds =
+            allFixtures.map(
+                function (fixture) {
+                    return fixture.id;
+                }
+            );
+
+        let results = [];
+
+        if (
+            fixtureIds.length > 0
+        ) {
+
+            const {
+                data,
+                error: resultsError
+            } = await supabase
+                .from("results")
+                .select(`
+                    id,
+                    fixture_id,
+                    home_score,
+                    away_score
+                `)
+                .in(
+                    "fixture_id",
+                    fixtureIds
+                );
+
+            if (resultsError) {
+                throw resultsError;
+            }
+
+            results =
+                data || [];
+        }
+
+        const resultMap =
+            new Map();
+
+        results.forEach(
+            function (result) {
+                resultMap.set(
+                    String(
+                        result.fixture_id
+                    ),
+                    result
+                );
+            }
+        );
+
+        // ----------------------------------------------------
+        // 6. Check every group is complete
+        // ----------------------------------------------------
+
+        let allGroupsComplete =
+            true;
+
+        for (
+            const group of groups
+        ) {
+
+            const members =
+                (groupTeams || [])
+                    .filter(
+                        function (membership) {
+                            return (
+                                String(
+                                    membership.group_id
+                                ) ===
+                                String(
+                                    group.id
+                                )
+                            );
+                        }
+                    );
+
+            const teamIds =
+                new Set(
+                    members.map(
+                        function (membership) {
+                            return String(
+                                membership.team_id
+                            );
+                        }
+                    )
+                );
+
+            const teamCount =
+                teamIds.size;
+
+            let expectedMatches = 0;
+
+            if (
+                teamCount > 1
+            ) {
+                expectedMatches =
+                    (
+                        teamCount *
+                        (teamCount - 1)
+                    ) / 2;
+            }
+
+            let completedMatches = 0;
+
+            allFixtures.forEach(
+                function (fixture) {
+
+                    const homeId =
+                        String(
+                            fixture.home_team_id
+                        );
+
+                    const awayId =
+                        String(
+                            fixture.away_team_id
+                        );
+
+                    if (
+                        !teamIds.has(homeId) ||
+                        !teamIds.has(awayId)
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        String(
+                            fixture.status || ""
+                        ).toLowerCase() !==
+                        "completed"
+                    ) {
+                        return;
+                    }
+
+                    const result =
+                        resultMap.get(
+                            String(
+                                fixture.id
+                            )
+                        );
+
+                    if (!result) {
+                        return;
+                    }
+
+                    completedMatches += 1;
+                }
+            );
+
+            if (
+                completedMatches <
+                expectedMatches
+            ) {
+                allGroupsComplete =
+                    false;
+            }
+        }
+
+        if (!allGroupsComplete) {
+
+            return {
+                type:
+                    "group_stage_incomplete"
+            };
+        }
+
+        // ----------------------------------------------------
+        // 7. Read qualification slots
+        // ----------------------------------------------------
+
+        const {
+            data: qualificationSlots,
+            error:
+                qualificationError
+        } = await supabase
+            .from(
+                "competition_qualification_slots"
+            )
+            .select(`
+                id,
+                group_id,
+                position,
+                label
+            `)
+            .eq(
+                "stage_id",
+                groupStage.id
+            )
+            .order(
+                "group_id",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "position",
+                {
+                    ascending: true
+                }
+            );
+
+        if (qualificationError) {
+            throw qualificationError;
+        }
+
+        if (
+            !qualificationSlots ||
+            qualificationSlots.length === 0
+        ) {
+            return {
+                type: "warning",
+                message:
+                    "The group stage is complete, but no qualification slots were configured."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 8. Build standings for each group
+        // ----------------------------------------------------
+
+        const qualifiedTeams = [];
+
+        for (
+            const group of groups
+        ) {
+
+            const members =
+                (groupTeams || [])
+                    .filter(
+                        function (membership) {
+                            return (
+                                String(
+                                    membership.group_id
+                                ) ===
+                                String(
+                                    group.id
+                                )
+                            );
+                        }
+                    );
+
+            const table = {};
+
+            members.forEach(
+                function (membership) {
+
+                    const teamId =
+                        String(
+                            membership.team_id
+                        );
+
+                    table[teamId] = {
+                        id:
+                            membership.team_id,
+                        played: 0,
+                        won: 0,
+                        drawn: 0,
+                        lost: 0,
+                        gf: 0,
+                        ga: 0,
+                        points: 0
+                    };
+                }
+            );
+
+            allFixtures.forEach(
+                function (fixture) {
+
+                    const homeId =
+                        String(
+                            fixture.home_team_id
+                        );
+
+                    const awayId =
+                        String(
+                            fixture.away_team_id
+                        );
+
+                    if (
+                        !table[homeId] ||
+                        !table[awayId]
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        String(
+                            fixture.status || ""
+                        ).toLowerCase() !==
+                        "completed"
+                    ) {
+                        return;
+                    }
+
+                    const result =
+                        resultMap.get(
+                            String(
+                                fixture.id
+                            )
+                        );
+
+                    if (!result) {
+                        return;
+                    }
+
+                    const homeScore =
+                        Number(
+                            result.home_score
+                        );
+
+                    const awayScore =
+                        Number(
+                            result.away_score
+                        );
+
+                    if (
+                        !Number.isFinite(
+                            homeScore
+                        ) ||
+                        !Number.isFinite(
+                            awayScore
+                        )
+                    ) {
+                        return;
+                    }
+
+                    table[homeId].played++;
+                    table[awayId].played++;
+
+                    table[homeId].gf +=
+                        homeScore;
+
+                    table[homeId].ga +=
+                        awayScore;
+
+                    table[awayId].gf +=
+                        awayScore;
+
+                    table[awayId].ga +=
+                        homeScore;
+
+                    if (
+                        homeScore >
+                        awayScore
+                    ) {
+
+                        table[homeId].won++;
+                        table[awayId].lost++;
+
+                        table[homeId].points +=
+                            3;
+
+                    } else if (
+                        awayScore >
+                        homeScore
+                    ) {
+
+                        table[awayId].won++;
+                        table[homeId].lost++;
+
+                        table[awayId].points +=
+                            3;
+
+                    } else {
+
+                        table[homeId].drawn++;
+                        table[awayId].drawn++;
+
+                        table[homeId].points++;
+                        table[awayId].points++;
+                    }
+                }
+            );
+
+            const standings =
+                Object.values(
+                    table
+                );
+
+            standings.forEach(
+                function (team) {
+                    team.gd =
+                        team.gf -
+                        team.ga;
+                }
+            );
+
+            standings.sort(
+                function (a, b) {
+
+                    if (
+                        b.points !==
+                        a.points
+                    ) {
+                        return (
+                            b.points -
+                            a.points
+                        );
+                    }
+
+                    if (
+                        b.gd !==
+                        a.gd
+                    ) {
+                        return (
+                            b.gd -
+                            a.gd
+                        );
+                    }
+
+                    return (
+                        b.gf -
+                        a.gf
+                    );
+                }
+            );
+
+            // ------------------------------------------------
+            // 9. Apply qualification slots
+            // ------------------------------------------------
+
+            qualificationSlots
+                .filter(
+                    function (slot) {
+                        return (
+                            String(
+                                slot.group_id
+                            ) ===
+                            String(
+                                group.id
+                            )
+                        );
+                    }
+                )
+                .forEach(
+                    function (slot) {
+
+                        const position =
+                            Number(
+                                slot.position
+                            );
+
+                        const team =
+                            standings[
+                                position - 1
+                            ];
+
+                        if (!team) {
+                            return;
+                        }
+
+                        qualifiedTeams.push({
+                            slot_id:
+                                slot.id,
+                            slot_label:
+                                slot.label,
+                            group_id:
+                                group.id,
+                            group_name:
+                                group.name,
+                            position:
+                                position,
+                            team_id:
+                                team.id
+                        });
+                    }
+                );
+        }
+
+        // ----------------------------------------------------
+        // 10. Make sure we have the exact number of teams
+        // ----------------------------------------------------
+
+        const requiredTeams =
+            Number(
+                groupStage
+                    .number_of_groups || 0
+            ) *
+            Number(
+                groupStage
+                    .qualifiers_per_group || 0
+            );
+
+        if (
+            qualifiedTeams.length !==
+            requiredTeams
+        ) {
+            return {
+                type: "warning",
+                message:
+                    "The group stage finished, but the number of qualified teams does not match the configured knockout requirement."
+            };
+        }
+
+        // ----------------------------------------------------
+        // 11. Check whether first knockout round
+        //     already has fixtures
+        // ----------------------------------------------------
+
+        const {
+            data: knockoutRounds,
+            error:
+                knockoutRoundsError
+        } = await supabase
+            .from(
+                "competition_knockout_rounds"
+            )
+            .select(`
+                id,
+                name,
+                round_order,
+                number_of_matches,
+                status
+            `)
+            .eq(
+                "stage_id",
+                groupStage.next_stage_id
+            )
+            .order(
+                "round_order",
+                {
+                    ascending: true
+                }
+            );
+
+        if (knockoutRoundsError) {
+            throw knockoutRoundsError;
+        }
+
+        if (
+            !knockoutRounds ||
+            knockoutRounds.length === 0
+        ) {
+            return {
+                type: "warning",
+                message:
+                    "No knockout rounds were configured."
+            };
+        }
+
+        const firstRound =
+            knockoutRounds[0];
+
+        const expectedFixtures =
+            Number(
+                firstRound.number_of_matches || 0
+            );
+
+        const existingKnockoutFixtures =
+            allFixtures.filter(
+                function (fixture) {
+
+                    return (
+                        fixture.matchday !== null &&
+                        Number(
+                            fixture.matchday
+                        ) >
+                        Math.max(
+                            ...allFixtures
+                                .filter(
+                                    function (item) {
+                                        return (
+                                            item.matchday !== null
+                                        );
+                                    }
+                                )
+                                .map(
+                                    function (item) {
+                                        return Number(
+                                            item.matchday
+                                        );
+                                    }
+                                ),
+                            0
+                        )
+                    );
+                }
+            );
+
+        // ----------------------------------------------------
+        // 12. Prevent duplicate generation
+        // ----------------------------------------------------
+
+        if (
+            existingKnockoutFixtures.length >=
+            expectedFixtures
+        ) {
+            return {
+                type:
+                    "already_generated"
+            };
+        }
+
+        // ----------------------------------------------------
+        // 13. Create first knockout fixtures
+        // ----------------------------------------------------
+
+        const newFixtures = [];
+
+        const lastGroupFixture =
+            allFixtures
+                .filter(
+                    function (fixture) {
+                        return (
+                            fixture.match_date
+                        );
+                    }
+                )
+                .sort(
+                    function (a, b) {
+                        return (
+                            new Date(
+                                b.match_date
+                            ) -
+                            new Date(
+                                a.match_date
+                            )
+                        );
+                    }
+                )[0];
+
+        const defaultDate =
+            lastGroupFixture
+                ? new Date(
+                    lastGroupFixture.match_date +
+                    "T00:00:00"
+                )
+                : new Date();
+
+        defaultDate.setDate(
+            defaultDate.getDate() + 1
+        );
+
+        const defaultDateString =
+            defaultDate
+                .toISOString()
+                .split("T")[0];
+
+        const defaultKickoff =
+            lastGroupFixture &&
+            lastGroupFixture.kick_off
+                ? lastGroupFixture.kick_off
+                : "15:00";
+
+        const defaultVenue =
+            lastGroupFixture &&
+            lastGroupFixture.venue
+                ? lastGroupFixture.venue
+                : "Kabaru Grounds";
+
+        const maxMatchday =
+            allFixtures.length > 0
+                ? Math.max(
+                    ...allFixtures.map(
+                        function (fixture) {
+                            return Number(
+                                fixture.matchday || 0
+                            );
+                        }
+                    )
+                )
+                : 0;
+
+        const nextMatchday =
+            maxMatchday + 1;
+
+        for (
+            let i = 0;
+            i < qualifiedTeams.length;
+            i += 2
+        ) {
+
+            const homeTeam =
+                qualifiedTeams[i];
+
+            const awayTeam =
+                qualifiedTeams[i + 1];
+
+            if (
+                !homeTeam ||
+                !awayTeam
+            ) {
+                continue;
+            }
+
+            newFixtures.push({
+                competition_id:
+                    competitionId,
+
+                home_team_id:
+                    homeTeam.team_id,
+
+                away_team_id:
+                    awayTeam.team_id,
+
+                match_date:
+                    defaultDateString,
+
+                kick_off:
+                    defaultKickoff,
+
+                venue:
+                    defaultVenue,
+
+                matchday:
+                    nextMatchday,
+
+                status:
+                    "Scheduled"
+            });
+        }
+
+        if (
+            newFixtures.length !==
+            expectedFixtures
+        ) {
+            return {
+                type: "warning",
+                message:
+                    "The system could not create the expected number of knockout fixtures."
+            };
+        }
+
+        const {
+            error: insertError
+        } = await supabase
+            .from("fixtures")
+            .insert(
+                newFixtures
+            );
+
+        if (insertError) {
+            throw insertError;
+        }
+
+        // ----------------------------------------------------
+        // 14. Update stage/round status
+        // ----------------------------------------------------
+
+        await supabase
+            .from("competition_stages")
+            .update({
+                status:
+                    "Completed"
+            })
+            .eq(
+                "id",
+                groupStage.id
+            );
+
+        await supabase
+            .from("competition_stages")
+            .update({
+                status:
+                    "Active"
+            })
+            .eq(
+                "id",
+                groupStage.next_stage_id
+            );
+
+        await supabase
+            .from("competition_knockout_rounds")
+            .update({
+                status:
+                    "Active"
+            })
+            .eq(
+                "id",
+                firstRound.id
+            );
+
+        return {
+            type:
+                "progressed",
+            roundName:
+                firstRound.name,
+            fixturesCreated:
+                newFixtures.length
+        };
+
+    } catch (error) {
+
+        console.error(
+            "GROUP → KNOCKOUT TRANSITION ERROR:",
+            error
+        );
+
+        return {
+            type: "warning",
+            message:
+                "The group stage finished, but automatic knockout generation encountered an error."
+        };
+    }
+}
 async function advanceKnockoutAfterResult(
     completedFixture,
     homeFinalScore,
