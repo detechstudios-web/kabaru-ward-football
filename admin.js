@@ -9621,12 +9621,35 @@ async function advanceGroupToKnockout(
                 firstRound.number_of_matches || 0
             );
 
-        const existingKnockoutFixtures =
+const groupTeamIds = new Set(
+    (groupTeams || []).map(function (membership) {
+        return String(membership.team_id);
+    })
+);
+
+const groupStageFixtures =
     allFixtures.filter(function (fixture) {
+        const homeId =
+            String(fixture.home_team_id);
+
+        const awayId =
+            String(fixture.away_team_id);
+
         return (
-            fixture.home_team_id !== null &&
-            fixture.away_team_id !== null &&
-            fixture.matchday !== null
+            groupTeamIds.has(homeId) &&
+            groupTeamIds.has(awayId)
+        );
+    });
+
+const existingKnockoutFixtures =
+    allFixtures.filter(function (fixture) {
+        return !groupStageFixtures.some(
+            function (groupFixture) {
+                return (
+                    String(groupFixture.id) ===
+                    String(fixture.id)
+                );
+            }
         );
     });
 
