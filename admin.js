@@ -10248,99 +10248,119 @@ for (const fixture of fixtures || []) {
     }
 }
 
-        // ----------------------------------------------------
-        // 13. Create next-round fixtures
-        // ----------------------------------------------------
-        const newFixtures = [];
+    
+// ----------------------------------------------------
+// 13. Create next-round fixtures
+// ----------------------------------------------------
+const nextRoundMatches =
+    Number(nextRound.number_of_matches);
 
-        // Default date = day after latest completed match
-        const latestFixture = roundFixtures
-            .slice()
-            .sort(
-                (a, b) =>
-                    new Date(b.match_date) -
-                    new Date(a.match_date)
-            )[0];
+const newFixtures = [];
 
-        const defaultDate = new Date(
-            latestFixture.match_date + "T00:00:00"
-        );
+// The number of winners must be exactly
+// two times the number of matches required
+// in the next round.
+if (
+    winners.length !==
+    nextRoundMatches * 2
+) {
+    return {
+        type: "warning",
+        message:
+            "The result was saved, but the number of advancing teams does not match the required next knockout round."
+    };
+}
 
-        defaultDate.setDate(
-            defaultDate.getDate() + 1
-        );
+// Default date = day after latest completed match
+const latestFixture = roundFixtures
+    .slice()
+    .sort(
+        (a, b) =>
+            new Date(b.match_date) -
+            new Date(a.match_date)
+    )[0];
 
-        const defaultDateString =
-            defaultDate.toISOString().split("T")[0];
+const defaultDate = new Date(
+    latestFixture.match_date + "T00:00:00"
+);
 
-        const defaultKickoff =
-            latestFixture.kick_off || "15:00";
+defaultDate.setDate(
+    defaultDate.getDate() + 1
+);
 
-        const defaultVenue =
-            latestFixture.venue || "Kabaru Grounds";
+const defaultDateString =
+    defaultDate.toISOString().split("T")[0];
 
-        const nextMatchday =
-            Math.max(
-                ...roundFixtures.map(
-                    fixture =>
-                        Number(fixture.matchday || 0)
-                )
-            ) + 1;
+const defaultKickoff =
+    latestFixture.kick_off || "15:00";
 
-        for (
-            let i = 0;
-            i < winners.length;
-            i += 2
-        ) {
-            const homeTeam = winners[i];
-            const awayTeam = winners[i + 1];
+const defaultVenue =
+    latestFixture.venue || "Kabaru Grounds";
 
-            if (!homeTeam || !awayTeam) continue;
+const nextMatchday =
+    Math.max(
+        ...roundFixtures.map(
+            fixture =>
+                Number(fixture.matchday || 0)
+        )
+    ) + 1;
 
-            const pairKey =
-                `${homeTeam}-${awayTeam}`;
+for (
+    let i = 0;
+    i < winners.length;
+    i += 2
+) {
+    const homeTeam = winners[i];
+    const awayTeam = winners[i + 1];
 
-            const reversePairKey =
-                `${awayTeam}-${homeTeam}`;
+    if (!homeTeam || !awayTeam) {
+        continue;
+    }
 
-            if (
-                existingTeamIds.has(pairKey) ||
-                existingTeamIds.has(reversePairKey)
-            ) {
-                continue;
-            }
+    const pairKey =
+        `${homeTeam}-${awayTeam}`;
 
-            newFixtures.push({
-                competition_id: competition.id,
-                home_team_id: homeTeam,
-                away_team_id: awayTeam,
+    const reversePairKey =
+        `${awayTeam}-${homeTeam}`;
 
-                // IMPORTANT:
-                // This is only the DEFAULT date.
-                // The fixture can still be edited later.
-                match_date: defaultDateString,
+    if (
+        existingTeamIds.has(pairKey) ||
+        existingTeamIds.has(reversePairKey)
+    ) {
+        continue;
+    }
 
-                kick_off: defaultKickoff,
-                venue: defaultVenue,
-                matchday: nextMatchday,
-                status: "Scheduled"
-            });
-        }
+    newFixtures.push({
+        competition_id: competition.id,
+        home_team_id: homeTeam,
+        away_team_id: awayTeam,
 
-        if (newFixtures.length !== nextRoundMatches) {
-            return {
-                type: "warning",
-                message:
-                    "The result was saved, but the system could not create the expected number of next-round fixtures."
-            };
-        }
+        // IMPORTANT:
+        // This is only the DEFAULT date.
+        // The fixture can still be edited later.
+        match_date: defaultDateString,
 
-        const { error: insertError } =
-            await supabase
-                .from("fixtures")
-                .insert(newFixtures);
+        kick_off: defaultKickoff,
+        venue: defaultVenue,
+        matchday: nextMatchday,
+        status: "Scheduled"
+    });
+}
 
-        if (insertError) throw insertError;
+if (newFixtures.length !== nextRoundMatches) {
+    return {
+        type: "warning",
+        message:
+            "The result was saved, but the system could not create the expected number of next-round fixtures."
+    };
+}
+
+const { error: insertError } =
+    await supabase
+        .from("fixtures")
+        .insert(newFixtures);
+
+if (insertError) throw insertError;
 
         // ----------------------------------------------------
         // 14. Update knockout round statuses
