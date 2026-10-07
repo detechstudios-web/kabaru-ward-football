@@ -9622,35 +9622,13 @@ async function advanceGroupToKnockout(
             );
 
         const existingKnockoutFixtures =
-            allFixtures.filter(
-                function (fixture) {
-
-                    return (
-                        fixture.matchday !== null &&
-                        Number(
-                            fixture.matchday
-                        ) >
-                        Math.max(
-                            ...allFixtures
-                                .filter(
-                                    function (item) {
-                                        return (
-                                            item.matchday !== null
-                                        );
-                                    }
-                                )
-                                .map(
-                                    function (item) {
-                                        return Number(
-                                            item.matchday
-                                        );
-                                    }
-                                ),
-                            0
-                        )
-                    );
-                }
-            );
+    allFixtures.filter(function (fixture) {
+        return (
+            fixture.home_team_id !== null &&
+            fixture.away_team_id !== null &&
+            fixture.matchday !== null
+        );
+    });
 
         // ----------------------------------------------------
         // 12. Prevent duplicate generation
