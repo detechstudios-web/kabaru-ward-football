@@ -10102,16 +10102,33 @@ if (!completedRound) {
                 0
             );
 
-        const roundFixtures = completedFixtures
-            .sort(
-                (a, b) =>
-                    new Date(b.match_date) -
-                    new Date(a.match_date)
-            )
-            .slice(
-                0,
-                Number(completedRound.number_of_matches)
-            );
+        // Knockout rounds are generated with a new matchday.
+// Therefore, the latest completed knockout matchday
+// represents the round currently being completed.
+
+const completedMatchdays = completedFixtures
+    .map(fixture => Number(fixture.matchday || 0))
+    .filter(matchday => matchday > 0);
+
+const currentKnockoutMatchday =
+    completedMatchdays.length > 0
+        ? Math.max(...completedMatchdays)
+        : null;
+
+const roundFixtures = completedFixtures
+    .filter(
+        fixture =>
+            Number(fixture.matchday || 0) ===
+            currentKnockoutMatchday
+    )
+    .sort(
+        (a, b) =>
+            Number(a.id) - Number(b.id)
+    )
+    .slice(
+        0,
+        Number(completedRound.number_of_matches)
+    );
 
         if (
             roundFixtures.length !==
