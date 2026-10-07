@@ -10039,28 +10039,41 @@ if (
                 resultMap.has(fixture.id)
         );
 
-        // ----------------------------------------------------
-        // 7. Identify the round that has just been completed
-        // ----------------------------------------------------
-        let completedRound = null;
-        let cumulativeMatches = 0;
+// ----------------------------------------------------
+// 7. Identify the round that has just been completed
+// ----------------------------------------------------
+const completedFixtureCount =
+    completedFixtures.length;
 
-        for (const round of rounds) {
-            cumulativeMatches += Number(
-                round.number_of_matches || 0
-            );
+let completedRound = null;
+let previousRoundMatchCount = 0;
 
-            if (completedFixtures.length === cumulativeMatches) {
-                completedRound = round;
-                break;
-            }
-        }
+for (const round of rounds) {
 
-        if (!completedRound) {
-            return {
-                type: "not_applicable"
-            };
-        }
+    const currentRoundMatchCount =
+        Number(round.number_of_matches || 0);
+
+    const currentRoundEnd =
+        previousRoundMatchCount +
+        currentRoundMatchCount;
+
+    if (
+        completedFixtureCount > previousRoundMatchCount &&
+        completedFixtureCount === currentRoundEnd
+    ) {
+        completedRound = round;
+        break;
+    }
+
+    previousRoundMatchCount =
+        currentRoundEnd;
+}
+
+if (!completedRound) {
+    return {
+        type: "not_applicable"
+    };
+}
 
         // ----------------------------------------------------
         // 8. Check if this is the FINAL
