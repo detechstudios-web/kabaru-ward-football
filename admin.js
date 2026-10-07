@@ -11308,14 +11308,23 @@ if (
                             "id",
                             currentFixture.id
                         );
+// Automatically progress Group → Knockout
+let groupKnockoutProgression = null;
+
+groupKnockoutProgression =
+    await advanceGroupToKnockout(
+        currentFixture.competition_id
+    );
+
 // Automatically progress knockout competition
 let knockoutProgression = null;
 
-knockoutProgression = await advanceKnockoutAfterResult(
-    currentFixture,
-    homeFinalScore,
-    awayFinalScore
-);
+knockoutProgression =
+    await advanceKnockoutAfterResult(
+        currentFixture,
+        homeFinalScore,
+        awayFinalScore
+    );
 
                 if (
                     fixtureUpdateError
