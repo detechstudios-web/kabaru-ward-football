@@ -3005,11 +3005,6 @@ async function createInitialKnockoutFixtures(
 }
 
 
-// ========================================
-// CREATE LEAGUE STAGE
-// ========================================
-
-async function createLeagueStage(
     
 // ========================================
 // CREATE LEAGUE STAGE
