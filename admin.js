@@ -7594,16 +7594,17 @@ window.editFixture = editFixture;
                 await supabaseClient
                     .from("fixtures")
                     .select(`
-                        id,
-                        competition_id,
-                        home_team_id,
-                        away_team_id,
-                        match_date,
-                        kick_off,
-                        venue,
-                        matchday,
-                        status,
-                        competition:competitions (
+    id,
+    competition_id,
+    home_team_id,
+    away_team_id,
+    match_date,
+    kick_off,
+    venue,
+    matchday,
+    status,
+    knockout_round_id,
+    competition:competitions (
                             id,
                             name,
                             season
