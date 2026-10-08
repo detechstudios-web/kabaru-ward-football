@@ -5894,6 +5894,70 @@ try {
                 }
             }
         }
+                // ----------------------------------------
+        // CREATE INITIAL PURE KNOCKOUT FIXTURES
+        // ----------------------------------------
+
+        const {
+            data: savedStage,
+            error: savedStageError
+        } = await supabaseClient
+            .from("competition_stages")
+            .select(`
+                id,
+                stage_type,
+                competition_id
+            `)
+            .eq(
+                "id",
+                Number(stageId)
+            )
+            .single();
+
+        if (savedStageError) {
+            throw savedStageError;
+        }
+
+        if (
+            savedStage &&
+            savedStage.stage_type ===
+                "knockout"
+        ) {
+
+            const {
+                data: knockoutCompetition,
+                error: knockoutCompetitionError
+            } = await supabaseClient
+                .from("competitions")
+                .select(`
+                    id,
+                    competition_format
+                `)
+                .eq(
+                    "id",
+                    Number(
+                        savedStage.competition_id
+                    )
+                )
+                .single();
+
+            if (knockoutCompetitionError) {
+                throw knockoutCompetitionError;
+            }
+
+            if (
+                knockoutCompetition &&
+                knockoutCompetition.competition_format ===
+                    "knockout"
+            ) {
+
+                await createInitialKnockoutFixtures(
+                    Number(stageId),
+                    selectedTeamIds
+                );
+            }
+        }
+
         showParticipationMessage(
             "✅ Participating teams saved successfully.",
             "success"
