@@ -10419,16 +10419,17 @@ if (
             await supabase
                 .from("fixtures")
                 .select(`
-                    id,
-                    competition_id,
-                    home_team_id,
-                    away_team_id,
-                    match_date,
-                    kick_off,
-                    venue,
-                    matchday,
-                    status
-                `)
+    id,
+    competition_id,
+    home_team_id,
+    away_team_id,
+    match_date,
+    kick_off,
+    venue,
+    matchday,
+    status,
+    knockout_round_id
+`)
                 .eq("competition_id", competition.id);
 
         if (fixturesError) throw fixturesError;
