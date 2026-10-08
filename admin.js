@@ -2921,12 +2921,17 @@ async function createInitialKnockoutFixtures(
 
         newFixtures.push({
             competition_id:
-                Number(
-                    competition.id
-                ),
+    Number(
+        competition.id
+    ),
 
-            home_team_id:
-                homeTeamId,
+knockout_round_id:
+    Number(
+        firstRound.id
+    ),
+
+home_team_id:
+    homeTeamId,
 
             away_team_id:
                 awayTeamId,
