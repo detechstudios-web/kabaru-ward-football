@@ -2650,7 +2650,367 @@ async function createKnockoutStage(
     return stage;
 }
 
+// ========================================
+// CREATE INITIAL PURE KNOCKOUT FIXTURES
+// ========================================
 
+async function createInitialKnockoutFixtures(
+    stageId,
+    selectedTeamIds
+) {
+
+    // ----------------------------------------
+    // 1. Get the knockout stage
+    // ----------------------------------------
+
+    const {
+        data: stage,
+        error: stageError
+    } = await supabaseClient
+        .from("competition_stages")
+        .select(`
+            id,
+            competition_id,
+            stage_type
+        `)
+        .eq(
+            "id",
+            Number(stageId)
+        )
+        .single();
+
+    if (stageError) {
+        throw stageError;
+    }
+
+    if (
+        !stage ||
+        stage.stage_type !== "knockout"
+    ) {
+        return;
+    }
+
+    // ----------------------------------------
+    // 2. Get the competition
+    // ----------------------------------------
+
+    const {
+        data: competition,
+        error: competitionError
+    } = await supabaseClient
+        .from("competitions")
+        .select(`
+            id,
+            competition_format,
+            start_date
+        `)
+        .eq(
+            "id",
+            Number(stage.competition_id)
+        )
+        .single();
+
+    if (competitionError) {
+        throw competitionError;
+    }
+
+    // This helper is ONLY for pure Knockout.
+    if (
+        !competition ||
+        competition.competition_format !==
+            "knockout"
+    ) {
+        return;
+    }
+
+    // ----------------------------------------
+    // 3. Get all knockout rounds
+    // ----------------------------------------
+
+    const {
+        data: rounds,
+        error: roundsError
+    } = await supabaseClient
+        .from(
+            "competition_knockout_rounds"
+        )
+        .select(`
+            id,
+            name,
+            round_order,
+            number_of_matches,
+            status,
+            legs
+        `)
+        .eq(
+            "stage_id",
+            Number(stage.id)
+        )
+        .order(
+            "round_order",
+            {
+                ascending: true
+            }
+        );
+
+    if (roundsError) {
+        throw roundsError;
+    }
+
+    if (
+        !rounds ||
+        rounds.length === 0
+    ) {
+        throw new Error(
+            "No knockout rounds were configured."
+        );
+    }
+
+    // ----------------------------------------
+    // 4. ONLY use the FIRST knockout round
+    // ----------------------------------------
+
+    const firstRound =
+        rounds[0];
+
+    const expectedMatches =
+        Number(
+            firstRound.number_of_matches || 0
+        );
+
+    if (
+        expectedMatches <= 0
+    ) {
+        throw new Error(
+            "The first knockout round has no configured matches."
+        );
+    }
+
+    // ----------------------------------------
+    // 5. Validate participating teams
+    // ----------------------------------------
+
+    const teamIds =
+        (
+            selectedTeamIds || []
+        ).map(
+            function (teamId) {
+                return Number(teamId);
+            }
+        );
+
+    const requiredTeams =
+        expectedMatches * 2;
+
+    if (
+        teamIds.length !==
+        requiredTeams
+    ) {
+        throw new Error(
+            "The selected participating teams do not match the required number for " +
+            firstRound.name +
+            ". " +
+            firstRound.name +
+            " requires exactly " +
+            requiredTeams +
+            " teams."
+        );
+    }
+
+    // ----------------------------------------
+    // 6. Check whether FIRST-round fixtures
+    //    already exist
+    // ----------------------------------------
+
+    const {
+        data: existingFixtures,
+        error: existingFixturesError
+    } = await supabaseClient
+        .from("fixtures")
+        .select(`
+            id,
+            competition_id,
+            home_team_id,
+            away_team_id,
+            matchday
+        `)
+        .eq(
+            "competition_id",
+            Number(
+                competition.id
+            )
+        );
+
+    if (existingFixturesError) {
+        throw existingFixturesError;
+    }
+
+    const firstRoundMatchCount =
+        Number(
+            firstRound.number_of_matches || 0
+        );
+
+    const existingFirstRoundFixtures =
+        (
+            existingFixtures || []
+        ).filter(
+            function (fixture) {
+                return (
+                    fixture.home_team_id !==
+                        null &&
+                    fixture.away_team_id !==
+                        null
+                );
+            }
+        );
+
+    if (
+        existingFirstRoundFixtures.length >=
+        firstRoundMatchCount
+    ) {
+        return {
+            type:
+                "already_generated"
+        };
+    }
+
+    // ----------------------------------------
+    // 7. Prepare default fixture information
+    // ----------------------------------------
+
+    const defaultDate =
+        competition.start_date
+            ? competition.start_date
+            : new Date()
+                .toISOString()
+                .split("T")[0];
+
+    const defaultKickoff =
+        "15:00";
+
+    const defaultVenue =
+        "Kabaru Grounds";
+
+    const nextMatchday = 1;
+
+    // ----------------------------------------
+    // 8. Create ONLY the FIRST round
+    // ----------------------------------------
+
+    const newFixtures = [];
+
+    for (
+        let i = 0;
+        i < teamIds.length;
+        i += 2
+    ) {
+
+        const homeTeamId =
+            teamIds[i];
+
+        const awayTeamId =
+            teamIds[i + 1];
+
+        if (
+            !homeTeamId ||
+            !awayTeamId
+        ) {
+            continue;
+        }
+
+        newFixtures.push({
+            competition_id:
+                Number(
+                    competition.id
+                ),
+
+            home_team_id:
+                homeTeamId,
+
+            away_team_id:
+                awayTeamId,
+
+            match_date:
+                defaultDate,
+
+            kick_off:
+                defaultKickoff,
+
+            venue:
+                defaultVenue,
+
+            matchday:
+                nextMatchday,
+
+            status:
+                "Scheduled"
+        });
+    }
+
+    // ----------------------------------------
+    // 9. Make sure the exact expected number
+    //    of FIRST-round fixtures was created
+    // ----------------------------------------
+
+    if (
+        newFixtures.length !==
+        firstRoundMatchCount
+    ) {
+        throw new Error(
+            "The system could not create the expected number of initial knockout fixtures."
+        );
+    }
+
+    // ----------------------------------------
+    // 10. Insert FIRST-round fixtures only
+    // ----------------------------------------
+
+    const {
+        error: insertError
+    } = await supabaseClient
+        .from("fixtures")
+        .insert(
+            newFixtures
+        );
+
+    if (insertError) {
+        throw insertError;
+    }
+
+    // ----------------------------------------
+    // 11. Mark the FIRST round Active
+    // ----------------------------------------
+
+    await supabaseClient
+        .from(
+            "competition_knockout_rounds"
+        )
+        .update({
+            status:
+                "Active"
+        })
+        .eq(
+            "id",
+            firstRound.id
+        );
+
+    return {
+        type:
+            "created",
+        roundName:
+            firstRound.name,
+        fixturesCreated:
+            newFixtures.length
+    };
+}
+
+
+// ========================================
+// CREATE LEAGUE STAGE
+// ========================================
+
+async function createLeagueStage(
+    
 // ========================================
 // CREATE LEAGUE STAGE
 // ========================================
