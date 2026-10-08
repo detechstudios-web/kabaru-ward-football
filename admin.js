@@ -10624,8 +10624,8 @@ const existingTeamIds = new Set();
 
 for (const fixture of fixtures || []) {
     if (
-        Number(fixture.matchday || 0) !==
-        Number(currentKnockoutMatchday || 0) + 1
+        String(fixture.knockout_round_id) !==
+        String(nextRound.id)
     ) {
         continue;
     }
