@@ -10127,14 +10127,7 @@ if (!completedRound) {
 // Therefore, the latest completed knockout matchday
 // represents the round currently being completed.
 
-const completedMatchdays = completedFixtures
-    .map(fixture => Number(fixture.matchday || 0))
-    .filter(matchday => matchday > 0);
 
-const currentKnockoutMatchday =
-    completedMatchdays.length > 0
-        ? Math.max(...completedMatchdays)
-        : null;
 
 const roundFixtures = completedFixtures
     .filter(
@@ -10221,8 +10214,7 @@ const roundFixtures = completedFixtures
         // ----------------------------------------------------
 // 12. Check whether next-round fixtures already exist
 // ----------------------------------------------------
-const nextRoundMatches =
-    Number(nextRound.number_of_matches);
+
 
 const existingTeamIds = new Set();
 
