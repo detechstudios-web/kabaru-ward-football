@@ -11376,25 +11376,35 @@ if (
                 }
 
 
-                // ========================================
-                // MARK FIXTURE COMPLETED
-                // ========================================
+// ========================================
+// MARK FIXTURE COMPLETED
+// ========================================
 
-                const {
-                    error: fixtureUpdateError
-                } =
-                    await supabaseClient
-                        .from("fixtures")
-                        .update({
+const {
+    error: fixtureUpdateError
+} =
+    await supabaseClient
+        .from("fixtures")
+        .update({
 
-                            status:
-                                "Completed"
+            status:
+                "Completed"
 
-                        })
-                        .eq(
-                            "id",
-                            currentFixture.id
-                        );
+        })
+        .eq(
+            "id",
+            currentFixture.id
+        );
+
+if (
+    fixtureUpdateError
+) {
+    throw new Error(
+        "Result was saved, but the fixture could not be marked Completed. " +
+        fixtureUpdateError.message
+    );
+}
+
 // Automatically progress Group → Knockout
 let groupKnockoutProgression = null;
 
@@ -11413,31 +11423,41 @@ knockoutProgression =
         awayFinalScore
     );
 
-                if (
-                    fixtureUpdateError
-                ) {
-
-                    throw new Error(
-                        "Result was saved, but the fixture could not be marked Completed. " +
-                        fixtureUpdateError.message
-                    );
-                }
-
-
                 // ========================================
                 // SUCCESS
                 // ========================================
 
-                showResultMessage(
-                    "✅ Match result saved successfully!",
-                    "success"
-                );
+                // ========================================
+// SUCCESS
+// ========================================
 
+let successMessage =
+    "✅ Match result saved successfully!";
 
-                alert(
-                    "✅ Match result saved successfully!"
-                );
+if (
+    knockoutProgression &&
+    knockoutProgression.type === "progressed"
+) {
+    successMessage +=
+        `\n⚽ ${knockoutProgression.roundName} fixtures created successfully.`;
+}
 
+if (
+    knockoutProgression &&
+    knockoutProgression.type === "champion"
+) {
+    successMessage +=
+        "\n🏆 Competition completed — champion determined!";
+}
+
+showResultMessage(
+    successMessage,
+    "success"
+);
+
+alert(
+    successMessage
+);
 
                 // ========================================
                 // CLEAR FORM
