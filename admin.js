@@ -2828,12 +2828,13 @@ async function createInitialKnockoutFixtures(
     } = await supabaseClient
         .from("fixtures")
         .select(`
-            id,
-            competition_id,
-            home_team_id,
-            away_team_id,
-            matchday
-        `)
+    id,
+    competition_id,
+    home_team_id,
+    away_team_id,
+    matchday,
+    knockout_round_id
+`)
         .eq(
             "competition_id",
             Number(
@@ -2851,18 +2852,18 @@ async function createInitialKnockoutFixtures(
         );
 
     const existingFirstRoundFixtures =
-        (
-            existingFixtures || []
-        ).filter(
-            function (fixture) {
-                return (
-                    fixture.home_team_id !==
-                        null &&
-                    fixture.away_team_id !==
-                        null
-                );
-            }
-        );
+    (
+        existingFixtures || []
+    ).filter(
+        function (fixture) {
+            return (
+                fixture.home_team_id !== null &&
+                fixture.away_team_id !== null &&
+                String(fixture.knockout_round_id) ===
+                    String(firstRound.id)
+            );
+        }
+    );
 
     if (
         existingFirstRoundFixtures.length >=
