@@ -10187,11 +10187,14 @@ const existingKnockoutFixtures =
             }
 
             newFixtures.push({
-                competition_id:
-                    competitionId,
+    competition_id:
+        competitionId,
 
-                home_team_id:
-                    homeTeam.team_id,
+    knockout_round_id:
+        Number(firstRound.id),
+
+    home_team_id:
+        homeTeam.team_id,
 
                 away_team_id:
                     awayTeam.team_id,
