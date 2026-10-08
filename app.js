@@ -4198,89 +4198,45 @@ async function loadKnockoutStage(
                 )
             );
 
-
         // ----------------------------------------
-        // 5. Determine matchday for each round
+        // 5. Assign fixtures to knockout rounds
         // ----------------------------------------
-
-        const roundMatchdays = [];
-
-        let matchdayCursor = 0;
+        // A knockout round is determined by the
+        // configured number of matches, NOT by
+        // matchday alone.
+        //
+        // This allows multiple Semi-Finals,
+        // Quarter-Finals, etc. to have different
+        // matchday values while still belonging
+        // to the same configured round.
+        // ----------------------------------------
+        const roundFixturesMap = new Map();
+        let fixtureCursor = 0;
 
         for (
             const round of rounds
         ) {
-
-            const matchCount =
+            const expectedMatches =
                 Number(
                     round.number_of_matches || 0
                 );
 
-            const roundFixtures =
-                (fixtures || []).filter(
-                    function (fixture) {
-
-                        const fixtureMatchday =
-                            Number(
-                                fixture.matchday
-                            );
-
-                        return (
-                            fixtureMatchday >
-                            matchdayCursor
-                        );
-                    }
-                );
-
-            if (
-                roundFixtures.length === 0
-            ) {
-                roundMatchdays.push(
-                    null
-                );
-
-                continue;
-            }
-
-            const matchdays =
-                roundFixtures
-                    .map(
-                        function (fixture) {
-                            return Number(
-                                fixture.matchday
-                            );
-                        }
+            const assignedFixtures =
+                expectedMatches > 0
+                    ? (fixtures || []).slice(
+                        fixtureCursor,
+                        fixtureCursor +
+                            expectedMatches
                     )
-                    .filter(
-                        function (value) {
-                            return Number.isFinite(
-                                value
-                            );
-                        }
-                    );
+                    : [];
 
-            if (
-                matchdays.length === 0
-            ) {
-
-                roundMatchdays.push(
-                    null
-                );
-
-                continue;
-            }
-
-            const currentMatchday =
-                Math.min(
-                    ...matchdays
-                );
-
-            roundMatchdays.push(
-                currentMatchday
+            roundFixturesMap.set(
+                String(round.id),
+                assignedFixtures
             );
 
-            matchdayCursor =
-                currentMatchday;
+            fixtureCursor +=
+                assignedFixtures.length;
         }
 
 
@@ -4297,32 +4253,10 @@ async function loadKnockoutStage(
                 roundIndex
             ) {
 
-                const roundMatchday =
-                    roundMatchdays[
-                        roundIndex
-                    ];
-
-                let roundFixtures = [];
-
-                if (
-                    roundMatchday !== null
-                ) {
-
-                    roundFixtures =
-                        (fixtures || []).filter(
-                            function (
-                                fixture
-                            ) {
-
-                                return (
-                                    Number(
-                                        fixture.matchday
-                                    ) ===
-                                    roundMatchday
-                                );
-                            }
-                        );
-                }
+                                const roundFixtures =
+                    roundFixturesMap.get(
+                        String(round.id)
+                    ) || [];
 
 
                 // Only show the configured number
