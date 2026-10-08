@@ -9473,15 +9473,17 @@ async function advanceGroupToKnockout(
         } = await supabase
             .from("fixtures")
             .select(`
-                id,
-                home_team_id,
-                away_team_id,
-                match_date,
-                kick_off,
-                venue,
-                matchday,
-                status
-            `)
+    id,
+    competition_id,
+    home_team_id,
+    away_team_id,
+    match_date,
+    kick_off,
+    venue,
+    matchday,
+    status,
+    knockout_round_id
+`)
             .eq(
                 "competition_id",
                 competitionId
@@ -10464,63 +10466,42 @@ if (
         resultMap.has(fixture.id)
 );
 
-// For knockout progression, only fixtures from the
-// knockout round containing the completed fixture
-// should be considered.
-//
-// This is especially important for Group + Knockout
-// competitions because their group-stage results are
-// also stored in the same fixtures table.
-//
-// Knockout rounds are generated with their own matchday,
-// so the completed fixture's matchday identifies the
-// current knockout round.
-const currentKnockoutMatchday =
-    Number(completedFixture.matchday || 0);
+// ----------------------------------------------------
+// 7. Identify the exact knockout round
+// ----------------------------------------------------
+
+const completedRoundId =
+    completedFixture.knockout_round_id;
+
+if (!completedRoundId) {
+    return {
+        type: "warning",
+        message:
+            "The result was saved, but this fixture is not linked to a knockout round."
+    };
+}
+
+const completedRound =
+    rounds.find(
+        round =>
+            String(round.id) ===
+            String(completedRoundId)
+    );
+
+if (!completedRound) {
+    return {
+        type: "warning",
+        message:
+            "The result was saved, but the knockout round linked to this fixture could not be found."
+    };
+}
 
 const currentRoundFixtures =
     completedFixtures.filter(
         fixture =>
-            Number(fixture.matchday || 0) ===
-            currentKnockoutMatchday
+            String(fixture.knockout_round_id) ===
+            String(completedRound.id)
     );
-
-// ----------------------------------------------------
-// 7. Identify the round that has just been completed
-// ----------------------------------------------------
-const completedFixtureCount =
-    currentRoundFixtures.length;
-
-let completedRound = null;
-let previousRoundMatchCount = 0;
-
-for (const round of rounds) {
-
-    const currentRoundMatchCount =
-        Number(round.number_of_matches || 0);
-
-    const currentRoundEnd =
-        previousRoundMatchCount +
-        currentRoundMatchCount;
-
-    if (
-        completedFixtureCount > previousRoundMatchCount &&
-        completedFixtureCount === currentRoundEnd
-    ) {
-        completedRound = round;
-        break;
-    }
-
-    previousRoundMatchCount =
-        currentRoundEnd;
-}
-
-if (!completedRound) {
-    return {
-        type: "not_applicable"
-    };
-}
-
         // ----------------------------------------------------
         // 8. Check if this is the FINAL
         // ----------------------------------------------------
@@ -10548,21 +10529,14 @@ if (!completedRound) {
                 0
             );
 
-        // Knockout rounds are generated with a new matchday.
-// Therefore, the latest completed knockout matchday
-// represents the round currently being completed.
+        // Get only fixtures belonging to the exact
+// knockout round that has just been completed.
 
-
-
-const roundFixtures = completedFixtures
-    .filter(
-        fixture =>
-            Number(fixture.matchday || 0) ===
-            currentKnockoutMatchday
-    )
+const roundFixtures = currentRoundFixtures
     .sort(
         (a, b) =>
-            Number(a.id) - Number(b.id)
+            Number(a.id) -
+            Number(b.id)
     )
     .slice(
         0,
@@ -10748,13 +10722,16 @@ for (
     }
 
     newFixtures.push({
-        competition_id: competition.id,
-        home_team_id: homeTeam,
-        away_team_id: awayTeam,
+    competition_id: competition.id,
 
-        // IMPORTANT:
-        // This is only the DEFAULT date.
-        // The fixture can still be edited later.
+    knockout_round_id:
+        Number(nextRound.id),
+
+    home_team_id: homeTeam,
+    away_team_id: awayTeam,
+
+    // IMPORTANT:
+    // This is only the DEFAULT date.
         match_date: defaultDateString,
 
         kick_off: defaultKickoff,
