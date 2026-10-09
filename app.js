@@ -3895,11 +3895,22 @@ async function loadGroupKnockoutTables(
         );
 
         // ========================================
-        // DISPLAY GROUP TABLES
-        // ========================================
+// DISPLAY GROUP TABLES AND KNOCKOUT SECTION
+// ========================================
 
-        groupKnockoutTablesEl.innerHTML =
-            output;
+groupKnockoutTablesEl.innerHTML = `
+    <div id="groupStandingsContent">
+        ${output}
+    </div>
+
+    <div id="groupKnockoutBracketContent">
+        <div style="text-align:center;padding:20px;">
+            Loading knockout stage...
+        </div>
+    </div>
+`;
+
+await loadKnockoutStage(competition);
 
     } catch (error) {
 
@@ -3961,6 +3972,9 @@ async function loadKnockoutStage(
         return;
     }
 
+    const knockoutContainer =
+    document.getElementById("groupKnockoutBracketContent") ||
+    groupKnockoutTablesEl;
     try {
 
         // ----------------------------------------
@@ -4001,7 +4015,7 @@ async function loadKnockoutStage(
 
         if (!stage) {
 
-            groupKnockoutTablesEl.innerHTML = `
+            knockoutContainer.innerHTML = `
                 <div
                     style="
                         text-align:center;
@@ -4065,7 +4079,7 @@ async function loadKnockoutStage(
             rounds.length === 0
         ) {
 
-            groupKnockoutTablesEl.innerHTML = `
+            knockoutContainer.innerHTML = `
                 <div
                     style="
                         text-align:center;
@@ -4489,7 +4503,7 @@ const awayTeam =
         );
 
 
-        groupKnockoutTablesEl.innerHTML =
+        knockoutContainer.innerHTML =
             output;
 
 
@@ -4500,7 +4514,7 @@ const awayTeam =
             error
         );
 
-        groupKnockoutTablesEl.innerHTML = `
+        knockoutContainer.innerHTML = `
             <div
                 style="
                     text-align:center;
