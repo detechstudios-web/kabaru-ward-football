@@ -10310,7 +10310,7 @@ async function advanceKnockoutAfterResult(
         // 1. Get competition information
         // ----------------------------------------------------
         const { data: competition, error: competitionError } =
-            await supabase
+            await supabaseClient
                 .from("competitions")
                 .select(`
                     id,
@@ -10374,7 +10374,7 @@ if (
         // 3. Get knockout stage
         // ----------------------------------------------------
         const { data: stage, error: stageError } =
-            await supabase
+            await supabaseClient
                 .from("competition_stages")
                 .select("*")
                 .eq("competition_id", competition.id)
@@ -10397,7 +10397,7 @@ if (
         // 4. Get knockout rounds
         // ----------------------------------------------------
         const { data: rounds, error: roundsError } =
-            await supabase
+            await supabaseClient
                 .from("competition_knockout_rounds")
                 .select("*")
                 .eq("stage_id", stage.id)
@@ -10417,7 +10417,7 @@ if (
         // 5. Get all fixtures in this competition
         // ----------------------------------------------------
         const { data: fixtures, error: fixturesError } =
-            await supabase
+            await supabaseClient
                 .from("fixtures")
                 .select(`
     id,
@@ -10449,7 +10449,7 @@ if (
         }
 
         const { data: results, error: resultsError } =
-            await supabase
+            await supabaseClient
                 .from("results")
                 .select(`
                     id,
@@ -10755,7 +10755,7 @@ if (newFixtures.length !== nextRoundMatches) {
 }
 
 const { error: insertError } =
-    await supabase
+    await supabaseClient
         .from("fixtures")
         .insert(newFixtures);
 
@@ -10764,14 +10764,14 @@ if (insertError) throw insertError;
         // ----------------------------------------------------
         // 14. Update knockout round statuses
         // ----------------------------------------------------
-        await supabase
+        await supabaseClient
             .from("competition_knockout_rounds")
             .update({
                 status: "Completed"
             })
             .eq("id", completedRound.id);
 
-        await supabase
+        await supabaseClient
             .from("competition_knockout_rounds")
             .update({
                 status: "Active"
