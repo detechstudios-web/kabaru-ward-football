@@ -3975,6 +3975,43 @@ async function loadKnockoutStage(
     const knockoutContainer =
     document.getElementById("groupKnockoutBracketContent") ||
     groupKnockoutTablesEl;
+
+
+if (
+    competition.competition_format === "group_knockout" &&
+    (
+        !qualification.allGroupsComplete ||
+        !qualification.qualifiedTeams ||
+        qualification.qualifiedTeams.length === 0
+    )
+) {
+    knockoutContainer.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:25px;
+            margin-top:20px;
+            border:1px solid #ddd;
+            border-radius:12px;
+        ">
+            <div style="font-size:32px;margin-bottom:10px;">
+                🏆
+            </div>
+
+            <h3 style="margin:0 0 10px;">
+                Knockout Stage
+            </h3>
+
+            <p style="margin:0;color:#666;">
+                The knockout stage will appear here after
+                all group matches are completed and the
+                qualifying teams are confirmed.
+            </p>
+        </div>
+    `;
+
+    return;
+}
+    
     try {
 
         // ----------------------------------------
