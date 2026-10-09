@@ -9280,10 +9280,35 @@ if (saveResultBtn) {
 // GROUP → KNOCKOUT AUTOMATIC TRANSITION
 // ============================================================
 
+
 async function advanceGroupToKnockout(
     competitionId
 ) {
     try {
+
+        // GROUP + KNOCKOUT PROGRESSION IS MANUAL
+        const {
+            data: competitionFormatCheck,
+            error: competitionFormatError
+        } = await supabase
+            .from("competitions")
+            .select("competition_format")
+            .eq("id", competitionId)
+            .single();
+
+        if (competitionFormatError) {
+            throw competitionFormatError;
+        }
+
+        if (
+            competitionFormatCheck &&
+            competitionFormatCheck.competition_format === "group_knockout"
+        ) {
+            return {
+                type: "manual",
+                message: "Group-to-knockout progression is manual."
+            };
+        }
 
         // ----------------------------------------------------
         // 1. Get GROUP stage
@@ -10265,6 +10290,19 @@ async function advanceKnockoutAfterResult(
                 .single();
 
         if (competitionError) throw competitionError;
+
+        
+        // Group + Knockout progression is manual.
+        // Keep automatic progression available for pure Knockout.
+        if (
+            competition.competition_format === "group_knockout"
+        ) {
+            return {
+                type: "manual",
+                message:
+                    "Group + Knockout progression is manual. Create the next round manually."
+            };
+        }
 
         // ----------------------------------------------------
 // HANDLE GROUP + KNOCKOUT COMPETITIONS
