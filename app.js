@@ -6309,14 +6309,23 @@ return "Unknown Player";
                             min-width:0;
                         "
                     >
-                        <div
+                        
+                        <a
+                            href="player-profile.html?id=${encodeURIComponent(player.id)}"
                             style="
+                                display:block;
                                 font-weight:700;
                                 white-space:nowrap;
                                 overflow:hidden;
                                 text-overflow:ellipsis;
+                                color:#075b35;
+                                text-decoration:underline;
                             "
                         >
+                            ${escapeHtml(
+                                playerName
+                            )}
+                        </a>
                             ${escapeHtml(
                                 playerName
                             )}
