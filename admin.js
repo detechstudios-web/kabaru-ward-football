@@ -7636,13 +7636,37 @@ window.editFixture = editFixture;
                     );
 
 
+            
             if (error) {
                 throw error;
             }
 
+            // Get fixtures that already have saved results.
+            const {
+                data: savedResults,
+                error: savedResultsError
+            } = await supabaseClient
+                .from("results")
+                .select("fixture_id");
 
-            resultFixtures =
-                data || [];
+            if (savedResultsError) {
+                throw savedResultsError;
+            }
+
+            const fixturesWithResults = new Set(
+                (savedResults || []).map(function (result) {
+                    return String(result.fixture_id);
+                })
+            );
+
+            // Show only fixtures without saved results.
+            resultFixtures = (data || []).filter(
+                function (fixture) {
+                    return !fixturesWithResults.has(
+                        String(fixture.id)
+                    );
+                }
+            );
 
 
             resultFixtureSelect.innerHTML =
