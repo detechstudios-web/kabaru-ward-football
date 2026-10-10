@@ -55,7 +55,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const fixtureStatus =
         document.getElementById("fixtureStatus");
+const knockoutRoundGroup =
+    document.getElementById("knockoutRoundGroup");
 
+const knockoutRoundSelect =
+    document.getElementById("knockoutRoundSelect");
 
     // ========================================
     // RESULT MANAGER ELEMENTS
@@ -6273,20 +6277,77 @@ async function loadFixtureTeamsForCompetition(
 }
 
 
-// Update fixture team choices whenever
-// the competition changes.
+async function loadKnockoutRoundsForFixture(competitionId) {
+
+    if (!knockoutRoundGroup || !knockoutRoundSelect) {
+        return;
+    }
+
+    knockoutRoundGroup.style.display = "none";
+
+    knockoutRoundSelect.innerHTML =
+        '<option value="">Group-stage / non-knockout fixture</option>';
+
+    if (!competitionId) {
+        return;
+    }
+
+    try {
+        const { data: stage, error: stageError } =
+            await supabaseClient
+                .from("competition_stages")
+                .select("id")
+                .eq("competition_id", Number(competitionId))
+                .eq("stage_type", "knockout")
+                .order("stage_order", { ascending: true })
+                .limit(1)
+                .maybeSingle();
+
+        if (stageError) throw stageError;
+
+        if (!stage) return;
+
+        const { data: rounds, error: roundsError } =
+            await supabaseClient
+                .from("competition_knockout_rounds")
+                .select("id, name, round_order")
+                .eq("stage_id", stage.id)
+                .order("round_order", { ascending: true });
+
+        if (roundsError) throw roundsError;
+
+        if (!rounds || rounds.length === 0) return;
+
+        rounds.forEach(function (round) {
+            const option = document.createElement("option");
+            option.value = String(round.id);
+            option.textContent = round.name;
+            knockoutRoundSelect.appendChild(option);
+        });
+
+        knockoutRoundGroup.style.display = "block";
+
+    } catch (error) {
+        console.error("LOAD KNOCKOUT ROUNDS ERROR:", error);
+
+        knockoutRoundGroup.style.display = "block";
+
+        knockoutRoundSelect.innerHTML =
+            '<option value="">Unable to load rounds</option>';
+    }
+}
+
+// Update fixture teams and knockout rounds
+// whenever the competition changes.
 if (competitionSelect) {
+    competitionSelect.addEventListener("change", async function () {
+        await loadFixtureTeamsForCompetition(this.value);
+        await loadKnockoutRoundsForFixture(this.value);
+    });
 
-    competitionSelect.addEventListener(
-        "change",
-        async function () {
-
-            await loadFixtureTeamsForCompetition(
-                this.value
-            );
-
-        }
-    );
+    if (competitionSelect.value) {
+        loadKnockoutRoundsForFixture(competitionSelect.value);
+    }
 }
 
     // ========================================
@@ -6533,6 +6594,11 @@ if (competitionSelect) {
                                     Number(
                                         competitionId
                                     ),
+                                knockout_round_id:
+    knockoutRoundSelect &&
+    knockoutRoundSelect.value
+        ? Number(knockoutRoundSelect.value)
+        : null,
 
                                 home_team_id:
                                     Number(
