@@ -4263,34 +4263,21 @@ if (
         // matchday values while still belonging
         // to the same configured round.
         // ----------------------------------------
-        const roundFixturesMap = new Map();
-        let fixtureCursor = 0;
+        
+const roundFixturesMap = new Map();
 
-        for (
-            const round of rounds
-        ) {
-            const expectedMatches =
-                Number(
-                    round.number_of_matches || 0
-                );
+(rounds || []).forEach(function (round) {
+    const assignedFixtures =
+        (fixtures || []).filter(function (fixture) {
+            return String(fixture.knockout_round_id || "") ===
+                String(round.id);
+        });
 
-            const assignedFixtures =
-                expectedMatches > 0
-                    ? (fixtures || []).slice(
-                        fixtureCursor,
-                        fixtureCursor +
-                            expectedMatches
-                    )
-                    : [];
-
-            roundFixturesMap.set(
-                String(round.id),
-                assignedFixtures
-            );
-
-            fixtureCursor +=
-                assignedFixtures.length;
-        }
+    roundFixturesMap.set(
+        String(round.id),
+        assignedFixtures
+    );
+});
 
 
         // ----------------------------------------
@@ -4306,7 +4293,7 @@ if (
                 roundIndex
             ) {
 
-                                const roundFixtures =
+                                let roundFixtures =
                     roundFixturesMap.get(
                         String(round.id)
                     ) || [];
