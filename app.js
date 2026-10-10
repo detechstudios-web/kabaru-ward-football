@@ -4150,10 +4150,12 @@ if (
             data: fixtures,
             error: fixturesError
         } = await supabaseClient
-            .from("fixtures")
-            .select(`
+            
+.from("fixtures")
+.select(`
     id,
     competition_id,
+    knockout_round_id,
     home_team_id,
     away_team_id,
     match_date,
