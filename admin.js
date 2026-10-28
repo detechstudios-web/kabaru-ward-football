@@ -60,6 +60,17 @@ const knockoutRoundGroup =
 
 const knockoutRoundSelect =
     document.getElementById("knockoutRoundSelect");
+    const fixtureStageGroup =
+    document.getElementById("fixtureStageGroup");
+
+const fixtureStageSelect =
+    document.getElementById("fixtureStageSelect");
+
+const fixtureGroupGroup =
+    document.getElementById("fixtureGroupGroup");
+
+const fixtureGroupSelect =
+    document.getElementById("fixtureGroupSelect");
 
     // ========================================
     // RESULT MANAGER ELEMENTS
