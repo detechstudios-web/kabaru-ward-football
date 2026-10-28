@@ -699,6 +699,7 @@ if (initialCompetition) {
 
             }
         );
+        return initialCompetition;
 
     } catch (error) {
 
@@ -8838,12 +8839,18 @@ async function loadCompetitionSupport(
         // LOAD MAIN COMPETITION
         // ========================================
 
-        const competition =
-            await loadCompetition();
-        currentMainCompetition = competition;
-        await setupMainCompetitionSelector(
-    competition
-);
+        const defaultCompetition =
+    await loadCompetition();
+
+const restoredCompetition =
+    await setupMainCompetitionSelector(
+        defaultCompetition
+    );
+
+const competition =
+    restoredCompetition || defaultCompetition;
+
+currentMainCompetition = competition;
 if (playerCompetitionFilter) {
 
     playerCompetitionFilter.addEventListener(
