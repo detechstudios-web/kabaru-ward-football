@@ -2219,10 +2219,18 @@ if (teamsError) {
 // LOAD TEAMS SELECTED FOR THIS COMPETITION
 // ========================================
 
-const participatingTeamIds =
+
+let participatingTeamIds =
     await getCompetitionParticipatingTeamIds(
         leagueCompetition.id
     );
+
+if (
+    leagueCompetition.competition_format ===
+    "group_finals_league"
+) {
+    participatingTeamIds = finalsLeagueTeamIds;
+}
 
 // ========================================
 // ONLY PARTICIPATING APPROVED TEAMS
