@@ -3588,6 +3588,41 @@ async function loadGroupKnockoutTables(
         );
 
         // ========================================
+        // CHECK GROUP STAGE COMPLETION
+        // ========================================
+
+        const groupStageFixtures =
+            (fixtures || []).filter(
+                function (fixture) {
+                    return (
+                        String(fixture.stage_id || "") ===
+                        String(groupStage.id)
+                    );
+                }
+            );
+
+        const allGroupMatchesComplete =
+            groupStageFixtures.length > 0 &&
+            groupStageFixtures.every(
+                function (fixture) {
+                    const result =
+                        resultMap[String(fixture.id)];
+
+                    return (
+                        String(fixture.status || "")
+                            .toLowerCase() === "completed" &&
+                        result &&
+                        result.home_score !== null &&
+                        result.home_score !== undefined &&
+                        result.away_score !== null &&
+                        result.away_score !== undefined &&
+                        Number.isFinite(Number(result.home_score)) &&
+                        Number.isFinite(Number(result.away_score))
+                    );
+                }
+            );
+        
+        // ========================================
         // PREPARE OUTPUT
         // ========================================
 
