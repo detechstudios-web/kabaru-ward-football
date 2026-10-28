@@ -4278,7 +4278,7 @@ async function loadGroupKnockoutTables(
                                     ${finalsRows.map(function (team) {
                                         return `
                                             <tr>
-                                                <td>${team.name}</td>
+                                                <td>${escapeHtml(team.name)}</td>
                                                 <td>${team.played}</td>
                                                 <td>${team.won}</td>
                                                 <td>${team.drawn}</td>
