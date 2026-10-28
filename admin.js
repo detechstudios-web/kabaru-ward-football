@@ -221,8 +221,9 @@ function updateCompetitionFormatConfiguration() {
     // ----------------------------------------
 
     if (
-        competitionType === "Group + Knockout"
-    ) {
+    competitionType === "Group + Knockout" ||
+    competitionType === "Group Stage + Finals League Robin"
+) {
 
         competitionFormatConfiguration.style.display =
             "block";
