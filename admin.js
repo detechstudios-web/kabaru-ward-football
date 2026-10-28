@@ -3545,7 +3545,21 @@ async function createCompetitionStructure(
 
         return;
     }
+    if (
+        format === "group_finals_league"
+    ) {
 
+        await createGroupFinalsLeagueStructure(
+            competition.id,
+            competition.name,
+            competition.number_of_groups,
+            competition.teams_per_group,
+            competition.qualifiers_per_group,
+            competition.qualification_method
+        );
+
+        return;
+    }
 
     throw new Error(
         "Unsupported competition format: " +
