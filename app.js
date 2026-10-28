@@ -4253,48 +4253,66 @@ async function loadGroupKnockoutTables(
                     );
                 });
 
-                finalsLeagueOutput = `
-                    <div style="margin-top:20px;">
-                        <h3 style="text-align:center;">
-                            🏆 Finals League Robin
-                        </h3>
+                
+finalsLeagueOutput = `
+    <div style="margin-top:25px;margin-bottom:30px;">
 
-                        <div style="overflow-x:auto;">
-                            <table style="width:100%;border-collapse:collapse;">
-                                <thead>
-                                    <tr>
-                                        <th>Team</th>
-                                        <th>P</th>
-                                        <th>W</th>
-                                        <th>D</th>
-                                        <th>L</th>
-                                        <th>GF</th>
-                                        <th>GA</th>
-                                        <th>GD</th>
-                                        <th>Pts</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${finalsRows.map(function (team) {
-                                        return `
-                                            <tr>
-                                                <td>${escapeHtml(team.name)}</td>
-                                                <td>${team.played}</td>
-                                                <td>${team.won}</td>
-                                                <td>${team.drawn}</td>
-                                                <td>${team.lost}</td>
-                                                <td>${team.gf}</td>
-                                                <td>${team.ga}</td>
-                                                <td>${team.gd}</td>
-                                                <td><strong>${team.points}</strong></td>
-                                            </tr>
-                                        `;
-                                    }).join("")}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
+        <h3 style="
+            text-align:center;
+            font-size:20px;
+            color:#04351f;
+            margin:0 0 16px;
+            font-weight:800;
+        ">
+            🏆 Finals League Robin
+        </h3>
+
+        <div class="table-wrapper">
+            <table class="league-table">
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Team</th>
+                        <th>P</th>
+                        <th>W</th>
+                        <th>D</th>
+                        <th>L</th>
+                        <th>GF</th>
+                        <th>GA</th>
+                        <th>GD</th>
+                        <th>Pts</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${finalsRows.map(function (team, index) {
+                        return `
+                            <tr>
+                                <td style="font-weight:700;">
+                                    ${index + 1}
+                                </td>
+                                <td style="font-weight:700;">
+                                    ${escapeHtml(team.name)}
+                                </td>
+                                <td>${team.played}</td>
+                                <td>${team.won}</td>
+                                <td>${team.drawn}</td>
+                                <td>${team.lost}</td>
+                                <td>${team.gf}</td>
+                                <td>${team.ga}</td>
+                                <td>${team.gd > 0 ? "+" : ""}${team.gd}</td>
+                                <td style="font-weight:800;">
+                                    ${team.points}
+                                </td>
+                            </tr>
+                        `;
+                    }).join("")}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+`;
             }
         }
         // ========================================
