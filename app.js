@@ -555,20 +555,36 @@ async function setupMainCompetitionSelector(
         );
 
         // ----------------------------------------
-        // SELECT THE CURRENT MAIN COMPETITION
-        // ----------------------------------------
+// RESTORE THE SELECTED COMPETITION
+// ----------------------------------------
 
-        if (
-            defaultCompetition &&
-            defaultCompetition.id !== undefined &&
-            defaultCompetition.id !== null
-        ) {
+const savedCompetitionId =
+    localStorage.getItem(
+        "kabaruSelectedCompetitionId"
+    );
 
-            mainCompetitionFilter.value =
-                String(
-                    defaultCompetition.id
-                );
-        }
+const savedCompetition =
+    savedCompetitionId
+        ? competitions.find(
+            function (competition) {
+                return String(competition.id) ===
+                    String(savedCompetitionId);
+            }
+        )
+        : null;
+
+const initialCompetition =
+    savedCompetition ||
+    defaultCompetition ||
+    competitions[0];
+
+if (initialCompetition) {
+    mainCompetitionFilter.value =
+        String(initialCompetition.id);
+
+    currentMainCompetition =
+        initialCompetition;
+}
 
         // ----------------------------------------
         // COMPETITION CHANGE
@@ -580,6 +596,10 @@ async function setupMainCompetitionSelector(
 
                 const selectedId =
                     mainCompetitionFilter.value;
+                localStorage.setItem(
+    "kabaruSelectedCompetitionId",
+    selectedId
+);
 
                 const selectedCompetition =
                     competitions.find(
