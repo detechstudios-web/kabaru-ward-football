@@ -1533,6 +1533,46 @@ if (fixtureIds.length > 0) {
         results || [];
 }
 
+const resultIds = resultRows.map(function (item) {
+    return item.id;
+});
+
+const goalScorersByResult = {};
+
+if (resultIds.length > 0) {
+    const {
+        data: goalRows,
+        error: goalError
+    } = await supabaseClient
+        .from("goal_scorers")
+        .select(`
+            result_id,
+            player_id,
+            minute,
+            players (
+                full_name,
+                team_id
+            )
+        `)
+        .in("result_id", resultIds)
+        .order("minute", {
+            ascending: true
+        });
+
+    if (goalError) {
+        throw goalError;
+    }
+
+    (goalRows || []).forEach(function (goal) {
+        const key = String(goal.result_id);
+
+        if (!goalScorersByResult[key]) {
+            goalScorersByResult[key] = [];
+        }
+
+        goalScorersByResult[key].push(goal);
+    });
+}
 const resultMap = {};
 
 resultRows.forEach(
