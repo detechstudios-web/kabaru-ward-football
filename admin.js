@@ -4122,29 +4122,38 @@ if (competitionForm) {
                                     ? knockoutStartRound
                                     : null,
 
-                            number_of_groups:
-                                competitionFormat ===
-                                "group_knockout"
-                                    ? numberOfGroups
-                                    : null,
+                            
+number_of_groups:
+    (
+        competitionFormat === "group_knockout" ||
+        competitionFormat === "group_finals_league"
+    )
+        ? numberOfGroups
+        : null,
 
-                            teams_per_group:
-                                competitionFormat ===
-                                "group_knockout"
-                                    ? teamsPerGroup
-                                    : null,
+teams_per_group:
+    (
+        competitionFormat === "group_knockout" ||
+        competitionFormat === "group_finals_league"
+    )
+        ? teamsPerGroup
+        : null,
 
-                            qualifiers_per_group:
-                                competitionFormat ===
-                                "group_knockout"
-                                    ? qualifiersPerGroup
-                                    : null,
+qualifiers_per_group:
+    (
+        competitionFormat === "group_knockout" ||
+        competitionFormat === "group_finals_league"
+    )
+        ? qualifiersPerGroup
+        : null,
 
-                            qualification_method:
-                                competitionFormat ===
-                                "group_knockout"
-                                    ? qualificationMethod
-                                    : null
+qualification_method:
+    (
+        competitionFormat === "group_knockout" ||
+        competitionFormat === "group_finals_league"
+    )
+        ? qualificationMethod
+        : null
 
                         })
                         .select()
