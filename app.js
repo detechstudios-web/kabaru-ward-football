@@ -2292,14 +2292,15 @@ const table = {};
             } = await supabaseClient
                 .from("fixtures")
                 .select(`
-                    id,
-                    competition_id,
-                    home_team_id,
-                    away_team_id,
-                    match_date,
-                    kick_off,
-                    status
-                `)
+    id,
+    competition_id,
+    stage_id,
+    home_team_id,
+    away_team_id,
+    match_date,
+    kick_off,
+    status
+`)
                 .eq(
                     "competition_id",
                     leagueCompetition.id
@@ -2314,10 +2315,23 @@ const table = {};
             if (fixtureError) {
                 throw fixtureError;
             }
+const relevantFixtureRows =
+    (fixtureRows || []).filter(
+        function (fixture) {
+            if (
+                leagueCompetition.competition_format ===
+                "group_finals_league"
+            ) {
+                return String(fixture.stage_id) ===
+                    String(finalsLeagueStageId);
+            }
 
+            return true;
+        }
+    );
             const fixtureIds =
-                (fixtureRows || [])
-                    .map(
+    relevantFixtureRows
+        .map(
                         function (fixture) {
                             return fixture.id;
                         }
@@ -2373,8 +2387,8 @@ resultRows.forEach(
             // PROCESS COMPLETED LEAGUE MATCHES
             // ========================================
 
-            fixtureRows.forEach(
-                function (fixture) {
+            relevantFixtureRows.forEach(
+    function (fixture) {
 
                     if (
                         String(
