@@ -3930,6 +3930,10 @@ if (competitionForm) {
                 }
 
 
+                
+            if (
+                competitionFormat === "group_knockout"
+            ) {
                 const roundRequirements = {
                     "Round of 64": 64,
                     "Round of 32": 32,
@@ -3938,23 +3942,13 @@ if (competitionForm) {
                     "Semi-Finals": 4
                 };
 
-
                 const requiredTeams =
-                    roundRequirements[
-                        knockoutStartRound
-                    ];
-
+                    roundRequirements[knockoutStartRound];
 
                 const totalQualifiers =
-                    numberOfGroups *
-                    qualifiersPerGroup;
+                    numberOfGroups * qualifiersPerGroup;
 
-
-                if (
-                    totalQualifiers !==
-                    requiredTeams
-                ) {
-
+                if (totalQualifiers !== requiredTeams) {
                     competitionFormMessage.textContent =
                         "❌ Your group settings produce " +
                         totalQualifiers +
