@@ -3667,16 +3667,25 @@ async function loadGroupKnockoutTables(
                 );
 
                 // ========================================
-                // PROCESS GROUP MATCHES
-                // ========================================
+// PROCESS GROUP MATCHES
+// ========================================
 
-                (fixtures || []).forEach(
-                    function (fixture) {
+(fixtures || []).forEach(
+    function (fixture) {
 
-                        const homeId =
-                            String(
-                                fixture.home_team_id
-                            );
+        // Ignore fixtures belonging to other stages.
+        if (
+            fixture.stage_id &&
+            String(fixture.stage_id) !==
+            String(groupStage.id)
+        ) {
+            return;
+        }
+
+        const homeId =
+            String(
+                fixture.home_team_id
+            );
 
                         const awayId =
                             String(
