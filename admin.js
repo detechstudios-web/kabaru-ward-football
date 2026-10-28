@@ -3073,6 +3073,110 @@ async function createLeagueStage(
     return data;
 }
 
+async function createGroupFinalsLeagueStructure(
+    competitionId,
+    competitionName,
+    numberOfGroups,
+    teamsPerGroup,
+    qualifiersPerGroup,
+    qualificationMethod
+) {
+    if (
+        !Number.isInteger(numberOfGroups) ||
+        numberOfGroups < 1 ||
+        !Number.isInteger(teamsPerGroup) ||
+        teamsPerGroup < 2 ||
+        !Number.isInteger(qualifiersPerGroup) ||
+        qualifiersPerGroup < 1 ||
+        qualifiersPerGroup > teamsPerGroup
+    ) {
+        throw new Error(
+            "Check the number of groups, teams per group, and qualifiers per group."
+        );
+    }
+
+    // 1. Create the group stage.
+    const { data: groupStage, error: groupError } =
+        await supabaseClient
+            .from("competition_stages")
+            .insert({
+                competition_id: competitionId,
+                name: competitionName + " - Group Stage",
+                stage_type: "group",
+                stage_order: 1,
+                status: "Upcoming",
+                description: "Group stage. Finalists are selected manually.",
+                number_of_groups: numberOfGroups,
+                teams_per_group: teamsPerGroup,
+                qualifiers_per_group: qualifiersPerGroup,
+                qualification_method: "manual",
+                progression_method: "manual"
+            })
+            .select()
+            .single();
+
+    if (groupError) {
+        throw groupError;
+    }
+
+    // 2. Create Group A, Group B, Group C, and so on.
+    for (let i = 1; i <= numberOfGroups; i++) {
+        const groupLetter = String.fromCharCode(64 + i);
+
+        const { error: createGroupError } =
+            await supabaseClient
+                .from("competition_groups")
+                .insert({
+                    stage_id: groupStage.id,
+                    name: "Group " + groupLetter,
+                    group_order: i
+                });
+
+        if (createGroupError) {
+            throw createGroupError;
+        }
+    }
+
+    // 3. Create the separate Finals League Robin stage.
+    const { data: finalsStage, error: finalsError } =
+        await supabaseClient
+            .from("competition_stages")
+            .insert({
+                competition_id: competitionId,
+                name: competitionName + " - Finals League Robin",
+                stage_type: "league",
+                stage_order: 2,
+                status: "Upcoming",
+                description: "Finals League Robin. Select finalists manually.",
+                qualification_method: "manual",
+                progression_method: "manual"
+            })
+            .select()
+            .single();
+
+    if (finalsError) {
+        throw finalsError;
+    }
+
+    // 4. Link the group stage to the finals stage.
+    const { error: linkError } =
+        await supabaseClient
+            .from("competition_stages")
+            .update({
+                next_stage_id: finalsStage.id,
+                progression_method: "manual"
+            })
+            .eq("id", groupStage.id);
+
+    if (linkError) {
+        throw linkError;
+    }
+
+    return {
+        groupStage,
+        finalsStage
+    };
+}
 
 // ========================================
 // CREATE GROUP + KNOCKOUT STRUCTURE
