@@ -3505,15 +3505,16 @@ async function loadGroupKnockoutTables(
             error: fixturesError
         } = await supabaseClient
             .from("fixtures")
-            .select(`
-                id,
-                competition_id,
-                home_team_id,
-                away_team_id,
-                match_date,
-                kick_off,
-                status
-            `)
+.select(`
+    id,
+    competition_id,
+    stage_id,
+    home_team_id,
+    away_team_id,
+    match_date,
+    kick_off,
+    status
+`)
             .eq(
                 "competition_id",
                 competition.id
