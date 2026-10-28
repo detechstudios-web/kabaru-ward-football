@@ -6477,6 +6477,114 @@ async function loadKnockoutRoundsForFixture(competitionId) {
     }
 }
 
+    
+async function loadFixtureStagesForCompetition(competitionId) {
+    if (
+        !fixtureStageGroup ||
+        !fixtureStageSelect ||
+        !fixtureGroupGroup ||
+        !fixtureGroupSelect
+    ) {
+        return;
+    }
+
+    fixtureStageGroup.style.display = "none";
+    fixtureGroupGroup.style.display = "none";
+
+    fixtureStageSelect.innerHTML =
+        '<option value="">Select stage</option>';
+
+    fixtureGroupSelect.innerHTML =
+        '<option value="">Select group</option>';
+
+    if (!competitionId) return;
+
+    try {
+        const { data: competition, error: competitionError } =
+            await supabaseClient
+                .from("competitions")
+                .select("competition_format")
+                .eq("id", Number(competitionId))
+                .single();
+
+        if (competitionError) throw competitionError;
+
+        if (competition.competition_format !== "group_finals_league") {
+            return;
+        }
+
+        const { data: stages, error: stagesError } =
+            await supabaseClient
+                .from("competition_stages")
+                .select("id, name, stage_type, stage_order")
+                .eq("competition_id", Number(competitionId))
+                .order("stage_order", { ascending: true });
+
+        if (stagesError) throw stagesError;
+
+        (stages || []).forEach(function (stage) {
+            const option = document.createElement("option");
+            option.value = String(stage.id);
+            option.textContent = stage.name;
+            option.dataset.stageType = stage.stage_type;
+
+            fixtureStageSelect.appendChild(option);
+        });
+
+        if (stages && stages.length > 0) {
+            fixtureStageGroup.style.display = "block";
+        }
+
+    } catch (error) {
+        console.error("LOAD FIXTURE STAGES ERROR:", error);
+    }
+}
+
+if (fixtureStageSelect) {
+    fixtureStageSelect.addEventListener("change", async function () {
+        fixtureGroupGroup.style.display = "none";
+
+        fixtureGroupSelect.innerHTML =
+            '<option value="">Select group</option>';
+
+        const selectedOption =
+            fixtureStageSelect.options[fixtureStageSelect.selectedIndex];
+
+        if (
+            !fixtureStageSelect.value ||
+            !selectedOption ||
+            selectedOption.dataset.stageType !== "group"
+        ) {
+            return;
+        }
+
+        try {
+            const { data: groups, error: groupsError } =
+                await supabaseClient
+                    .from("competition_groups")
+                    .select("id, name, group_order")
+                    .eq("stage_id", Number(fixtureStageSelect.value))
+                    .order("group_order", { ascending: true });
+
+            if (groupsError) throw groupsError;
+
+            (groups || []).forEach(function (group) {
+                const option = document.createElement("option");
+                option.value = String(group.id);
+                option.textContent = group.name;
+
+                fixtureGroupSelect.appendChild(option);
+            });
+
+            if (groups && groups.length > 0) {
+                fixtureGroupGroup.style.display = "block";
+            }
+
+        } catch (error) {
+            console.error("LOAD FIXTURE GROUPS ERROR:", error);
+        }
+    });
+}
 // Update fixture teams and knockout rounds
 // whenever the competition changes.
 if (competitionSelect) {
