@@ -2460,11 +2460,18 @@ function getCompetitionFormat(
         return "knockout";
     }
 
-    if (
+      if (
         competitionType ===
         "Group + Knockout"
     ) {
         return "group_knockout";
+    }
+
+    if (
+        competitionType ===
+        "Group Stage + Finals League Robin"
+    ) {
+        return "group_finals_league";
     }
 
     if (
