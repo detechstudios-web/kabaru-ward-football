@@ -4059,6 +4059,243 @@ async function loadGroupKnockoutTables(
 
         
         // ========================================
+        // PREPARE FINALS LEAGUE ROBIN TABLE
+        // ========================================
+
+        let finalsLeagueOutput = "";
+
+        if (
+            isFinalsLeague &&
+            allGroupMatchesComplete
+        ) {
+            const {
+                data: finalsStages,
+                error: finalsStagesError
+            } = await supabaseClient
+                .from("competition_stages")
+                .select(`
+                    id,
+                    stage_type,
+                    stage_order,
+                    competition_stage_teams (
+                        team_id,
+                        status
+                    )
+                `)
+                .eq(
+                    "competition_id",
+                    competition.id
+                )
+                .eq(
+                    "stage_type",
+                    "league"
+                )
+                .order(
+                    "stage_order",
+                    { ascending: true }
+                )
+                .limit(1);
+
+            if (finalsStagesError) {
+                throw finalsStagesError;
+            }
+
+            const finalsStage =
+                (finalsStages || [])[0];
+
+            const finalistIds =
+                finalsStage
+                    ? (
+                        finalsStage.competition_stage_teams || []
+                    )
+                        .filter(function (membership) {
+                            const status =
+                                String(
+                                    membership.status || ""
+                                ).toLowerCase();
+
+                            return (
+                                membership.team_id &&
+                                (
+                                    !status ||
+                                    status === "active"
+                                )
+                            );
+                        })
+                        .map(function (membership) {
+                            return String(membership.team_id);
+                        })
+                    : [];
+
+            if (finalistIds.length === 0) {
+                finalsLeagueOutput = `
+                    <div style="text-align:center;padding:20px;">
+                        <h3>🏆 Finals League Robin</h3>
+                        <p>
+                            The group stage is complete.
+                            Awaiting manual selection of finalists.
+                        </p>
+                    </div>
+                `;
+            } else {
+                const finalsTable = {};
+
+                finalistIds.forEach(function (teamId) {
+                    const team = teamMap[teamId];
+
+                    if (!team) return;
+
+                    finalsTable[teamId] = {
+                        name: team.name || "Unknown Team",
+                        played: 0,
+                        won: 0,
+                        drawn: 0,
+                        lost: 0,
+                        gf: 0,
+                        ga: 0,
+                        gd: 0,
+                        points: 0
+                    };
+                });
+
+                (fixtures || []).forEach(function (fixture) {
+                    if (
+                        String(fixture.stage_id || "") !==
+                        String(finalsStage.id)
+                    ) {
+                        return;
+                    }
+
+                    const homeId =
+                        String(fixture.home_team_id);
+
+                    const awayId =
+                        String(fixture.away_team_id);
+
+                    if (
+                        !finalsTable[homeId] ||
+                        !finalsTable[awayId] ||
+                        String(fixture.status || "").toLowerCase()
+                            !== "completed"
+                    ) {
+                        return;
+                    }
+
+                    const result =
+                        resultMap[String(fixture.id)];
+
+                    if (
+                        !result ||
+                        result.home_score === null ||
+                        result.home_score === undefined ||
+                        result.away_score === null ||
+                        result.away_score === undefined
+                    ) {
+                        return;
+                    }
+
+                    const homeScore =
+                        Number(result.home_score);
+
+                    const awayScore =
+                        Number(result.away_score);
+
+                    if (
+                        !Number.isFinite(homeScore) ||
+                        !Number.isFinite(awayScore)
+                    ) {
+                        return;
+                    }
+
+                    const home = finalsTable[homeId];
+                    const away = finalsTable[awayId];
+
+                    home.played++;
+                    away.played++;
+
+                    home.gf += homeScore;
+                    home.ga += awayScore;
+
+                    away.gf += awayScore;
+                    away.ga += homeScore;
+
+                    if (homeScore > awayScore) {
+                        home.won++;
+                        home.points += 3;
+                        away.lost++;
+                    } else if (homeScore < awayScore) {
+                        away.won++;
+                        away.points += 3;
+                        home.lost++;
+                    } else {
+                        home.drawn++;
+                        away.drawn++;
+                        home.points++;
+                        away.points++;
+                    }
+                });
+
+                const finalsRows =
+                    Object.values(finalsTable);
+
+                finalsRows.forEach(function (team) {
+                    team.gd = team.gf - team.ga;
+                });
+
+                finalsRows.sort(function (a, b) {
+                    return (
+                        b.points - a.points ||
+                        b.gd - a.gd ||
+                        b.gf - a.gf ||
+                        a.name.localeCompare(b.name)
+                    );
+                });
+
+                finalsLeagueOutput = `
+                    <div style="margin-top:20px;">
+                        <h3 style="text-align:center;">
+                            🏆 Finals League Robin
+                        </h3>
+
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%;border-collapse:collapse;">
+                                <thead>
+                                    <tr>
+                                        <th>Team</th>
+                                        <th>P</th>
+                                        <th>W</th>
+                                        <th>D</th>
+                                        <th>L</th>
+                                        <th>GF</th>
+                                        <th>GA</th>
+                                        <th>GD</th>
+                                        <th>Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${finalsRows.map(function (team) {
+                                        return `
+                                            <tr>
+                                                <td>${team.name}</td>
+                                                <td>${team.played}</td>
+                                                <td>${team.won}</td>
+                                                <td>${team.drawn}</td>
+                                                <td>${team.lost}</td>
+                                                <td>${team.gf}</td>
+                                                <td>${team.ga}</td>
+                                                <td>${team.gd}</td>
+                                                <td><strong>${team.points}</strong></td>
+                                            </tr>
+                                        `;
+                                    }).join("")}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        // ========================================
         // DISPLAY GROUP TABLES AND NEXT STAGE
         // ========================================
 
