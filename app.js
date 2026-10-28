@@ -4321,29 +4321,31 @@ async function loadGroupKnockoutTables(
                 id="groupFinalsLeagueContent"
                 style="${isFinalsLeague ? "" : "display:none;"}"
             >
-                <div style="
-                    text-align:center;
-                    padding:25px;
-                    margin-top:20px;
-                    border:1px solid #ddd;
-                    border-radius:12px;
-                ">
-                    <div style="font-size:28px;margin-bottom:10px;">
-                        🏆
+                                ${finalsLeagueOutput || `
+                    <div style="
+                        text-align:center;
+                        padding:25px;
+                        margin-top:20px;
+                        border:1px solid #ddd;
+                        border-radius:12px;
+                    ">
+                        <div style="font-size:28px;margin-bottom:10px;">
+                            🏆
+                        </div>
+
+                        <h3>Finals League Robin</h3>
+
+                        <p>
+                            The Finals League table will appear here
+                            after all group matches are completed
+                            and the finalists are confirmed.
+                        </p>
+
+                        <p style="color:#777;">
+                            Awaiting completion of the group stage.
+                        </p>
                     </div>
-
-                    <h3>Finals League Robin</h3>
-
-                    <p>
-                        The Finals League table will appear here
-                        after all group matches are completed
-                        and the finalists are confirmed.
-                    </p>
-
-                    <p style="color:#777;">
-                        Awaiting completion of the group stage.
-                    </p>
-                </div>
+                `}
             </div>
         `;
 
