@@ -9690,9 +9690,12 @@ async function advanceGroupToKnockout(
         }
 
         if (
-            competitionFormatCheck &&
-            competitionFormatCheck.competition_format === "group_knockout"
-        ) {
+    competitionFormatCheck &&
+    (
+        competitionFormatCheck.competition_format === "group_knockout" ||
+        competitionFormatCheck.competition_format === "group_finals_league"
+    )
+) {
             return {
                 type: "manual",
                 message: "Group-to-knockout progression is manual."
@@ -9839,9 +9842,9 @@ async function advanceGroupToKnockout(
     venue,
     matchday,
     status,
-    knockout_round_id
+    knockout_round_id,
     stage_id,
-group_id
+    group_id
 `)
             .eq(
                 "competition_id",
