@@ -4057,7 +4057,9 @@ async function loadGroupKnockoutTables(
             }
         );
 
-        
+                const isFinalsLeague =
+            competition.competition_format ===
+            "group_finals_league";
         // ========================================
         // PREPARE FINALS LEAGUE ROBIN TABLE
         // ========================================
@@ -4299,9 +4301,7 @@ async function loadGroupKnockoutTables(
         // DISPLAY GROUP TABLES AND NEXT STAGE
         // ========================================
 
-        const isFinalsLeague =
-            competition.competition_format ===
-            "group_finals_league";
+        
 
         groupKnockoutTablesEl.innerHTML = `
             <div id="groupStandingsContent">
