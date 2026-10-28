@@ -1692,6 +1692,56 @@ resultRows.forEach(
                     formatDate(
                         result.match_date
                     );
+                const matchGoals =
+    goalScorersByResult[
+        String(matchResult.id)
+    ] || [];
+
+const homeScorersHtml = matchGoals
+    .filter(function (goal) {
+        return String(goal.players?.team_id) ===
+            String(homeTeam.id);
+    })
+    .map(function (goal) {
+        const playerName =
+            goal.players?.full_name || "Unknown player";
+
+        const minute =
+            goal.minute !== null &&
+            goal.minute !== undefined
+                ? ` ${goal.minute}'`
+                : "";
+
+        return `
+            <div style="margin-top:4px;">
+                ${escapeHtml(playerName)}${escapeHtml(minute)}
+            </div>
+        `;
+    })
+    .join("");
+
+const awayScorersHtml = matchGoals
+    .filter(function (goal) {
+        return String(goal.players?.team_id) ===
+            String(awayTeam.id);
+    })
+    .map(function (goal) {
+        const playerName =
+            goal.players?.full_name || "Unknown player";
+
+        const minute =
+            goal.minute !== null &&
+            goal.minute !== undefined
+                ? ` ${goal.minute}'`
+                : "";
+
+        return `
+            <div style="margin-top:4px;">
+                ${escapeHtml(playerName)}${escapeHtml(minute)}
+            </div>
+        `;
+    })
+    .join("");
 
                 const kickOff =
                     formatTime(
@@ -1917,6 +1967,27 @@ resultCard.addEventListener(
                             ${escapeHtml(
                                 awayScore
                             )}
+                        </div>
+                                                <div
+                            style="
+                                grid-column:1 / 4;
+                                display:grid;
+                                grid-template-columns:1fr auto 1fr;
+                                gap:12px;
+                                margin-top:4px;
+                                font-size:12px;
+                                color:#555;
+                            "
+                        >
+                            <div style="text-align:left;">
+                                ${homeScorersHtml}
+                            </div>
+
+                            <div></div>
+
+                            <div style="text-align:right;">
+                                ${awayScorersHtml}
+                            </div>
                         </div>
 
                         <div
