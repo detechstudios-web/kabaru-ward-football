@@ -4012,28 +4012,62 @@ async function loadGroupKnockoutTables(
             }
         );
 
+        
         // ========================================
-// DISPLAY GROUP TABLES AND KNOCKOUT SECTION
-// ========================================
+        // DISPLAY GROUP TABLES AND NEXT STAGE
+        // ========================================
 
-groupKnockoutTablesEl.innerHTML = `
-    <div id="groupStandingsContent">
-        ${output}
-    </div>
+        const isFinalsLeague =
+            competition.competition_format ===
+            "group_finals_league";
 
-    <div id="groupKnockoutBracketContent">
-        <div style="text-align:center;padding:20px;">
-            Loading knockout stage...
-        </div>
-    </div>
-`;
+        groupKnockoutTablesEl.innerHTML = `
+            <div id="groupStandingsContent">
+                ${output}
+            </div>
 
-if (
-    competition.competition_format ===
-    "group_knockout"
-) {
-    await loadKnockoutStage(competition);
-} else {
+            <div
+                id="groupKnockoutBracketContent"
+                style="${isFinalsLeague ? "display:none;" : ""}"
+            >
+                <div style="text-align:center;padding:20px;">
+                    Loading knockout stage...
+                </div>
+            </div>
+
+            <div
+                id="groupFinalsLeagueContent"
+                style="${isFinalsLeague ? "" : "display:none;"}"
+            >
+                <div style="
+                    text-align:center;
+                    padding:25px;
+                    margin-top:20px;
+                    border:1px solid #ddd;
+                    border-radius:12px;
+                ">
+                    <div style="font-size:28px;margin-bottom:10px;">
+                        🏆
+                    </div>
+
+                    <h3>Finals League Robin</h3>
+
+                    <p>
+                        The Finals League table will appear here
+                        after all group matches are completed
+                        and the finalists are confirmed.
+                    </p>
+
+                    <p style="color:#777;">
+                        Awaiting completion of the group stage.
+                    </p>
+                </div>
+            </div>
+        `;
+
+        if (!isFinalsLeague) {
+            await loadKnockoutStage(competition);
+        } else {
     const bracketContent =
         document.getElementById(
             "groupKnockoutBracketContent"
