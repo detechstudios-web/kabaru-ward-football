@@ -9840,6 +9840,8 @@ async function advanceGroupToKnockout(
     matchday,
     status,
     knockout_round_id
+    stage_id,
+group_id
 `)
             .eq(
                 "competition_id",
