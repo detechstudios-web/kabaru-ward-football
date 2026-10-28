@@ -3867,9 +3867,9 @@ if (competitionForm) {
 
 
             if (
-                competitionFormat ===
-                "group_knockout"
-            ) {
+    competitionFormat === "group_knockout" ||
+    competitionFormat === "group_finals_league"
+) {
 
                 if (
                     !numberOfGroups ||
