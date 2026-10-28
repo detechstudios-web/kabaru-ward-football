@@ -3975,7 +3975,7 @@ if (competitionForm) {
                     return;
                 }
             }
-
+            }
 
             competitionFormMessage.textContent =
                 "Saving competition and generating structure...";
