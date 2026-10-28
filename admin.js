@@ -6591,10 +6591,12 @@ if (competitionSelect) {
     competitionSelect.addEventListener("change", async function () {
         await loadFixtureTeamsForCompetition(this.value);
         await loadKnockoutRoundsForFixture(this.value);
+        await loadFixtureStagesForCompetition(this.value);
     });
 
     if (competitionSelect.value) {
         loadKnockoutRoundsForFixture(competitionSelect.value);
+        loadFixtureStagesForCompetition(competitionSelect.value);
     }
 }
 
@@ -6815,6 +6817,42 @@ if (competitionSelect) {
 
                     return;
                 }
+                
+const selectedStageOption =
+    fixtureStageSelect &&
+    fixtureStageSelect.selectedIndex >= 0
+        ? fixtureStageSelect.options[
+            fixtureStageSelect.selectedIndex
+        ]
+        : null;
+
+const selectedStageType =
+    selectedStageOption
+        ? selectedStageOption.dataset.stageType
+        : "";
+
+if (
+    fixtureStageGroup &&
+    fixtureStageGroup.style.display !== "none" &&
+    !fixtureStageSelect.value
+) {
+    showFixtureMessage(
+        "Please select a competition stage.",
+        "error"
+    );
+    return;
+}
+
+if (
+    selectedStageType === "group" &&
+    (!fixtureGroupSelect || !fixtureGroupSelect.value)
+) {
+    showFixtureMessage(
+        "Please select a group.",
+        "error"
+    );
+    return;
+}
 
 
                 if (!kickOffValue) {
@@ -6842,6 +6880,19 @@ if (competitionSelect) {
                                     Number(
                                         competitionId
                                     ),
+                                
+stage_id:
+    fixtureStageSelect &&
+    fixtureStageSelect.value
+        ? Number(fixtureStageSelect.value)
+        : null,
+
+group_id:
+    selectedStageType === "group" &&
+    fixtureGroupSelect &&
+    fixtureGroupSelect.value
+        ? Number(fixtureGroupSelect.value)
+        : null,
                                 knockout_round_id:
     knockoutRoundSelect &&
     knockoutRoundSelect.value
