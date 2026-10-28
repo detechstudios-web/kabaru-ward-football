@@ -2218,7 +2218,78 @@ if (teamsError) {
 // ========================================
 // LOAD TEAMS SELECTED FOR THIS COMPETITION
 // ========================================
+let finalsLeagueStageId = null;
+let finalsLeagueTeamIds = [];
 
+if (
+    leagueCompetition.competition_format ===
+    "group_finals_league"
+) {
+    const {
+        data: finalsStage,
+        error: finalsStageError
+    } = await supabaseClient
+        .from("competition_stages")
+        .select(`
+            id,
+            stage_type,
+            stage_order,
+            competition_stage_teams (
+                team_id,
+                status
+            )
+        `)
+        .eq(
+            "competition_id",
+            leagueCompetition.id
+        )
+        .eq(
+            "stage_type",
+            "league"
+        )
+        .order(
+            "stage_order",
+            {
+                ascending: true
+            }
+        )
+        .limit(1)
+        .maybeSingle();
+
+    if (finalsStageError) {
+        throw finalsStageError;
+    }
+
+    if (finalsStage) {
+        finalsLeagueStageId =
+            finalsStage.id;
+
+        finalsLeagueTeamIds =
+            (
+                finalsStage.competition_stage_teams ||
+                []
+            )
+            .filter(function (membership) {
+                const status =
+                    String(
+                        membership.status || ""
+                    ).toLowerCase();
+
+                return (
+                    membership.team_id &&
+                    (
+                        !status ||
+                        status === "active"
+                    )
+                );
+            })
+            .map(function (membership) {
+                return String(
+                    membership.team_id
+                );
+            });
+    }
+}
 
 let participatingTeamIds =
     await getCompetitionParticipatingTeamIds(
