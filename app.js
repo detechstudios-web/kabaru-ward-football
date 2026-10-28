@@ -2068,8 +2068,12 @@ if (!leagueCompetition) {
 // Group + Knockout competitions will be handled
 // separately after the normal league table logic.
 if (
+    (
     leagueCompetition.competition_format ===
-    "group_knockout"
+        "group_knockout" ||
+    leagueCompetition.competition_format ===
+        "group_finals_league"
+)
 ) {
 
     if (competitionStandingsTitleEl) {
@@ -4003,7 +4007,21 @@ groupKnockoutTablesEl.innerHTML = `
     </div>
 `;
 
-await loadKnockoutStage(competition);
+if (
+    competition.competition_format ===
+    "group_knockout"
+) {
+    await loadKnockoutStage(competition);
+} else {
+    const bracketContent =
+        document.getElementById(
+            "groupKnockoutBracketContent"
+        );
+
+    if (bracketContent) {
+        bracketContent.innerHTML = "";
+    }
+}
 
     } catch (error) {
 
