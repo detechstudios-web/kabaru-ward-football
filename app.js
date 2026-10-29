@@ -7248,7 +7248,7 @@ return "Unknown Player";
 
         let players = 0;
 
-        const MAX_PLAYERS = 20;
+        const MAX_PLAYERS = 26;
 
 
         // ========================================
@@ -7313,7 +7313,7 @@ return "Unknown Player";
             ) {
 
                 alert(
-                    "Maximum of 20 players allowed."
+                    "Maximum of 26 players allowed."
                 );
 
                 return;
