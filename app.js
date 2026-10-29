@@ -1731,9 +1731,9 @@ function buildScorersHtml(teamId) {
                             : "";
 
                     const penalty =
-                        goal.is_penalty === true
-                            ? " P"
-                            : "";
+    goal.is_penalty === true
+        ? ' (<span style="color:#f5c542;font-weight:bold;">P</span>)'
+        : "";
 
                     return `⚽ ${minute}${penalty}`;
                 })
