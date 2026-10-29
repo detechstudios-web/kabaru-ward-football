@@ -1969,6 +1969,7 @@ resultCard.addEventListener(
                         </div>
                                                 
 
+                        
                         <div
                             style="
                                 text-align:center;
@@ -1988,29 +1989,30 @@ resultCard.addEventListener(
                                     )
                                 )}
                             </div>
-                                                </div>
-
-                        <div
-                            style="
-                                display:grid;
-                                grid-template-columns:1fr 1fr;
-                                gap:12px;
-                                margin-top:8px;
-                                font-size:12px;
-                                color:#555;
-                            "
-                        >
-                            <div style="text-align:left;">
-                                ${homeScorersHtml}
-                            </div>
-
-                            <div style="text-align:right;">
-                                ${awayScorersHtml}
-                            </div>
                         </div>
 
                     </div>
+
+                    <div
+                        style="
+                            display:grid;
+                            grid-template-columns:1fr 1fr;
+                            gap:12px;
+                            margin-top:8px;
+                            font-size:12px;
+                            color:#555;
+                        "
+                    >
+                        <div style="text-align:left;">
+                            ${homeScorersHtml}
+                        </div>
+
+                        <div style="text-align:right;">
+                            ${awayScorersHtml}
+                        </div>
+                    </div>
                 `;
+
 
                 resultsEl.appendChild(
                     resultCard
