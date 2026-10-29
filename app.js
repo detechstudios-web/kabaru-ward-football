@@ -1984,11 +1984,14 @@ resultCard.addEventListener(
 
                         
                         <div
-                            style="
-                                text-align:center;
-                            "
-                        >
-                            ${awayLogo}
+    style="
+        text-align:right;
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+    "
+>
+    ${awayLogo}
 
                             <div
                                 style="
