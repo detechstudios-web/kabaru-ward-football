@@ -1980,9 +1980,10 @@ resultCard.addEventListener(
 
                             <div
                                 style="
-                                    font-weight:700;
-                                    margin-top:7px;
-                                "
+    font-weight:700;
+    font-size:16px;
+    margin-top:7px;
+"
                             >
                                 ${escapeHtml(
                                     getTeamName(
