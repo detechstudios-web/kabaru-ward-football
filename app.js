@@ -1545,10 +1545,11 @@ if (resultIds.length > 0) {
         error: goalError
     } = await supabaseClient
         .from("goal_scorers")
-        .select(`
+                .select(`
             result_id,
             player_id,
             minute,
+            is_penalty,
             players (
                 full_name,
                 team_id
@@ -1713,13 +1714,30 @@ function buildScorersHtml(teamId) {
                 goalsByPlayer[name] = [];
             }
 
-            goalsByPlayer[name].push(goal.minute);
+            goalsByPlayer[name].push({
+    minute: goal.minute,
+    is_penalty: goal.is_penalty
+});
         });
 
     return Object.keys(goalsByPlayer)
         .map(function (name) {
             const goalIcons = goalsByPlayer[name]
-                .map(function (minute) {
+    .map(function (goal) {
+        const minute =
+            goal.minute !== null &&
+            goal.minute !== undefined
+                ? `${escapeHtml(goal.minute)}'`
+                : "";
+
+        const penalty =
+            goal.is_penalty === true
+                ? " P"
+                : "";
+
+        return `⚽ ${minute}${penalty}`;
+    })
+    .join(" ");
                     return minute !== null &&
                         minute !== undefined
                         ? `⚽ ${escapeHtml(minute)}'`
